@@ -1,0 +1,31 @@
+<div class="hidden-pdf">
+<p id="notice"><%= notice %></p>
+
+<h1>Items</h1>
+ <%= link_to "PDF", products_etichette_path(format: :pdf) %>
+
+<%=
+  link_to 'Download as Excel',
+  products_path(format: :xlsx)
+%>
+<%=
+  link_to 'Upload from Excel',
+  new_products_import_path
+%>
+</div>
+
+<div class="columns-3">
+
+       <% @products.each do |product| %>
+       <% qty = product.qty.to_i %>
+        <% qty.times do %>
+          <div class="cell">
+          <%= product.itemcode %> <%= product.fabricode %> <%= product.varcode %> <br>
+          <%= product.description %><br>
+          tg <%= product.tg %><br>
+          <%= product.color %><br>
+          <%= product.materiale %>  
+          </div>
+      <% end %>
+    <% end %>
+</div>

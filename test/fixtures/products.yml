@@ -1,0 +1,25 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  prodcode: MyString
+  itemcode: MyString
+  fabricode: MyString
+  varcode: MyString
+  description: MyText
+  tg: MyString
+  note: MyText
+  fabric: MyString
+  color: MyString
+  materiale: MyString
+
+two:
+  prodcode: MyString
+  itemcode: MyString
+  fabricode: MyString
+  varcode: MyString
+  description: MyText
+  tg: MyString
+  note: MyText
+  fabric: MyString
+  color: MyString
+  materiale: MyString

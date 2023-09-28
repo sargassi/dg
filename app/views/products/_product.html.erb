@@ -1,0 +1,68 @@
+<% qty = product.qty.to_i %>
+<% qty.times do %>
+<div id="<%= dom_id product %>" class="flex  gap-20 bg-slate-50 border border-b-1 border-slate-100 p-4">
+  <div class="codes w-1/3 flex-initial">
+    <p>
+      <strong class="block font-medium mb-1">Prodcode:</strong>
+      <%= product.prodcode %> 
+    </p>
+
+    <p>
+      <strong class="block font-medium mb-1">Itemcode:</strong>
+      <%= product.itemcode %>
+    </p>
+
+    <p>
+      <strong class="block font-medium mb-1">Fabricode:</strong>
+      <%= product.fabricode %>
+    </p>
+
+    <p>
+      <strong class="block font-medium mb-1">Varcode:</strong>
+      <%= product.varcode %>
+    </p>
+  </div>
+  <div class="description w-2/3 flex-initial">
+  <p>
+    <strong class="block font-medium mb-1">Description:</strong>
+    <%= product.description %>
+  </p>
+
+  <p>
+    <strong class="block font-medium mb-1">Fabric:</strong>
+    <%= product.fabric %>
+  </p>
+
+  
+  </div>
+  <div class="mat w-1/6 flex-initial">
+  
+
+  <p>
+    <strong class="block font-medium mb-1">Color:</strong>
+    <%= product.color %>
+  </p>
+
+  <p>
+    <strong class="block font-medium mb-1">Materiale:</strong>
+    <%= product.materiale %>
+  </p>
+  
+  </div>
+<div class="sizes">
+  <p>
+    <strong class="block font-medium mb-1">Tg:</strong>
+    <%= product.tg %>
+  </p>
+
+</div>  
+<div class="actions flex-grow text-end w-full">
+  <% if action_name != "show" %>
+    <%= link_to "Show this product", product, class: "rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
+    <%= link_to 'Edit this product', edit_product_path(product), class: "rounded-lg py-3 ml-2 px-5 bg-gray-100 inline-block font-medium" %>
+    <hr class="mt-6">
+  <% end %>
+</div>
+</div>
+
+<% end %>

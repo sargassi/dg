@@ -1,7 +1,5 @@
-<h1>Import Items From Excel</h1>
-
-
-<h5>Select File</h5>
+<h1 class="font-bold text-4xl mb-4">Import Items From Excel</h1>
+<hr>
 <%= form_for @products_import do |f| %>
   <% if @products_import.errors.any? %>
     <%= pluralize(@products_import.errors.count, "error") %> prevented us from

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_09_28_154542) do
+ActiveRecord::Schema[7.0].define(version: 2023_09_28_163203) do
   create_table "products", force: :cascade do |t|
     t.string "prodcode"
     t.string "itemcode"
@@ -25,6 +25,21 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_28_154542) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "qty"
+  end
+
+  create_table "products_imports", force: :cascade do |t|
+    t.string "prodcode"
+    t.string "itemcode"
+    t.string "fabricode"
+    t.string "varcode"
+    t.text "description"
+    t.string "tg"
+    t.text "note"
+    t.string "fabric"
+    t.string "color"
+    t.string "materiale"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "size_zone_qties", force: :cascade do |t|

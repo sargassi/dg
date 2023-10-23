@@ -1,0 +1,25 @@
+<%= form_with(model: product, class: "contents", data: {'controller': 'populate'}) do |form| %>
+    
+    <%= product.itemcode %> <%= product.fabricode %><%= product.varcode %> <br>
+                <%= form.text_area :description, class: "w-full p-0 m-0 border-0" %><br>tg <%= product.tg %><br>
+                <%= product.color %><br>
+                <%= product.materiale %>  
+                <%= form.submit %> 
+<% end %>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

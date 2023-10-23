@@ -31,14 +31,14 @@ table td {
 
 .cell {
   width: 282px;
-  height:121px;
-  min-height:121px;
+  height:124px;
+  min-height:124px;
   overflow: hidden;
   display: flex;
   float: left;
     height: 12.5%;
     vertical-align: middle;
-    border: 1px solid #ccc;
     padding: 24px;
     line-height: 1.25;
 }
+

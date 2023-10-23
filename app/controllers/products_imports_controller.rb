@@ -6,7 +6,7 @@ class ProductsImportsController < ApplicationController
   def create
     @products_import = ProductsImport.new(params[:products_import])
     if @products_import.save
-      redirect_to products_etichette_path
+      redirect_to utilities_etichette_path
     else
       render :new
     end

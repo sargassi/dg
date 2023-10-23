@@ -1,0 +1,14 @@
+  <% @etigroup.each do |product| %>
+       
+       <% qty = product.qty.to_i %>
+        <% qty.times do %>
+          <div class="cell w-full h-1/8 p-4">
+          <%= product.itemcode %> <%= product.fabricode %><%= product.varcode %> <br>
+          <%= product.description %><br>
+          tg <%= product.tg %><br>
+          <%= product.color %><br>
+          <%= product.materiale %>  
+          </div>
+      <% end %>
+         
+    <% end %>

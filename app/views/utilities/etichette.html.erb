@@ -1,0 +1,80 @@
+
+  <h1 class="font-bold text-4xl mb-4">Utilities / Stampa etichette</h1>
+  <hr>
+
+<%# FILE UPLOAD %>
+
+<section class="files flex justify-between items-center">
+
+
+
+  <%= form_for @products_import do |f| %>
+  <% if @products_import.errors.any? %>
+    <%= pluralize(@products_import.errors.count, "error") %> prevented us from
+    importing your spreadsheet. Please update your spreadsheet and try agin.
+    <ul>
+      <% @products_import.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  <% end %>
+  <%= f.file_field :file, class:"py-4 my-4 bg-slate-50 inline-block rounded-sm" %>
+  <%= f.submit "Import File", class:"p-4 my-4 bg-slate-200 inline-block rounded-sm" %>
+<% end %>
+
+<div class="link_to_pdf">
+<%= link_to "PDF", products_etichette_path(format: :pdf), class:"p-4 my-4 bg-red-400 text-white font-bold inline-block rounded-sm" %>
+</div>
+
+</section>
+
+<%# END FILE UPLOAD  %>
+
+<hr>
+
+<section class="list">
+    <% i = 0 %>
+    <% @etigroup.each do |craete, val| %>
+        <%= craete %>
+        <hr>
+        <div class="columns-3 my-8">
+
+
+
+
+
+          <% val.each do |product| %>
+            <% qty = product.qty.to_i %>
+            <% qty.times do %>
+              
+
+
+              <div class="cell w-full h-1/8 p-4">
+                <hr>
+
+                <turbo_frame id="<%= dom_id(product) %>">
+
+                  <%=  render 'form', product:product %>
+                </turbo_frame>
+
+                <hr>
+
+
+                <%= product.itemcode %> <%= product.fabricode %><%= product.varcode %> <br>
+                <%= product.description %><br>tg <%= product.tg %><br>
+                <%= product.color %><br>
+                <%= product.materiale %>  
+              </div>
+            <% end %>
+ 
+          <% end %>
+        </div>
+
+    <% end %>
+   
+   
+
+
+</section>
+
+

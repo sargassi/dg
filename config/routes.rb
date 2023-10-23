@@ -1,10 +1,12 @@
 Rails.application.routes.draw do
+  get 'dashboard/home'
+  get 'utilities/etichette'
   get 'products_imports/new'
   get 'products_imports/create'
   get "products/etichette"
   resources :products
   resources :products_imports, only: [:new, :create]
-  root to: "products#index"
+  root to: "dashboard#home"
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

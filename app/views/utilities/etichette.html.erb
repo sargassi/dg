@@ -19,7 +19,7 @@
     </ul>
   <% end %>
   <%= f.file_field :file, class:"py-4 my-4 bg-slate-50 inline-block rounded-sm" %>
-  <%= f.submit "Import File", class:"p-4 my-4 bg-slate-200 inline-block rounded-sm" %>
+  <%= f.submit "Import File", target: "_blank", class:"p-4 my-4 bg-slate-200 inline-block rounded-sm" %>
 <% end %>
 
 <div class="link_to_pdf">
@@ -35,12 +35,11 @@
 <section class="list">
     <% i = 0 %>
     <% @etigroup.each do |craete, val| %>
-        <%= craete %>
-        <hr>
+        <% if i == 0 %>
+        
+        <h5 class="mt-4 font-bold uppercase">Ultimo inserimento</h5>
+        
         <div class="columns-3 my-8">
-
-
-
 
 
           <% val.each do |product| %>
@@ -65,7 +64,8 @@
  
           <% end %>
         </div>
-
+        <% i += 1%>
+    <% end %>
     <% end %>
    
    

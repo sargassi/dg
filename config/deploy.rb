@@ -2,7 +2,8 @@
 lock "~> 3.18.0"
 
 set :application, "dg"
-set :repo_url, "git@github.com/sargassi/dg.git"
+set :repo_url, "git@github.com:sargassi/dg.git"
+set :branch, 'main'
 
 # Default branch is :master
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp

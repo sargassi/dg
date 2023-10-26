@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  resources :rails
+  resources :taglia
+  resources :areas
   get 'dashboard/home'
   get 'utilities/etichette'
   get 'products_imports/new'

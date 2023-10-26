@@ -10,7 +10,25 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_09_28_163203) do
+ActiveRecord::Schema[7.0].define(version: 2023_10_23_164516) do
+  create_table "areas", force: :cascade do |t|
+    t.string "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "prodrow", force: :cascade do |t|
+    t.string "prodrow"
+    t.integer "prodcode_id", null: false
+    t.integer "area_id", null: false
+    t.integer "user"
+    t.integer "pub", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["area_id"], name: "index_prodrow_on_area_id"
+    t.index ["prodcode_id"], name: "index_prodrow_on_prodcode_id"
+  end
+
   create_table "products", force: :cascade do |t|
     t.string "prodcode"
     t.string "itemcode"
@@ -25,6 +43,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_28_163203) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "qty"
+    t.integer "status", default: 0
   end
 
   create_table "products_imports", force: :cascade do |t|
@@ -57,12 +76,20 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_28_163203) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "taglia", force: :cascade do |t|
+    t.string "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "zones", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "prodrow", "areas"
+  add_foreign_key "prodrow", "prodcodes"
   add_foreign_key "size_zone_qties", "sizes"
   add_foreign_key "size_zone_qties", "zones"
 end

@@ -1,0 +1,2 @@
+class Taglium < ApplicationRecord
+end

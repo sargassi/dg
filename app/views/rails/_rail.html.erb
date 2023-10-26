@@ -1,0 +1,42 @@
+<div id="<%= dom_id rail %>">
+  <p class="my-5">
+    <strong class="block font-medium mb-1">G:</strong>
+    <%= rail.g %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Migration:</strong>
+    <%= rail.migration %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Prodrow:</strong>
+    <%= rail.prodrow %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Prodcode:</strong>
+    <%= rail.prodcode_id %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Area:</strong>
+    <%= rail.area_id %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">User:</strong>
+    <%= rail.user %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Pub:</strong>
+    <%= rail.pub %>
+  </p>
+
+  <% if action_name != "show" %>
+    <%= link_to "Show this rail", rail, class: "rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
+    <%= link_to 'Edit this rail', edit_rail_path(rail), class: "rounded-lg py-3 ml-2 px-5 bg-gray-100 inline-block font-medium" %>
+    <hr class="mt-6">
+  <% end %>
+</div>

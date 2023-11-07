@@ -24,12 +24,25 @@ class ProductsImport
   def load_imported_products
     spreadsheet = open_spreadsheet
     header = spreadsheet.row(1)
-    (2..spreadsheet.last_row).map do |i|
+    (2..spreadsheet.last_row).each do |i|
       row = Hash[[header, spreadsheet.row(i)].transpose]
       item = Product.new
-      item.attributes = row.to_hash
-      item
+      item.itemcode = spreadsheet.cell(i,'A')
+      item.fabricode = spreadsheet.cell(i,'B')
+      item.varcode = spreadsheet.cell(i,'C')
+      item.description = spreadsheet.cell(i,'D')
+      item.tg = spreadsheet.cell(i,'E')
+      item.color = spreadsheet.cell(i,'F')
+      item.qty = spreadsheet.cell(i,'G')
+      item.materiale = spreadsheet.cell(i,'H')
+      item.save
     end
+    # (2..spreadsheet.last_row).map do |i|
+    #   row = Hash[[header, spreadsheet.row(i)].transpose]
+    #   item = Product.new
+    #   item.attributes = row.to_hash
+    #   item
+    # end
   end
 
   def imported_products
@@ -37,8 +50,7 @@ class ProductsImport
   end
 
   def save
-    if imported_products.map(&:valid?).all?
-      imported_products.each(&:save!)
+    if imported_products
       true
     else
       imported_products.each_with_index do |item, index|

@@ -1,3 +1,4 @@
+<turbo_frame id="<%= dom_id(product) %>">
 <%= form_with(model: product, class: "contents", data: {'controller': 'populate'}) do |form| %>
     <p>
     <%= product.itemcode %> <%= product.fabricode %><%= product.varcode %> 
@@ -7,7 +8,7 @@
                 <%= product.materiale %>  
                 <%= form.submit %> 
 <% end %>
-
+</turbo_frame>
 
 
 

@@ -18,7 +18,7 @@ class ProductsController < ApplicationController
   end
 
   def etichette
-    @products = Product.all
+    @products = Product.all.group_by{|product| product.created_at.to_s}
     respond_to do |format|
       format.html
       format.pdf do 
@@ -48,7 +48,7 @@ class ProductsController < ApplicationController
   end
 
   def index
-    @products = Product.all.limit(30)
+    @products = Product.all.group_by{|product| product.created_at.to_s}
     respond_to do |format|
       format.html
       format.pdf do 

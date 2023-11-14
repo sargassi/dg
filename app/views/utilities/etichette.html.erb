@@ -55,14 +55,12 @@
                 <%= product.itemcode %> <%= product.fabricode %><%= product.varcode %> 
                 </p>   
                 <%= turbo_frame_tag :description do  %> 
-                 <%= product.description %> <%= link_to 'edit', [:edit, product, attribute: :description ], class:"no-pdf text-end text-xs uppercase absolute top-0 right-0" %>
+                 <span class="leading-tight h-8 block"><%= raw(product.description.gsub(/\R+/, '<br/>')) %> </span> <%= link_to 'edit', [:edit, product, attribute: :description ], class:"no-pdf text-end text-xs uppercase absolute top-0 right-0" %>
                 <% end %>
                 <br> tg <%= product.tg %><br>
                 <%= product.color %><br>
                 <%= product.materiale %>  
 
-                  
-                
 
                 <hr>
 
@@ -72,7 +70,7 @@
  
           <% end %>
         </div>
-        <% i += 1%>
+        <% i +=1 %>
     <% end %>
     <% end %>
    

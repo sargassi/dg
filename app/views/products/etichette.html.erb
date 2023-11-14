@@ -1,3 +1,4 @@
+
 <div class="hidden-pdf">
 <p id="notice"><%= notice %></p>
 
@@ -15,17 +16,28 @@
 </div>
 
 <div class="columns-3">
+        <% i = 0 %>
+       <% @products.each do |iz, val| %>
+        <% if i == 0 %>
 
-       <% @products.each do |product| %>
-       <% qty = product.qty.to_i %>
-        <% qty.times do %>
-          <div class="cell">
-          <%= product.itemcode %> <%= product.fabricode %> <%= product.varcode %> <br>
-          <%= product.description %><br>
-          tg <%= product.tg %><br>
-          <%= product.color %><br>
-          <%= product.materiale %>  
-          </div>
-      <% end %>
+          <% val.each do |product| %>
+
+             <% qty = product.qty.to_i %>
+              <% qty.times do %>
+                <div class="cell">
+                <%= product.itemcode %> <%= product.fabricode %> <%= product.varcode %> <br>
+                
+                <%= raw(product.description.gsub(/\R+/, '<br/>')) %><br>
+               
+                tg <%= product.tg %><br>
+                <%= product.color %><br>
+                <%= product.materiale %>  
+                </div>
+            <% end %>
+
+          <% end %>
+
+        <% i += 1%>
+    <% end %>
     <% end %>
 </div>

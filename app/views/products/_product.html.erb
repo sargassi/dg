@@ -26,8 +26,7 @@
   <p>
     <strong class="block font-medium mb-1">Description:</strong>
     <%= turbo_frame_tag :description do%>
-
-    <%= product.description %> <%= link_to 'edit', [:edit, product, attribute: :description ], class:"no-pdf text-end text-xs uppercase absolute top-0 right-0" %>
+    <span class="leading-tight h-8 block"><%= raw(product.description.gsub(/\R+/, '<br/>')) %> </span><%= link_to 'edit', [:edit, product, attribute: :description ], class:"no-pdf text-end text-xs uppercase absolute top-0 right-0" %>
     <% end %>
   </p>
 

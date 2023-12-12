@@ -34,6 +34,7 @@
 
 <section class="list">
     <% i = 0 %>
+    
     <% @etigroup.each do |craete, val| %>
         <% if i == 0 %>
         
@@ -42,7 +43,8 @@
         <div class="columns-3 my-8">
 
 
-          <% val.each do |product| %>
+          <% val.sort.each do |product| %>
+          <%=  product.group %>
             <% qty = product.qty.to_i %>
             <% qty.times do %>
               
@@ -60,6 +62,7 @@
                 <br> tg <%= product.tg %><br>
                 <%= product.color %><br>
                 <%= product.materiale %>  
+                <%= product.note %>  
 
 
                 <hr>

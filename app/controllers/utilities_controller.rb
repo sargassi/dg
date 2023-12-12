@@ -2,7 +2,8 @@ class UtilitiesController < ApplicationController
   def etichette
     
     @products_import = ProductsImport.new
-    @etigroup = Product.all.group_by{|product| product.created_at.to_s}
+    @etigroup = Product.all.order('created_at DESC').group_by{|product| product.group}
+
 
     
   end

@@ -30,8 +30,8 @@ class ProductsController < ApplicationController
         default_header: false,
         lowquality:      false,
         disable_smart_shrinking: false,
-        margin:  {   top:    5,                     # default 10 (mm)
-          bottom:            5,
+        margin:  {   top:    4,                     # default 10 (mm)
+          bottom:            4,
           left:              0,
           right:             0 }
       end

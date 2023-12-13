@@ -24,9 +24,9 @@ class ProductsImport
   def load_imported_products
     spreadsheet = open_spreadsheet
     header = spreadsheet.row(1)
+    lastNum = Product.last.group.to_i + 1
     (2..spreadsheet.last_row).each do |i|
       row = Hash[[header, spreadsheet.row(i)].transpose]
-      lastNum = Product.last.group.to_i
       item = Product.new
       item.itemcode = spreadsheet.cell(i,'A')
       item.fabricode = spreadsheet.cell(i,'B')
@@ -36,7 +36,7 @@ class ProductsImport
       item.color = spreadsheet.cell(i,'F')
       item.qty = spreadsheet.cell(i,'G')
       item.materiale = spreadsheet.cell(i,'H')
-      item.group = lastNum + 1
+      item.group = lastNum
       item.save
     end
     # (2..spreadsheet.last_row).map do |i|

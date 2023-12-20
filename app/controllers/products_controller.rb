@@ -18,7 +18,8 @@ class ProductsController < ApplicationController
   end
 
   def etichette
-    @products = Product.all.group_by{|product| product.created_at.to_s}
+    @products = Product.all.order('created_at DESC').group_by{|product| product.group}
+    #@products = Product.all.group_by{|product| product.created_at.to_s}
     respond_to do |format|
       format.html
       format.pdf do 

@@ -49,7 +49,9 @@ gem 'wicked_pdf'
 gem 'roo', "~> 2.7.0"
 gem 'wkhtmltopdf-binary'
 
+gem "ransack", "~> 4.0"
 
+gem "rqrcode", "~> 2.0"
 
 # Use Sass to process CSS
 # gem "sassc-rails"

@@ -1,0 +1,15 @@
+
+
+<%= render "form", rassegna: @rassegna %>
+
+<br>
+
+<div>
+  <%= link_to "Mostra", @rassegna %> |
+    
+
+  <%= link_to "Indietro", rassegnas_path %>
+
+  <%= button_to "Elimina", @rassegna, method: :delete, class:"btn btn-lg" %>
+
+</div>

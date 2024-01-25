@@ -12,8 +12,18 @@
   </head>
 
   <body>
+    <header>
+      <% if !notice.nil? && !alert.nil? %>
+      <div class="container">
+        <div class="row">
+          <p class="notice alert alert-success"><%= notice %></p>
+          <p class="alert alert-danger"><%= alert %></p>
+        </div>
+      </div>
+      <% end %>
+    </header>
     <main class="container mx-auto mt-28 px-5">
-      <%= flash[:notice]%>
+      
       <%= yield %>
     </main>
   </body>

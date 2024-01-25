@@ -1,0 +1,112 @@
+<%= form_with(model: rassegna) do |form| %>
+  <% if rassegna.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(rassegna.errors.count, "error") %> prohibited this rassegna from being saved:</h2>
+
+      <ul>
+        <% rassegna.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+<div class="flex my-5">
+<div class="from-group w-1/10">
+     <%= form.label :salva %>
+    <%= form.check_box :salva, class:"border-slate-300 p-2 w-full" %>
+
+  </div>
+  <div class="form-group w-5/10">
+
+    <%= form.label :testata %>
+    <%= form.text_field :testata, class:"border-slate-300 p-2 w-full" %>
+  </div>
+    <div class="form-group w-1/2">
+
+    <%= form.label :titolo %>
+    <%= form.text_field :titolo, class:"border-slate-300 p-2 w-full" %>
+   
+
+  </div>
+  
+
+  <div class="form-group w-2/10">
+    <%= form.label :paginea, 'Num pagine' %>
+    <%= form.text_field :paginea, class:"border-slate-300 p-2 w-full", placeholder:".." %>
+</div>
+
+  <div class="form-group w-2/10">
+
+    <%= form.label :pagine, 'Da' %>
+    <%= form.text_field :pagine, class:"border-slate-300 p-2 w-full", placeholder:".." %>
+    
+  </div>
+
+
+
+<%# if (form.text_field :paginea) || (form.text_field :pagine) %>
+<%# diff = (form.text_filed :paginea) - (form.text_filed :pagine)%>
+<%# puts diff %>
+
+
+  </div>
+  <div class="flex">  
+   <div class="form-group">
+    <%= form.label :tipologia %>
+    <%= form.select(:tipologia, ['articolo', 'trafiletto', 'segnalazione', 'copertina', 'reportage', 'libro', 'video'], {}, { :class => 'border-slate-300 p-2 w-full' }) %>
+
+  </div>
+  
+
+    <div class="form-group">
+
+    <%= form.label :data %>
+    <%= form.date_field :data, class:"border-slate-300 p-2 w-full" %>
+  </div>
+      <div class="form-group">
+
+    <%= form.label :paese %>
+    <%= form.select(:paese, ['Italia', 'Estero', 'Francia', 'UK', 'USA', 'Germania', 'Giappone', 'Cina', 'Spagna'], {}, { :class => 'border-slate-300 p-2 w-full' }) %>
+  </div>
+    <div class="form-group w-25">
+
+    <%= form.label :medium %>
+    <%= form.select(:medium, ['Web', 'Settimanale', 'Mensile', 'Quotidiano', 'Blog'], {}, { :class => 'border-slate-300 p-2 w-full' }) %>
+  </div>
+    
+
+    <div class="form-group w-25">
+
+    <%= form.label :giornalista %>
+    <%= form.text_field :giornalista, class:"border-slate-300 p-2 w-full" %>
+  </div>
+
+   <div class="form-group w-25">
+
+    <%= form.label :fotografo %>
+    <%= form.text_field :fotografo, class:"border-slate-300 p-2 w-full" %>
+  </div>
+
+   <div class="form-group w-25">
+    <%= form.label :photo %>
+    <%= form.file_field :photo, class:"border-slate-300 p-2 w-full" %>
+    <%= form.hidden_field :photo_cache %>
+
+    <% if @rassegna["photo"].present? %>
+    <a href="<%= @rassegna.photo %>" target="_blank" class="btn btn-sm" >PDF</a>
+    
+    <% end %>
+  </div>
+</div>
+<div>
+   <div class="form-group">
+
+    <%= form.label :descrizione %>
+    <%= form.rich_text_area :descrizione, class:"border-slate-300 p-2 w-full w-50" %>
+  </div>
+</div>
+    <div class="form-group">
+
+    <%= form.submit %>
+  </div>
+<% end %>

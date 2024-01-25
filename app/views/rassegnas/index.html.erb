@@ -1,0 +1,52 @@
+<h1 class="text-4xl font-bold text-slate-800 mb-5 tracking-tight">Rassegna stampa</h1>
+<hr>
+
+<div class="flex my-5 py-5">
+  <div class="search w-3/4 relative">
+    <%= search_form_for @q do |f| %>
+    <%= f.search_field :titolo_or_testata_or_descrizione_cont, class:"w-3/4 border-slate-300" %>
+    <%= f.submit 'Cerca', class:'px-5 py-2 bg-slate-900 hover:bg-slate-700 rounded inline-block uppercase text-white font-bold cursor-pointer text-sm' %>
+  <% end %>
+    <a href="?q" class="font-bold  cursor-pointer block absolute top-0 -left-6 py-2 align-center text-red-500 hover:text-red-700 font-bold  rounded">X</a>
+    </div>
+    <div class="nuovo w-1/4">
+       
+<%= link_to "Nuovo articolo rassegna stampa", new_rassegna_path, :class=>"bg-blue-700 hover:bg-blue-600 py-2 px-5 inline-block uppercase text-white rounded text-sm" %>
+</div>
+</div>
+
+<div id="rassegnas my-10">
+<table class="my-10 w-full text-left table-auto border-1">
+  <thead class="caption-top bg-slate-600">
+    <tr>
+      
+              <th class="text-white p-2 border-2 text-sm border-solid">Testata</th>
+              <th class="text-white p-2 border-2 text-sm border-solid">Titolo</th>
+              <th class="text-white p-2 border-2 text-sm border-solid">Tipologia</th>
+              <th class="text-white p-2 border-2 text-sm border-solid">Anno</th>
+              <th class="text-white p-2 border-2 text-sm border-solid">Media</th>
+              <th class="text-white p-2 border-2 text-sm border-solid">Paese</th>
+              <th class="text-white p-2 border-2 text-sm border-solid">Giornalista</th>
+              <th class="text-white p-2 border-2 text-sm border-solid">Descrizione</th>
+              <th class="text-white p-2 border-2 text-sm border-solid">Allegato</th>
+              <th class="text-white p-2 border-2 text-sm border-solid w-1/6">Azioni</th>
+    </tr>
+     </thead>
+      <tbody>
+<tr>
+  <% @rassegnas.each do |rassegna| %>
+      <%= render rassegna %>
+    
+    <td class="flex justify-items-stretch gap-2 px-2 text-sm bg-slate-200 p-2">
+      <%= link_to "Mostra", rassegna , class:"text-white bg-blue-400 p-2 inline-block"  %>
+      <%= link_to "Modifica", edit_rassegna_path(rassegna) , class:"text-white bg-orange-400 p-2 inline-block"  %> 
+      <%= button_to "Elimina", rassegna, method: :delete, class:"text-white bg-red-400 p-2 inline-block" %>
+      
+    </td>
+     </tr>
+  <% end %>
+  </tbody>
+  </table>
+
+</div>
+

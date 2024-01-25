@@ -1,0 +1,10 @@
+              <td class="text-slate-900 text-sm border-2 border-solid p-2"><h6><%= rassegna.testata %></h6></td>
+              <td class="text-slate-900 text-sm border-2 border-solid p-2"><%= rassegna.titolo  %></td>
+              <td class="text-slate-900 text-sm border-2 border-solid p-2"><%= rassegna.tipologia %></td>
+              <td class="text-slate-900 text-sm border-2 border-solid p-2"><%= rassegna.data %></td>
+              <td class="text-slate-900 text-sm border-2 border-solid p-2"><%= rassegna.medium %></td>
+              <td class="text-slate-900 text-sm border-2 border-solid p-2"><%= rassegna.paese %></td>
+              <td class="text-slate-900 text-sm border-2 border-solid p-2"><%= rassegna.giornalista %></td>
+              <td class="text-slate-900 text-sm border-2 border-solid p-2" class="short"><%= sanitize(rassegna.descrizione[0..100]) %></td>
+              <td class="text-slate-900 text-sm border-2 font-bold border-solid p-2"><a href="<%= rassegna.photo %>" target="_blank" class="btn btn-sm" >PDF</a></td>
+              

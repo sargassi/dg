@@ -53,6 +53,12 @@ gem "ransack", "~> 4.0"
 
 gem "rqrcode", "~> 2.0"
 
+gem "devise"
+
+gem 'carrierwave', '>= 3.0.0.beta', '< 4.0'
+
+gem 'trix'
+
 # Use Sass to process CSS
 # gem "sassc-rails"
 

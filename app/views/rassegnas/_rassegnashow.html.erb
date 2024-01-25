@@ -1,0 +1,47 @@
+<div class="flex">
+
+    <div class="w-3/4">
+        <h3><small>Testata:</small> <%= @rassegna.testata %>
+        </h3>
+        <hr>
+        <div class="flex">
+          <div class="w-2/3">
+            <h4><%= @rassegna.titolo  %> </h4>
+            <h6><small>Giornalista: </small><%= @rassegna.giornalista %>  </h6>
+        
+            <h6><small>Fotografo: </small><%= @rassegna.fotografo %>  </h6>
+          </div>
+          <div class="w-1/3">
+              <a href="<%= @rassegna.photo %>" target="_blank" class="btn btn-sm" >PDF</a>
+              <img src="<%= @rassegna.photo.thumb %>">
+
+              
+          </div>
+    </div>
+    </div>
+    <div class="w-1/3 adds">
+      <ul class="list-unstyled">
+        <li><%= @rassegna.tipologia %>
+        </li>
+        <li><%= @rassegna.data %>
+        </li>
+        <li><%= @rassegna.medium %>
+        </li>
+      </ul> 
+    </div>
+   
+</div>
+
+<div class="row">
+  <div class="w-1/2">
+  <%= sanitize(@rassegna.descrizione) %>
+</div>
+  <div class="w-1/2">
+  <ul>
+    <li>Numero pagine: <%= @rassegna.paginea %>
+    </li>
+    <li><Da pagina: <%= @rassegna.pagine %>
+    </li>
+  </ul>
+
+</div>

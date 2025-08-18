@@ -8,7 +8,7 @@
              <% qty = product.qty.to_i %>
               <% qty.times do %>
                 <div class="cell">
-                  <div style="text-align:left; font-size: 8.65pt; line-height:10.4pt;margin: 0; padding: 0.4cm;width: 62mm; min-width: 62mm; height: 36mm; min-height: 36mm">
+                  <div class="sub">
                     <%= product.itemcode %> <%= product.fabricode %> <%= product.varcode %>
                     <p>
                       <%= raw(product.description.gsub(/\R+/, '<br/>')) %></p>

@@ -1,5 +1,7 @@
 body {
     font-family: Arial, sans-serif !important;
+    margin: 0;
+    padding: 0;
 }
 
 * {
@@ -20,4 +22,16 @@ body {
     height: 36mm;
 
     border: 1px solid #ccc;
+}
+
+#et .cell .sub {
+    margin: 0;
+    padding: 40mm 60mm;
+}
+
+#et .cell .sub p {
+    line-height: 10.4 pt;
+    font-size: 8.65pt;
+    margin: 0;
+    padding: 0;
 }

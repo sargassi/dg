@@ -33,7 +33,8 @@ class ProductsController < ApplicationController
         lowquality:      false,
         page_height:     297,
         page_width:      210,
-        #disable_smart_shrinking: false,
+        show_as_html:   params.key?('debug'),
+        disable_smart_shrinking: false,
         margin:  {   top:    4,                     # default 10 (mm)
           bottom:            4,
           left:              0,

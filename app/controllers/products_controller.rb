@@ -21,20 +21,15 @@ class ProductsController < ApplicationController
     @products = Product.all.order('created_at DESC').group_by{|product| product.group}
     #@products = Product.all.group_by{|product| product.created_at.to_s}
     respond_to do |format|
-      format.html
+      #format.html
       format.pdf do
         render pdf: @products.count.to_s,
         orientation: 'Portrait',
         template: 'products/etichette',
-        disposition: :inline,
         layout: 'pdf',
         page_size: 'A4',
         default_header: false,
-        lowquality:      false,
-        page_height:     '297mm',
-        page_width:      '215mm',
         show_as_html:   params.key?('debug'),
-        disable_smart_shrinking: false,
         margin:  {   top:    4,                     # default 10 (mm)
           bottom:            4,
           left:              0,

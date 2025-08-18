@@ -1,4 +1,4 @@
-<div style="margin: 0; width: 21.3cm; background: #fff ">
+<div style="margin: 0; width: 21.3cm; min-width: 21.3cm; background: #fff; font-family: 'Arial', sans-serif;  ">
         <% counter = 0 %>
         <% i = 0 %>
        <% @products.each do |iz, val| %>
@@ -7,7 +7,7 @@
 
              <% qty = product.qty.to_i %>
               <% qty.times do %>
-                <div style="width: 33%!important; min-width: 7cm; height: 3.6cm!important; min-height: 3.6cm; margin:0; padding:0; display:inline-block ;position: relative; overflow:hidden; box-shadow: 0 0 1px rgba(0,0,0,1); text-align:left;">
+                <div style="min-width: 7cm; height: 3.6cm!important; min-height: 3.6cm; margin:0; padding:0; display:inline-block ;position: relative; overflow:hidden; box-shadow: 0 0 1px rgba(0,0,0,1); text-align:left;">
                   <div style="text-align:left; font-size: 8.65pt; line-height:10.4pt;margin: 0; padding: 0.4cm;width: 6.2cm; min-width: 6.2cm; height: 2.8cm; min-height: 2.8cm">
                     <%= product.itemcode %> <%= product.fabricode %> <%= product.varcode %>
                     <p>
@@ -19,10 +19,10 @@
                 </div>
                 <% counter = counter + 1 %>
                 </div>
-            <% end %>
                 <% if counter.modulo(24) == 0 %>
                 <div style="clear:both; page-break-after: always;"></div>
                 <% end %>
+            <% end %>
 
           <% end %>
 

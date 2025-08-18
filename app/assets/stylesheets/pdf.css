@@ -1,22 +1,7 @@
 body {
     font-family: Arial, sans-serif !important;
-    width: 21.3cm;
-    background: #ccc;
 }
 
-table thead,
-.hidden-pdf {
-    display: none;
-    height: 0;
-}
-
-table td {
-    min-height: 3.5cm;
-    height: 3.5cm;
-    width: 7cm;
-}
-
-.columns-3 {
-    margin: 0;
-    padding: 0;
+#et {
+    background-color: #f00;
 }

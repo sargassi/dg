@@ -24,7 +24,13 @@ class ProductsController < ApplicationController
       format.html
       format.pdf do
         render pdf: @products.count.to_s,
-          template: 'products/etichette.html.erb'
+          orientation: "Portrait", # Portrait
+          page_size: "A4",
+          lowquality: false,
+          zoom: 1.0,
+          dpi: 300,
+          disposition: 'attachment',
+          layout: 'pdf'
 
       end
     end

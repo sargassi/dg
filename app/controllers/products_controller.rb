@@ -28,6 +28,8 @@ class ProductsController < ApplicationController
         template: 'products/etichette',
         layout: 'pdf',
         page_size: 'A4',
+        zoom: 1,
+        disposition: :inline,
         default_header: false,
         show_as_html:   params.key?('debug'),
         margin:  {   top:    4,                     # default 10 (mm)

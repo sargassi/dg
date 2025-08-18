@@ -25,11 +25,10 @@ class ProductsController < ApplicationController
       format.pdf do
         render pdf: @products.count.to_s,
         orientation: 'Portrait',
-        template: 'products/etichette',
         layout: 'pdf',
         page_size: 'A4',
         zoom: 1,
-        dpi: '300dpi',
+        dpi: '300',
         disposition: :inline,
         default_header: false,
         show_as_html:   params.key?('debug'),

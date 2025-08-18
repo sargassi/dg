@@ -7,7 +7,7 @@ class ProductsController < ApplicationController
   def show
     respond_to do |format|
       format.html
-      format.pdf do 
+      format.pdf do
         render pdf: [@product.id, @product.decsription].join('-'),
         template: "products/show.html.erb",
         formats: [:html],
@@ -22,7 +22,7 @@ class ProductsController < ApplicationController
     #@products = Product.all.group_by{|product| product.created_at.to_s}
     respond_to do |format|
       format.html
-      format.pdf do 
+      format.pdf do
         render pdf: @products.count.to_s,
         orientation: 'Portrait',
         formats: [:html],
@@ -52,7 +52,7 @@ class ProductsController < ApplicationController
     @products = Product.all.group_by{|product| product.created_at.to_s}
     respond_to do |format|
       format.html
-      format.pdf do 
+      format.pdf do
         render pdf: "Posts: #{@products.count}",
         orientation: 'Landscape',
         formats: [:html],
@@ -113,8 +113,8 @@ class ProductsController < ApplicationController
       params.require(:product).permit(:prodcode, :itemcode, :fabricode, :varcode, :description, :tg, :note, :fabric, :color, :materiale, :costo)
     end
 
-    private 
+    private
     def set_prodcode
-      
+
     end
 end

@@ -1,14 +1,5 @@
 body {
     font-family: Arial, sans-serif !important;
-    font-size: 8.65pt !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    box-sizing: border-box;
-    width: 21.3cm !important;
-    height: 30cm !important;
-}
-
-table {
 }
 
 table thead,
@@ -26,26 +17,4 @@ table td {
 .columns-3 {
     margin: 0;
     padding: 0;
-}
-
-.cell {
-    width: 7.3cm;
-    height: 3.08cm;
-    min-height: 3.08cm;
-    overflow: hidden;
-
-    float: left;
-    padding: 0.7cm;
-    vertical-align: middle;
-    line-height: 0.46cm;
-
-    /*  border:1px solid #111;  */
-}
-
-.content {
-    margin: 0;
-    padding: 0;
-    height: 100%; /*3.5225cm; */
-
-    width: 100%;
 }

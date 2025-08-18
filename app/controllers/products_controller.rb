@@ -25,14 +25,14 @@ class ProductsController < ApplicationController
       format.pdf do
         render pdf: @products.count.to_s,
         orientation: 'Portrait',
-        formats: [:html],
+        template: 'products/etichette',
         disposition: :inline,
         layout: 'pdf',
         page_size: 'A4',
         default_header: false,
         lowquality:      false,
-        page_height:     297,
-        page_width:      210,
+        page_height:     '297mm',
+        page_width:      '215mm',
         show_as_html:   params.key?('debug'),
         disable_smart_shrinking: false,
         margin:  {   top:    4,                     # default 10 (mm)

@@ -9,10 +9,15 @@ body {
 #et {
     margin: 0;
     padding: 0;
-    display: flex;
+    width: 210mm;
 }
 
 #et .cell {
     margin: 0;
     padding: 0;
+    float: left;
+    width: 700mm;
+    height: 360mm;
+
+    border: 1px solid #ccc;
 }

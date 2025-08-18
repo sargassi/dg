@@ -16,18 +16,12 @@ body {
 
 #et .cell {
     margin: 0;
-    padding: 0;
+    padding: 4mm 8mm;
     float: left;
     width: 70mm;
     height: 36mm;
     position: relative;
     border: 1px solid #ccc;
-}
-
-#et .cell .sub {
-    margin: 0;
-    padding: 40mm 60mm;
-    width: 100%;
 }
 
 #et .cell .sub p {

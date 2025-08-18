@@ -1,57 +1,51 @@
 body {
-  font-family: Arial, sans-serif !important;
-  font-size: 11pt !important;
-  margin:0!important;
-  padding:0 !important;
-  box-sizing: border-box;
-  width: 100%;
-  height: 31cm;
+    font-family: Arial, sans-serif !important;
+    font-size: 8.65pt !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box;
+    width: 21.3cm !important;
+    height: 30cm !important;
 }
-
 
 table {
-  
-
 }
 
-table thead, .hidden-pdf {
-  display: none;
-  height:0;
+table thead,
+.hidden-pdf {
+    display: none;
+    height: 0;
 }
 
 table td {
-  min-height: 3.5cm;
-  height: 3.5cm;
-  width:7cm;
+    min-height: 3.5cm;
+    height: 3.5cm;
+    width: 7cm;
 }
 
 .columns-3 {
-  margin: 0;
-  padding:0;
+    margin: 0;
+    padding: 0;
 }
 
 .cell {
-  width: 7.3cm;
-  height:3.08cm;
-  min-height:3.08cm;
-  overflow: hidden;
- 
-  float: left;
-   padding: 0.7cm;
+    width: 7.3cm;
+    height: 3.08cm;
+    min-height: 3.08cm;
+    overflow: hidden;
+
+    float: left;
+    padding: 0.7cm;
     vertical-align: middle;
     line-height: 0.46cm;
 
-     /*  border:1px solid #111;  */ 
-
+    /*  border:1px solid #111;  */
 }
 
 .content {
-  margin:0;
-  padding:0;
-  height: 100%;  /*3.5225cm; */
+    margin: 0;
+    padding: 0;
+    height: 100%; /*3.5225cm; */
 
-  width: 100%;
+    width: 100%;
 }
-
-
-

@@ -24,7 +24,8 @@ class ProductsController < ApplicationController
 
     format.html
     format.pdf do
-      render :pdf => @products.count.to_s , orientation: "portrait",page_size: 'A4',margin:  {top:'4mm',bottom: '4mm',left: '0mm',right:'0mm' }, template: "products/etichette.pdf.erb"
+      render :pdf => @products.count.to_s , orientation: "portrait",page_size: 'A4',margin:  {top:'4mm',bottom: '4mm',left: '0mm',right:'0mm' }, disable_smart_shrinking: true
+
     end
     end
   end

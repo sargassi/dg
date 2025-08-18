@@ -32,5 +32,5 @@ WickedPdf.config = {
 }
 
 WickedPdf.config.merge!({
-  layout: "pdf.html"
+  layout: "pdf"
 })

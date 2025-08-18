@@ -23,7 +23,7 @@
 <% end %>
 
 <div class="link_to_pdf">
-<%= link_to "PDF", products_etichette_path(format: :pdf), target: "_blank", class:"p-4 my-4 bg-red-400 text-white font-bold inline-block rounded-sm" %>
+<%= link_to "PDF", products_etichette_path(:format => :pdf), target: "_blank", class:"p-4 my-4 bg-red-400 text-white font-bold inline-block rounded-sm" %>
 </div>
 
 </section>
@@ -36,35 +36,35 @@
 
 
     <% i = 0 %>
-    
+
     <% @etigroup.each do |craete, val| %>
         <% if i == 0 %>
-        
+
         <h5 class="mt-4 font-bold uppercase">Ultimo inserimento</h5>
-        
+
         <div class="columns-3 my-8">
 
 
           <% val.sort.each do |product| %>
-          
+
             <% qty = product.qty.to_i %>
             <% qty.times do %>
-              
+
 
 
               <div class="cell w-full h-1/8 p-4 overflow-hidden relative">
                 <hr>
 
                 <p>
-                <%= product.itemcode %> <%= product.fabricode %><%= product.varcode %> 
-                </p>   
-                <%= turbo_frame_tag :description do  %> 
+                <%= product.itemcode %> <%= product.fabricode %><%= product.varcode %>
+                </p>
+                <%= turbo_frame_tag :description do  %>
                  <span class="leading-tight h-8 block"><%= raw(product.description.gsub(/\R+/, '<br/>')) %> </span> <%= link_to 'edit', [:edit, product, attribute: :description ], class:"no-pdf text-end text-xs uppercase absolute top-0 right-0" %>
                 <% end %>
                 <br> tg <%= product.tg %><br>
                 <%= product.color %><br>
-                <%= product.materiale %>  
-                <%= product.note %>  
+                <%= product.materiale %>
+                <%= product.note %>
 
 
                 <hr>
@@ -72,17 +72,15 @@
 
               </div>
             <% end %>
- 
+
           <% end %>
         </div>
         <% i +=1 %>
     <% end %>
     <% end %>
-   
-   
+
+
   <hr>
     <%= params.inspect %>
 
 </section>
-
-

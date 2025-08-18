@@ -29,6 +29,7 @@ class ProductsController < ApplicationController
         layout: 'pdf',
         page_size: 'A4',
         zoom: 1,
+        dpi: '300dpi',
         disposition: :inline,
         default_header: false,
         show_as_html:   params.key?('debug'),

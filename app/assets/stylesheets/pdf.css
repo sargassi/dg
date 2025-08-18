@@ -22,11 +22,12 @@ body {
     height: 36mm;
     position: relative;
     border: 1px solid #ccc;
+    font-size: 8.65pt !important;
 }
 
 #et .cell .sub p {
     line-height: 10.4 pt;
-    font-size: 8.65pt;
+    font-size: 8.65pt !important;
 
     margin: 0;
     padding: 0;

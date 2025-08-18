@@ -7,8 +7,8 @@
 
              <% qty = product.qty.to_i %>
               <% qty.times do %>
-                <div style="width: 33%!important; min-width: 7cm; height: 3.6cm!important; margin:0; padding:0; display:inline-block ;position: relative; overflow:auto; box-shadow: 0 0 1px rgba(0,0,0,1); text-align:left;">
-                  <div style="text-align:left; font-size: 8.65pt; line-height:10.4pt;margin: 0; padding:0;width: 6.2cm; min-width: 6.2cm; height: 2.8cm; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                <div style="width: 33%!important; min-width: 7cm; height: 3.6cm!important; margin:0; padding:0; display:inline-block ;position: relative; overflow:hidden; box-shadow: 0 0 1px rgba(0,0,0,1); text-align:left;">
+                  <div style="text-align:left; font-size: 8.65pt; line-height:10.4pt;margin: 0; padding: 0.4cm;width: 6.2cm; min-width: 6.2cm; height: 2.8cm; ">
                     <%= product.itemcode %> <%= product.fabricode %> <%= product.varcode %>
                     <p>
                       <%= raw(product.description.gsub(/\R+/, '<br/>')) %></p>

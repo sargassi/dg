@@ -24,18 +24,8 @@ class ProductsController < ApplicationController
       #format.html
       format.pdf do
         render pdf: @products.count.to_s,
-        orientation: 'Portrait',
-        layout: 'pdf',
-        page_size: 'A4',
-        zoom: 1,
-        dpi: '300',
-        disposition: :inline,
-        default_header: false,
-        show_as_html:   params.key?('debug'),
-        margin:  {   top:    4,                     # default 10 (mm)
-          bottom:            4,
-          left:              0,
-          right:             0 }
+          template: 'products/etichette.html.erb'
+
       end
     end
   end

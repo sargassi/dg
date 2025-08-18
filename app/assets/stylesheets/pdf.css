@@ -1,5 +1,7 @@
 body {
     font-family: Arial, sans-serif !important;
+    width: 21.3cm;
+    background: #ccc;
 }
 
 table thead,

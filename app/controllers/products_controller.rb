@@ -28,9 +28,12 @@ class ProductsController < ApplicationController
         formats: [:html],
         disposition: :inline,
         layout: 'pdf',
+        page_size: 'A4',
         default_header: false,
         lowquality:      false,
-        disable_smart_shrinking: false,
+        page_height:     297,
+        page_width:      210,
+        #disable_smart_shrinking: false,
         margin:  {   top:    4,                     # default 10 (mm)
           bottom:            4,
           left:              0,

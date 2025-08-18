@@ -21,7 +21,7 @@ class ProductsController < ApplicationController
     @products = Product.all.order('created_at DESC').group_by{|product| product.group}
     #@products = Product.all.group_by{|product| product.created_at.to_s}
     respond_to do |format|
-      #format.html
+      format.html
       format.pdf do
         render pdf: @products.count.to_s,
           template: 'products/etichette.html.erb'

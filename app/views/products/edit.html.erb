@@ -1,8 +1,11 @@
-<div class="mx-auto md:w-2/3 w-full">
-  <h1 class="font-bold text-4xl">Editing product</h1>
+<% if params[:attribute] == 'description' %>
+  <%= turbo_frame_tag :description do %>
 
-  <%= render "form", product: @product %>
+    <%= render "form", product: @product %>
+  <% end %>
+<% elsif params[:attribute] == 'note' %>
+  <%= turbo_frame_tag :note do %>
 
-  <%= link_to "Show this product", @product, class: "ml-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
-  <%= link_to "Back to products", products_path, class: "ml-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
-</div>
+    <%= render partial: "products/form_note", locals: {product: @product} %>
+  <% end %>
+<% end %>

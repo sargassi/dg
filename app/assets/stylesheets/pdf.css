@@ -14,7 +14,8 @@ body {
     width: 210mm;
 }
 
-#et .cell {
+#et .cell,
+#et .notez {
     margin: 0;
     padding: 12mm 6mm 4mm;
     float: left;
@@ -23,6 +24,10 @@ body {
     position: relative;
     font-size: 8.65pt !important;
     line-height: 10.4pt !important;
+}
+
+#et .cell.notez {
+    padding-top: 10mm;
 }
 
 #et .cell .sub p {

@@ -7,8 +7,12 @@
 
              <% qty = product.qty.to_i %>
               <% qty.times do %>
-                <div style="min-width: 70mm; height: 36mm; min-height: 36mm; margin:0; padding:0; float:left ;overflow:auto; box-shadow: 0 0 1px rgba(0,0,0,1); text-align:left; box-sizing:border-box">
-                  <div style="text-align:left; font-size: 8.65pt; line-height:10.4pt;margin: 0; padding: 0.4cm;width: 62mm; min-width: 62mm; height: 36mm; min-height: 36mm">
+                <% if product.note == '' %>
+                  <div class="cell">
+                <% else %>
+                  <div class="cell notez">
+                <% end %>
+                  <div class="sub">
                     <%= product.itemcode %> <%= product.fabricode %> <%= product.varcode %>
                     <p>
                       <%= raw(product.description.gsub(/\R+/, '<br/>')) %></p>
@@ -19,10 +23,10 @@
                 </div>
                 <% counter = counter + 1 %>
                 </div>
-                <% if counter.modulo(24) == 0 %>
-                <div style="clear:both; page-break-after: always;"></div>
-                <% end %>
             <% end %>
+              <% if counter.modulo(24) == 0 %>
+              <div style="clear:both; page-break-after: always;"></div>
+              <% end %>
 
           <% end %>
 

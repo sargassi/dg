@@ -12,24 +12,33 @@
 
 
           <% val.sort.each do |product| %>
-
+            <% product.note.present? ? notez = 'notez' : notez = '' %>
             <% qty = product.qty.to_i %>
             <% qty.times do %>
 
-              <div class="cell w-full h-52 py-4 overflow-hidden relative border border-slate-700 mb-4">
+              <div class="cell w-full h-52 py-4 overflow-hidden relative border border-slate-700 mb-4 <%= notez %>">
 
                 <p>
                 <%= product.itemcode %> <%= product.fabricode %><%= product.varcode %>
                 </p>
+
                 <%= turbo_frame_tag :description do  %>
                   <div class="flex justify-between">
-                 <span class="leading-tight h-8 block"><%= raw(product.description.gsub(/\R+/, '<br/>')) %> </span> <%= link_to 'modifica', [:edit, product, attribute: :description ], class:"no-pdf text-end text-xs uppercase text-blue-500 font-bold" %>
+                    <span class="leading-tight h-8 block"><%= raw(product.description.gsub(/\R+/, '<br/>')) %> </span> <%= link_to 'modifica', [:edit, product, attribute: :description ], class:"no-pdf text-end text-xs uppercase text-blue-500 font-bold" %>
                   </div>
                 <% end %>
-                <br> tg <%= product.tg %><br>
+
+                <p> tg <%= product.tg %><p>
                 <%= product.color %><br>
                 <%= product.materiale %>
-                <%= product.note %>
+                <br>
+                <%= turbo_frame_tag :note do  %>
+                <% if notez == '' %>
+                  <%= link_to 'Aggiungi nota', [:edit, product, attribute: :note ], class:"no-pdf text-end text-xs uppercase text-blue-500 font-bold absolute right-4 bottom-4" %>
+                <% else %>
+                   <p> <%= product.note %> </p>
+                <% end %>
+                <% end %>
 
               </div>
             <% end %>

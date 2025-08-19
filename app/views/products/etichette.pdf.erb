@@ -7,7 +7,11 @@
 
              <% qty = product.qty.to_i %>
               <% qty.times do %>
-                <div class="cell">
+                <% if product.note == '' %>
+                  <div class="cell">
+                <% else %>
+                  <div class="cell notez">
+                <% end %>
                   <div class="sub">
                     <%= product.itemcode %> <%= product.fabricode %> <%= product.varcode %>
                     <p>

@@ -1,9 +1,12 @@
   <% i = 0 %>
 
     <% @etigroup.each do |craete, val| %>
+
+      <%  date = val.first.created_at if val.first.created_at.present?  %>
+
         <% if i == 0 %>
 
-        <h5 class="mr-4 font-bold uppercase">Ultimo inserimento</h5>
+          <h5 class="mr-4  text-blue-900 text-xl">Ultimo inserimento - <%= date.strftime('%d-%m-%Y') if defined?(date) %></h5>
 
         <div class="columns-3 my-8">
 

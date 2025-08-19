@@ -27,10 +27,6 @@ body {
     overflow: hidden;
 }
 
-#et .cell.notez {
-    padding-top: 6mm;
-}
-
 #et .cell .sub p {
     line-height: 10.4pt !important;
     font-size: 8.65pt !important;

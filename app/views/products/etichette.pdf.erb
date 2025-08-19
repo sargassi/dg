@@ -20,6 +20,9 @@
                     <p>tg <%= product.tg %></p>
                 <%= product.color %><br>
                 <%= product.materiale %>
+                <% if product.note.present? %>
+                 <p> <%= product.note %> </p>
+                <% end %>
                 </div>
                 <% counter = counter + 1 %>
                 </div>

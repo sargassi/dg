@@ -21,7 +21,6 @@ body {
     width: 70mm;
     height: 36mm;
     position: relative;
-    border: 1px solid #ccc;
     font-size: 8.65pt !important;
     line-height: 10.4pt !important;
 }

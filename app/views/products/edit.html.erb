@@ -8,4 +8,11 @@
 
     <%= render partial: "products/form_note", locals: {product: @product} %>
   <% end %>
+
+<% elsif params[:attribute] == 'color' %>
+  <%= turbo_frame_tag :color do %>
+
+    <%= render partial: "products/form_color", locals: {product: @product} %>
+  <% end %>
+
 <% end %>

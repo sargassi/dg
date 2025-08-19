@@ -1,0 +1,9 @@
+<%= turbo_frame_tag :description do  %>
+  <div class="flex justify-between mb-2 border-b">
+    <span class="leading-tight block"><%= raw(product.description.gsub(/\R+/, '<br/>')) %> </span> <%= link_to [:edit, product, attribute: :description ], class:"no-pdf text-end text-xs uppercase text-blue-500 font-bold" do %>
+      <span class="material-symbols-outlined">
+        edit
+      </span>
+      <% end %>
+  </div>
+<% end %>

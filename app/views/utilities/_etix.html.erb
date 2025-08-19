@@ -1,50 +1,40 @@
   <% i = 0 %>
-
     <% @etigroup.each do |craete, val| %>
-
       <%  date = val.first.created_at if val.first.created_at.present?  %>
+      <% if i == 0 %>
 
-        <% if i == 0 %>
+        <h5 class="mr-4  text-blue-900 text-xl">Ultimo inserimento - <%= date.strftime('%d-%m-%Y') if defined?(date) %></h5>
 
-          <h5 class="mr-4  text-blue-900 text-xl">Ultimo inserimento - <%= date.strftime('%d-%m-%Y') if defined?(date) %></h5>
+      <div class="columns-3 my-8">
+        <% val.sort.each do |product| %>
+          <% # vars
+            product.note.present? ? notez = 'notez' : notez = ''
+            qty = product.qty.to_i
+          %>
 
-        <div class="columns-3 my-8">
+          <% qty.times do %>
+            <div class="cell w-full h-52 py-4 overflow-hidden relative border border-slate-700 mb-4 <%= notez %>">
+
+              <p> <%= product.itemcode %> <%= product.fabricode %><%= product.varcode %> </p>
+
+                <%= render partial: 'utilities/atoms/descr', locals: {product: product} %>
+
+              <p>tg <%= product.tg %></p>
 
 
-          <% val.sort.each do |product| %>
-            <% product.note.present? ? notez = 'notez' : notez = '' %>
-            <% qty = product.qty.to_i %>
-            <% qty.times do %>
+                <%= render partial: 'utilities/atoms/desc2', locals: {product: product} %>
 
-              <div class="cell w-full h-52 py-4 overflow-hidden relative border border-slate-700 mb-4 <%= notez %>">
 
-                <p>
-                <%= product.itemcode %> <%= product.fabricode %><%= product.varcode %>
-                </p>
+              <p><%= product.materiale %></p>
 
-                <%= turbo_frame_tag :description do  %>
-                  <div class="flex justify-between">
-                    <span class="leading-tight h-8 block"><%= raw(product.description.gsub(/\R+/, '<br/>')) %> </span> <%= link_to 'modifica', [:edit, product, attribute: :description ], class:"no-pdf text-end text-xs uppercase text-blue-500 font-bold" %>
-                  </div>
-                <% end %>
 
-                <p> tg <%= product.tg %><p>
-                <%= product.color %><br>
-                <%= product.materiale %>
-                <br>
-                <%= turbo_frame_tag :note do  %>
-                <% if notez == '' %>
-                  <%= link_to 'Aggiungi nota', [:edit, product, attribute: :note ], class:"no-pdf text-end text-xs uppercase text-blue-500 font-bold absolute right-4 bottom-4" %>
-                <% else %>
-                   <p> <%= product.note %> </p>
-                <% end %>
-                <% end %>
+                <%= render partial: 'utilities/atoms/notes', locals: {product: product, notez: notez} %>
 
-              </div>
-            <% end %>
+            </div>
 
           <% end %>
-        </div>
-        <% i +=1 %>
+        <% end %>
+      </div>
+      <% i +=1 %>
     <% end %>
     <% end %>

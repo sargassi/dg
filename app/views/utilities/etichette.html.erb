@@ -8,15 +8,14 @@
 
   <%= form_for @products_import do |f| %>
   <% if @products_import.errors.any? %>
-    <%= pluralize(@products_import.errors.count, "error") %> prevented us from
-    importing your spreadsheet. Please update your spreadsheet and try agin.
+    <%= pluralize(@products_import.errors.count, "error") %> errore.
     <ul>
       <% @products_import.errors.full_messages.each do |msg| %>
         <li><%= msg %></li>
       <% end %>
     </ul>
   <% end %>
-  <%= f.file_field :file, class:"py-4 my-4 bg-blue-50 inline-block rounded-sm" %>
+  <%= f.file_field :file, class:"py-4 my-4 bg-blue-50 inline-block rounded-sm", :required => true %>
   <%= f.submit "Importa", target: "_blank", class:"p-4 my-4 bg-blue-200 inline-block rounded-sm uppercase text-sm cursor-pointer" %>
 <% end %>
 

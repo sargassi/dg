@@ -15,9 +15,9 @@
 
  <div class="flex justify-between">
     <span class="leading-tight h-8 block grow">
-    <%= form.text_area :description, rows:2, class: "w-full p-0 m-0 leading-tight border-0 bg-slate-50", wrap:'hard' %>
+    <%= form.text_area :description, rows:3, class: "w-full p-0 m-0 leading-tight border-0 bg-slate-50", wrap:'hard' %>
 </span>
-    <%= form.submit 'Ok', class:"no-pdf text-center text-xs uppercase cursor-pointer w-12 bg-green-100 h-8" %>
+    <%= form.submit 'Ok', class:"no-pdf text-center text-xs uppercase cursor-pointer w-12 bg-green-100 h-8", data: {turbo_frame: '_top'} %>
  </div>
 <% end %>
 

@@ -1,0 +1,43 @@
+  <% i = 0 %>
+
+    <% @etigroup.each do |craete, val| %>
+        <% if i == 0 %>
+
+        <h5 class="mr-4 font-bold uppercase">Ultimo inserimento</h5>
+
+        <div class="columns-3 my-8">
+
+
+          <% val.sort.each do |product| %>
+
+            <% qty = product.qty.to_i %>
+            <% qty.times do %>
+
+              <div class="cell w-full h-1/8 py-4 overflow-hidden relative">
+                <hr>
+
+                <p>
+                <%= product.itemcode %> <%= product.fabricode %><%= product.varcode %>
+                </p>
+                <%= turbo_frame_tag :description do  %>
+                  <div class="flex justify-between">
+                 <span class="leading-tight h-8 block"><%= raw(product.description.gsub(/\R+/, '<br/>')) %> </span> <%= link_to 'modifica', [:edit, product, attribute: :description ], class:"no-pdf text-end text-xs uppercase " %>
+                  </div>
+                <% end %>
+                <br> tg <%= product.tg %><br>
+                <%= product.color %><br>
+                <%= product.materiale %>
+                <%= product.note %>
+
+
+                <hr>
+
+
+              </div>
+            <% end %>
+
+          <% end %>
+        </div>
+        <% i +=1 %>
+    <% end %>
+    <% end %>

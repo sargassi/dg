@@ -1,4 +1,4 @@
-    <%= turbo_frame_tag :description do%>
+    <%= turbo_frame_tag :description do %>
 
 <%= form_with(model: product, class: "contents", data: {'controller': 'populate'}) do |form| %>
   <% if product.errors.any? %>
@@ -13,15 +13,12 @@
     </div>
   <% end %>
 
-
-    <%= form.text_area :description, rows:2, class: "w-full p-0 m-0 leading-tight", wrap:'hard' %>
-
-
-  
-
-
-    <%= form.submit class:"no-pdf text-end text-xs uppercase absolute top-0 right-0" %>
-
+ <div class="flex justify-between">
+    <span class="leading-tight h-8 block grow">
+    <%= form.text_area :description, rows:2, class: "w-full p-0 m-0 leading-tight border-0 bg-slate-50", wrap:'hard' %>
+</span>
+    <%= form.submit 'Ok', class:"no-pdf text-center text-xs uppercase cursor-pointer w-12 bg-green-100 h-8" %>
+ </div>
 <% end %>
 
     <% end %>

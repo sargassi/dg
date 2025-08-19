@@ -19,7 +19,7 @@ class ProductsImport
     when ".XLS" then Roo::Excel.new(file.path, nil, :ignore)
     when ".xlsx" then Roo::Excelx.new(file.path)
     when ".XLSX" then Roo::Excelx.new(file.path)
-    else raise "Unknown file type: #{file.original_filename}"
+    else raise "tipo di file nn va bene: #{file.original_filename}"
     end
   end
 

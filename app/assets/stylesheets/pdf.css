@@ -25,6 +25,7 @@ body {
     border: 1px solid;
     font-size: 8.65pt !important;
     line-height: 10.4pt !important;
+    overflow: hidden;
 }
 
 #et .cell.notez {

@@ -6,7 +6,12 @@
 
 <%= turbo_frame_tag :note do %>
   <div>
-  <p class="mr-16"> <%= product.note %> </p>
+  <p class="mr-16">
+
+    <% product = Product.find(params[:id]) if params[:id].present? %>
+    <%= product.note %>
+
+  </p>
 
   <%= link_to [:edit, product, attribute: :note ], class:"no-pdf text-end text-xs uppercase text-blue-500 font-bold absolute right-4 bottom-4" do %>
     <%= raw(addx) %>

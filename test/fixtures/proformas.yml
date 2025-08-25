@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  customer: MyText
+  data_in: 2025-08-25 12:14:09
+  data_out: 2025-08-25 12:14:09
+  closed: false
+  note: MyText
+
+two:
+  customer: MyText
+  data_in: 2025-08-25 12:14:09
+  data_out: 2025-08-25 12:14:09
+  closed: false
+  note: MyText

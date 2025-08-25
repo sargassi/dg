@@ -12,3 +12,7 @@
 
 */
 @import "actiontext.css";
+
+* {
+    box-sizing: border-box;
+}

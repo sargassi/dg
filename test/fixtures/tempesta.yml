@@ -1,0 +1,29 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  prow: one
+  f0: false
+  f1: false
+  f2: false
+  f3: false
+  f4: false
+  f5: false
+  f1date: 2025-08-25 12:25:47
+  f2date: 2025-08-25 12:25:47
+  f3date: 2025-08-25 12:25:47
+  f4date: 2025-08-25 12:25:47
+  f5date: 2025-08-25 12:25:47
+
+two:
+  prow: two
+  f0: false
+  f1: false
+  f2: false
+  f3: false
+  f4: false
+  f5: false
+  f1date: 2025-08-25 12:25:47
+  f2date: 2025-08-25 12:25:47
+  f3date: 2025-08-25 12:25:47
+  f4date: 2025-08-25 12:25:47
+  f5date: 2025-08-25 12:25:47

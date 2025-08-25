@@ -1,0 +1,37 @@
+<div id="<%= dom_id prow %>">
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Code:</strong>
+    <%= prow.code %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Proforma:</strong>
+    <%= prow.proforma_id %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Description:</strong>
+    <%= prow.description %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Note:</strong>
+    <%= prow.note %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Qty:</strong>
+    <%= prow.qty %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Qr:</strong>
+    <%= prow.qr %>
+  </p>
+
+  <% if action_name != "show" %>
+    <%= link_to "Show this prow", prow, class: "rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
+    <%= link_to "Edit this prow", edit_prow_path(prow), class: "rounded-lg py-3 ml-2 px-5 bg-gray-100 inline-block font-medium" %>
+    <hr class="mt-6">
+  <% end %>
+</div>

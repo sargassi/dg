@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  resources :tempesta
+  resources :prows
+  resources :proformas
+  resources :stations
   devise_for :users
   resources :rails
   resources :taglia

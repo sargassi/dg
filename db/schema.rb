@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_01_10_160612) do
+ActiveRecord::Schema[7.0].define(version: 2025_08_25_120849) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
     t.text "body"
@@ -100,6 +100,37 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_10_160612) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "proformas", force: :cascade do |t|
+    t.text "customer"
+    t.time "data_in"
+    t.time "data_out"
+    t.boolean "closed"
+    t.text "note"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.text "file"
+  end
+
+  create_table "prows", force: :cascade do |t|
+    t.text "code"
+    t.integer "proforma_id", null: false
+    t.text "description"
+    t.text "note"
+    t.integer "qty"
+    t.text "qr"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.text "itemcode"
+    t.text "fabricode"
+    t.text "varcode"
+    t.text "tg"
+    t.text "color"
+    t.text "materiale"
+    t.text "origine"
+    t.text "doe"
+    t.index ["proforma_id"], name: "index_prows_on_proforma_id"
+  end
+
   create_table "rassegnas", force: :cascade do |t|
     t.string "titolo"
     t.string "tipologia"
@@ -134,10 +165,35 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_10_160612) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "stations", force: :cascade do |t|
+    t.text "description"
+    t.text "note"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "taglia", force: :cascade do |t|
     t.string "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "tempesta", force: :cascade do |t|
+    t.integer "prow_id", null: false
+    t.boolean "f0", default: true
+    t.boolean "f1"
+    t.boolean "f2"
+    t.boolean "f3"
+    t.boolean "f4"
+    t.boolean "f5"
+    t.time "f1date"
+    t.time "f2date"
+    t.time "f3date"
+    t.time "f4date"
+    t.time "f5date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["prow_id"], name: "index_tempesta_on_prow_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -170,6 +226,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_01_10_160612) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "prodrow", "areas"
   add_foreign_key "prodrow", "prodcodes"
+  add_foreign_key "prows", "proformas"
   add_foreign_key "size_zone_qties", "sizes"
   add_foreign_key "size_zone_qties", "zones"
+  add_foreign_key "tempesta", "prows"
 end

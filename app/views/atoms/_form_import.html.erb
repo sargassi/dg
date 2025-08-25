@@ -1,0 +1,30 @@
+<%# FILE UPLOAD %>
+<section class="<%= style_import_form %>" >
+  <%= form_for prods do |f| %>
+  <% if prods.errors.any? %>
+    <%= pluralize(prods.errors.count, "error") %> errore.
+    <ul>
+      <% prods.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  <% end %>
+   <% if defined?(customer) && customer == 'y' %>
+
+     <%= f.text_field :customer, class: style_main_input, :required => true, placeholder: 'Cliente' %>
+
+   <% end %>
+  <%= f.file_field :file, class: style_import_field, :required => true %>
+  <%= f.submit "Importa", target: "_blank", class: style_import_btn %>
+<% end %>
+  <% if pdf.present? && pdf == 'y' %>
+<div class="link_to_pdf">
+<%= link_to "PDF", products_etichette_path(:format => :pdf), target: "_blank", class: style_import_pdf %>
+</div>
+<% end %>
+
+</section>
+
+<%# END FILE UPLOAD  %>
+
+<hr>

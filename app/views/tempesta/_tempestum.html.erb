@@ -1,0 +1,67 @@
+<div id="<%= dom_id tempestum %>">
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Prow:</strong>
+    <%= tempestum.prow_id %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">F0:</strong>
+    <%= tempestum.f0 %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">F1:</strong>
+    <%= tempestum.f1 %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">F2:</strong>
+    <%= tempestum.f2 %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">F3:</strong>
+    <%= tempestum.f3 %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">F4:</strong>
+    <%= tempestum.f4 %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">F5:</strong>
+    <%= tempestum.f5 %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">F1date:</strong>
+    <%= tempestum.f1date %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">F2date:</strong>
+    <%= tempestum.f2date %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">F3date:</strong>
+    <%= tempestum.f3date %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">F4date:</strong>
+    <%= tempestum.f4date %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">F5date:</strong>
+    <%= tempestum.f5date %>
+  </p>
+
+  <% if action_name != "show" %>
+    <%= link_to "Show this tempestum", tempestum, class: "rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
+    <%= link_to "Edit this tempestum", edit_tempestum_path(tempestum), class: "rounded-lg py-3 ml-2 px-5 bg-gray-100 inline-block font-medium" %>
+    <hr class="mt-6">
+  <% end %>
+</div>

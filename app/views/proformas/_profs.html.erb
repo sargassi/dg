@@ -1,0 +1,30 @@
+<% @proformas.each do |prof| %>
+  <div class="<%= style_main_lists %>">
+    <div class="<%= style_main_lists_sub %> w-2/3">
+      <h3 class="<%= style_main_lists_head %>">
+        <%= prof.customer %>
+        <span class="text-slate-400 text-sm mx-4">
+          <%= prof.created_at.strftime('%d/%m/%Y') %>
+        </span>
+      </h3>
+      <div class="<%= style_main_lists_p %>">
+      <% varx = [] %>
+      <% prof.prows.each do |pr| %>
+        <% varx.push(pr.qty) %>
+      <% end %>
+      <%= varx.sum %> Articoli
+      </div>
+    </div>
+    <div class="<%= style_main_lists_sub %>">
+      <div class="<%= style_main_lists_subtitle %>">
+          Avanzamento
+      </div>
+    </div>
+     <div class="<%= style_main_lists_sub %> grow">
+       <div class="<%= style_main_lists_subtitle %> text-end">
+         <a href="" class="font-bold text-xs border p-2">dettagliato</a>
+       </div>
+     </div>
+
+</div>
+<% end %>

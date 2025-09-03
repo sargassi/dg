@@ -3,3 +3,4 @@ import "@hotwired/turbo-rails";
 import "controllers";
 require("trix");
 require("@rails/actiontext");
+import "@hotwired/turbo-rails"

@@ -21,7 +21,20 @@ class ImportProformasService
       item.doe = spreadsheet.cell(i,'M')
       item.code = customer
       item.proforma_id = prof
-      item.save
+      codex = prof.to_s + spreadsheet.cell(i,'A') + spreadsheet.cell(i,'B') + spreadsheet.cell(i,'C')
+      item.qr = codex
+      if item.save
+
+      #tempesta iniziale
+      qtx = spreadsheet.cell(i,'G').to_i
+      qtx.times do
+        temp = Tempesta.new
+        temp.prow_id = item.id
+        temp.proforma_id = prof
+        temp.save
+      end
+      end
+
     end
   end
 end

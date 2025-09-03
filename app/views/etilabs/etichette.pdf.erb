@@ -1,0 +1,50 @@
+<div id="et">
+        <% counter = 0 %>
+        <% i = 0 %>
+       <% @products.each do |iz, val| %>
+        <% if i == 0 %>
+          <% val.sort.each do |product| %>
+
+             <% qty = product.qty.to_i %>
+             <% cqty  = 0 %>
+              <% qty.times do %>
+                <% if product.note == '' %>
+                  <div class="cell sm">
+                <% else %>
+                  <div class="cell sm" style="text-transform:uppercase">
+                <% end %>
+                  <div class="sub">
+                    <%= product.itemcode %> <%= product.fabricode %> <%= product.varcode %>
+                    <p class="sm">
+                      <%= raw(product.description.gsub(/\R+/, '<br/>')) %> - <%= product.supplier %></p>
+
+                 <p class="sm"><%= product.materiale %> <%= product.fabric  %> <span style="text-transform: lowercase"> <%= product.color %></span></p>
+                    <p>tg <%= product.tg %></p>
+
+                 <% cqty = cqty + 1 %>
+
+
+                <p class="air"><%= product.customer %>
+                <% if qty > 1 %>
+                  <%= cqty %> / <%= qty %>
+                <% end %>
+                </p>
+
+                <% if product.note.present? %>
+                 <p> <%= product.note %> </p>
+                <% end %>
+                </div>
+
+                <% counter = counter + 1 %>
+                </div>
+              <% if counter.modulo(24) == 0 %>
+              <div style="clear:both; page-break-after: always;"></div>
+              <% end %>
+            <% end %>
+
+          <% end %>
+
+        <% i += 1 %>
+    <% end %>
+    <% end %>
+</div>

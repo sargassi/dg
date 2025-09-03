@@ -1,37 +1,50 @@
-<div id="<%= dom_id prow %>">
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Code:</strong>
-    <%= prow.code %>
-  </p>
+ <div class="overflow-x-auto my-8 w-full">
+   <table class="table w-full">
+     <thead class="align-top">
+       <th class="<%= style_table_th %> w-16">Qty</th>
+       <th class="<%= style_table_th %> w-56">Code</th>
+       <th class="<%= style_table_th %>">Descrizione</th>
+       <th class="<%= style_table_th %> w-24">Tg</th>
+       <th class="<%= style_table_th %> w-24">Materiale</th>
+       <th class="<%= style_table_th %> w-16">Origine</th>
+       <th class="<%= style_table_th %> w-24">Dove</th>
 
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Proforma:</strong>
-    <%= prow.proforma_id %>
-  </p>
+     </thead>
 
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Description:</strong>
-    <%= prow.description %>
-  </p>
 
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Note:</strong>
-    <%= prow.note %>
-  </p>
+    <tr>
+      <td class="<%= style_table_td %> bg-slate-100">
+        <%= prow.qty %>
+      </td>
+      <td class="<%= style_table_td %>"> <%= prow.itemcode %>
+      <%= prow.fabricode %>
+      <%= prow.varcode %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= prow.description %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= prow.tg %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= prow.materiale %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= prow.origine %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= prow.doe %>
+      </td>
 
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Qty:</strong>
-    <%= prow.qty %>
-  </p>
 
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Qr:</strong>
-    <%= prow.qr %>
-  </p>
+    </tr>
+    <tr>
+        <td class="<%= style_table_td_parent %>" colspan=7>
+          <p class="text-start font-bold mt-8 p-2 mb-2 uppercase">Avanzamento:</p>
+          <%= render partial: 'prows/avanzamento_full', locals: {row: prow, src: 'search'} %>
+        </td>
 
-  <% if action_name != "show" %>
-    <%= link_to "Show this prow", prow, class: "rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
-    <%= link_to "Edit this prow", edit_prow_path(prow), class: "rounded-lg py-3 ml-2 px-5 bg-gray-100 inline-block font-medium" %>
-    <hr class="mt-6">
-  <% end %>
-</div>
+    </tr>
+
+ </table>
+ </div>

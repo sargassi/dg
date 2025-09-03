@@ -1,0 +1,20 @@
+  <div class="my-4 flex gap-2 items-center">
+<% if target == true %>
+    <span class="material-symbols-outlined">
+    check_circle
+    </span>
+    <span class="material-symbols-outlined">
+      calendar_today
+    </span>
+    <%= temdate.strftime('%d-%m-%Y') %>
+<% else %>
+<% date = Date.today %>
+    <%= link_to production_checkpoint_path(:tid => tem.id, :date => date, :stage => stage, :q => dom, src: src) do %>
+      <span class="material-symbols-outlined">
+      check_box_outline_blank
+      </span>
+    <% end %>
+
+
+<% end %>
+  </div>

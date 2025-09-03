@@ -1,0 +1,20 @@
+<%# FILE UPLOAD %>
+<section class="<%= style_import_form %>" >
+  <%= form_with url:"/utilities/etilabimp" do |f| %>
+
+    <%= hidden_field_tag :import, nil, :value => 'y' %>
+
+  <%= f.file_field :file, class: style_import_field, :required => true %>
+  <%= f.submit "Importa", target: "_blank", class: style_import_btn %>
+<% end %>
+  <% if pdf.present? && pdf == 'y' %>
+<div class="link_to_pdf">
+<%= link_to "PDF", etilabs_etichette_path(:format => :pdf), target: "_blank", class: style_import_pdf %>
+</div>
+<% end %>
+
+</section>
+
+<%# END FILE UPLOAD  %>
+
+<hr>

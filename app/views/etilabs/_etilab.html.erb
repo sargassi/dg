@@ -1,0 +1,62 @@
+<div id="<%= dom_id etilab %>">
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Itemcode:</strong>
+    <%= etilab.itemcode %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Fabricode:</strong>
+    <%= etilab.fabricode %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Varcode:</strong>
+    <%= etilab.varcode %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Description:</strong>
+    <%= etilab.description %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Tg:</strong>
+    <%= etilab.tg %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Color:</strong>
+    <%= etilab.color %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Qty:</strong>
+    <%= etilab.qty %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Materiale:</strong>
+    <%= etilab.materiale %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Group:</strong>
+    <%= etilab.group %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Customer:</strong>
+    <%= etilab.customer %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Supplier:</strong>
+    <%= etilab.supplier %>
+  </p>
+
+  <% if action_name != "show" %>
+    <%= link_to "Show this etilab", etilab, class: "rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
+    <%= link_to "Edit this etilab", edit_etilab_path(etilab), class: "rounded-lg py-3 ml-2 px-5 bg-gray-100 inline-block font-medium" %>
+    <hr class="mt-6">
+  <% end %>
+</div>

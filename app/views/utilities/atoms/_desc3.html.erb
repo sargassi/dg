@@ -1,0 +1,10 @@
+<%= turbo_frame_tag :fabric do  %>
+  <div class="flex justify-between mb-2 border-b">
+    <span class="leading-tight  block mr-4"><%= raw(product.fabric.gsub(/\R+/, '<br/>')) %> </span> <%= link_to [:edit, product, attribute: :fabric ], class:"no-pdf text-end text-xs uppercase text-blue-500 font-bold" do %>
+
+      <span class="material-symbols-outlined">
+        edit
+      </span>
+      <% end %>
+  </div>
+<% end %>

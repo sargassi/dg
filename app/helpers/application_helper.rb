@@ -1,48 +1,123 @@
 module ApplicationHelper
 
+  include Pagy::Frontend
+
   def style_main_cnt
-    return 'mt-12'
+    'mt-12'
   end
 
   def style_main_lists
-    return 'my-8 flex gap-4 flex-wrap items-start'
+    'my-8 flex gap-4 flex-wrap items-start'
+  end
+
+  def style_main_lists_no_gap
+    'my-2 flex gap-0  items-start'
   end
 
   def style_main_lists_sub
-    return 'my-4'
+    'my-4'
   end
 
   def style_main_lists_head
-    return 'uppercase text-xl border-b border-slate-200 p-2'
+    'uppercase text-xl border-b border-slate-200 p-2'
   end
 
   def style_main_lists_p
-    return 'p-2 text-sm'
+    'p-2 text-sm'
+  end
+
+  def style_main_lists_p_border
+    'p-4 text-sm border border-slate-400 h-14'
+  end
+
+  def style_actions_linx
+    'mt-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium'
+  end
+
+  def style_action_pdf
+    "#{style_actions_linx} bg-red-200"
   end
 
   def style_main_lists_subtitle
-    return 'my-6 grow uppercase text-sm text-slate-600'
+    'my-6 grow uppercase text-sm text-slate-600'
   end
 
   def style_main_input
-    return 'p-2 border border-slate-500'
+    'p-2 border border-slate-500'
   end
 
+  def style_table_th
+    'p-4 bg-slate-200 text-xs uppercase text-start border-r border-slate-300'
+  end
+
+  def style_table_td
+    'p-4 text-sm border border-slate-300'
+  end
+
+  def style_table_td_parent
+    'text-sm border border-slate-300'
+  end
+
+  def style_table_th_children
+    'p-2 bg-slate-50 text-xs uppercase text-start border-r border-slate-200'
+  end
+
+  def style_table_td_children
+    'p-2 text-sm border border-slate-300'
+  end
+
+
+  def style_input
+    'p-2 border-slate-400'
+  end
+
+  def style_search_input
+    style_input + ' w-96'
+  end
+
+  def style_main_btn
+    'p-2 my-4 bg-indigo-400 text-white font-bold inline-block rounded-sm cursor-pointer hover:bg-indigo-500'
+  end
+
+
   def style_import_form
-    return 'files flex justify-between items-center bg-blue-50 px-4'
+    'files flex justify-between items-center bg-blue-50 px-4'
   end
 
   def style_import_field
-    return 'py-4 my-4 bg-blue-50 inline-block rounded-sm'
+    'py-4 my-4 bg-blue-50 inline-block rounded-sm'
   end
 
   def style_import_btn
-    return 'p-4 my-4 bg-blue-200 inline-block rounded-sm uppercase text-sm cursor-pointer'
+    'p-4 my-4 bg-blue-200 inline-block rounded-sm uppercase text-sm cursor-pointer'
   end
 
   def style_import_pdf
-    return 'p-4 my-4 bg-red-400 text-white font-bold inline-block rounded-sm'
+    'p-4 my-4 bg-red-400 text-white font-bold inline-block rounded-sm'
   end
 
 
+  # routines
+  #
+  def calc_percentage(num1, num2)
+    return (num1 * 100 / num2).round(2)
+  end
+
+  def add_time_tempestas(arr, datex, index)
+    arr[index].push(datex)
+  end
+
+  def add_count_tempestas(arr, num, index)
+    arr[index].push(num)
+  end
+
+  def get_bg_tempestas(arr, qty)
+    if arr.sum == qty
+      bg = 'bg-green-600'
+      elsif arr.sum > qty && arr.sum > 0
+      bg = 'bg-amber-500'
+      else
+      bg = 'bg.red-500'
+      end
+  end
 end

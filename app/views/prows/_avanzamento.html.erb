@@ -1,0 +1,61 @@
+<table class="table w-full">
+    <thead class="align-top">
+
+      <th class="<%= style_table_th_children %>">
+          1
+      </th>
+      <th class="<%= style_table_th_children %>">
+          2
+      </th>
+      <th class="<%= style_table_th_children %>">
+          3
+      </th>
+      <th class="<%= style_table_th_children %>">
+          4
+      </th>
+      <th class="<%= style_table_th_children %>">
+          5
+      </th>
+
+    </thead>
+
+    <tr class="align-top">
+      <% chk = [[], [], [], [] ,[], []] %>
+      <% row.tempestas.each do |tem| %>
+        <% if tem.f1 == true %>
+          <% add_count_tempestas(chk, 1, 1) %>
+        <% end %>
+        <% if tem.f2 == true %>
+          <% add_count_tempestas(chk, 1, 2) %>
+        <% end %>
+        <% if tem.f3 == true %>
+          <% add_count_tempestas(chk, 1, 3) %>
+        <% end %>
+        <% if tem.f4 == true %>
+          <% add_count_tempestas(chk, 1, 4) %>
+        <% end %>
+        <% if tem.f5 == true %>
+          <% add_count_tempestas(chk, 1, 5) %>
+        <% end %>
+
+      <% end %>
+
+
+        <td class="<%= style_table_td_children %> w-1/5 <%= get_bg_tempestas(chk[1], row.qty) %>">
+          <%= chk[1].sum %>
+
+        </td>
+        <td class="<%= style_table_td_children %> w-1/5 <%= get_bg_tempestas(chk[2], row.qty) %>">
+          <%= chk[2].sum %>
+        </td>
+        <td class="<%= style_table_td_children %> w-1/5 <%= get_bg_tempestas(chk[3], row.qty) %>">
+          <%= chk[3].sum %>
+        </td>
+        <td class="<%= style_table_td_children %> w-1/5 <%= get_bg_tempestas(chk[4], row.qty) %>">
+          <%= chk[4].sum %>
+        </td>
+        <td class="<%= style_table_td_children %> w-1/5 <%= get_bg_tempestas(chk[5], row.qty) %>">
+          <%= chk[5].sum %>
+        </td>
+    </tr>
+</table>

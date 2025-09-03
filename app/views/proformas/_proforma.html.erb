@@ -1,32 +1,15 @@
-<div id="<%= dom_id proforma %>">
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Customer:</strong>
+<div id="<%= dom_id proforma %>" class="flex flex-col gap-4 p-4">
+  <h3 class="font-bold">
     <%= proforma.customer %>
+  </h3>
+  <p>
+    Proforma n. <%= proforma.id %> del <%= proforma.data_in.strftime('%d-%m-%Y') %>
   </p>
-
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Data in:</strong>
-    <%= proforma.data_in %>
+  <% if proforma.closed.present? %>
+  <p>Chiusa: <%= proforma.data_out.strftime('%d-%m-%Y') %>
   </p>
-
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Data out:</strong>
-    <%= proforma.data_out %>
+    <% end %>
+  <p>
+    Note: <%= proforma.note %>
   </p>
-
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Closed:</strong>
-    <%= proforma.closed %>
-  </p>
-
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Note:</strong>
-    <%= proforma.note %>
-  </p>
-
-  <% if action_name != "show" %>
-    <%= link_to "Show this proforma", proforma, class: "rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
-    <%= link_to "Edit this proforma", edit_proforma_path(proforma), class: "rounded-lg py-3 ml-2 px-5 bg-gray-100 inline-block font-medium" %>
-    <hr class="mt-6">
-  <% end %>
 </div>

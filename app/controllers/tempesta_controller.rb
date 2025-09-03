@@ -65,6 +65,6 @@ class TempestaController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def tempestum_params
-      params.require(:tempestum).permit(:prow_id, :f0, :f1, :f2, :f3, :f4, :f5, :f1date, :f2date, :f3date, :f4date, :f5date)
+      params.require(:tempestum).permit(:prow_id, :f0, :f1, :f2, :f3, :f4, :f5, :f1date, :f2date, :f3date, :f4date, :f5date, :proforma_id, :user_id)
     end
 end

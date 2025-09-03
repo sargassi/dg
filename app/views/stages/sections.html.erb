@@ -1,0 +1,5 @@
+<%= render partial: 'atoms/header', locals: {link: '/stages/dashboard', label: "Stages > #{@section}" } %>
+
+<%= turbo_frame_tag 'rez' do %>
+  <%= render partial: 'stages/atoms/checkpoint' %>
+<% end %>

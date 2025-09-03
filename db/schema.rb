@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_08_25_120849) do
+ActiveRecord::Schema[7.0].define(version: 2025_09_03_143625) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
     t.text "body"
@@ -53,6 +53,24 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_25_120849) do
     t.string "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "etilabs", force: :cascade do |t|
+    t.string "itemcode"
+    t.string "fabricode"
+    t.string "varcode"
+    t.string "description"
+    t.string "tg"
+    t.string "color"
+    t.integer "qty"
+    t.string "materiale"
+    t.integer "group"
+    t.string "customer"
+    t.string "supplier"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "note"
+    t.string "fabric"
   end
 
   create_table "prodrow", force: :cascade do |t|
@@ -102,7 +120,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_25_120849) do
 
   create_table "proformas", force: :cascade do |t|
     t.text "customer"
-    t.time "data_in"
+    t.date "data_in"
     t.time "data_out"
     t.boolean "closed"
     t.text "note"
@@ -128,6 +146,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_25_120849) do
     t.text "materiale"
     t.text "origine"
     t.text "doe"
+    t.boolean "closed", default: false
     t.index ["proforma_id"], name: "index_prows_on_proforma_id"
   end
 
@@ -186,14 +205,18 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_25_120849) do
     t.boolean "f3"
     t.boolean "f4"
     t.boolean "f5"
-    t.time "f1date"
-    t.time "f2date"
-    t.time "f3date"
-    t.time "f4date"
-    t.time "f5date"
+    t.date "f1date"
+    t.date "f2date"
+    t.date "f3date"
+    t.date "f4date"
+    t.date "f5date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "proforma_id", null: false
+    t.integer "user_id", default: 2, null: false
+    t.index ["proforma_id"], name: "index_tempesta_on_proforma_id"
     t.index ["prow_id"], name: "index_tempesta_on_prow_id"
+    t.index ["user_id"], name: "index_tempesta_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -212,6 +235,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_25_120849) do
     t.datetime "locked_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "role", default: "ufficio"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
@@ -229,5 +253,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_08_25_120849) do
   add_foreign_key "prows", "proformas"
   add_foreign_key "size_zone_qties", "sizes"
   add_foreign_key "size_zone_qties", "zones"
+  add_foreign_key "tempesta", "proformas"
   add_foreign_key "tempesta", "prows"
+  add_foreign_key "tempesta", "users"
 end

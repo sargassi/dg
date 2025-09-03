@@ -1,15 +1,14 @@
-<div class="mx-auto md:w-2/3 w-full flex">
-  <div class="mx-auto">
-    <% if notice.present? %>
-      <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-lg inline-block" id="notice"><%= notice %></p>
-    <% end %>
+<%= turbo_frame_tag 'report' do %>
+  <div class="content">
+    <div class="main">
+      <%= render partial: 'atoms/header', locals: {link: "/proformas/#{@proforma.id}", label: "Proforma #{@proforma.id} / #{@prow.description }"} %>
 
-    <%= render @prow %>
-
-    <%= link_to "Edit this prow", edit_prow_path(@prow), class: "mt-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
-    <div class="inline-block ml-2">
-      <%= button_to "Destroy this prow", prow_path(@prow), method: :delete, class: "mt-2 rounded-lg py-3 px-5 bg-gray-100 font-medium" %>
+      <%= render @prow %>
+      <% if params[:src].present? && params[:src] == 'search' %>
+        <%= render partial: 'atoms/actions', locals: {target: @prow, var: "prows", redir: "production/research", back: @proforma.id}  %>
+      <% else %>
+        <%= render partial: 'atoms/actions', locals: {target: @prow, var: "prows", redir: "proformas/#{@proforma.id}", back: @proforma.id} %>
+      <% end %>
     </div>
-    <%= link_to "Back to prows", prows_path, class: "ml-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
   </div>
-</div>
+<% end %>

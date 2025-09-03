@@ -1,0 +1,9 @@
+<%= render partial: 'atoms/header', locals: {link: '/', label: 'Produzione / Ricerca x QR Code'} %>
+<%= turbo_frame_tag 'rez' do %>
+  <%= render partial: 'atoms/search_qr' %>
+<% if params[:q].present? %>
+  <%= render partial: 'atoms/search_qr_rows', locals:{prows: @rows} %>
+  <%= render partial: 'atoms/ux/pagy' %>
+<% end %>
+  <%= render partial: 'atoms/ux/modal' %>
+<% end %>

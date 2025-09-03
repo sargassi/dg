@@ -13,6 +13,8 @@
 
      <%= f.text_field :customer, class: style_main_input, :required => true, placeholder: 'Cliente' %>
 
+    <%= f.date_field :data_in, class: style_main_input, :required => true %>
+
    <% end %>
   <%= f.file_field :file, class: style_import_field, :required => true %>
   <%= f.submit "Importa", target: "_blank", class: style_import_btn %>

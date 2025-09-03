@@ -4,25 +4,30 @@
       <h3 class="<%= style_main_lists_head %>">
         <%= prof.customer %>
         <span class="text-slate-400 text-sm mx-4">
-          <%= prof.created_at.strftime('%d/%m/%Y') %>
+          <%= prof.data_in.strftime('%d-%m-%Y') if prof.data_in.present? %>
         </span>
       </h3>
       <div class="<%= style_main_lists_p %>">
       <% varx = [] %>
+      <% totav = [] %>
       <% prof.prows.each do |pr| %>
         <% varx.push(pr.qty) %>
+        <% av = GetAvanzamentoService.new %>
+        <% totav.push(av.get(pr)) if av.get(pr) > 0 %>
       <% end %>
       <%= varx.sum %> Articoli
       </div>
     </div>
     <div class="<%= style_main_lists_sub %>">
       <div class="<%= style_main_lists_subtitle %>">
-          Avanzamento
+
+          Avanzamento:
+          <span class="font-bold text-indigo-700"><%= calc_percentage(totav.sum.to_f, varx.sum.to_f) %> % </span>
       </div>
     </div>
      <div class="<%= style_main_lists_sub %> grow">
        <div class="<%= style_main_lists_subtitle %> text-end">
-         <a href="" class="font-bold text-xs border p-2">dettagliato</a>
+         <%= link_to 'Dettaglio', proforma_path(prof.id), class:"font-bold text-xs border p-2" %>
        </div>
      </div>
 

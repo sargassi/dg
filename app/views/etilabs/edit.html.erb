@@ -1,0 +1,24 @@
+<% if params[:attribute] == 'description' %>
+  <%= turbo_frame_tag :description do %>
+
+    <%= render "form", product: @etilab %>
+  <% end %>
+<% elsif params[:attribute] == 'note' %>
+  <%= turbo_frame_tag :note do %>
+
+    <%= render partial: "etilabs/form_note", locals: {etilab: @etilab} %>
+  <% end %>
+
+<% elsif params[:attribute] == 'color' %>
+  <%= turbo_frame_tag :color do %>
+
+    <%= render partial: "etilabs/form_color", locals: {product: @etilab} %>
+  <% end %>
+
+<% elsif params[:attribute] == 'fabric' %>
+  <%= turbo_frame_tag :fabric do %>
+
+    <%= render partial: "etilabs/form_fabric", locals: {product: @etilab} %>
+  <% end %>
+
+<% end %>

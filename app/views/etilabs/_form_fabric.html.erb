@@ -1,0 +1,21 @@
+
+<%= form_with(model: product, class: "contents", data: {'controller': 'populate'}) do |form| %>
+  <% if product.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-lg mt-3">
+      <h2><%= pluralize(product.errors.count, "error") %> prohibited this product from being saved:</h2>
+
+      <ul>
+        <% product.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+ <div class="flex justify-between">
+    <span class="leading-tight h-8 block grow relative">
+    <%= form.text_area :fabric, rows:3, class: "w-full p-0 m-0 leading-tight border-0 bg-slate-50  shadow-xl w-4/5 absolute p-2", wrap:'hard' %>
+</span>
+    <%= form.submit 'Ok', class:"no-pdf text-center text-xs uppercase cursor-pointer w-12 bg-green-100 h-8" %>
+ </div>
+<% end %>

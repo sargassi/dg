@@ -1,0 +1,51 @@
+<% queryx = {}
+    if params[:q].is_a? String
+        queryx = params[:q]
+    else
+        queryx = params[:q].to_unsafe_h if params[:q].present?
+    end %>
+<td class="<%= style_table_td_children %> w-1/5">
+    <% if tem.f1 == true %>
+    <% add_count_tempestas(chk, 1, 1) %>
+    <% add_time_tempestas(chktime, tem.f1date, 1) %>
+    <% end %>
+    <%= turbo_frame_tag "temp-#{tem.id}" do %>
+      <%= render partial: 'prows/atoms/state', locals:{tem:tem, chktime: chktime, chk: chk, dom: queryx, target: tem.f1 , stage: 'F1', temdate: tem.f1date , src:src } %>
+    <% end %>
+</td>
+<td class="<%= style_table_td_children %> w-1/5">
+  <% if tem.f2 == true %>
+  <% add_count_tempestas(chk, 1, 1) %>
+  <% add_time_tempestas(chktime, tem.f2date, 1) %>
+  <% end %>
+  <%= turbo_frame_tag "temp-#{tem.id}" do %>
+    <%= render partial: 'prows/atoms/state', locals:{tem:tem, chktime: chktime, chk: chk, dom: queryx, target: tem.f2 , stage: 'F2', temdate: tem.f2date , src:src } %>
+  <% end %>
+</td>
+<td class="<%= style_table_td_children %> w-1/5">
+  <% if tem.f3 == true %>
+  <% add_count_tempestas(chk, 1, 1) %>
+  <% add_time_tempestas(chktime, tem.f3date, 1) %>
+  <% end %>
+  <%= turbo_frame_tag "temp-#{tem.id}" do %>
+    <%= render partial: 'prows/atoms/state', locals:{tem:tem, chktime: chktime, chk: chk, dom: queryx, target: tem.f3 , stage: 'F3', temdate: tem.f3date  , src:src} %>
+  <% end %>
+</td>
+<td class="<%= style_table_td_children %> w-1/5">
+  <% if tem.f4 == true %>
+  <% add_count_tempestas(chk, 1, 1) %>
+  <% add_time_tempestas(chktime, tem.f4date, 1) %>
+  <% end %>
+  <%= turbo_frame_tag "temp-#{tem.id}" do %>
+    <%= render partial: 'prows/atoms/state', locals:{tem:tem, chktime: chktime, chk: chk, dom: queryx, target: tem.f4 , stage: 'F4', temdate: tem.f4date , src:src } %>
+  <% end %>
+</td>
+<td class="<%= style_table_td_children %> w-1/5">
+  <% if tem.f5 == true %>
+  <% add_count_tempestas(chk, 1, 1) %>
+  <% add_time_tempestas(chktime, tem.f5date, 1) %>
+  <% end %>
+  <%= turbo_frame_tag "temp-#{tem.id}" do %>
+    <%= render partial: 'prows/atoms/state', locals:{tem:tem, chktime: chktime, chk: chk, dom: queryx, target: tem.f5 , stage: 'F5', temdate: tem.f5date , src:src } %>
+  <% end %>
+</td>

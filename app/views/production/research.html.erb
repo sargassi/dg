@@ -1,0 +1,10 @@
+<%= render partial: 'atoms/header', locals: {link: '/', label: 'Produzione / Ricerca'} %>
+
+<%= turbo_frame_tag 'rez' do %>
+<%= render partial: 'atoms/search' %>
+
+  <%= render partial: 'atoms/search_rows' %>
+  <%== pagy_nav(@pagy) if @pagy.pages > 1 %>
+
+<%= render partial: 'atoms/ux/modal' %>
+<% end %>

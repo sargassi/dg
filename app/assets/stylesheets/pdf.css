@@ -26,10 +26,46 @@ body {
     line-height: 10.4pt !important;
     overflow: hidden;
 }
+#et .cell.sm {
+    border: 1px solid;
+    padding: 2mm 2mm;
+    font-size: 7.8pt !important;
+}
+
+#et .cell.hor {
+    border: 1px solid #ccc;
+}
 
 #et .cell .sub p {
     line-height: 10.4pt !important;
     font-size: 8.65pt !important;
     margin: 0;
     padding: 0;
+}
+
+#et .cell p.air {
+    margin: 1pt 0;
+}
+
+#et .cell.sm p {
+    font-size: 7.8pt !important;
+}
+
+#et .cell .sub.hor {
+    position: relative;
+    font-sze: 8.5pt !important;
+}
+
+#et .cell .sub.hor p {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 58%;
+}
+#et .cell .sub.hor img {
+    position: absolute;
+    top: 0;
+    left: -3mm;
+    width: 40%;
+    height: auto;
 }

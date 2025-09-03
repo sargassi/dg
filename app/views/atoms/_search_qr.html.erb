@@ -1,0 +1,16 @@
+<section class="<%= style_import_form %>" >
+  <div class="w-1/2">
+  <%= search_form_for @q, url: production_research_qr_path, data:{turbo_frame: 'rez'} do |f| %>
+      <% f.label 'QR' %>
+      <%= f.search_field :qr_eq, class: style_search_input %>
+      <%= f.submit 'Cerca', class: style_main_btn %>
+    <% end %>
+</div>
+<div class="w-1/2">
+  <%= turbo_frame_tag 'rez' do %>
+    <% if params[:q].present? %>
+        <%= render partial: 'atoms/ux/pagy' %>
+    <% end %>
+  <% end %>
+</div>
+</section>

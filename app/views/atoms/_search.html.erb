@@ -1,0 +1,13 @@
+<section class="<%= style_import_form %>" >
+<div class="w-1/2">
+  <%= search_form_for @q, url: production_research_path, data:{turbo_frame: 'rez'} do |f| %>
+      <% f.label 'Ricerca' %>
+      <%= f.search_field :code_or_proforma_id_or_note_or_qr_or_materiale_or_color_or_origine_or_doe_cont, class: style_search_input %>
+      <%= f.submit 'Cerca', class: style_main_btn %>
+    <% end %>
+  </div>
+  <div class="w-1/2">
+    <%= render partial: 'atoms/ux/pagy' %>
+  </div>
+
+</section>

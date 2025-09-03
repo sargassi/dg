@@ -1,0 +1,53 @@
+ <% prows.each do |prow| %>
+   <div class="overflow-x-auto my-8 w-full">
+   <table class="table w-full">
+     <thead class="align-top">
+       <th class="<%= style_table_th %> w-16">Qty</th>
+       <th class="<%= style_table_th %> w-56">Code</th>
+       <th class="<%= style_table_th %>">Descrizione</th>
+       <th class="<%= style_table_th %> w-24">Tg</th>
+       <th class="<%= style_table_th %> w-24">Materiale</th>
+       <th class="<%= style_table_th %> w-16">Origine</th>
+       <th class="<%= style_table_th %> w-24">Dove</th>
+
+     </thead>
+
+
+    <tr>
+      <td class="<%= style_table_td %> bg-slate-100">
+        <%= prow.qty %>
+      </td>
+      <td class="<%= style_table_td %>"> <%= prow.itemcode %>
+      <%= prow.fabricode %>
+      <%= prow.varcode %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= prow.description %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= prow.tg %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= prow.materiale %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= prow.origine %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= prow.doe %>
+      </td>
+
+
+    </tr>
+    <tr>
+
+        <td class="<%= style_table_td_parent %>" colspan="7">
+          <p class="text-start font-bold my-8 mb-4 p-2  uppercase">Avanzamento:</p>
+          <%= render partial: 'prows/avanzamento_full', locals: {row: prow, src: 'qr'} %>
+        </td>
+
+    </tr>
+
+ </table>
+ </div>
+ <% end %>

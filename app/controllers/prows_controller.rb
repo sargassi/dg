@@ -8,6 +8,7 @@ class ProwsController < ApplicationController
 
   # GET /prows/1 or /prows/1.json
   def show
+    @proforma = Proforma.find(params[:proforma])
   end
 
   # GET /prows/new
@@ -47,12 +48,19 @@ class ProwsController < ApplicationController
     end
   end
 
+  def checkinsert
+
+  end
+
   # DELETE /prows/1 or /prows/1.json
   def destroy
+    temp = @prow.tempestas
+    temp.each do |tm|
+      tm.destroy
+    end
     @prow.destroy
-
     respond_to do |format|
-      format.html { redirect_to prows_url, notice: "Prow was successfully destroyed." }
+      format.html { redirect_to proforma_path(:id => params[:bck]), notice: "eliminato." }
       format.json { head :no_content }
     end
   end
@@ -65,6 +73,6 @@ class ProwsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def prow_params
-      params.require(:prow).permit(:code, :proforma_id, :description, :note, :qty, :qr, :itemcode, :fabricode, :varcode, :tg, :color, :materiale, :origine, :doe)
+      params.require(:prow).permit(:code, :proforma_id, :description, :note, :qty, :qr, :itemcode, :fabricode, :varcode, :tg, :color, :materiale, :origine, :doe, :closed)
     end
 end

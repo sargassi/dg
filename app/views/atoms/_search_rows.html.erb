@@ -1,0 +1,62 @@
+ <div class="overflow-x-auto my-8 w-full">
+   <table class="table w-full">
+     <thead class="align-top">
+       <th class="<%= style_table_th %> w-56">Code</th>
+       <th class="<%= style_table_th %>">Descrizione</th>
+       <th class="<%= style_table_th %>">Riferimenti</th>
+       <th class="<%= style_table_th %> w-24">Qty</th>
+       <th class="<%= style_table_th %> w-24">Tg</th>
+       <th class="<%= style_table_th %> w-24">Materiale</th>
+       <th class="<%= style_table_th %> w-16">Origine</th>
+       <th class="<%= style_table_th %> w-24">Dove</th>
+       <th class="<%= style_table_th %> w-24">QR</th>
+       <th class="<%= style_table_th %> w-16">Avanzamento</th>
+       <th class="<%= style_table_th %> w-8"></th>
+
+     </thead>
+
+  <% @rows.each do |row| %>
+    <tr>
+      <td class="<%= style_table_td %>"> <%= row.itemcode %>
+      <%= row.fabricode %>
+      <%= row.varcode %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= row.description %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= row.code %> - <%= row.proforma_id %> del <%= row.proforma.data_in.strftime('%d-%m-%Y') %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= row.qty %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= row.tg %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= row.materiale %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= row.origine %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= row.doe %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= row.qr %>
+      </td>
+      <td class="<%= style_table_td_parent %>">
+        <%= render partial: 'prows/avanzamento', locals: {row: row} %>
+      </td>
+      <td class="<%= style_table_td_children %>">
+        <%= link_to prow_path(:id => row.id, :proforma => row.proforma.id, :src => 'search'), data: {turbo_frame: 'report'} do %>
+          <span class="material-symbols-outlined">
+          key_visualizer
+          </span>
+          <% end %>
+      </td>
+    </tr>
+
+  <% end %>
+ </table>
+ </div>

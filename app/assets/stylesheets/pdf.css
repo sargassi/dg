@@ -27,7 +27,8 @@ body {
     overflow: hidden;
 }
 #et .cell.sm {
-    font-size: 7.8pt !important;
+    border: 1px solid;
+    font-size: 7.4pt !important;
 }
 
 #et .cell.hor {
@@ -46,7 +47,7 @@ body {
 }
 
 #et .cell.sm p {
-    font-size: 7.8pt !important;
+    font-size: 7.4pt !important;
 }
 
 #et .cell .sub.hor {

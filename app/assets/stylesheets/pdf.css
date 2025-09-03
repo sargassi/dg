@@ -27,7 +27,8 @@ body {
     overflow: hidden;
 }
 #et .cell.sm {
-    border: 1px solid;
+    padding: 4mm 2mm 4mm;
+
     font-size: 7.4pt !important;
 }
 

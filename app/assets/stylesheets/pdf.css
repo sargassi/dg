@@ -27,9 +27,9 @@ body {
     overflow: hidden;
 }
 #et .cell.sm {
-    padding: 4mm 2mm 4mm;
+    padding: 4mm 6mm 4mm;
 
-    font-size: 7.4pt !important;
+    font-size: 7pt !important;
 }
 
 #et .cell.hor {
@@ -48,7 +48,7 @@ body {
 }
 
 #et .cell.sm p {
-    font-size: 7.4pt !important;
+    font-size: 7pt !important;
 }
 
 #et .cell .sub.hor {

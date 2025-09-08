@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_09_03_143625) do
+ActiveRecord::Schema[7.0].define(version: 2025_09_02_153710) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
     t.text "body"
@@ -69,8 +69,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_03_143625) do
     t.string "supplier"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "note"
-    t.string "fabric"
   end
 
   create_table "prodrow", force: :cascade do |t|

@@ -1,0 +1,6 @@
+<form action="/production/research" data-turbo-frame="rez" data-controller="formsubmit">
+   <% params[:customer].present? ? sel = params[:customer] : sel = '' %>
+   
+   <%= select_tag 'customer', options_for_select(profs.collect {|x| ["#{x.customer.upcase } - N.#{x.id} del #{x.data_in.strftime('%d-%m-%Y')}" , x.id]}, sel) , { class: style_select_class ,  :include_blank => 'Tutte le proforma attive' , data: {action: 'change->formsubmit#go'}} %>
+</form>
+

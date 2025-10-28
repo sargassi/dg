@@ -9,7 +9,7 @@
     <%= temdate.strftime('%d-%m-%Y') %>
 <% else %>
 <% date = Date.today %>
-    <%= link_to production_checkpoint_path(:tid => tem.id, :date => date, :stage => stage, :q => dom, src: src) do %>
+    <%= link_to production_checkpoint_path(:tid => tem.id, :date => date, :stage => stage, :q => dom, src: src, :prow => tem.prow_id) do %>
       <span class="material-symbols-outlined">
       check_box_outline_blank
       </span>

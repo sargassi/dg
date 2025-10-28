@@ -2,6 +2,18 @@ module ApplicationHelper
 
   include Pagy::Frontend
 
+  def style_container_head
+    'flex gap-4 justify-between items-center border-b border-bg-slate-300 text-center'
+  end
+
+  def style_subcontainer_hor
+    'w-full flex items-center w-1/3'
+  end
+
+  def style_subcontainer_linx(link = '/')
+    "block w-12 h-12 p-2 border border-slate-100 flex items-center justify-center rounded-full #{active_class(link)}"
+  end
+
   def style_main_cnt
     'mt-12'
   end
@@ -38,8 +50,16 @@ module ApplicationHelper
     "#{style_actions_linx} bg-red-200"
   end
 
+  def style_action_pdf_small
+    "text-xs font-semibold bg-red-200 p-2 mt-2"
+  end
+
   def style_main_lists_subtitle
     'my-6 grow uppercase text-sm text-slate-600'
+  end
+
+  def style_main_lists_subtitle_nomarg
+    'grow uppercase text-sm text-slate-600'
   end
 
   def style_main_input
@@ -71,6 +91,10 @@ module ApplicationHelper
     'p-2 border-slate-400'
   end
 
+  def style_select_class
+    'w-80 bg-blue-100 uppercase text-sm'
+  end
+
   def style_search_input
     style_input + ' w-96'
   end
@@ -96,6 +120,15 @@ module ApplicationHelper
     'p-4 my-4 bg-red-400 text-white font-bold inline-block rounded-sm'
   end
 
+  #navigation
+  #
+  def active_class(link_path)
+    current_page?(link_path) ? "active" : ""
+  end
+
+
+
+
 
   # routines
   #
@@ -114,10 +147,35 @@ module ApplicationHelper
   def get_bg_tempestas(arr, qty)
     if arr.sum == qty
       bg = 'bg-green-600'
-      elsif arr.sum > qty && arr.sum > 0
+      elsif arr.sum < qty && arr.sum > 0
       bg = 'bg-amber-500'
       else
       bg = 'bg.red-500'
       end
+  end
+
+  def hasDoneTempestas?(prow)
+      qty = prow.qty.to_i
+      if qty == get_no_temp(prow)
+        return true
+      else
+        return false
+      end
+  end
+
+  def get_no_temp(prow)
+    if prow.tempestas.size > 0
+      return prow.tempestas.where('prow_id = ? and (f1 = true and f2 = true and f3 = true and f4 = true and f5 = true)', prow.id).size
+    else
+      return 0
+    end
+  end
+
+  def get_icon_etx(notez)
+    notez == '' ? addx = '<span class="material-symbols-outlined">add_2</span>' : addx = '<span class="material-symbols-outlined">edit</span>'
+  end
+
+  def icon_edit
+    raw('<span class="material-symbols-outlined">edit</span>')
   end
 end

@@ -73,6 +73,6 @@ class ProwsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def prow_params
-      params.require(:prow).permit(:code, :proforma_id, :description, :note, :qty, :qr, :itemcode, :fabricode, :varcode, :tg, :color, :materiale, :origine, :doe, :closed)
+      params.require(:prow).permit(:code, :proforma_id, :description, :note, :qty, :qr, :itemcode, :fabricode, :varcode, :tg, :color, :materiale, :origine, :doe, :closed, :identifier, :datedeno, :done)
     end
 end

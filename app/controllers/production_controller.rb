@@ -3,8 +3,13 @@ class ProductionController < ApplicationController
   include Pagy::Backend
 
   def research
-    profs = Proforma.where('closed is not true').order('created_at desc').select(:id).map(&:id).compact
-    @q = Prow.where('proforma_id in (?)', profs).ransack(params[:q])
+    @profs = Proforma.where('closed is not true').order('created_at desc')
+    profs = @profs.select(:id).map(&:id).compact
+    if params[:customer].present? and params[:customer] != ''
+      @q = Prow.where('proforma_id = ?', params[:customer]).ransack(params[:q])
+    else
+      @q = Prow.where('proforma_id in (?)', profs).ransack(params[:q])
+    end
     @rows = @q.result(distinct: true)
     @pagy, @rows = pagy(@rows)
   end
@@ -21,8 +26,10 @@ class ProductionController < ApplicationController
   end
 
   def checkpoint
-    dom = params[:q][:qr_eq]
+    src = params[:src]
+    dom = params[:q][:qr_eq] if params[:q].present?
     tmp = params[:tid]
+    prow = params[:prow]
     stage = params[:stage]
     datex = params[:date]
     target = params[:target]
@@ -52,9 +59,20 @@ class ProductionController < ApplicationController
 
     end
 if chk.save
+     if hasDoneTempestas?(prow.to_i)
+       setProwDone(prow.to_i, datex )
+     end
+
     respond_to do |format|
       format.html do
-        redirect_to production_research_qr_path(q: dom)
+        if src == 'search'
+          redirect_to production_research_qr_path(q: dom)
+        elsif src == 'list'
+          redirect_to prow_path(prow.to_i, :proforma => Prow.find(prow.to_i).proforma_id, :src => src )
+        #redirect_to proforma_path(Prow.find(tmp.to_i).proforma_id)
+        elsif src == 'searchplain'
+          redirect_to prow_path(prow.to_i, :proforma => Prow.find(prow.to_i).proforma_id, :src => src )
+        end
       end
     end
 end

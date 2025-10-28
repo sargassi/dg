@@ -100,4 +100,6 @@ gem "bcrypt_pbkdf", "~> 1.1"
 
 gem "byebug"
 
+gem "rabl"
+
 gem 'pagy', '~> 7.0'

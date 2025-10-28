@@ -1,14 +1,18 @@
-<%= turbo_frame_tag 'report' do %>
-  <div class="content">
-    <div class="main">
-      <%= render partial: 'atoms/header', locals: {link: "/proformas/#{@proforma.id}", label: "Proforma #{@proforma.id} / #{@prow.description }"} %>
+<% if params[:src].present? and params[:src] == 'fromapp' %>
+x
+<% else %>
+  <%= turbo_frame_tag 'report' do %>
+    <div class="content">
+      <div class="main">
+        <%= render partial: 'atoms/header', locals: {link: "/proformas/#{@proforma.id}", label: "Proforma #{@proforma.id} / #{@prow.description }"} %>
 
-      <%= render @prow %>
-      <% if params[:src].present? && params[:src] == 'search' %>
-        <%= render partial: 'atoms/actions', locals: {target: @prow, var: "prows", redir: "production/research", back: @proforma.id}  %>
-      <% else %>
-        <%= render partial: 'atoms/actions', locals: {target: @prow, var: "prows", redir: "proformas/#{@proforma.id}", back: @proforma.id} %>
-      <% end %>
+        <%= render @prow %>
+        <% if params[:src].present? && params[:src] == 'search' %>
+          <%= render partial: 'atoms/actions', locals: {target: @prow, var: "prows", redir: "production/research", back: @proforma.id}  %>
+        <% elsif params[:src].present? and params[:src] == 'list' %>
+          <%= render partial: 'atoms/actions', locals: {target: @prow, var: "prows", redir: "proformas/#{@proforma.id}", back: @proforma.id} %>
+        <% end %>
+      </div>
     </div>
-  </div>
+  <% end %>
 <% end %>

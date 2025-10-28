@@ -1,10 +1,10 @@
 <% defined?(redir) ? bck = redir : bck = '' %>
 <div class="flex gap-8">
-  <a href="/<%= var %>/<%= target.id %>/edit" class="<%= style_actions_linx %>" data-turbo-frame="_top">Modifica</a>
+
+ <a href="/<%= bck %>" class="<%= style_actions_linx %>">Indietro</a>
 
  <%= button_to "Elimina", "/#{var}/#{target.id}?bck=#{bck}", method: :delete, class: style_actions_linx, data: {turbo_frame: '_top'} %>
 
- <a href="/<%= bck %>" class="<%= style_actions_linx %>" >Indietro</a>
 
  <% if defined?(pdf) && pdf == 'prof' %>
    <div class="link_to_pdf">

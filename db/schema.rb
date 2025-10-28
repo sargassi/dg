@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_09_02_153710) do
+ActiveRecord::Schema[7.0].define(version: 2025_09_20_143201) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
     t.text "body"
@@ -49,6 +49,15 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_02_153710) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "api_tokens", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.boolean "active"
+    t.text "token"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_api_tokens_on_user_id"
+  end
+
   create_table "areas", force: :cascade do |t|
     t.string "description"
     t.datetime "created_at", null: false
@@ -69,6 +78,8 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_02_153710) do
     t.string "supplier"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "note"
+    t.string "fabric"
   end
 
   create_table "prodrow", force: :cascade do |t|
@@ -145,6 +156,9 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_02_153710) do
     t.text "origine"
     t.text "doe"
     t.boolean "closed", default: false
+    t.integer "identifier"
+    t.boolean "done", default: false
+    t.time "datedone"
     t.index ["proforma_id"], name: "index_prows_on_proforma_id"
   end
 
@@ -212,6 +226,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_02_153710) do
     t.datetime "updated_at", null: false
     t.integer "proforma_id", null: false
     t.integer "user_id", default: 2, null: false
+    t.integer "qty", default: 1
     t.index ["proforma_id"], name: "index_tempesta_on_proforma_id"
     t.index ["prow_id"], name: "index_tempesta_on_prow_id"
     t.index ["user_id"], name: "index_tempesta_on_user_id"
@@ -246,6 +261,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_02_153710) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "api_tokens", "users"
   add_foreign_key "prodrow", "areas"
   add_foreign_key "prodrow", "prodcodes"
   add_foreign_key "prows", "proformas"

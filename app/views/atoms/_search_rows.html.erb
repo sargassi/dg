@@ -16,7 +16,10 @@
      </thead>
 
   <% @rows.each do |row| %>
-    <tr>
+    <% colo = '' %>
+    <% colo = 'bg-green-300' if row.done == true %>
+
+    <tr class="<%= colo %>">
       <td class="<%= style_table_td %>"> <%= row.itemcode %>
       <%= row.fabricode %>
       <%= row.varcode %>
@@ -49,7 +52,7 @@
         <%= render partial: 'prows/avanzamento', locals: {row: row} %>
       </td>
       <td class="<%= style_table_td_children %>">
-        <%= link_to prow_path(:id => row.id, :proforma => row.proforma.id, :src => 'search'), data: {turbo_frame: 'report'} do %>
+        <%= link_to prow_path(:id => row.id, :proforma => row.proforma.id, :src => 'searchplain'), data: {turbo_frame: 'report'} do %>
           <span class="material-symbols-outlined">
           key_visualizer
           </span>

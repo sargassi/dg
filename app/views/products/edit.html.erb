@@ -1,5 +1,5 @@
 <% if params[:attribute] == 'description' %>
-  <%= turbo_frame_tag :description do %>
+  <%= turbo_frame_tag "description-#{@product.id}" do %>
 
     <%= render "form", product: @product %>
   <% end %>
@@ -10,7 +10,7 @@
   <% end %>
 
 <% elsif params[:attribute] == 'color' %>
-  <%= turbo_frame_tag :color do %>
+  <%= turbo_frame_tag "color-#{@product.id}" do %>
 
     <%= render partial: "products/form_color", locals: {product: @product} %>
   <% end %>

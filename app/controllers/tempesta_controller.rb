@@ -3,7 +3,7 @@ class TempestaController < ApplicationController
 
   # GET /tempesta or /tempesta.json
   def index
-    @tempesta = Tempestum.all
+    @tempesta = Tempesta.all
   end
 
   # GET /tempesta/1 or /tempesta/1.json
@@ -12,7 +12,7 @@ class TempestaController < ApplicationController
 
   # GET /tempesta/new
   def new
-    @tempestum = Tempestum.new
+    @tempestum = Tempesta.new
   end
 
   # GET /tempesta/1/edit
@@ -21,7 +21,7 @@ class TempestaController < ApplicationController
 
   # POST /tempesta or /tempesta.json
   def create
-    @tempestum = Tempestum.new(tempestum_params)
+    @tempestum = Tempesta.new(tempestum_params)
 
     respond_to do |format|
       if @tempestum.save
@@ -60,11 +60,11 @@ class TempestaController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_tempestum
-      @tempestum = Tempestum.find(params[:id])
+      @tempestum = Tempesta.find(params[:id])
     end
 
     # Only allow a list of trusted parameters through.
     def tempestum_params
-      params.require(:tempestum).permit(:prow_id, :f0, :f1, :f2, :f3, :f4, :f5, :f1date, :f2date, :f3date, :f4date, :f5date, :proforma_id, :user_id)
+      params.require(:tempesta).permit(:prow_id, :f0, :f1, :f2, :f3, :f4, :f5, :f1date, :f2date, :f3date, :f4date, :f5date, :proforma_id, :user_id, :qty)
     end
 end

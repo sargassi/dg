@@ -8,6 +8,7 @@
        <th class="<%= style_table_th %> w-24">Materiale</th>
        <th class="<%= style_table_th %> w-16">Origine</th>
        <th class="<%= style_table_th %> w-24">Dove</th>
+       <th class="<%= style_table_th %> w-24">QR</th>
        <th class="<%= style_table_th %> w-16">Avanzamento</th>
        <th class="<%= style_table_th %> w-8"></th>
 
@@ -37,12 +38,15 @@
       <td class="<%= style_table_td %>">
         <%= row.doe %>
       </td>
+      <td class="<%= style_table_td %>">
+        <%= row.qr %>
+      </td>
 
       <td class="<%= style_table_td_parent %>">
         <%= render partial: 'prows/avanzamento', locals: {row: row} %>
       </td>
       <td class="<%= style_table_td_children %>">
-        <%= link_to prow_path(:id => row.id, :proforma => @proforma.id), data: {turbo_frame: 'report'} do %>
+        <%= link_to prow_path(:id => row.id, :proforma => @proforma.id, :src => 'list' ), data: {turbo_frame: 'report'} do %>
           <span class="material-symbols-outlined">
           key_visualizer
           </span>

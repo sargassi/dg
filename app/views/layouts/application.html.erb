@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,100,0,-25" >    
-
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,100,0,-25" >
     <%= stylesheet_link_tag "tailwind", "inter-font", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
@@ -26,17 +25,21 @@
         </div>
       </div>
       <% end %>
-             <% if current_user.present? %>
-             <p class="text-muted text-center text-sm mt-2"><span><%= current_user.email if current_user.present? %></span></p>
+      <% if current_user.present? %>
+        <p class="text-muted text-center text-sm mt-2"><span><%= current_user.email if current_user.present? %></span></p>
+        <div class="<%= style_container_head %>">
       <% if current_user.role == 'ufficio' %>
-       
-        <h3 class="text-center my-4 font-semibold"> ufficio </h3>
+          <%= render partial: 'atoms/menu/ufficio'%>
+         <h3 class="text-center my-4 font-semibold">
+          <a href="/"><span class="material-symbols-outlined">home</span>ufficio</a>
+         </h3>
+          <%= render partial: 'atoms/menu/lab'%>
       <% elsif current_user.role == 'lab' %>
- 
-         <h3 class="text-center my-4 font-semibold"> laboratorio </h3>
-
+      <h3 class="text-center my-4 font-semibold">
+       <a href="/"><span class="material-symbols-outlined">home</span>laboratorio</a>
+      </h3>
       <% end %>
-
+      </div>
     </header>
     <% end %>
       <%= yield %>

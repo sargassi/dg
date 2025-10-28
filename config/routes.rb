@@ -25,5 +25,13 @@ Rails.application.routes.draw do
   resources :products
   resources :rassegnas
   resources :products_imports, only: [:new, :create]
+  namespace :api do
+    namespace :v1 do
+      defaults format: :json do
+        get "home/index", to: "home#index" # /api/v1/home/index
+        get "home/list_qrs"
+      end
+    end
+  end
   root to: "dashboard#home"
 end

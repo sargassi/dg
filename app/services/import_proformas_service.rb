@@ -20,8 +20,10 @@ class ImportProformasService
       item.origine = spreadsheet.cell(i,'L')
       item.doe = spreadsheet.cell(i,'M')
       item.code = customer
+      tx = Time.now.to_i + i
+      item.identifier = tx
       item.proforma_id = prof
-      codex = prof.to_s + spreadsheet.cell(i,'A') + spreadsheet.cell(i,'B') + spreadsheet.cell(i,'C')
+      codex = prof.to_s + tx.to_s + spreadsheet.cell(i,'A') + '_' + spreadsheet.cell(i,'B') + spreadsheet.cell(i,'C')
       item.qr = codex
       if item.save
 

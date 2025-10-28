@@ -1,5 +1,5 @@
 <% if params[:attribute] == 'description' %>
-  <%= turbo_frame_tag :description do %>
+  <%= turbo_frame_tag "description-#{@etilab.id}" do %>
 
     <%= render "form", product: @etilab %>
   <% end %>
@@ -10,13 +10,13 @@
   <% end %>
 
 <% elsif params[:attribute] == 'color' %>
-  <%= turbo_frame_tag :color do %>
+  <%= turbo_frame_tag "color-#{@etilab.id}" do %>
 
     <%= render partial: "etilabs/form_color", locals: {product: @etilab} %>
   <% end %>
 
 <% elsif params[:attribute] == 'fabric' %>
-  <%= turbo_frame_tag :fabric do %>
+  <%= turbo_frame_tag "fabric-#{@etilab.id}" do %>
 
     <%= render partial: "etilabs/form_fabric", locals: {product: @etilab} %>
   <% end %>

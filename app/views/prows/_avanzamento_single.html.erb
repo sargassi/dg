@@ -1,0 +1,28 @@
+<table class="table w-full">
+
+      <% chk = [[], [], [], [] ,[], []] %>
+      <% chktime = [[], [], [], [] ,[], []] %>
+    <tr class="align-top">
+      <% countopen = 0 %>
+      <td class="<%= style_table_td_children %> ">
+        <table class="table w-full">
+          <tr>
+
+      <% row.tempestas.each do |tem| %>
+        <% if assign_fs(tem, sez).nil? || assign_fs(tem,sez) == false %>
+          <% countopen = countopen + 1 %>
+          <%= render partial: 'prows/atoms/tempesta_single', locals:{tem:tem, chk:chk, chktime: chktime, src: src, sez: sez} %>
+        <% end %>
+
+      <% end %>
+        </tr>
+        </table>
+      </td>
+
+    </tr>
+
+
+
+
+
+</table>

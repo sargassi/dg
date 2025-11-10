@@ -96,13 +96,16 @@ module ApplicationHelper
   end
 
   def style_search_input
-    style_input + ' w-96'
+    style_input + ' w-96 border border-blue-100 shadow-sm'
   end
 
   def style_main_btn
     'p-2 my-4 bg-indigo-400 text-white font-bold inline-block rounded-sm cursor-pointer hover:bg-indigo-500'
   end
 
+  def style_main_btn_icon
+    'my-6 bg-indigo-400 text-white font-bold inline-block rounded-sm cursor-pointer hover:bg-indigo-500 h-10 w-10'
+  end
 
   def style_import_form
     'files flex justify-between items-center bg-blue-50 px-4'
@@ -126,9 +129,22 @@ module ApplicationHelper
     current_page?(link_path) ? "active" : ""
   end
 
+  def assign_fs(tem, sez)
+    case sez
+    when '1'
+      tem.f1
+    when '2'
+      tem.f2
+    when '3'
+      tem.f3
+    when '4'
+      tem.f4
+    when '5'
+      tem.f5
+    else
 
-
-
+    end
+  end
 
   # routines
   #

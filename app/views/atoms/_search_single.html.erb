@@ -1,0 +1,48 @@
+    <% if section.present? %>
+
+
+        <section class="bg-blue-50 my-0">
+        <div class="mx-auto section-qr">
+            <div id="qr-reader">
+
+            </div>
+            </div>
+        </section>
+
+    <% end %>
+<section class="<%= style_import_form %> rounded shadow-sm" >
+  <div class="flex items-center justify-center w-full mt-24">
+  <%= search_form_for @q, url: app_sez_path(:place => params[:place]), data:{turbo_frame: 'sprawl'} do |f| %>
+  <% if section.present? %>
+      <%= f.search_field :qr_eq, class: style_search_input, placeholder: 'QR Code' %>
+  <% else %>
+    <%= f.search_field :qr_eq, class: style_search_input, placeholder: 'Selezionare prima una zona', disabled: true %>
+
+  <% end %>
+        <%= hidden_field_tag :place, nil, :value => params[:place] %>
+        <%= button_tag(:class => style_main_btn_icon + " hidden", :id => 'btin') do %>
+          <span class="material-symbols-outlined font-bold">
+          qr_code_scanner
+          </span>
+          <% end %>
+    <% end %>
+
+</div>
+
+</section>
+
+<section class="<%= style_import_form %> rounded shadow-sm" >
+  <div class="flex items-center justify-center w-full mb-24 my-8">
+    <ul class="flex gap-4 w-full justify-center">
+    <% @sections.each do |sec| %>
+      <li>
+          <% params[:place].present? && params[:place] != '' && params[:place] == sec ? active = 'active' : active = '' %>
+        <a href="<%= "/app/sez?place=#{sec}" %>" class="p-2 bg-slate-50 rounded-sm uppercase <%= active %> ">
+
+          <%= sec %>
+        </a>
+      </li>
+    <% end %>
+    </ul>
+  </div>
+</section>

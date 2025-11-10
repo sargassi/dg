@@ -1,0 +1,34 @@
+<div class="bg-blue-50 p-4 cont">
+    <table class="table w-full">
+        <thead class="align-top">
+
+          <th class="<%= style_table_th_children %>">
+             Stage 1
+          </th>
+          <th class="<%= style_table_th_children %>">
+             Stage 2
+          </th>
+          <th class="<%= style_table_th_children %>">
+             Stage 3
+          </th>
+          <th class="<%= style_table_th_children %>">
+             Stage 4
+          </th>
+          <th class="<%= style_table_th_children %>">
+             Stage 5
+          </th>
+
+        </thead>
+  <% @rows.each do |row| %>
+      <% chk = [[], [], [], [] ,[], []] %>
+      <% chktime = [[], [], [], [] ,[], []] %>
+
+      <% row.tempestas.each do |tm| %>
+      <tr class="align-top">
+
+        <%= render partial: 'prows/atoms/tempesta', locals:{tem:tm, chk:chk, chktime: chktime, src: 'qr'} %>
+      </tr>
+      <% end %>
+  <% end %>
+    </table>
+</div>

@@ -13,34 +13,13 @@
 
   <body>
     <main class="container mx-auto mt-16">
-      <hr>
-      <h1 class="font-semibold text-4xl my-4 text-center">ok'am</h1>
-      <hr>
-    <header>
-      <% if !notice.nil? && !alert.nil? %>
-      <div class="container">
-        <div class="row">
-          <p class="notice alert alert-success"><%= notice %></p>
-          <p class="alert alert-danger"><%= alert %></p>
-        </div>
-      </div>
-      <% end %>
-      <% if current_user.present? %>
-        <p class="text-muted text-center text-sm mt-2"><span><%= current_user.email if current_user.present? %></span></p>
-        <div class="<%= style_container_head %>">
-      <% if current_user.role == 'ufficio' %>
-          <%= render partial: 'atoms/menu/ufficio'%>
-         <h3 class="text-center my-4 font-semibold">
-          <a href="/"><span class="material-symbols-outlined">home</span>ufficio</a>
-         </h3>
-          <%= render partial: 'atoms/menu/lab'%>
-      <% elsif current_user.role == 'lab' %>
-      <h3 class="text-center my-4 font-semibold">
-       <a href="/"><span class="material-symbols-outlined">home</span>laboratorio</a>
-      </h3>
-      <% end %>
-      </div>
-    </header>
+    <% if controller_name == 'app' %>
+
+      <%= render partial: 'layouts/headers/app' %>
+
+    <% else %>
+        <%= render partial: 'layouts/headers/default' %>
+
     <% end %>
       <%= yield %>
     </main>
@@ -48,5 +27,7 @@
     <div class="text-sm text-center">             <p class="fixed top-0 right-0 text-sm "><%= button_to "logout", destroy_user_session_path(current_user.id), method: :delete  %></p>
 </div>
 <% end %>
+
+
   </body>
 </html>

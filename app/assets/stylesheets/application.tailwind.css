@@ -106,3 +106,46 @@
     border-bottom: 1px solid #333;
     color: #333;
 }
+
+.sez .active {
+    background: rgba(0, 0, 0, 0.4);
+    color: #fff;
+    border: 1 px solid #333;
+}
+
+#qr-reader {
+    padding: 20px !important;
+}
+
+#qr-reader img[alt="Info icon"] {
+    display: none;
+}
+
+#qr-reader img[alt="Camera based scan"] {
+    width: 250px !important;
+    height: 250px !important;
+}
+
+.section-qr {
+    max-width: 400px !important;
+    max-height: 400px !important;
+}
+
+#q_qr_eq {
+    transition: all 0.2s ease;
+    font-weight: bold;
+    padding: 1em;
+}
+
+#q_qr_eq.success {
+    background-color: #008000;
+    color: #fff;
+}
+
+#sprawl {
+    visibility: hidden;
+}
+
+#sprawl[complete] > .cont {
+    visibility: visible;
+}

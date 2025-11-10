@@ -58,10 +58,10 @@ body {
                   <div class="sub">
                     <%= product.itemcode %> <%= product.fabricode %> <%= product.varcode %>
                     <p>
-                      <%= raw(product.description.gsub(/\R+/, '<br/>')) %></p>
+                      <%= raw(product.description.gsub(/\R+/, '<br/>')) if !product.description.nil?  %></p>
 
                     <p>tg <%= product.tg %></p>
-                <%= product.color %><br>
+                <%= raw(product.color.gsub(/\R+/, '<br/>')) if !product.color.nil? %><br>
                 <%= product.materiale %>
                 <% if product.note.present? %>
                  <p> <%= product.note %> </p>

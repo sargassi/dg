@@ -1,0 +1,14 @@
+
+
+    <% queryx = {}
+        if params[:q].is_a? String
+            queryx = params[:q]
+        else
+            queryx = params[:q].to_unsafe_h if params[:q].present?
+        end %>
+    <td class="<%= style_table_td_children %> w-1/5">
+
+        <%= turbo_frame_tag "temp-#{tem.id}" do %>
+          <%= render partial: 'prows/atoms/state', locals:{tem:tem, chktime: chktime, chk: chk, dom: queryx, target: tem.f2 , stage: 'F2', temdate: tem.f1date , src:src } %>
+        <% end %>
+    </td>

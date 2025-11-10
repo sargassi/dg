@@ -18,7 +18,7 @@
                       <%= raw(product.description.gsub(/\R+/, '<br/>')) %></p>
 
                     <p>tg <%= product.tg %></p>
-                <%= product.color %><br>
+                <%= raw(product.color.gsub(/\R+/, '<br/>')) if !product.color.nil? %><br>
                 <%= product.materiale %>
                 <% if product.note.present? %>
                  <p> <%= product.note %> </p>

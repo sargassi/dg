@@ -25,6 +25,16 @@ class ProductionController < ApplicationController
     end
   end
 
+  def checkpoint_single
+    place = params[:place]
+    profs = Proforma.where('closed is not true').order('created_at desc').select(:id).map(&:id).compact
+      @sez = params[:place]
+
+      @q = Prow.where('proforma_id in (?) and closed is false', profs).ransack(params[:q])
+      @rows = @q.result(distinct: true)
+
+  end
+
   def checkpoint
     src = params[:src]
     dom = params[:q][:qr_eq] if params[:q].present?

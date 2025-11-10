@@ -1,0 +1,11 @@
+<%= render partial: 'atoms/header', locals: {link: '/', label: 'Produzione / Check'} %>
+
+  <%= render partial: 'atoms/search_single' , locals:{section: params[:place]} %>
+<%= turbo_frame_tag 'rez' do %>
+
+
+<% if params[:q].present? %>
+  <%= render partial: 'atoms/search_qr_single', locals:{prows: @rows, sez: @sez} %>
+<% end %>
+
+<% end %>

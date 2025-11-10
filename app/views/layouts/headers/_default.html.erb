@@ -1,0 +1,22 @@
+<hr>
+<h1 class="font-semibold text-4xl my-4 text-center">ok'am</h1>
+<hr>
+<header>
+ <% if current_user.present? %>
+   <p class="text-muted text-center text-sm mt-2"><span><%= current_user.email if current_user.present? %></span>
+   </p>
+   <div class="<%= style_container_head %>">
+     <% if current_user.role == 'ufficio' %>
+       <%= render partial: 'atoms/menu/ufficio'%>
+        <h3 class="text-center my-4 font-semibold">
+        <a href="/"><span class="material-symbols-outlined">home</span>ufficio</a>
+        </h3>
+        <%= render partial: 'atoms/menu/lab'%>
+     <% elsif current_user.role == 'lab' %>
+        <h3 class="text-center my-4 font-semibold">
+        <a href="/"><span class="material-symbols-outlined">home</span>laboratorio</a>
+        </h3>
+     <% end %>
+  </div>
+  <% end %>
+</header>

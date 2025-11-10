@@ -1,0 +1,46 @@
+  <%= render partial: '/atoms/search_single' , locals:{section: @sez} %>
+
+<%= turbo_frame_tag 'sprawl' do %>
+    <%= render partial: 'app/atoms/results', locals:{prows: @rows, sez: @sez} %>
+<% end %>
+
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <script>
+  function domReady(fn) {
+      if (
+          document.readyState === "complete" ||
+          document.readyState === "interactive"
+      ) {
+          setTimeout(fn, 1000);
+      } else {
+          document.addEventListener("DOMContentLoaded", fn);
+      }
+  }
+
+  function play(){
+     const audio = new Audio('http://localhost:3000/ok.mp3')
+     audio.loop = false
+     audio.play()
+  }
+  domReady(function () {
+
+      // If found you qr code
+      function onScanSuccess(decodeText, decodeResult) {
+           let input = document.getElementById('q_qr_eq')
+           const btninput = document.getElementById('btnin')
+           const form = document.getElementById('prow_search')
+           console.log(document.readyState)
+           input.value = decodeText
+           play()
+           input.classList.add('success')
+           console.log(form)
+           //form.submit()
+           //alert("You Qr is : " + decodeText, decodeResult);
+      }
+
+      let htmlscanner = new Html5QrcodeScanner(
+          "qr-reader",
+          { fps: 10, qrbos: 250 }
+      );
+      htmlscanner.render(onScanSuccess);
+  });</script>

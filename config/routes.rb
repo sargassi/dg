@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get 'app/dashboard'
+  get 'app/sez'
   get 'etilabs/import'
   get "etilabs/etichette"
   resources :etilabs
@@ -7,6 +9,7 @@ Rails.application.routes.draw do
   get 'production/research'
   get 'production/research_qr'
   get 'production/checkpoint'
+  get 'production/checkpoint_single'
   resources :tempesta
   resources :prows
   resources :proformas

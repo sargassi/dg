@@ -2,6 +2,10 @@ module ApplicationHelper
 
   include Pagy::Frontend
 
+  def comp_code(i,f,v)
+    i + f + v
+  end
+
   def style_container_head
     'flex gap-4 justify-between items-center border-b border-bg-slate-300 text-center'
   end
@@ -33,6 +37,8 @@ module ApplicationHelper
   def style_main_lists_head
     'uppercase text-xl border-b border-slate-200 p-2'
   end
+
+
 
   def style_main_lists_p
     'p-2 text-sm'

@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   get 'app/dashboard'
+  get 'app/check_qr'
   get 'app/sez'
   get 'etilabs/import'
   get "etilabs/etichette"

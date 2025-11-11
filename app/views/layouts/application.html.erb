@@ -13,6 +13,7 @@
 
   <body>
     <main class="container mx-auto mt-16">
+
     <% if controller_name == 'app' %>
 
       <%= render partial: 'layouts/headers/app' %>
@@ -21,12 +22,10 @@
         <%= render partial: 'layouts/headers/default' %>
 
     <% end %>
+      <%= turbo_frame_tag 'success' %>
       <%= yield %>
     </main>
-    <% if current_user.present? %>
-    <div class="text-sm text-center">             <p class="fixed top-0 right-0 text-sm "><%= button_to "logout", destroy_user_session_path(current_user.id), method: :delete  %></p>
-</div>
-<% end %>
+
 
 
   </body>

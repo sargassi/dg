@@ -115,6 +115,7 @@
 
 #qr-reader {
     padding: 20px !important;
+    height: 400px !important;
 }
 
 #qr-reader img[alt="Info icon"] {
@@ -129,6 +130,8 @@
 .section-qr {
     max-width: 400px !important;
     max-height: 400px !important;
+    overflow: hidden;
+    background: #fff;
 }
 
 #q_qr_eq {
@@ -142,10 +145,29 @@
     color: #fff;
 }
 
-#sprawl {
+#sprawl,
+#success {
     visibility: hidden;
+}
+
+#success > .cont {
+    position: fixed;
+    z-index: -10;
+    left: 0;
+    right: 0;
 }
 
 #sprawl[complete] > .cont {
     visibility: visible;
+}
+
+#success[complete] > .cont {
+    visibility: visible;
+    position: fixed;
+    z-index: 99999;
+
+    top: 10vh;
+    left: 0;
+    right: 0;
+    margin: 10vh;
 }

@@ -12,7 +12,7 @@
     <% end %>
 <section class="<%= style_import_form %> rounded shadow-sm" >
   <div class="flex items-center justify-center w-full mt-24">
-  <%= search_form_for @q, url: app_sez_path(:place => params[:place]), data:{turbo_frame: 'sprawl'} do |f| %>
+  <%= search_form_for @q, url: app_check_qr_path(:place => params[:place]), data:{turbo_frame: 'success'} do |f| %>
   <% if section.present? %>
       <%= f.search_field :qr_eq, class: style_search_input, placeholder: 'QR Code' %>
   <% else %>

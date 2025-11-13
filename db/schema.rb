@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_09_20_143201) do
+ActiveRecord::Schema[7.0].define(version: 2025_11_13_153756) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
     t.text "body"
@@ -80,6 +80,8 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_20_143201) do
     t.datetime "updated_at", null: false
     t.string "note"
     t.string "fabric"
+    t.string "colfilcuc"
+    t.string "lab"
   end
 
   create_table "prodrow", force: :cascade do |t|
@@ -159,6 +161,8 @@ ActiveRecord::Schema[7.0].define(version: 2025_09_20_143201) do
     t.integer "identifier"
     t.boolean "done", default: false
     t.time "datedone"
+    t.string "colfilcuc"
+    t.string "lab"
     t.index ["proforma_id"], name: "index_prows_on_proforma_id"
   end
 

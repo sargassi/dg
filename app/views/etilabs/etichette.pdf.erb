@@ -16,7 +16,7 @@
                   <div class="sub">
                     <%= product.itemcode %> <%= product.fabricode %> <%= product.varcode %>
                     <p class="sm">
-                      <%= raw(product.description.gsub(/\R+/, '<br/>')) %> - <%= product.supplier %></p>
+                      <%= raw(product.description.gsub(/\R+/, '<br/>')) %> - <%= product.lab %></p>
 
                  <p class="sm"><%= product.materiale %> <%= product.fabric  %> <span style="text-transform: lowercase"> <%= product.color %></span></p>
                     <p>tg <%= product.tg %></p>
@@ -33,7 +33,25 @@
                 <% if product.note.present? %>
                  <p> <%= product.note %> </p>
                 <% end %>
-                </div>
+                <p class="fasi">
+                <span>
+                    <input type="radio" />
+                    <label for="dewey">Verifica LAVAGGIO</label>
+                </span>
+                <span>
+                    <input type="radio" />
+                    <label for="dewey">Verifica CAMPIONE</label>
+                </span>
+                <span>
+                    <input type="radio" />
+                    <label for="dewey">Gemelli/Bottoni</label>
+                </span>
+                <span>
+                    <input type="radio" />
+                    <label for="dewey">Scorta</label>
+                </span>
+                </p>
+            </div>
 
                 <% counter = counter + 1 %>
                 </div>

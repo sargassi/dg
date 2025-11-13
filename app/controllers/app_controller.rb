@@ -24,7 +24,7 @@ class AppController < ApplicationController
 
     @sez = params[:place]
 
-    @q = Prow.where('proforma_id in (?) and closed is false', profs).ransack(params[:q])
+    @q = Prow.where('proforma_id in (?) and done is false', profs).ransack(params[:q])
     @rows = @q.result(distinct: true)
 
     if @rows.size > 0
@@ -51,6 +51,9 @@ class AppController < ApplicationController
           else
         end
         if chk.save
+          if hasDoneTempestas?(@rows.first.id.to_i)
+            setProwDone(@rows.first.id.to_i, datex )
+          end
           @output = chk
         end
       else

@@ -75,8 +75,6 @@ if chk.save
 
     respond_to do |format|
       format.html do
-        if src = 'scan'
-          redirect_to app_check_qr_path(:sector => stage, :q => dom)
         if src == 'search'
           redirect_to production_research_qr_path(q: dom)
         elsif src == 'list'

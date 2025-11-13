@@ -82,6 +82,6 @@ class EtilabsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def etilab_params
-      params.require(:etilab).permit(:itemcode, :fabricode, :varcode, :description, :tg, :color, :qty, :materiale, :group, :customer, :supplier, :note, :fabric)
+      params.require(:etilab).permit(:itemcode, :fabricode, :varcode, :description, :tg, :color, :qty, :materiale, :group, :customer, :supplier, :note, :fabric, :colfilcuc, :lab)
     end
 end

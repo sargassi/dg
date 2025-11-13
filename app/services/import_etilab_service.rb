@@ -16,10 +16,12 @@ class ImportEtilabService
       item.description = spreadsheet.cell(i,'E')
       item.tg = spreadsheet.cell(i,'H')
       item.color = spreadsheet.cell(i,'P')
+      item.colfilcuc = spreadsheet.cell(i, 'M')
       item.qty = spreadsheet.cell(i,'Q')
       item.fabric = spreadsheet.cell(i,'O')
       item.materiale = spreadsheet.cell(i,'R')
-      item.customer = spreadsheet.cell(i,'V')
+      item.lab = spreadsheet.cell(i,'V')
+      item.customer = spreadsheet.cell(i,'AD')
       item.note = spreadsheet.cell(i,'I')
       item.supplier = spreadsheet.cell(i,'N')
       item.group = lastNum

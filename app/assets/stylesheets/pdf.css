@@ -43,12 +43,12 @@ body {
 #lab .cell.sm {
     padding: 2mm 4mm 8mm;
     font-size: 7pt !important;
-    border: 1px solid #ccc
 }
 
 #et .cell.sm {
     padding: 4mm 6mm 2mm;
     font-size: 7pt !important;
+
 }
 
 #et .cell.hor,
@@ -75,9 +75,12 @@ body {
     margin: 1pt 0;
 }
 
-#et .cell.sm p,
-#lab .cell.sm p {
+#et .cell.sm p {
     font-size: 7pt !important;
+}
+
+#lab .cell.sm p {
+    font-size: .92em !important;
 }
 
 #et .cell .sub.hor {
@@ -111,16 +114,21 @@ body {
     width: 40%;
     height: auto;
 }
-.fasi {
-    font-size: 6pt;
-    line-height: 7pt;
+#lab p.fasi {
+    font-size: 5pt;
+    line-height: 6pt !important;
     position: absolute;
     bottom: 2pt;
 }
 
+.fasi label {
+    font-size: .9em
+}
+
 .fasi input[type="radio"] {
-    height: 5pt;
-    width: 5pt;
+    height: 4pt;
+    width: 4pt;
+    border: .2em solid #333;
     margin: 0;
     margin-right: 2pt;
 }

@@ -8,7 +8,7 @@ body {
     box-sizing: border-box;
 }
 
-#et {
+#et, #lab {
     margin: 0;
     padding: 0;
     width: 210mm;
@@ -26,13 +26,33 @@ body {
     line-height: 10.4pt !important;
     overflow: hidden;
 }
+
+#lab .cell,
+#lab .notez{
+    margin: 0;
+    padding: 4mm 6mm 14mm;
+    float: left;
+    width: 70mm;
+    height: 37mm;
+    position: relative;
+    font-size: 7pt !important;
+    line-height: 9pt !important;
+    overflow: hidden;
+}
+
+#lab .cell.sm {
+    padding: 2mm 4mm 8mm;
+    font-size: 7pt !important;
+    border: 1px solid #ccc
+}
+
 #et .cell.sm {
     padding: 4mm 6mm 2mm;
-
     font-size: 7pt !important;
 }
 
-#et .cell.hor {
+#et .cell.hor,
+#lab .cell.hor {
     border: 1px solid #ccc;
 }
 
@@ -43,11 +63,20 @@ body {
     padding: 0;
 }
 
-#et .cell p.air {
+#lab .cell .sub p {
+    line-height: 9pt !important;
+    font-size: 7pt !important;
+    margin: 0;
+    padding: 0;
+}
+
+#et .cell p.air,
+#lab .cell p.air {
     margin: 1pt 0;
 }
 
-#et .cell.sm p {
+#et .cell.sm p,
+#lab .cell.sm p {
     font-size: 7pt !important;
 }
 
@@ -56,16 +85,47 @@ body {
     font-sze: 8.5pt !important;
 }
 
-#et .cell .sub.hor p {
+#lab .cell .sub.hor {
+    position: relative;
+    font-size: 7pt !important;
+}
+
+.sub {
+    width: 100%;
+    height: 28mm;
+    overflow: hidden;
+}
+
+#et .cell .sub.hor p,
+#lab .cell .sub.hor p {
     position: absolute;
     top: 0;
     right: 0;
     width: 58%;
 }
-#et .cell .sub.hor img {
+#et .cell .sub.hor img,
+#lab .cell .sub.hor img {
     position: absolute;
     top: 0;
     left: -3mm;
     width: 40%;
     height: auto;
+}
+.fasi {
+    font-size: 6pt;
+    line-height: 7pt;
+    position: absolute;
+    bottom: 2pt;
+}
+
+.fasi input[type="radio"] {
+    height: 5pt;
+    width: 5pt;
+    margin: 0;
+    margin-right: 2pt;
+}
+
+.fasi span {
+    width: 50%;
+    float: left;
 }

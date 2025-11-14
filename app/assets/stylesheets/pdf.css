@@ -126,11 +126,11 @@ body {
 }
 
 .fasi input[type="radio"] {
-    height: 4pt;
-    width: 4pt;
-    border: .2em solid #333;
+    height: 5pt;
+    width: 5pt;
+    border: .2pt solid #333;
     margin: 0;
-    margin-right: 2pt;
+    margin-right: 4pt;
 }
 
 .fasi span {

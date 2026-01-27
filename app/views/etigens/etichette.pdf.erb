@@ -1,0 +1,45 @@
+<div id="et">
+        <% counter = 0 %>
+        <% i = 0 %>
+       <% @products.each do |iz, val| %>
+        <% if i == 0 %>
+          <% val.sort.each do |product| %>
+            <% if check_empty_gen(product) == true %>
+
+             <% qty = product.qty.to_i %>
+              <% qty.times do %>
+                  <div class="cell">
+
+                  <div class="sub">
+                    <p style="margin-bottom: .2em">
+                    <%= product.riga1 %>
+                  </p>
+                  <p style="margin-bottom: .2em">
+                  <%= product.riga2 %>
+                </p>
+                <p style="margin-bottom: .2em">
+                <%= product.riga3 %>
+              </p>
+              <p style="margin-bottom: .2em">
+              <%= product.riga4 %>
+            </p>
+            <p style="margin-bottom: .2em">
+            <%= product.riga5 %>
+          </p>
+
+
+                </div>
+                <% counter = counter + 1 %>
+                </div>
+              <% if counter.modulo(24) == 0 %>
+              <div style="clear:both; page-break-after: always;"></div>
+              <% end %>
+            <% end %>
+
+          <% end %>
+
+        <% i += 1 %>
+        <% end %>
+    <% end %>
+    <% end %>
+</div>

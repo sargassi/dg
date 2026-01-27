@@ -1,0 +1,2 @@
+module FabriclusHelper
+end

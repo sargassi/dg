@@ -2,9 +2,11 @@
 
 <%= turbo_frame_tag 'rez' do %>
 <%= render partial: 'atoms/search' %>
-
+<%= turbo_frame_tag 'prodside' do %>
   <%= render partial: 'atoms/search_rows' %>
   <%== pagy_nav(@pagy) if @pagy.pages > 1 %>
+
+<% end %>
 
 <%= render partial: 'atoms/ux/modal' %>
 <% end %>

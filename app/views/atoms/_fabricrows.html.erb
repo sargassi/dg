@@ -1,0 +1,65 @@
+ <div class="overflow-x-auto my-8 w-full">
+   <table class="table w-full">
+     <thead class="align-top">
+       <th class="<%= style_table_th %> w-24">Fabric</th>
+       <th class="<%= style_table_th %> w-24">Var</th>
+       <th class="<%= style_table_th %> w-24">Anno</th>
+       <th class="<%= style_table_th %> w-24">Descrizione</th>
+       <th class="<%= style_table_th %> w-24">Note</th>
+       <th class="<%= style_table_th %> w-24">Tg</th>
+       <th class="<%= style_table_th %> w-24    ">Color</th>
+       <th class="<%= style_table_th %> w-24">Qty</th>
+       <th class="<%= style_table_th %> w-24">Materiale</th>
+       <th class="<%= style_table_th %> w-24">Cliente</th>
+       <th class="<%= style_table_th %> w-24">Fornitore</th>
+       <th class="<%= style_table_th %> w-16 text-center"></th>
+
+     </thead>
+
+  <% @fabriclus.each do |row| %>
+
+
+    <tr>
+      <td class="<%= style_table_td %>"> <%= row.fab %>
+
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= row.var %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= row.year %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= row.description %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= row.note %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= row.tg %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= row.color %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= row.qty %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= row.materiale %>
+      </td>
+
+      <td class="<%= style_table_td %>">
+        <%= row.customer %>
+      </td>
+
+      <td class="<%= style_table_td %>">
+        <%= row.supplier %>
+      </td>
+      <td class="<%= style_table_td %>">
+
+      </td>
+    </tr>
+
+  <% end %>
+ </table>
+ </div>

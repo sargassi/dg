@@ -6,24 +6,27 @@ class ImportEtilabService
     spreadsheet = Roo::Spreadsheet.open(file)
     spreadsheet = Roo::Excelx.new(file)
     header = spreadsheet.row(1)
+
     Etilab.last.present? ? lastNum = Etilab.last.group.to_i + 1 : lastnum = 1
-    (2..spreadsheet.last_row).each do |i|
+    (0..spreadsheet.last_row).each do |i|
+
       row = Hash[[header, spreadsheet.row(i)].transpose]
+
       item = Etilab.new
-      item.itemcode = spreadsheet.cell(i,'B')
-      item.fabricode = spreadsheet.cell(i,'C')
-      item.varcode = spreadsheet.cell(i,'D')
-      item.description = spreadsheet.cell(i,'E')
-      item.tg = spreadsheet.cell(i,'H')
-      item.color = spreadsheet.cell(i,'P')
-      item.colfilcuc = spreadsheet.cell(i, 'M')
-      item.qty = spreadsheet.cell(i,'Q')
-      item.fabric = spreadsheet.cell(i,'O')
-      item.materiale = spreadsheet.cell(i,'R')
-      item.lab = spreadsheet.cell(i,'V')
-      item.customer = spreadsheet.cell(i,'AD')
-      item.note = spreadsheet.cell(i,'I')
-      item.supplier = spreadsheet.cell(i,'N')
+      item.itemcode = row["Item Code:"]
+      item.fabricode = row["Fabric code:"]
+      item.varcode = row["var. code:"]
+      item.description = row["Description: "]
+      item.tg = row["Tg."]
+      item.color = row["Colour:"]
+      item.colfilcuc = row["COL. FILO CUCITO"]
+      item.qty = row["Qt."]
+      item.fabric = row["Fabric:"]
+      item.materiale = row["materiale"]
+      item.lab = row["chi?"]
+      item.customer = row['dove']
+      item.note = row["Note:"]
+      item.supplier = row["fornitore"]
       item.group = lastNum
       item.save
     end

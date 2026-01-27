@@ -1,6 +1,7 @@
-<%= render partial: 'atoms/header', locals: {link: '/', label: 'Proforma / Elenco'} %>
-
+<%= render partial: 'atoms/header', locals: {link: '/', label: 'Avanzamento / Elenco'} %>
 
 <%= render partial: 'atoms/form_import', locals: {prods: @profnew,  pdf: 'n', customer: 'y'} %>
+
+<%= render partial: 'atoms/ux/pagy' %>
 
 <%= render partial: 'proformas/profs' %>

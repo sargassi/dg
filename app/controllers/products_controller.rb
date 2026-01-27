@@ -2,14 +2,12 @@ class ProductsController < ApplicationController
 
   before_action :set_product, only: %i[ show edit update destroy ]
   # GET /products or /products.json
-
-
   # GET /products/1 or /products/1.json
   def show
     respond_to do |format|
       format.html
       format.pdf do
-        render pdf: [@product.id, @product.decsription].join('-'),
+        render pdf: [@product.id, @product.description].join('-'),
         template: "products/show.html.erb",
         formats: [:html],
         disposition: :attachment,
@@ -53,8 +51,6 @@ class ProductsController < ApplicationController
       end
     end
   end
-
-
 
   # POST /products or /products.json
   def create

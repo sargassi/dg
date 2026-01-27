@@ -1,0 +1,10 @@
+<%= render partial: 'atoms/header', locals: {link: '/', label: 'Tessuti Storico / Elenco'} %>
+
+<%= turbo_frame_tag 'rez' do %>
+
+  <%= render partial: 'atoms/fabricrows' %>
+
+  <%== pagy_nav(@pagy) if @pagy.pages > 1 %>
+
+<%= render partial: 'atoms/ux/modal' %>
+<% end %>

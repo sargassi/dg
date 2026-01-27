@@ -1,0 +1,19 @@
+<div data-controller="openmod">
+    <a href="#" class="w-16" data-action="click->openmod#toggle" data-target="legend"><span class="material-symbols-outlined" data-target="legend">
+    legend_toggle
+    </span></a>
+    <%= turbo_frame_tag 'legenda' do %>
+    <div class="table  w-full content hidden" id="legend">
+        <div class="table-row">
+        <% show_leg(['Consegna', 'Controllo', 'Messo da Lavare', 'Lavato', 'Inscatolato']).each do |x| %>
+            <div class="table-cell border p-2 w-8 bg-slate-50">
+            <%= x[0] %>
+            </div>
+            <div class="table-cell border p-2 text-start">
+            <%= x[1] %>
+            </div>
+        <% end %>
+        </div>
+    </div>
+    <% end %>
+</div>

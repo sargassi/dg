@@ -1,0 +1,11 @@
+ <% if current_user.present? %>
+   <% #  ex newdef %>
+   <div class="<%= style_container_head %> pb-1 ">
+
+
+       <%= render partial: '/layouts/menus/top/user' %>
+       <%= render partial: '/layouts/menus/top/macro', locals: {:role => current_user.role} %>
+
+  </div>
+  <% end %>
+<hr>

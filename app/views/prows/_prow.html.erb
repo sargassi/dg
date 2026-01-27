@@ -1,27 +1,33 @@
  <div class="overflow-x-auto my-8 w-full">
    <table class="table w-full">
      <thead class="align-top">
-       <th class="<%= style_table_th %> w-16">Qty</th>
        <th class="<%= style_table_th %> w-56">Code</th>
        <th class="<%= style_table_th %>">Descrizione</th>
+       <th class="<%= style_table_th %> w-16">Qty</th>
        <th class="<%= style_table_th %> w-24">Tg</th>
        <th class="<%= style_table_th %> w-24">Materiale</th>
        <th class="<%= style_table_th %> w-16">Origine</th>
+       <th class="<%= style_table_th %> w-16">Lavaggio</th>
+       <th class="<%= style_table_th %> w-16">Dettagli</th>
+       <th class="<%= style_table_th %> w-16">Col filo cucito</th>
+       <th class="<%= style_table_th %> w-16">Note</th>
+       <th class="<%= style_table_th %> w-16">Fornitore</th>
        <th class="<%= style_table_th %> w-24">Dove</th>
+       <th class="<%= style_table_th %> w-24">Fabric</th>
 
      </thead>
 
 
     <tr>
-      <td class="<%= style_table_td %> bg-slate-100">
-        <%= prow.qty %>
-      </td>
       <td class="<%= style_table_td %>"> <%= prow.itemcode %>
       <%= prow.fabricode %>
       <%= prow.varcode %>
       </td>
       <td class="<%= style_table_td %>">
         <%= prow.description %>
+      </td>
+      <td class="<%= style_table_td %> bg-slate-100">
+        <%= prow.qty %>
       </td>
       <td class="<%= style_table_td %>">
         <%= prow.tg %>
@@ -33,13 +39,31 @@
         <%= prow.origine %>
       </td>
       <td class="<%= style_table_td %>">
+        <%= prow.lavaggio %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= prow.dettagli %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= prow.colfilcuc %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= prow.note %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= prow.fornitore %>
+      </td>
+      <td class="<%= style_table_td %>">
         <%= prow.doe %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= prow.fabric %>
       </td>
 
 
     </tr>
     <tr>
-        <td class="<%= style_table_td_parent %>" colspan=7>
+        <td class="<%= style_table_td_parent %>" colspan=13>
           <p class="text-start font-bold mt-8 p-2 mb-2 uppercase">Avanzamento:</p>
           <%= render partial: 'prows/avanzamento_full', locals: {row: prow, src: params[:src]} %>
         </td>

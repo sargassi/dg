@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  riga1: MyString
+  riga2: MyString
+  riga3: MyString
+  riga4: MyString
+  riga5: MyString
+  qty: 1
+  status: false
+  group: 1
+
+two:
+  riga1: MyString
+  riga2: MyString
+  riga3: MyString
+  riga4: MyString
+  riga5: MyString
+  qty: 1
+  status: false
+  group: 1

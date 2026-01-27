@@ -1,0 +1,6 @@
+it:
+  simple_calendar:
+    previous: "<<"
+    next: ">>"
+    week: "Settimana"
+    month: "Mese"

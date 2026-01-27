@@ -103,3 +103,5 @@ gem "byebug"
 gem "rabl"
 
 gem 'pagy', '~> 7.0'
+
+gem "simple_calendar"

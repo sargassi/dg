@@ -1,0 +1,28 @@
+ <li class="<%= style_side_li %>">
+     <%= link_to proformas_path, class: style_side_a(proformas_path) do %>
+         <span class="material-symbols-outlined">
+             checklist_rtl
+         </span>
+         <em>Avanzamento Produzione
+         </em>
+     <% end %>
+ </li>
+ <li class="<%= style_side_li %>">
+     <%= link_to production_research_path, class: style_side_a(production_research_path) do %>
+         <span class="material-symbols-outlined">
+             search_insights
+         </span>
+         <em>Ricerca Produzione
+         </em>
+     <% end %>
+ </li>
+
+ <li class="<%= style_side_li %>">
+     <%= link_to fabriclus_path, class: style_side_a(fabriclus_path) do %>
+         <span class="material-symbols-outlined">
+             shelf_position
+         </span>
+         <em>Fabric
+         </em>
+     <% end %>
+ </li>

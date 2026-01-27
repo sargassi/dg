@@ -1,0 +1,47 @@
+<div id="<%= dom_id etigen %>">
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Riga1:</strong>
+    <%= etigen.riga1 %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Riga2:</strong>
+    <%= etigen.riga2 %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Riga3:</strong>
+    <%= etigen.riga3 %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Riga4:</strong>
+    <%= etigen.riga4 %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Riga5:</strong>
+    <%= etigen.riga5 %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Qty:</strong>
+    <%= etigen.qty %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Status:</strong>
+    <%= etigen.status %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Group:</strong>
+    <%= etigen.group %>
+  </p>
+
+  <% if action_name != "show" %>
+    <%= link_to "Show this etigen", etigen, class: "rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
+    <%= link_to "Edit this etigen", edit_etigen_path(etigen), class: "rounded-lg py-3 ml-2 px-5 bg-gray-100 inline-block font-medium" %>
+    <hr class="mt-6">
+  <% end %>
+</div>

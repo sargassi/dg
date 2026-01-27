@@ -36,7 +36,7 @@ body {
     height: 37mm;
     position: relative;
     font-size: 7pt !important;
-    line-height: 9pt !important;
+    line-height: 8pt !important;
     overflow: hidden;
 }
 
@@ -64,7 +64,7 @@ body {
 }
 
 #lab .cell .sub p {
-    line-height: 9pt !important;
+    line-height: 8pt !important;
     font-size: 7pt !important;
     margin: 0;
     padding: 0;
@@ -80,7 +80,7 @@ body {
 }
 
 #lab .cell.sm p {
-    font-size: .9em !important;
+    font-size: .8em !important;
 }
 
 #et .cell .sub.hor {
@@ -121,19 +121,22 @@ body {
     bottom: 2pt;
 }
 
-.fasi label {
-    font-size: .9em
-}
 
 .fasi input[type="radio"] {
-    height: 5pt;
-    width: 5pt;
+    height: 4pt;
+    width: 4pt;
     border: .2pt solid #333;
     margin: 0;
-    margin-right: 4pt;
+    margin-right: 2pt;
 }
 
 .fasi span {
     width: 50%;
     float: left;
+    margin:0;
+    padding:0;
+}
+
+.fasi span label, .fasi span em {
+    font-size: .8em
 }

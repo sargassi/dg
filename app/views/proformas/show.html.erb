@@ -1,8 +1,8 @@
-<%= render partial: 'atoms/header', locals: {link: '/proformas', label: "Proforma / #{@proforma.id} del #{@proforma.data_in.strftime('%d/%m/%Y')}"} %>
+<%= render partial: 'atoms/header', locals: {link: '/proformas', label: "Lancio / #{@proforma.id} del #{@proforma.data_in.strftime('%d/%m/%Y')}"} %>
 
-<%= render @proforma %>
 
-<%= render partial: 'atoms/actions', locals: {target: @proforma, var: 'proformas', redir: 'proformas', pdf: 'prof'} %>
+
+<%= render partial: 'atoms/actions', locals: {target: @proforma, var: 'proformas', redir: 'proformas', pdf: 'prof', note: @proforma.note} %>
 
 <%= render partial: 'prows/rows', locals: {rows: @rows} %>
 

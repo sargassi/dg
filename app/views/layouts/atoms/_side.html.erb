@@ -1,0 +1,16 @@
+<ul class="<%= style_side_ul %>">
+
+    <%= render partial: "layouts/menus/side/home" %>
+
+
+    <% if user_signed_in? %>
+
+        <%= render partial: "/layouts/menus/side/ufficio" %>
+        <%= render partial: "/layouts/menus/side/utilities" %>
+        <%= render partial: "/layouts/menus/side/lab" %>
+        <%= render partial: "/layouts/menus/side/users" %>
+
+        <%= render partial: "layouts/menus/side/logout" %>
+
+    <% end %>
+</ul>

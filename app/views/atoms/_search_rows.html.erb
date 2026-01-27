@@ -3,16 +3,21 @@
      <thead class="align-top">
        <th class="<%= style_table_th %> w-56">Code</th>
        <th class="<%= style_table_th %>">Descrizione</th>
-       <th class="<%= style_table_th %>">Riferimenti</th>
+       <th class="<%= style_table_th %>">Riferimento</th>
        <th class="<%= style_table_th %> w-24">Qty</th>
        <th class="<%= style_table_th %> w-24">Tg</th>
        <th class="<%= style_table_th %> w-24">Materiale</th>
        <th class="<%= style_table_th %> w-16">Origine</th>
-       <th class="<%= style_table_th %> w-24">Lab</th>
-       <th class="<%= style_table_th %> w-24">Cliente</th>
+       <th class="<%= style_table_th %> w-24">Lavaggio</th>
+       <th class="<%= style_table_th %> ">Dettagli</th>
+       <th class="<%= style_table_th %> w-24">Col Filo Cucito</th>
+       <th class="<%= style_table_th %> w-24">Note</th>
+       <th class="<%= style_table_th %> w-24">Fornitore</th>
+       <th class="<%= style_table_th %> w-24">Dove</th>
+       <th class="<%= style_table_th %> w-24">Fabric</th>
        <th class="<%= style_table_th %> w-24">QR</th>
-       <th class="<%= style_table_th %> w-16">Avanzamento</th>
-       <th class="<%= style_table_th %> w-8"></th>
+       <th class="<%= style_table_th %> w-16 text-center"></th>
+       <th class="<%= style_table_th %> w-16 text-center"></th>
 
      </thead>
 
@@ -44,7 +49,25 @@
         <%= row.origine %>
       </td>
       <td class="<%= style_table_td %>">
+        <%= row.lavaggio %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= row.dettagli %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= row.colfilcuc %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= row.note %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= row.fornitore %>
+      </td>
+      <td class="<%= style_table_td %>">
         <%= row.doe %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= row.fabric   %>
       </td>
       <td class="<%= style_table_td %>">
         <%= row.qr %>
@@ -52,7 +75,7 @@
       <td class="<%= style_table_td_parent %>">
         <%= render partial: 'prows/avanzamento', locals: {row: row} %>
       </td>
-      <td class="<%= style_table_td_children %>">
+      <td class="<%= style_table_td_children %> text-center">
         <%= link_to prow_path(:id => row.id, :proforma => row.proforma.id, :src => 'searchplain'), data: {turbo_frame: 'report'} do %>
           <span class="material-symbols-outlined">
           key_visualizer

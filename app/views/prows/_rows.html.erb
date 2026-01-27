@@ -7,8 +7,13 @@
        <th class="<%= style_table_th %> w-24">Tg</th>
        <th class="<%= style_table_th %> w-24">Materiale</th>
        <th class="<%= style_table_th %> w-16">Origine</th>
+       <th class="<%= style_table_th %> w-24">Lavaggio</th>
+       <th class="<%= style_table_th %> ">Dettagli</th>
+       <th class="<%= style_table_th %> w-24">Col Filo Cucito</th>
+       <th class="<%= style_table_th %> w-24">Note</th>
+       <th class="<%= style_table_th %> w-24">Fornitore</th>
        <th class="<%= style_table_th %> w-24">Dove</th>
-       <th class="<%= style_table_th %> w-24">QR</th>
+       <th class="<%= style_table_th %> w-24">Fabric</th>
        <th class="<%= style_table_th %> w-16">Avanzamento</th>
        <th class="<%= style_table_th %> w-8"></th>
 
@@ -38,10 +43,25 @@
         <%= row.origine %>
       </td>
       <td class="<%= style_table_td %>">
+        <%= row.lavaggio %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= row.dettagli %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= row.colfilcuc %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= row.note %>
+      </td>
+      <td class="<%= style_table_td %>">
+        <%= row.fornitore %>
+      </td>
+      <td class="<%= style_table_td %>">
         <%= row.doe %>
       </td>
       <td class="<%= style_table_td %>">
-        <%= row.qr %>
+        <%= row.fabric   %>
       </td>
 
       <td class="<%= style_table_td_parent %>">

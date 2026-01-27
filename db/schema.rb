@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_11_13_153756) do
+ActiveRecord::Schema[7.0].define(version: 2026_01_08_141848) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
     t.text "body"
@@ -64,6 +64,21 @@ ActiveRecord::Schema[7.0].define(version: 2025_11_13_153756) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "etigens", force: :cascade do |t|
+    t.string "riga1"
+    t.string "riga2"
+    t.string "riga3"
+    t.string "riga4"
+    t.string "riga5"
+    t.integer "qty", default: 1
+    t.boolean "status", default: false
+    t.integer "group"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.date "dategroup"
+    t.integer "pages", default: 1
+  end
+
   create_table "etilabs", force: :cascade do |t|
     t.string "itemcode"
     t.string "fabricode"
@@ -82,6 +97,46 @@ ActiveRecord::Schema[7.0].define(version: 2025_11_13_153756) do
     t.string "fabric"
     t.string "colfilcuc"
     t.string "lab"
+  end
+
+  create_table "events", force: :cascade do |t|
+    t.string "name"
+    t.datetime "start_time"
+    t.datetime "end_time"
+    t.integer "eventype_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "recurrent"
+    t.string "boolean", default: "f"
+    t.index ["eventype_id"], name: "index_events_on_eventype_id"
+  end
+
+  create_table "eventypes", force: :cascade do |t|
+    t.string "name"
+    t.boolean "enabled", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "fabriclus", force: :cascade do |t|
+    t.string "fab"
+    t.string "var"
+    t.integer "year"
+    t.text "description"
+    t.text "note"
+    t.text "tg"
+    t.text "color"
+    t.integer "qty"
+    t.string "materiale"
+    t.string "customer"
+    t.string "supplier"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.decimal "mtkg"
+    t.decimal "mtkg20"
+    t.decimal "mtkgprezzi"
+    t.decimal "mtkg20prezzi"
+    t.string "perche"
   end
 
   create_table "prodrow", force: :cascade do |t|
@@ -163,6 +218,14 @@ ActiveRecord::Schema[7.0].define(version: 2025_11_13_153756) do
     t.time "datedone"
     t.string "colfilcuc"
     t.string "lab"
+    t.string "lavaggio"
+    t.string "dettagli"
+    t.string "ngemelli"
+    t.string "totngemelli"
+    t.string "colgemelli"
+    t.string "fornitore"
+    t.string "tempolav"
+    t.text "fabric"
     t.index ["proforma_id"], name: "index_prows_on_proforma_id"
   end
 
@@ -266,6 +329,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_11_13_153756) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "api_tokens", "users"
+  add_foreign_key "events", "eventypes"
   add_foreign_key "prodrow", "areas"
   add_foreign_key "prodrow", "prodcodes"
   add_foreign_key "prows", "proformas"

@@ -3,7 +3,8 @@
     <%  date = val.first.created_at if val.first.created_at.present?  %>
     <% if i == 0 %>
 
-      <h5 class="mr-4 text-blue-900 text-xl">Ultimo inserimento - <%= date.strftime('%d-%m-%Y') if defined?(date) %>
+      <h5 class="mr-4 text-blue-900 text-xl">
+          Ultimo inserimento - <%= date.strftime('%d-%m-%Y') if defined?(date) %>
       </h5>
 
       <div class="w-full flex-wrap flex my-8">

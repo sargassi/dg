@@ -1,4 +1,9 @@
 Rails.application.routes.draw do
+  resources :events
+  resources :eventypes
+  get 'etigens/etichette'
+  resources :etigens
+  resources :fabriclus
   get 'app/dashboard'
   get 'app/check_qr'
   get 'app/sez'
@@ -22,7 +27,9 @@ Rails.application.routes.draw do
   get 'dashboard/home'
   get 'utilities/etichette'
   get 'utilities/etichette_lab'
+  get 'utilities/etichette_gen'
   post 'utilities/etilabimp'
+  post 'utilities/etilgenimp'
   get 'products_imports/new'
   get 'products_imports/create'
   get "products/etichette"
@@ -37,5 +44,5 @@ Rails.application.routes.draw do
       end
     end
   end
-  root to: "dashboard#home"
+  root to: "dashboard#index"
 end

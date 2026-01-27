@@ -1,0 +1,12 @@
+<%= turbo_frame_tag "qty-#{etilab.id}" do  %>
+
+  <div class="flex justify-end mb-2 w-full text-end">
+    <span class="leading-tight block  border-b w-12 h-8 border border-slate-400 rounded-full">
+    <%= link_to [:edit, etilab, :qty => qty ], class:"no-pdf text-center text-xs uppercase text-slate-800 font-bold w-full block p-2" do %>
+      <%= etilab.qty %>
+
+      <% end %>
+    </span>
+  </div>
+
+<% end %>

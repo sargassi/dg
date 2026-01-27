@@ -1,0 +1,10 @@
+<%= render partial: 'atoms/header', locals: {link: '/', label: 'Calendario'} %>
+<div class="flex justify-between  gap-16 bg-slate-50 p-2">
+    <div class="<%= style_main_lists_sub %> w-2/3">
+       <%= render partial: 'atoms/ux/cal' %>
+    </div>
+    <div class="<%= style_main_lists_sub %> w-1/3">
+          <%= link_to "Aggiungi", new_event_path, class: "rounded-lg py-3 px-5 bg-blue-600 text-white block font-medium" %>
+
+    </div>
+</div>

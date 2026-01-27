@@ -1,5 +1,5 @@
 <% @proformas.each do |prof| %>
-  <div class="<%= style_main_lists %>">
+  <div class="<%= style_main_lists %> bg-slate-50 p-2">
     <div class="<%= style_main_lists_sub %> w-2/3">
       <h3 class="<%= style_main_lists_head %>">
         <%= prof.customer %>
@@ -20,19 +20,17 @@
     </div>
     <div class="<%= style_main_lists_sub %>">
       <div class="<%= style_main_lists_subtitle %>">
-
           Avanzamento:
-          <span class="font-bold text-indigo-700"><%= calc_percentage(totav.sum.to_f, varx.sum.to_f) %> % </span>
+          <span class="font-bold text-indigo-700">
+             <%= calc_percentage(totav.sum.to_f, varx.sum.to_f) %> %
+          </span>
       </div>
     </div>
      <div class="<%= style_main_lists_sub %> grow ">
        <div class="<%= style_main_lists_subtitle_nomarg %> justify-end items-end text-end flex gap-4 mb-4">
          <%= link_to 'Dettaglio', proforma_path(prof.id), class:"font-bold text-xs border p-2" %>
-
          <%= link_to "QR Codes", proforma_path(:id => prof.id, :format => :pdf), target: "_blank", class: style_action_pdf_small %>
-
        </div>
      </div>
-
 </div>
 <% end %>

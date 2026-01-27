@@ -1,0 +1,2 @@
+class Eventype < ApplicationRecord
+end

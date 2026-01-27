@@ -1,0 +1,16 @@
+<% if params[:numero].present? && params[:numero] != '' %>
+    <% riga = "riga#{params[:numero]}" if params[:numero].present? %>
+    <% frame = "#{@etigen.id}-riga#{params[:numero]}" if params[:numero].present? %>
+
+  <%= turbo_frame_tag frame do %>
+      <%= render "form", {etigen: @etigen, riga: riga} %>
+  <% end %>
+<% elsif params[:qty].present? %>
+
+
+    <%= turbo_frame_tag "qty-#{@etigen.id}" do %>
+        <%= render "formqty", {etigen: @etigen, qty: params[:qty]} %>
+    <% end %>
+<% else %>
+  <%= render "form", etigen: @etigen %>
+<% end %>

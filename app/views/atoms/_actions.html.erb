@@ -1,9 +1,15 @@
 <% defined?(redir) ? bck = redir : bck = '' %>
 <div class="flex gap-8">
 
- <a href="/<%= bck %>" class="<%= style_actions_linx %>">Indietro</a>
+ <a href="/<%= bck %>" class="<%= style_actions_linx %>" data-turbo-frame="_top"><span class="material-symbols-outlined">
+ close_small
+ </span></a>
 
- <%= button_to "Elimina", "/#{var}/#{target.id}?bck=#{bck}", method: :delete, class: style_actions_linx, data: {turbo_frame: '_top'} %>
+ <%= button_to "/#{var}/#{target.id}?bck=#{bck}", method: :delete, class: style_actions_linx, data: {turbo_frame: '_top'} do %>
+     <span class="material-symbols-outlined">
+     delete
+     </span>
+ <% end %>
 
 
  <% if defined?(pdf) && pdf == 'prof' %>
@@ -11,6 +17,13 @@
    <%= link_to "QR Codes", proforma_path(:id => @proforma.id, :format => :pdf), target: "_blank", class: style_action_pdf %>
    </div>
  <% end %>
-
+ <% if defined?(note) && note != '' %>
+    <div class="note">
+        <%= note %>
+    </div>
+    <div class="text-end fltrs">
+        <%= render partial: "/atoms/ux/fltrs" %>
+    </div>
+ <% end %>
 
 </div>

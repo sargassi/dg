@@ -1,0 +1,27 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  fab: MyString
+  var: MyString
+  year: 1
+  description: MyText
+  note: MyText
+  tg: MyText
+  color: MyText
+  qty: 1
+  materiale: MyString
+  customer: MyString
+  supplier: MyString
+
+two:
+  fab: MyString
+  var: MyString
+  year: 1
+  description: MyText
+  note: MyText
+  tg: MyText
+  color: MyText
+  qty: 1
+  materiale: MyString
+  customer: MyString
+  supplier: MyString

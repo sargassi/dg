@@ -12,18 +12,24 @@
   </head>
 
   <body>
-    <main class="container mx-auto mt-16">
+    <main class="flex gap-4">
 
     <% if controller_name == 'app' %>
 
       <%= render partial: 'layouts/headers/app' %>
 
     <% else %>
-        <%= render partial: 'layouts/headers/default' %>
+
+    <section class="w-16 fixed top-0 left-0 h-screen">
+      <%= render partial: '/layouts/menus/side/structure' %>
+    </section>
 
     <% end %>
+    <section class="home px-4 my-2 ml-16 grow">
+        <%= render partial: 'layouts/menus/top/structure' %>
       <%= turbo_frame_tag 'success' %>
       <%= yield %>
+    </section>
     </main>
 
 

@@ -1,0 +1,62 @@
+<div id="<%= dom_id fabriclu %>">
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Fab:</strong>
+    <%= fabriclu.fab %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Var:</strong>
+    <%= fabriclu.var %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Year:</strong>
+    <%= fabriclu.year %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Description:</strong>
+    <%= fabriclu.description %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Note:</strong>
+    <%= fabriclu.note %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Tg:</strong>
+    <%= fabriclu.tg %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Color:</strong>
+    <%= fabriclu.color %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Qty:</strong>
+    <%= fabriclu.qty %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Materiale:</strong>
+    <%= fabriclu.materiale %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Customer:</strong>
+    <%= fabriclu.customer %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Supplier:</strong>
+    <%= fabriclu.supplier %>
+  </p>
+
+  <% if action_name != "show" %>
+    <%= link_to "Show this fabriclu", fabriclu, class: "rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
+    <%= link_to "Edit this fabriclu", edit_fabriclu_path(fabriclu), class: "rounded-lg py-3 ml-2 px-5 bg-gray-100 inline-block font-medium" %>
+    <hr class="mt-6">
+  <% end %>
+</div>

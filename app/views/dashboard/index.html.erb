@@ -1,0 +1,9 @@
+<section class="home py-4 ">
+
+    <% if current_user.role == 'ufficio' %>
+
+        <%= render partial: 'dashboard/atoms/ufficio' %>
+
+    <% end %>
+
+</section>

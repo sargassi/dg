@@ -1,0 +1,21 @@
+ <% if current_user.present? %>
+
+   <div class="<%= style_container_head %> pb-1 ">
+       <p class="text-muted text-xs my-4 flex items-center w-1/3 max-w-1/3 font-semibold text-slate-400 px-2">
+           <span><%= current_user.email if current_user.present? %></span>
+       </p>
+     <% if current_user.role == 'ufficio' %>
+
+        <%= render partial: 'atoms/menu/ufficio'%>
+        <%= render partial: 'atoms/ux/legenda'%>
+
+
+     <% elsif current_user.role == 'lab' %>
+
+        <%= render partial: 'atoms/menu/lab'%>
+     <% end %>
+  </div>
+  <% end %>
+<hr>
+<header>
+</header>

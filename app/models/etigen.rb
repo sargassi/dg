@@ -1,0 +1,2 @@
+class Etigen < ApplicationRecord
+end

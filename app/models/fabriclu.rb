@@ -1,0 +1,2 @@
+class Fabriclu < ApplicationRecord
+end

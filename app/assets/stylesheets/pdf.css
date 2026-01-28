@@ -8,7 +8,8 @@ body {
     box-sizing: border-box;
 }
 
-#et, #lab {
+#et,
+#lab {
     margin: 0;
     padding: 0;
     width: 210mm;
@@ -28,7 +29,7 @@ body {
 }
 
 #lab .cell,
-#lab .notez{
+#lab .notez {
     margin: 0;
     padding: 8mm 6mm 14mm;
     float: left;
@@ -48,7 +49,6 @@ body {
 #et .cell.sm {
     padding: 4mm 6mm 2mm;
     font-size: 7pt !important;
-
 }
 
 #et .cell.hor,
@@ -80,7 +80,7 @@ body {
 }
 
 #lab .cell.sm p {
-    font-size: .8em !important;
+    font-size: 0.8em !important;
 }
 
 #et .cell .sub.hor {
@@ -121,22 +121,23 @@ body {
     bottom: 2pt;
 }
 
+.fasi label {
+    font-size: 0.9em;
+}
 
 .fasi input[type="radio"] {
-    height: 4pt;
-    width: 4pt;
-    border: .2pt solid #333;
+    height: 3pt;
+    width: 3pt;
+    border: 0.1pt solid #333;
     margin: 0;
-    margin-right: 2pt;
+    margin-right: 4pt;
+    border-radius: 50%;
+    background-color: transparent;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
 }
 
 .fasi span {
     width: 50%;
     float: left;
-    margin:0;
-    padding:0;
-}
-
-.fasi span label, .fasi span em {
-    font-size: .8em
 }

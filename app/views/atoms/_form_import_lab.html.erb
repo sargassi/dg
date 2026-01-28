@@ -1,22 +1,28 @@
 <%# FILE UPLOAD %>
-<section class="<%= style_import_form %>" >
+<section class="<%= style_import_form %>" data-controller="autosub">
   <%= form_with url:"/utilities/etilabimp" do |f| %>
 
     <%= hidden_field_tag :import, nil, :value => 'y' %>
 
-  <%= f.file_field :file, class: style_import_field, :required => true %>
-  <%= f.submit "Importa", target: "_blank", class: style_import_btn %>
+    <%= f.file_field :file, class: style_import_field, :required => true %>
+    <%= f.submit "Importa", target: "_blank", class: style_import_btn %>
 <% end %>
-  <select name="group" id="group" class="<%= style_select_class %>">
-    <% @etigroup.compact.each_with_index do |x, i| %>
-      <% if i < 5 %>
-      <option value="<%= x[1].first.group %>">
-       <%= x[1].first.created_at.strftime("%d-%m-%y | %H:%m") %>
-      </option>
-      <% i = i + 1 %>
+
+<form action="#" class="p-2">
+
+    <select name="group" id="group" class="<%= style_select_class %>" data-action="change->autosub#go">
+
+      <% @search.compact.each_with_index do |x, i| %>
+
+        <% if i < 5 %>
+        <option value="<%= x[1].first.ragg %>">
+         <%= x[1].first.ragg %> <%= x[1].first.created_at.strftime("%d-%m-%y | %H:%m") %>
+        </option>
+        <% i = i + 1 %>
+        <% end %>
       <% end %>
-    <% end %>
-  </select>
+    </select>
+</form>
 
   <% if pdf.present? && pdf == 'y' %>
 <div class="link_to_pdf">
@@ -26,6 +32,6 @@
 
 </section>
 
-<%# END FILE UPLOAD  %>
+<%# END FILE UPLOAD %>
 
 <hr>

@@ -1,16 +1,16 @@
 <header>
  <% if current_user.present? %>
    <% if action_name != 'dashboard' %>
-  <div class="flex gap-8 justify-between items-center w-full text-muted text-center text-sm py-2 my-16">
-   <p class="w-40">
+  <div class="flex gap-8 justify-center items-center w-full text-muted text-center text-sm py-2 mt-4">
+   <p class="w-40 text-start p-4">
      <a href="/app/dashboard">
        <span class="material-symbols-outlined">arrow_back_ios</span>
      </a>
    </p>
-   <p class="grow textcenter font-semibold">
+   <p class="w-40 text-center font-semibold border p-4 rounded-lg">
      <%= @title %>
    </p>
-   <p class="w-40">
+   <p class="w-40 text-end p-4">
    </p>
   </div>
   <% end %>

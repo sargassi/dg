@@ -4,11 +4,16 @@
 
 
     <% if user_signed_in? %>
-
+        <% if current_user.role == 'ufficio' %>
         <%= render partial: "/layouts/menus/side/ufficio" %>
         <%= render partial: "/layouts/menus/side/utilities" %>
         <%= render partial: "/layouts/menus/side/lab" %>
         <%= render partial: "/layouts/menus/side/users" %>
+
+        <% elsif current_user.role == 'lab' %>
+            <%= render partial: "/layouts/menus/side/utilities_lab" %>
+
+        <% end %>
 
         <%= render partial: "layouts/menus/side/logout" %>
 

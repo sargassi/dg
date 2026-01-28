@@ -1,5 +1,4 @@
 class ImportProformasService
-
   require 'roo'
 
   def callnew(file, customer, prof)
@@ -30,7 +29,7 @@ class ImportProformasService
       item.colgemelli = row['colore gemelli']
       item.fornitore = row['fornitore']
       item.tempolav = row['tempo lavaggio']
-       tx = Time.now.to_i + i
+      tx = Time.now.to_i + i
       item.identifier = tx
       item.doe = row['dove']
 
@@ -38,21 +37,18 @@ class ImportProformasService
       codex = prof.to_s + tx.to_s + row['Item Code:'] + '_' + row['Fabric code:'] + row['var. code:']
       item.qr = codex
 
-      if item.save
+      next unless item.save
 
-        #tempesta iniziale
-        qtx = row['Qt.'].to_i
-        qtx.times do
-          temp = Tempesta.new
-          temp.prow_id = item.id
-          temp.proforma_id = prof
-          temp.save
+      # tempesta iniziale
+      qtx = row['Qt.'].to_i
+      qtx.times do
+        temp = Tempesta.new
+        temp.prow_id = item.id
+        temp.proforma_id = prof
+        temp.save
 
-          puts temp.inspect
-
-        end
+        puts temp.inspect
       end
-
     end
   end
 
@@ -63,34 +59,32 @@ class ImportProformasService
     (7..spreadsheet.last_row).each do |i|
       row = Hash[[header, spreadsheet.row(i)].transpose]
       item = Prow.new
-      item.itemcode = spreadsheet.cell(i,'A')
-      item.fabricode = spreadsheet.cell(i,'B')
-      item.varcode = spreadsheet.cell(i,'C')
-      item.description = spreadsheet.cell(i,'D')
-      item.tg = spreadsheet.cell(i,'E')
-      item.color = spreadsheet.cell(i,'F')
-      item.qty = spreadsheet.cell(i,'G')
-      item.materiale = spreadsheet.cell(i,'J')
-      item.origine = spreadsheet.cell(i,'L')
-      item.doe = spreadsheet.cell(i,'M')
+      item.itemcode = spreadsheet.cell(i, 'A')
+      item.fabricode = spreadsheet.cell(i, 'B')
+      item.varcode = spreadsheet.cell(i, 'C')
+      item.description = spreadsheet.cell(i, 'D')
+      item.tg = spreadsheet.cell(i, 'E')
+      item.color = spreadsheet.cell(i, 'F')
+      item.qty = spreadsheet.cell(i, 'G')
+      item.materiale = spreadsheet.cell(i, 'J')
+      item.origine = spreadsheet.cell(i, 'L')
+      item.doe = spreadsheet.cell(i, 'M')
       item.code = customer
       tx = Time.now.to_i + i
       item.identifier = tx
       item.proforma_id = prof
-      codex = prof.to_s + tx.to_s + spreadsheet.cell(i,'A') + '_' + spreadsheet.cell(i,'B') + spreadsheet.cell(i,'C')
+      codex = prof.to_s + tx.to_s + spreadsheet.cell(i, 'A') + '_' + spreadsheet.cell(i, 'B') + spreadsheet.cell(i, 'C')
       item.qr = codex
-      if item.save
+      next unless item.save
 
-      #tempesta iniziale
-      qtx = spreadsheet.cell(i,'G').to_i
+      # tempesta iniziale
+      qtx = spreadsheet.cell(i, 'G').to_i
       qtx.times do
         temp = Tempesta.new
         temp.prow_id = item.id
         temp.proforma_id = prof
         temp.save
       end
-      end
-
     end
   end
 end

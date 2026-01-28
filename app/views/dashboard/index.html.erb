@@ -4,6 +4,8 @@
 
         <%= render partial: 'dashboard/atoms/ufficio' %>
 
+    <% elsif  current_user.role == 'lab' %>
+        <%= render partial: 'dashboard/atoms/lab' %>
     <% end %>
 
 </section>

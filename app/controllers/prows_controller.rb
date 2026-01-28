@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 class ProwsController < ApplicationController
-  before_action :set_prow, only: %i[ show edit update destroy ]
+  before_action :set_prow, only: %i[show edit update destroy]
 
   # GET /prows or /prows.json
   def index
@@ -26,7 +28,7 @@ class ProwsController < ApplicationController
 
     respond_to do |format|
       if @prow.save
-        format.html { redirect_to prow_url(@prow), notice: "Prow was successfully created." }
+        format.html { redirect_to prow_url(@prow), notice: 'Prow was successfully created.' }
         format.json { render :show, status: :created, location: @prow }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -39,7 +41,7 @@ class ProwsController < ApplicationController
   def update
     respond_to do |format|
       if @prow.update(prow_params)
-        format.html { redirect_to prow_url(@prow), notice: "Prow was successfully updated." }
+        format.html { redirect_to prow_url(@prow), notice: 'Prow was successfully updated.' }
         format.json { render :show, status: :ok, location: @prow }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -49,30 +51,29 @@ class ProwsController < ApplicationController
   end
 
   def checkinsert
-
   end
 
   # DELETE /prows/1 or /prows/1.json
   def destroy
     temp = @prow.tempestas
-    temp.each do |tm|
-      tm.destroy
-    end
+    temp.each(&:destroy)
     @prow.destroy
     respond_to do |format|
-      format.html { redirect_to proforma_path(:id => params[:bck]), notice: "eliminato." }
+      format.html { redirect_to proforma_path(id: params[:bck]), notice: 'eliminato.' }
       format.json { head :no_content }
     end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_prow
-      @prow = Prow.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def prow_params
-      params.require(:prow).permit(:code, :proforma_id, :description, :note, :qty, :qr, :itemcode, :fabricode, :varcode, :tg, :color, :materiale, :origine, :doe, :closed, :identifier, :datedeno, :done, :lavaggio, :dettagli, :ngemelli, :totngemelli, :colgemelli, :fornitore, :tempolav, :fabric)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_prow
+    @prow = Prow.find(params[:id])
+  end
+
+  # Only allow a list of trusted parameters through.
+  def prow_params
+    params.require(:prow).permit(:code, :proforma_id, :description, :note, :qty, :qr, :itemcode, :fabricode,
+                                 :varcode, :tg, :color, :materiale, :origine, :doe, :closed, :identifier, :datedeno, :done, :lavaggio, :dettagli, :ngemelli, :totngemelli, :colgemelli, :fornitore, :tempolav, :fabric)
+  end
 end

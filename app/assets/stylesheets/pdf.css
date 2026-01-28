@@ -122,7 +122,8 @@ body {
 }
 
 .fasi label {
-    font-size: 0.9em;
+    font-size: 0.8em;
+    margin-top: 0.1pt;
 }
 
 .fasi input[type="radio"] {

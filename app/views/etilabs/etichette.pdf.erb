@@ -43,8 +43,12 @@
                         <label>Verifica CAMPIONE</label>
                     </span>
                     <span>
-                        <input type="radio" />
-                        <label>Filo Asole</label>
+                    <% if product.colfilcuc.present? %>
+                      <%= product.colfilcuc %>
+                    <% else %>
+
+                    <label>Filo Asole</label>
+                    <% end %>
                     </span>
                     <span>
 

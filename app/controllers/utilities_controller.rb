@@ -7,17 +7,14 @@ class UtilitiesController < ApplicationController
   def etichette_lab
     @etigroup = if params[:etid].present? && params[:etid] != ''
                   Etilab.where('id = ?', params[:etid]).order('created_at DESC').group_by do |x|
-                    x.ragg
+                    x.group
                   end
-                elsif params[:group].present? && params[:group] != ''
-                  Etilab.where('ragg = ?', params[:group]).group_by do |x|
-                    x.ragg
-                  end
+
                 else
-                  Etilab.all.order('created_at DESC').group_by { |x| x.ragg }
+                  Etilab.all.order('created_at DESC').group_by { |x| x.group }
                 end
 
-    @search = Etilab.all.order('created_at DESC').limit(400).group_by { |x| x.ragg }
+    @search = Etilab.all.order('created_at DESC').limit(400).group_by { |x| x.group }
   end
 
   def etichette_gen

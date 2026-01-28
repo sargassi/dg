@@ -25,7 +25,7 @@ class ImportEtilabService
       item.customer = row['dove']
       item.note = row['Note:']
       item.supplier = row['fornitore']
-      item.ragg = lastNum
+      item.group = lastNum
       item.save
     end
   end

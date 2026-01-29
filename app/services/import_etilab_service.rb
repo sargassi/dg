@@ -7,7 +7,7 @@ class ImportEtilabService
     header = spreadsheet.row(1)
 
     Etilab.last.present? ? lastNum = Etilab.last.group.to_i + 1 : lastnum = 1
-    (1..spreadsheet.last_row).each do |i|
+    (2..spreadsheet.last_row).each do |i|
       row = Hash[[header, spreadsheet.row(i)].transpose]
 
       item = Etilab.new

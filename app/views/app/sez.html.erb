@@ -6,6 +6,8 @@
 
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <script>
+
+  console.log(Html5Qrcode)
   function domReady(fn) {
       if (
           document.readyState === "complete" ||
@@ -40,5 +42,6 @@
           "qr-reader",
           { fps: 10, qrbos: 250 }
       );
+      console.log(htmlscanner)
       htmlscanner.render(onScanSuccess);
   });</script>

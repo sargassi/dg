@@ -6,7 +6,7 @@ class ImportEtilabService
     spreadsheet = Roo::Excelx.new(file)
     header = spreadsheet.row(1)
 
-    Etilab.last.present? ? lastNum = Etilab.last.ragg.to_i + 1 : lastnum = 1
+    Etilab.last.present? ? lastNum = Etilab.last.group.to_i + 1 : lastnum = 1
     (1..spreadsheet.last_row).each do |i|
       row = Hash[[header, spreadsheet.row(i)].transpose]
 

@@ -13,7 +13,8 @@ gem "sprockets-rails"
 gem "sqlite3", "~> 1.7"
 
 # Use the Puma web server [https://github.com/puma/puma]
-gem "puma", "~> 5.0"
+#gem "puma", "~> 5.0"
+gem "puma", "~> 5.6.8"
 
 # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
 gem "importmap-rails"
@@ -25,8 +26,7 @@ gem "turbo-rails"
 gem "stimulus-rails"
 
 # Use Tailwind CSS [https://github.com/rails/tailwindcss-rails]
-gem "tailwindcss-rails"
-
+gem "tailwindcss-rails", "~> 3.3.1"
 # Build JSON APIs with ease gem w[https://github.com/rails/jbuilder]
 gem "jbuilder"
 

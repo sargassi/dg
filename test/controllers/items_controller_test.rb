@@ -17,7 +17,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create item" do
     assert_difference("Item.count") do
-      post items_url, params: { item: { colour: @item.colour, description: @item.description, fabric: @item.fabric, fabricode.string: @item.fabricode.string, itemcode: @item.itemcode, materiale: @item.materiale, note: @item.note, tg: @item.tg, unit_price: @item.unit_price, varcode: @item.varcode } }
+      post items_url, params: { item: { colour: @item.colour, description: @item.description, fabric: @item.fabric, fabricode: @item.fabricode, itemcode: @item.itemcode, materiale: @item.materiale, note: @item.note, tg: @item.tg, unit_price: @item.unit_price, varcode: @item.varcode } }
     end
 
     assert_redirected_to item_url(Item.last)
@@ -34,7 +34,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update item" do
-    patch item_url(@item), params: { item: { colour: @item.colour, description: @item.description, fabric: @item.fabric, fabricode.string: @item.fabricode.string, itemcode: @item.itemcode, materiale: @item.materiale, note: @item.note, tg: @item.tg, unit_price: @item.unit_price, varcode: @item.varcode } }
+    patch item_url(@item), params: { item: { colour: @item.colour, description: @item.description, fabric: @item.fabric, fabricode: @item.fabricode, itemcode: @item.itemcode, materiale: @item.materiale, note: @item.note, tg: @item.tg, unit_price: @item.unit_price, varcode: @item.varcode } }
     assert_redirected_to item_url(@item)
   end
 

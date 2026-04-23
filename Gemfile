@@ -10,7 +10,7 @@ gem "rails", "~> 7.0.7"
 gem "sprockets-rails"
 
 # Use sqlite3 as the database for Active Record
-gem "sqlite3", "~> 1.4"
+gem "sqlite3", "~> 1.7"
 
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", "~> 5.0"
@@ -89,9 +89,14 @@ gem 'capistrano-rbenv', '~> 2.1', '>= 2.1.4'
 group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
-  gem "selenium-webdriver"
-  gem "webdrivers"
+  gem "selenium-webdriver", "~> 4.16"
+  # webdrivers removed - deprecated, causes vulnerabilities
 end
+
+# Security patches for known vulnerabilities
+gem "rails-html-sanitizer", "~> 1.6.2"
+gem "loofah", "~> 2.25"
+gem "rack", "~> 2.2.18"
 
 gem "ed25519", "~> 1.3"
 

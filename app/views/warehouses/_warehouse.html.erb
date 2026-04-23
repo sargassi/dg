@@ -1,0 +1,42 @@
+<div id="<%= dom_id warehouse %>">
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Code:</strong>
+    <%= warehouse.code %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Address:</strong>
+    <%= warehouse.address %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">City:</strong>
+    <%= warehouse.city %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Cap:</strong>
+    <%= warehouse.cap %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Civic:</strong>
+    <%= warehouse.civic %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Latitude:</strong>
+    <%= warehouse.latitude %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Longitude:</strong>
+    <%= warehouse.longitude %>
+  </p>
+
+  <% if action_name != "show" %>
+    <%= link_to "Show this warehouse", warehouse, class: "rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
+    <%= link_to "Edit this warehouse", edit_warehouse_path(warehouse), class: "rounded-lg py-3 ml-2 px-5 bg-gray-100 inline-block font-medium" %>
+    <hr class="mt-6">
+  <% end %>
+</div>

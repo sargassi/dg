@@ -1,5 +1,6 @@
-<%= render partial: 'atoms/header', locals: {link: '/', label: 'Utilities / Stampa etichette generiche'} %>
-
+<div class="<%= style_main_header_container %>">
+    <%= render partial: 'atoms/header', locals: {link: '/', label: 'Utilities / Stampa etichette generiche'} %>
+</div>
 <%= render partial: 'atoms/form_gen', locals: {pdf: 'y'} %>
 <% if @etigroup.present? %>
 <section class="<%= style_main_cnt %>">

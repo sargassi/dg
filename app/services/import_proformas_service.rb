@@ -11,6 +11,7 @@ class ImportProformasService
       item = Prow.new
       item.itemcode = row['Item Code:']
       item.fabricode = row['Fabric code:']
+      item.fabric = row['Fabric:']
       item.varcode = row['var. code:']
       item.description = row['Description: ']
       item.tg = row['Tg.']
@@ -41,13 +42,16 @@ class ImportProformasService
 
       # tempesta iniziale
       qtx = row['Qt.'].to_i
-      qtx.times do
+      qtx.times do |i|
+        tqr = codex.to_s + i.to_s
         temp = Tempesta.new
         temp.prow_id = item.id
         temp.proforma_id = prof
+        temp.order = i + 1
+        temp.qrcode = tqr
         temp.save
 
-        puts temp.inspect
+        #puts temp.inspect
       end
     end
   end

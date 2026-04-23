@@ -3,9 +3,9 @@
     <time datetime="<%= start_date.strftime('%Y-%m') %>" class="calendar-title"><%= t('date.month_names')[start_date.month] %> <%= start_date.year %></time>
 
     <nav>
-      <%= link_to t('simple_calendar.previous', default: 'Previous'), calendar.url_for_previous_view %>
-      <%= link_to t('simple_calendar.today', default: 'Today'), calendar.url_for_today_view %>
-      <%= link_to t('simple_calendar.next', default: 'Next'), calendar.url_for_next_view %>
+      <%= link_to t('simple_calendar.previous', default: 'Prec.'), calendar.url_for_previous_view %>
+      <%= link_to t('simple_calendar.today', default: 'Oggi'), calendar.url_for_today_view %>
+      <%= link_to t('simple_calendar.next', default: 'Pros.'), calendar.url_for_next_view %>
     </nav>
   </div>
 
@@ -23,7 +23,9 @@
         <tr>
           <% week.each do |day| %>
             <%= content_tag :td, class: calendar.td_classes_for(day) do %>
+
               <% instance_exec(day, calendar.sorted_events_for(day), &passed_block) %>
+
             <% end %>
           <% end %>
         </tr>

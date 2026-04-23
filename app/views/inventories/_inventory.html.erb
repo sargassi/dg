@@ -1,0 +1,57 @@
+<div id="<%= dom_id inventory %>">
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Qtyavailable:</strong>
+    <%= inventory.qtyavailable %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Minstock:</strong>
+    <%= inventory.minstock %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Maxstock:</strong>
+    <%= inventory.maxstock %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Warehouse:</strong>
+    <%= inventory.warehouse_id %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Location:</strong>
+    <%= inventory.location_id %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Itemcode:</strong>
+    <%= inventory.itemcode %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Operationtype:</strong>
+    <%= inventory.operationtype_id %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Itemins:</strong>
+    <%= inventory.itemins_id %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Itemouts:</strong>
+    <%= inventory.itemouts_id %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Enabled:</strong>
+    <%= inventory.enabled %>
+  </p>
+
+  <% if action_name != "show" %>
+    <%= link_to "Show this inventory", inventory, class: "rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
+    <%= link_to "Edit this inventory", edit_inventory_path(inventory), class: "rounded-lg py-3 ml-2 px-5 bg-gray-100 inline-block font-medium" %>
+    <hr class="mt-6">
+  <% end %>
+</div>

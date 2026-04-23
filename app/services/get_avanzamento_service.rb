@@ -10,7 +10,9 @@ class GetAvanzamentoService
       chk.push(1) if tmp.f4 == true
       chk.push(1) if tmp.f5 == true
     end
+
     chk.sum
+
   end
 
 end

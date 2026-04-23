@@ -27,7 +27,7 @@ gem "stimulus-rails"
 # Use Tailwind CSS [https://github.com/rails/tailwindcss-rails]
 gem "tailwindcss-rails"
 
-# Build JSON APIs with ease [https://github.com/rails/jbuilder]
+# Build JSON APIs with ease gem w[https://github.com/rails/jbuilder]
 gem "jbuilder"
 
 # Use Redis adapter to run Action Cable in production
@@ -97,6 +97,7 @@ gem "ed25519", "~> 1.3"
 
 gem "bcrypt_pbkdf", "~> 1.1"
 
+gem 'requestjs-rails'
 
 gem "byebug"
 
@@ -105,3 +106,7 @@ gem "rabl"
 gem 'pagy', '~> 7.0'
 
 gem "simple_calendar"
+
+gem 'grape'
+
+gem "grape-active_model_serializers"

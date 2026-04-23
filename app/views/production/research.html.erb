@@ -1,5 +1,7 @@
-<%= render partial: 'atoms/header', locals: {link: '/', label: 'Produzione / Ricerca'} %>
+<div class="<%= style_main_header_container %>">
 
+<%= render partial: 'atoms/header', locals: {link: '/', label: 'Produzione / Ricerca'} %>
+</div>
 <%= turbo_frame_tag 'rez' do %>
 <%= render partial: 'atoms/search' %>
 <%= turbo_frame_tag 'prodside' do %>

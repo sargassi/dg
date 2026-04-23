@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@stimulus-components/notification": "^3.0.0",
+    "@zxing/library": "^0.21.3",
+    "requestjs": "^1.0.3"
+  }
+}

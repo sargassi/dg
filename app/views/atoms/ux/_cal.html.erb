@@ -1,4 +1,11 @@
 
         <%= month_calendar(attribute: :start_date, end_attribute: :end_date) do |date| %>
-            <%= date %>
+            <%= link_to events_path(:start_date => date ), class: "w-full block font-bold"  do %>
+          <%= date.strftime(('%d')) %>
+          <% end %>
+          <% if !@evx.empty? %>
+
+            <%= render partial: 'event_detail', locals: {date: date, section: 'single'} %>
+
+            <% end %>
         <% end %>

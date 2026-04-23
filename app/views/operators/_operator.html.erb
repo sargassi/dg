@@ -1,0 +1,23 @@
+<div id="<%= dom_id operator %>" class="">
+  <p class="<%= style_form_group %>">
+   <span class="font-bold">Nome: </span>
+   <span class="capitalize">
+    <%= operator.name %>
+    <%= operator.lastname %>
+   </span>
+  </p>
+
+  <p class="<%= style_form_group %>">
+      <span class="font-bold">Ruolo: </span>
+      <span class="capitalize">
+    <%= operator.role %>
+      </span>
+  </p>
+
+
+  <% if action_name != "show" %>
+    <%= link_to "Show this operator", operator, class: "rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
+    <%= link_to "Edit this operator", edit_operator_path(operator), class: "rounded-lg py-3 ml-2 px-5 bg-gray-100 inline-block font-medium" %>
+    <hr class="mt-6">
+  <% end %>
+</div>

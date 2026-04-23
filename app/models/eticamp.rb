@@ -1,0 +1,2 @@
+class Eticamp < ApplicationRecord
+end

@@ -1,0 +1,15 @@
+<div class="flex gap-4 justify-between p-4">
+    <p class="bg-green-500 w-12 h-12 rounded-full flex flex-col items-center justify-center">
+      <%= link_to tempesta_set_f_path(:sez => sez, :tid => tid), data:{turbo_frame: '_top'} do %>
+        <span class="material-symbols-outlined text-white font-bold">
+        check
+        </span>
+        <% end %>
+    </p>
+    <p class="bg-red-500 w-12 h-12 rounded-full flex flex-col items-center justify-center">
+        <span class="material-symbols-outlined text-white font-bold">
+            close
+        </span>
+
+    </p>
+</div>

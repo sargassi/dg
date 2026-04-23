@@ -67,10 +67,11 @@
         <%= row.doe %>
       </td>
       <td class="<%= style_table_td %>">
-        <%= row.fabric   %>
+        <%= row.fabric %>
       </td>
-      <td class="<%= style_table_td %>">
-        <%= row.qr %>
+      <td class="text-xs p-2  border border-slate-300 qrs">
+          <% qr = CreateQrService.new %>
+          <%= image_tag(qr.call(row.qr).to_data_url) %>
       </td>
       <td class="<%= style_table_td_parent %>">
         <%= render partial: 'prows/avanzamento', locals: {row: row} %>

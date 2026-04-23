@@ -1,29 +1,40 @@
 <% defined?(redir) ? bck = redir : bck = '' %>
-<div class="flex gap-8">
-
- <a href="/<%= bck %>" class="<%= style_actions_linx %>" data-turbo-frame="_top"><span class="material-symbols-outlined">
- close_small
- </span></a>
-
- <%= button_to "/#{var}/#{target.id}?bck=#{bck}", method: :delete, class: style_actions_linx, data: {turbo_frame: '_top'} do %>
-     <span class="material-symbols-outlined">
-     delete
-     </span>
+<div class="<%= style_main_header_container %>">
+ <% if defined? var %>
+   <% case var %>
+   <% when 'proformas' %>
+     <%= render partial: 'atoms/header', locals: {link: '/proformas', label: "Lancio / #{@proforma.id} del #{@proforma.data_in.strftime('%d/%m/%Y')}"} %>
+   <% when 'prows' %>
+     <%= render partial: 'atoms/header', locals: {link: "/proformas/#{back}", label: "Lancio #{back} / #{@prow.description }"} %>
+  <% else %>
+  <% end %>
  <% end %>
-
-
  <% if defined?(pdf) && pdf == 'prof' %>
-   <div class="link_to_pdf">
+   <div class="link_to_pdf w-40 ">
    <%= link_to "QR Codes", proforma_path(:id => @proforma.id, :format => :pdf), target: "_blank", class: style_action_pdf %>
    </div>
  <% end %>
  <% if defined?(note) && note != '' %>
-    <div class="note">
+    <div class="note grow">
         <%= note %>
     </div>
-    <div class="text-end fltrs">
+    <div class="text-end fltrs grow">
         <%= render partial: "/atoms/ux/fltrs" %>
     </div>
  <% end %>
+
+ <div class="grow text-end flex gap-4">
+
+
+ <% button_to "/#{var}/#{target.id}?bck=#{bck}", method: :delete, class: style_actions_linx, data: {turbo_frame: '_top'} do %>
+     <span class="material-symbols-outlined">
+     delete
+     </span>
+ <% end %>
+ <div class="grow text-end">
+     <a href="/<%= bck %>" class="<%= style_actions_linx %> " data-turbo-frame="_top"><span class="material-symbols-outlined">close_small</span></a>
+ </div>
+</div>
+
 
 </div>

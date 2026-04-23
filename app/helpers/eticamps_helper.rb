@@ -1,0 +1,2 @@
+module EticampsHelper
+end

@@ -18,6 +18,19 @@ class AppController < ApplicationController
 
   end
 
+  def check_single_qr
+    @sez = params[:place]
+
+    # ctrl proforma aperte
+    profs = Proforma.where('closed is not true').order('created_at desc').select(:id).map(&:id).compact
+
+    @q = Tempesta.where("#{@sez.downcase} is null and qrcode = '#{params[:q][:qr_eq]}'").ransack(params[:q])
+
+    @rows = @q.result(distinct: true)
+
+
+  end
+
   def check_qr
     sector = params[:place]
     profs = Proforma.where('closed is not true').order('created_at desc').select(:id).map(&:id).compact

@@ -1,5 +1,6 @@
-<%= render partial: 'atoms/header', locals: {link: '/', label: 'Utilities / Stampa etichette proforma'} %>
-
+<div class="<%= style_main_header_container %>">
+    <%= render partial: 'atoms/header', locals: {link: '/', label: 'Utilities / Stampa etichette proforma'} %>
+</div>
 <%= render partial: 'atoms/form_import', locals: {prods: @products_import,  pdf: 'y'} %>
 
 <section class="<%= style_main_cnt %>">

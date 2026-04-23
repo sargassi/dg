@@ -5,7 +5,12 @@ class EventsController < ApplicationController
   def index
     # Scope your query to the dates being shown:
     start_date = params.fetch(:start_date, Date.today).to_date
+    @todate = start_date
     @events = Event.where(starts_at: start_date.beginning_of_month.beginning_of_week..start_date.end_of_month.end_of_week)
+    @evx = Event.where(' start_time >= ? and end_time <= ?', start_date.beginning_of_month , start_date.end_of_month).group_by{|x| x.eventype_id}
+
+
+
   end
 
   # GET /events/1 or /events/1.json

@@ -25,6 +25,35 @@ module ApplicationHelper
     i + f + v
   end
 
+  # forms
+  #
+  def form_container
+    'shadow-sm p-2 bg-slate-50'
+  end
+
+  def style_form_group
+    'flex gap-4 w-full py-2 px-1'
+  end
+
+  def label_class
+    'text-xs font-semibold block'
+  end
+
+  def select_class
+    input_class + ' bg-white selex'
+  end
+
+  def input_class(add = ' bg-white')
+    'text-xs w-full  shadow block rounded-sm border-slate-50 outline-none px-3 py-2 mt-2' + add
+  end
+
+  def button_class(add = ' bg-green-600')
+    style_main_btn(add)
+  end
+
+
+  # end forms
+
   def style_container_head
     'flex gap-4 justify-between items-center border-b border-bg-slate-300 text-center'
   end
@@ -38,15 +67,19 @@ module ApplicationHelper
   end
 
   def style_main_cnt
-    'mt-12'
+    'bg-white rounded-none border-l border-r border-b border-slate-200 p-5'
+  end
+
+  def style_main_header_container
+    'flex gap-8 items-center py-4 bg-slate-50 border-b border-slate-300'
   end
 
   def style_main_header
-    'text-xl mt-4 mb-6 flex items-center p-2 lowercase font-semibold text-slate-600'
+    'text-xl flex items-center p-2 lowercase font-semibold text-slate-600 font-semibold px-4'
   end
 
   def style_main_sub_header
-      'text-2xl my-4 flex items-center p-2 font-semibold lowercase text-slate-600  border-b border-t border-slate-200 py-4  '
+      'text-2xl my-4 flex items-center p-2 font-semibold lowercase text-slate-600 font-semibold  border-b border-t border-slate-200 py-4  '
   end
 
   def style_main_lists
@@ -73,16 +106,23 @@ module ApplicationHelper
     'p-4 text-sm border border-slate-400 h-14'
   end
 
+  def style_agenda_ul
+    'flex flex-col gap-4 py-4 text-xs '
+  end
+  def style_agenda_li
+    'border-b p-1 border-slate-200  w-full'
+  end
+
   def style_actions_linx
-    'mt-2 rounded-lg py-2 px-5 bg-gray-100 inline-block font-semibold text-xs'
+    'rounded-lg py-1 px-3 bg-gray-100 inline-block font-semibold text-xs whitespace-nowrap'
   end
 
   def style_action_pdf
-    "#{style_actions_linx} bg-red-200"
+    "#{style_actions_linx} bg-red-500 uppercase text-white"
   end
 
   def style_action_pdf_small
-    "text-xs font-semibold bg-red-200 p-2 mt-2"
+    "text-xs font-semibold bg-red-500 text-white p-2"
   end
 
   def style_main_lists_subtitle
@@ -119,23 +159,23 @@ module ApplicationHelper
 
 
   def style_input
-    'p-2 border-slate-400'
+    'p-2 border-slate-400 text-xs'
   end
 
   def style_select_class
-    'w-80 bg-blue-100 uppercase text-sm'
+    'w-80 bg-blue-100 uppercase text-xs '
   end
 
   def style_search_input
     style_input + ' w-96 border border-blue-100 shadow-sm'
   end
 
-  def style_main_btn
-    'p-2 my-4 bg-indigo-400 text-white font-bold inline-block rounded-sm cursor-pointer hover:bg-indigo-500'
+  def style_main_btn(add = ' bg-blue-500')
+    'py-1 px-2  text-white tracking-wide text-xs rounded-sm inline-block  cursor-pointer' + add
   end
 
   def style_main_btn_icon
-    'my-6 bg-indigo-400 text-white font-bold inline-block rounded-sm cursor-pointer hover:bg-indigo-500 h-10 w-10'
+    'my-6 bg-blue-900 text-white tracking-wide  inline-block  cursor-pointer hover:bg-blue-700 h-10 w-10'
   end
 
   def style_import_form
@@ -147,7 +187,7 @@ module ApplicationHelper
   end
 
   def style_import_btn
-    'p-3 my-4 bg-blue-500 inline-block rounded-sm uppercase text-xs cursor-pointer text-white font-semibold'
+    'p-3 my-4 bg-blue-500 inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer text-white '
   end
 
   def style_import_btn_blank
@@ -203,7 +243,7 @@ module ApplicationHelper
   # routines
   #
   def calc_percentage(num1, num2)
-    return (num1 * 100 / num2).round(2)
+    return (num1 * 100 / (num2 * 5)).round(2)
   end
 
   def add_time_tempestas(arr, datex, index)
@@ -220,7 +260,7 @@ module ApplicationHelper
       elsif arr.sum < qty || arr.sum > 0
       bg = 'bg-amber-500'
       else
-      bg = 'bg.red-500'
+      bg = 'bg-red-500'
       end
   end
 

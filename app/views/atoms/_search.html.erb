@@ -1,11 +1,12 @@
 <section class="<%= style_import_form %>" >
-<div class="xl:w-1/3">
+
   <%= search_form_for @q, url: production_research_path, data:{turbo_frame: 'rez'} do |f| %>
+    <div class="w-full flex gap-2 items-center">
       <% f.label 'Ricerca' %>
       <%= f.search_field :code_or_proforma_id_or_note_or_qr_or_materiale_or_color_or_origine_or_doe_cont, class: style_search_input %>
       <%= f.submit 'Cerca', class: style_main_btn %>
-    <% end %>
   </div>
+    <% end %>
 
   <div class="xl:w-1/3">
       <%= render partial: 'atoms/ux/filter_customer', locals: {profs: @profs} %>
@@ -14,5 +15,6 @@
   <div class="xl:w-1/3">
     <%= render partial: 'atoms/ux/pagy' %>
   </div>
-
 </section>
+
+<hr>

@@ -34,6 +34,37 @@ class TempestaController < ApplicationController
     end
   end
 
+  def set_f
+    sez = params[:sez]
+    td = Tempesta.find(params[:tid])
+    desc = td.prow.description
+    today = Date.today
+    case sez
+    when 'F1'
+      td.f1 = true
+      td.f1date = today
+    when 'F2'
+      td.f2 = true
+      td.f2date = today
+    when 'F3'
+      td.f3 = true
+      td.f3date = today
+    when 'F4'
+      td.f4 = true
+      td.f4date = today
+    when 'F5'
+      td.f5 = true
+      td.f5date = today
+    else
+    end
+    td.save
+    respond_to do |format|
+
+      format.html { redirect_to app_sez_path(:place => sez), notice: "#{desc} assegnato" }
+
+    end
+  end
+
   # PATCH/PUT /tempesta/1 or /tempesta/1.json
   def update
     respond_to do |format|
@@ -65,6 +96,6 @@ class TempestaController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def tempestum_params
-      params.require(:tempesta).permit(:prow_id, :f0, :f1, :f2, :f3, :f4, :f5, :f1date, :f2date, :f3date, :f4date, :f5date, :proforma_id, :user_id, :qty)
+      params.require(:tempesta).permit(:prow_id, :f0, :f1, :f2, :f3, :f4, :f5, :f1date, :f2date, :f3date, :f4date, :f5date, :proforma_id, :user_id, :qty, :qrcode)
     end
 end

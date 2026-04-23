@@ -1,0 +1,9 @@
+<%= turbo_frame_tag 'insidejoke' do %>
+    <div class="flex gap-4">
+    <%= link_to "Modifica", edit_operator_path(@operator), class: style_main_btn %>
+    <%= button_to "Elimina", operator_path(@operator), method: :delete, class: button_class(' bg-red-500'), data:{ turbo_frame: '_top'} %>
+    </div>
+    <div class="<%= form_container %>">
+        <%= render @operator %>
+    </div>
+<% end %>

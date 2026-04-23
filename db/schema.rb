@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_01_28_133358) do
+ActiveRecord::Schema[7.0].define(version: 2026_03_20_142230) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
     t.text "body"
@@ -64,6 +64,16 @@ ActiveRecord::Schema[7.0].define(version: 2026_01_28_133358) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "eticamps", force: :cascade do |t|
+    t.string "itemcode"
+    t.string "fabricode"
+    t.string "varcode"
+    t.string "season"
+    t.integer "group", default: 1
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "etigens", force: :cascade do |t|
     t.string "riga1"
     t.string "riga2"
@@ -102,8 +112,8 @@ ActiveRecord::Schema[7.0].define(version: 2026_01_28_133358) do
 
   create_table "events", force: :cascade do |t|
     t.string "name"
-    t.datetime "start_time"
-    t.datetime "end_time"
+    t.date "start_time"
+    t.date "end_time"
     t.integer "eventype_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -138,6 +148,81 @@ ActiveRecord::Schema[7.0].define(version: 2026_01_28_133358) do
     t.decimal "mtkgprezzi"
     t.decimal "mtkg20prezzi"
     t.string "perche"
+  end
+
+  create_table "inventories", force: :cascade do |t|
+    t.integer "qtyavailable"
+    t.integer "minstock"
+    t.integer "maxstock"
+    t.integer "warehouse_id", null: false
+    t.integer "location_id"
+    t.string "itemcode"
+    t.integer "operationtype_id", null: false
+    t.integer "itemins_id"
+    t.integer "itemouts_id"
+    t.boolean "enabled", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["itemins_id"], name: "index_inventories_on_itemins_id"
+    t.index ["itemouts_id"], name: "index_inventories_on_itemouts_id"
+    t.index ["location_id"], name: "index_inventories_on_location_id"
+    t.index ["operationtype_id"], name: "index_inventories_on_operationtype_id"
+    t.index ["warehouse_id"], name: "index_inventories_on_warehouse_id"
+  end
+
+  create_table "itemins", force: :cascade do |t|
+    t.date "indate"
+    t.integer "operator_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["operator_id"], name: "index_itemins_on_operator_id"
+  end
+
+  create_table "itemouts", force: :cascade do |t|
+    t.date "indate"
+    t.integer "operator_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["operator_id"], name: "index_itemouts_on_operator_id"
+  end
+
+  create_table "items", force: :cascade do |t|
+    t.string "itemcode"
+    t.string "fabricode"
+    t.string "varcode"
+    t.string "description"
+    t.string "tg"
+    t.text "note"
+    t.string "fabric"
+    t.string "colour"
+    t.decimal "unit_price"
+    t.string "materiale"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "locations", force: :cascade do |t|
+    t.string "code"
+    t.integer "warehouse_id", null: false
+    t.boolean "enabled"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["warehouse_id"], name: "index_locations_on_warehouse_id"
+  end
+
+  create_table "operationtypes", force: :cascade do |t|
+    t.string "code"
+    t.string "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "operators", force: :cascade do |t|
+    t.string "name"
+    t.string "lastname"
+    t.integer "role", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "prodrow", force: :cascade do |t|
@@ -295,9 +380,17 @@ ActiveRecord::Schema[7.0].define(version: 2026_01_28_133358) do
     t.integer "proforma_id", null: false
     t.integer "user_id", default: 2, null: false
     t.integer "qty", default: 1
+    t.string "qrcode"
+    t.integer "order", default: 1
     t.index ["proforma_id"], name: "index_tempesta_on_proforma_id"
     t.index ["prow_id"], name: "index_tempesta_on_prow_id"
     t.index ["user_id"], name: "index_tempesta_on_user_id"
+  end
+
+  create_table "uoms", force: :cascade do |t|
+    t.string "code"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "users", force: :cascade do |t|
@@ -321,6 +414,18 @@ ActiveRecord::Schema[7.0].define(version: 2026_01_28_133358) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  create_table "warehouses", force: :cascade do |t|
+    t.string "code"
+    t.string "address"
+    t.string "city"
+    t.string "cap"
+    t.string "civic"
+    t.float "latitude"
+    t.float "longitude"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "zones", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
@@ -331,6 +436,14 @@ ActiveRecord::Schema[7.0].define(version: 2026_01_28_133358) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "api_tokens", "users"
   add_foreign_key "events", "eventypes"
+  add_foreign_key "inventories", "itemins", column: "itemins_id"
+  add_foreign_key "inventories", "itemouts", column: "itemouts_id"
+  add_foreign_key "inventories", "locations"
+  add_foreign_key "inventories", "operationtypes"
+  add_foreign_key "inventories", "warehouses"
+  add_foreign_key "itemins", "operators"
+  add_foreign_key "itemouts", "operators"
+  add_foreign_key "locations", "warehouses"
   add_foreign_key "prodrow", "areas"
   add_foreign_key "prodrow", "prodcodes"
   add_foreign_key "prows", "proformas"

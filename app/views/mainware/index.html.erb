@@ -1,0 +1,10 @@
+<div class="<%= style_main_header_container %>">
+    <%= render partial: 'atoms/header', locals: {link: '/', label: 'Generale'} %>
+</div>
+
+<%= render partial: '/mainware/atoms/form_import_ware', locals: {prods: @profnew,  pdf: 'n', customer: 'y'} %>
+
+
+<section class="<%= style_main_cnt %>">
+  <%= render partial: '/mainware/atoms/dash' %>
+</section>

@@ -1,4 +1,20 @@
 Rails.application.routes.draw do
+  resources :inventories
+  resources :items
+  resources :itemouts
+  resources :locations
+  resources :warehouses
+  resources :itemins
+  resources :operationtypes
+  resources :uoms
+  resources :operators
+  get 'mainware/index'
+  get 'mainware/search'
+  get 'mainware/searchqr'
+  mount API::Base, at: "/"
+
+  get 'eticamps/etichette'
+  resources :eticamps
   resources :events
   resources :eventypes
   get 'etigens/etichette'
@@ -6,6 +22,7 @@ Rails.application.routes.draw do
   resources :fabriclus
   get 'app/dashboard'
   get 'app/check_qr'
+  get 'app/check_single_qr'
   get 'app/sez'
   get 'etilabs/import'
   get "etilabs/etichette"
@@ -16,6 +33,7 @@ Rails.application.routes.draw do
   get 'production/research_qr'
   get 'production/checkpoint'
   get 'production/checkpoint_single'
+  get 'tempesta/set_f'
   resources :tempesta
   resources :prows
   resources :proformas
@@ -26,8 +44,10 @@ Rails.application.routes.draw do
   resources :areas
   get 'dashboard/home'
   get 'utilities/etichette'
+  get 'utilities/etichette_camp'
   get 'utilities/etichette_lab'
   get 'utilities/etichette_gen'
+  post 'utilities/eticampimp'
   post 'utilities/etilabimp'
   post 'utilities/etilgenimp'
   get 'products_imports/new'
@@ -44,5 +64,9 @@ Rails.application.routes.draw do
       end
     end
   end
+
+  get 'basic-qr-code-reader', to: 'basic_qr_codes#index'
+  get 'basic_qr_codes/qrcheck'
+
   root to: "dashboard#index"
 end

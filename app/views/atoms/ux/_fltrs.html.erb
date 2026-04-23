@@ -1,11 +1,11 @@
-<ul class="flex gap-2 justify_end">
+<ul class="flex gap-2 justify-between">
     <li>
-      <a href="?done=" class="<%= style_import_btn_blank %> <%= 'bg-blue-50' if (params[:done] == '' || params[:done].nil? ) %>"> Tutti</a>
+      <a href="?done=" class="<%= style_import_btn_blank %> <%= 'bg-slate-200 rounded-lg' if (params[:done] == '' || params[:done].nil? ) %>"> Tutti</a>
     </li>
     <li>
-      <a href="?done=y" class="<%= style_import_btn_blank %> <%= 'bg-blue-50' if params[:done] == 'y' %>"> Completati</a>
+      <a href="?done=y" class="<%= style_import_btn_blank %> <%= 'bg-slate-200 rounded-lg' if params[:done] == 'y' %>"> Completati</a>
     </li>
     <li>
-         <a href="?done=n" class="<%= style_import_btn_blank %> <%= 'bg-blue-50' if params[:done] == 'n' %>"> Non Completati</a>
+         <a href="?done=n" class="<%= style_import_btn_blank %> <%= 'bg-slate-200 rounded-lg' if params[:done] == 'n' %>"> Aperti</a>
     </li>
 </ul>

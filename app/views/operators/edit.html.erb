@@ -1,0 +1,4 @@
+<%= turbo_frame_tag 'insidejoke' do %>
+  <%= link_to "Cancella", operators_path, class: style_main_btn, data: {turbo_frame: '_top'} %>
+  <%= render "form", operator: @operator %>
+<% end %>

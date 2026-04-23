@@ -1,0 +1,35 @@
+<div id="et">
+        <% counter = 0 %>
+        <% i = 0 %>
+       <% @etix.each do |iz, val| %>
+        <% if i == 0 %>
+          <% val.sort.each do |product| %>
+            <div class="cell cell-camp">
+                <div class="sub">
+                    <div class="subzero">
+                    <p class="flipV">
+                    <%= product.itemcode %> <%= product.fabricode %> <%= product.varcode %>
+                    </p>
+                     <p class="flipV" style="text-align:right; margin-top: 1em"><%= product.season %></p>
+
+                    </div>
+                    <div class="subzero">
+                     <p  style="text-align:right; margin-top: 1em"><%= product.season %></p>
+                 <p style="position:absolute; bottom:1em; width:100%">
+                    <%= product.itemcode %> <%= product.fabricode %> <%= product.varcode %>
+                 </p>
+                    </div>
+                 </div>
+                <% counter = counter + 1 %>
+                </div>
+              <% if counter.modulo(24) == 0 %>
+              <div style="clear:both; page-break-after: always;"></div>
+              <% end %>
+            <% end %>
+
+          <% end %>
+
+        <% i += 1 %>
+    <% end %>
+
+</div>

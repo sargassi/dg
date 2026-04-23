@@ -1,0 +1,19 @@
+<%= turbo_frame_tag 'success' do %>
+
+    <div class="cont <%= alert %> shadow-lg w-full bg-white fixed top-10 left-0 right-0 p-4">
+    <% if @rows.empty? %>
+        <p class="p-4">
+            Nessun risultato oppure articolo già passato alla sezione <%= params[:place] %>
+        </p>
+    <% else %>
+        <p class="p-4 text-center">
+
+            <%= @rows.last.prow.description %>
+        <span class="text-xs block uppercase my-4"><%= @rows.last.prow.note %> </span>
+        </p>
+        <hr class="my-4">
+        <%= render partial: '/app/atoms/actions', locals: {:sez => params[:place], :tid => @rows.last.id} %>
+    <% end %>
+    </div>
+
+<% end %>

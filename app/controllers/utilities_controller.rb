@@ -5,16 +5,26 @@ class UtilitiesController < ApplicationController
   end
 
   def etichette_lab
-    @etigroup = if params[:etid].present? && params[:etid] != ''
-                  Etilab.where('id = ?', params[:etid]).order('created_at DESC').group_by do |x|
-                    x.group
-                  end
+   if params[:etid].present? && params[:etid] != ''
+     @etigroup =  Etilab.where('id = ?', params[:etid]).order('created_at DESC').group_by {|x| x.group }
 
-                else
-                  Etilab.all.order('created_at DESC').group_by { |x| x.group }
-                end
+   elsif params[:group].present? && params[:group] != ''
+       @etigroup = Etilab.where('ragg = ?', params[:group]).order('created_at DESC').group_by { |x| x.group }
+    else
+       @etigroup = Etilab.all.order('created_at DESC').group_by { |x| x.group }
+    end
 
     @search = Etilab.all.order('created_at DESC').limit(400).group_by { |x| x.group }
+  end
+
+  def etichette_camp
+    @etigroup = if params[:etid].present? && params[:etid] != ''
+      Eticamp.where('id = ?', params[:etid]).order('created_at DESC').group_by { |x| x.group }
+    else
+      Eticamp.all.order('created_at DESC').group_by { |x| x.group }
+    end
+
+    @search = Eticamp.all.order('created_at DESC').limit(400).group_by { |x| x.group }
   end
 
   def etichette_gen
@@ -41,6 +51,17 @@ class UtilitiesController < ApplicationController
     end
   end
 
+  def eticampimp
+    if params[:import].present? and params[:import] == 'y'
+      import = ImportEticampService.new
+      import.call(params[:file], params[:season])
+    end
+    respond_to do |format|
+      format.html { redirect_to utilities_etichette_camp_path, notice: 'Importate.' }
+      format.json { head :no_content }
+    end
+  end
+
   def etilabimp
     if params[:import].present? and params[:import] == 'y'
       import = ImportEtilabService.new
@@ -51,4 +72,10 @@ class UtilitiesController < ApplicationController
       format.json { head :no_content }
     end
   end
+
+  def eticampione
+    @working_date = Date.current
+
+  end
+
 end

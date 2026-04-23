@@ -1,0 +1,57 @@
+<div id="<%= dom_id item %>">
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Itemcode:</strong>
+    <%= item.itemcode %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Fabricode.string:</strong>
+    <%= item.fabricode.string %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Varcode:</strong>
+    <%= item.varcode %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Description:</strong>
+    <%= item.description %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Tg:</strong>
+    <%= item.tg %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Note:</strong>
+    <%= item.note %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Fabric:</strong>
+    <%= item.fabric %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Colour:</strong>
+    <%= item.colour %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Unit price:</strong>
+    <%= item.unit_price %>
+  </p>
+
+  <p class="my-5">
+    <strong class="block font-medium mb-1">Materiale:</strong>
+    <%= item.materiale %>
+  </p>
+
+  <% if action_name != "show" %>
+    <%= link_to "Show this item", item, class: "rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
+    <%= link_to "Edit this item", edit_item_path(item), class: "rounded-lg py-3 ml-2 px-5 bg-gray-100 inline-block font-medium" %>
+    <hr class="mt-6">
+  <% end %>
+</div>

@@ -16,6 +16,12 @@
     <% if controller_name == 'app' %>
       <%= render partial: 'layouts/headers/app' %>
       <%= turbo_frame_tag 'success' %>
+      <% if notice %>
+
+        <p id="notice" class="bg-green-400 p-4 w-full text-white absolute bottom-0 left-0 delay-300" data-controller="notifications"><%= notice %></p>
+
+      <% end %>
+
       <%= yield %>
 
     <% else %>

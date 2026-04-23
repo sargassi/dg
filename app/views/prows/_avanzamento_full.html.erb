@@ -2,6 +2,9 @@
     <thead class="align-top">
 
       <th class="<%= style_table_th_children %>">
+          Qr
+      </th>
+      <th class="<%= style_table_th_children %>">
           Consegna
       </th>
       <th class="<%= style_table_th_children %>">
@@ -27,12 +30,9 @@
 
           <%= render partial: 'prows/atoms/tempesta', locals:{tem:tem, chk:chk, chktime: chktime, src: src} %>
 
-
     </tr>
 
       <% end %>
-
-
 
 
 </table>

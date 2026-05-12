@@ -39,5 +39,43 @@
 
     <% end %>
 
+    <script>
+      function highlightRow() {
+        // First try sessionStorage (set when modal opened)
+        let anchor = sessionStorage.getItem('highlightRow')
+        
+        // Fall back to URL hash
+        if (!anchor) {
+          const match = location.href.match(/#prow-(\d+)/)
+          anchor = match ? match[0] : null
+        }
+        
+        if (anchor && anchor.startsWith('#prow-')) {
+          const rowId = anchor.replace('#prow-', '')
+          const row = document.getElementById('prow-' + rowId)
+          
+          if (row) {
+            row.classList.add('border-4', 'border-blue-500')
+            setTimeout(() => {
+              row.classList.remove('border-4', 'border-blue-500')
+              sessionStorage.removeItem('highlightRow')
+            }, 3000)
+          }
+        }
+      }
+
+      // Listen to turbo frame loads
+      document.addEventListener('turbo:frame-load', (event) => {
+        console.log('[HIGHLIGHT] Frame loaded:', event.target.id)
+        highlightRow()
+      })
+
+      document.addEventListener('turbo:load', highlightRow)
+      window.addEventListener('load', highlightRow)
+      
+      if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        setTimeout(highlightRow, 100)
+      }
+    </script>
   </body>
 </html>

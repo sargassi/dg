@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_03_20_142230) do
+ActiveRecord::Schema[7.2].define(version: 2026_05_08_154417) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
     t.text "body"
@@ -199,6 +199,8 @@ ActiveRecord::Schema[7.0].define(version: 2026_03_20_142230) do
     t.string "materiale"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "gencode"
+    t.text "qrcode_svg"
   end
 
   create_table "locations", force: :cascade do |t|
@@ -279,6 +281,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_03_20_142230) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text "file"
+    t.index ["closed"], name: "index_proformas_on_closed"
   end
 
   create_table "prows", force: :cascade do |t|
@@ -312,6 +315,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_03_20_142230) do
     t.string "fornitore"
     t.string "tempolav"
     t.text "fabric"
+    t.index ["closed"], name: "index_prows_on_closed"
     t.index ["proforma_id"], name: "index_prows_on_proforma_id"
   end
 

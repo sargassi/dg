@@ -17,7 +17,7 @@ class ItemsTest < ApplicationSystemTestCase
     fill_in "Colour", with: @item.colour
     fill_in "Description", with: @item.description
     fill_in "Fabric", with: @item.fabric
-    fill_in "Fabricode.string", with: @item.fabricode.string
+    fill_in "Fabricode", with: @item.fabricode
     fill_in "Itemcode", with: @item.itemcode
     fill_in "Materiale", with: @item.materiale
     fill_in "Note", with: @item.note
@@ -37,7 +37,7 @@ class ItemsTest < ApplicationSystemTestCase
     fill_in "Colour", with: @item.colour
     fill_in "Description", with: @item.description
     fill_in "Fabric", with: @item.fabric
-    fill_in "Fabricode.string", with: @item.fabricode.string
+    fill_in "Fabricode", with: @item.fabricode
     fill_in "Itemcode", with: @item.itemcode
     fill_in "Materiale", with: @item.materiale
     fill_in "Note", with: @item.note

@@ -1,10 +1,76 @@
 <div class="<%= style_main_header_container %>">
-    <%= render partial: 'atoms/header', locals: {link: '/', label: 'Generale'} %>
+  <%= render partial: 'atoms/header', locals: {link: '/', label: 'Generale / Articoli'} %>
 </div>
 
-<%= render partial: '/mainware/atoms/form_import_ware', locals: {prods: @profnew,  pdf: 'n', customer: 'y'} %>
+<section class="<%= style_main_cnt %>" data-controller="search-filter">
+  <div class="flex gap-4 items-center mb-4">
+    <%= form_with url: mainware_index_path, method: :get,
+                  data: { search_filter_target: "form", turbo_frame: "items-table" },
+                  class: "relative" do |f| %>
+      <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none">search</span>
+      <%= f.search_field :q,
+            value: params[:q],
+            placeholder: "Cerca in tutte le colonne",
+            class: "#{style_search_input} rounded-lg pl-10 font-mono text-blue-600",
+            data: { action: "input->search-filter#filter", search_filter_target: "input" } %>
+    <% end %>
+    <span class="text-sm text-slate-500 whitespace-nowrap" data-search-filter-target="count"><%= @pagy.count %> articoli</span>
+    <%= link_to "Importa da Excel", mainware_import_path, class: "#{style_import_btn} ml-auto" %>
+  </div>
 
+  <style>
+    turbo-frame#items-table[busy] .items-table-content { display: none; }
+    turbo-frame#items-table[busy] .items-table-loader { display: flex; }
+    turbo-frame#items-table td svg { width: 100%; height: auto; display: block; }
+  </style>
+  <%= turbo_frame_tag "items-table", data: { action: "turbo:frame-load->search-filter#onFrameLoad" } do %>
+    <div class="items-table-content">
+      <span hidden data-filtered-count><%= @pagy.count %></span>
+      <div class="overflow-x-auto max-h-[600px] overflow-y-auto">
+        <table class="min-w-full">
+          <thead>
+            <tr>
+              <% %w[Gencode Item Fabric Var. Descrizione Tg Fabric Color Unitprice Materiale Note QR].each do |h| %>
+                <th class="<%= style_table_th %> sticky top-0 z-10"><%= h %></th>
+              <% end %>
+            </tr>
+          </thead>
+          <tbody>
+            <% @itemz.each do |item| %>
+              <tr class="hover:bg-slate-50">
+                <td class="<%= style_table_td %> text-xs font-mono text-blue-600"><%= item.gencode %></td>
+                <td class="<%= style_table_td %>"><%= item.itemcode %></td>
+                <td class="<%= style_table_td %>"><%= item.fabricode %></td>
+                <td class="<%= style_table_td %>"><%= item.varcode %></td>
+                <td class="<%= style_table_td %>"><%= item.description %></td>
+                <td class="<%= style_table_td %>"><%= item.tg %></td>
+                <td class="<%= style_table_td %>"><%= item.fabric %></td>
+                <td class="<%= style_table_td %>"><%= item.colour %></td>
+                <td class="<%= style_table_td %>"><%= item.unit_price %></td>
+                <td class="<%= style_table_td %>"><%= item.materiale %></td>
+                <td class="<%= style_table_td %>"><%= item.note %></td>
+                <td class="<%= style_table_td %>" style="width:130px">
+                  <%= item.qrcode_svg.html_safe %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
 
-<section class="<%= style_main_cnt %>">
-  <%= render partial: '/mainware/atoms/dash' %>
+      <% if @pagy.pages > 1 %>
+        <div class="mt-6">
+          <%== pagy_nav(@pagy, link_extra: 'data-turbo-frame="items-table"') %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="items-table-loader hidden justify-center items-center py-12">
+      <svg class="animate-spin h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      <span class="ml-3 text-slate-600">Ricerca in corso...</span>
+    </div>
+  <% end %>
 </section>

@@ -1,0 +1,98 @@
+<div class="<%= style_main_header_container %>">
+  <%= render partial: 'atoms/header', locals: {link: '/', label: 'Generale / Import'} %>
+</div>
+
+<section class="<%= style_main_cnt %>">
+  <% if @data.present? %>
+
+    <h2 class="<%= style_main_sub_header %>">
+      Anteprima importazione (<span id="import-count"><%= @data[:rows].size %></span> righe)
+    </h2>
+
+    <div class="overflow-x-auto max-h-[800px] overflow-y-auto">
+      <table class="min-w-full" data-controller="inline-edit">
+        <thead>
+          <tr>
+            <th class="<%= style_table_th %> sticky top-0 z-10"></th>
+            <th class="<%= style_table_th %> sticky top-0 z-10">Riga</th>
+            <th class="<%= style_table_th %> sticky top-0 z-10">Gencode</th>
+            <% @data[:headers].each do |h| %>
+              <th class="<%= style_table_th %> sticky top-0 z-10"><%= h %></th>
+            <% end %>
+          </tr>
+        </thead>
+        <tbody>
+          <% @data[:rows].each do |row| %>
+            <tr id="row-<%= row[:_index] %>"
+                data-row-index="<%= row[:_index] %>"
+                data-inline-edit-target="row"
+                class="hover:bg-slate-50">
+
+              <td class="<%= style_table_td %> text-center">
+                <button type="button"
+                        data-action="inline-edit#deleteRow"
+                        class="text-red-500 hover:text-red-700 cursor-pointer">
+                  <span class="material-symbols-outlined text-sm">delete</span>
+                </button>
+              </td>
+
+              <td class="<%= style_table_td %> text-center text-xs text-slate-400">
+                <%= row[:_index] %>
+              </td>
+
+              <td class="<%= style_table_td %> text-xs font-mono text-blue-600"
+                  data-inline-edit-target="gencode">
+                <%= row[:_gencode] %>
+              </td>
+
+              <% @data[:headers].each do |header| %>
+                <td class="<%= style_table_td %> p-0">
+                  <input type="text"
+                         value="<%= row[header] %>"
+                         data-field="<%= header %>"
+                         data-action="input->inline-edit#update"
+                         data-inline-edit-target="input"
+                         data-default="<%= row[header] %>"
+                         class="w-full px-2 py-1 text-xs border-none bg-transparent outline-none focus:bg-blue-50">
+                </td>
+              <% end %>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="flex gap-4 mt-6">
+      <%= form_with url: mainware_import_confirm_path, method: :post do %>
+        <button type="submit" class="<%= style_import_btn %> bg-green-600">
+          Conferma importazione (<span id="import-count-btn"><%= @data[:rows].size %></span>)
+        </button>
+      <% end %>
+
+      <%= button_to "Annulla", mainware_import_cancel_path, method: :delete, class: "#{style_import_btn} bg-gray-400" %>
+    </div>
+
+  <% else %>
+
+    <section class="<%= style_import_form %>" data-controller="loader">
+      <div data-loader-target="form">
+        <%= form_with url: mainware_import_parse_path, method: :post, multipart: true,
+                     data: { action: "submit->loader#show" } do |f| %>
+          <div class="w-full flex gap-2 items-center">
+            <%= f.file_field :file, class: style_import_field, required: true %>
+            <%= f.submit "Carica", class: style_import_btn, data: { turbo_submits_with: "Caricamento..." } %>
+          </div>
+        <% end %>
+      </div>
+
+      <div data-loader-target="spinner" hidden class="flex justify-center items-center py-12">
+        <svg class="animate-spin h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span class="ml-3 text-slate-600">Caricamento in corso...</span>
+      </div>
+    </section>
+
+  <% end %>
+</section>

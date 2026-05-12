@@ -1,13 +1,17 @@
 class AppController < ApplicationController
+
+  ALLOWED_SECTORS = ['f1', 'f2', 'f3', 'f4', 'f5'].freeze
+
+
   def dashboard
-    @sections = ['F1', 'F2', 'F3', 'F4', 'F5']
+    @sections = ALLOWED_SECTORS
   end
 
   def sez
 
-    params[:place].present? ? sector = params[:place] : sector = ''
+    params[:place].present? ? sector = params[:place].downcase : sector = ''
     @title = "Sez #{sector}"
-    @sections = ['F1', 'F2', 'F3', 'F4', 'F5']
+    @sections = ALLOWED_SECTORS
 
     profs = Proforma.where('closed is not true').order('created_at desc').select(:id).map(&:id).compact
 

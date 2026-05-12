@@ -3,20 +3,20 @@ class ProductionController < ApplicationController
   include Pagy::Backend
 
   def research
-    @profs = Proforma.where('closed is not true').order('created_at desc')
-    profs = @profs.select(:id).map(&:id).compact
-    if params[:customer].present? and params[:customer] != ''
-      @q = Prow.where('proforma_id = ?', params[:customer]).ransack(params[:q])
+    profs = Proforma.where(closed: [nil, false]).order(created_at: :desc).pluck(:id)
+    @profs = Proforma.where(id: profs).select(:id, :customer, :data_in).order(created_at: :desc)
+    @q = if params[:customer].present? && params[:customer] != ''
+      Prow.where(proforma_id: params[:customer]).ransack(params[:q])
     else
-      @q = Prow.where('proforma_id in (?)', profs).ransack(params[:q])
+      Prow.where(proforma_id: profs).ransack(params[:q])
     end
     @rows = @q.result(distinct: true)
     @pagy, @rows = pagy(@rows)
   end
 
   def research_qr
-    profs = Proforma.where('closed is not true').order('created_at desc').select(:id).map(&:id).compact
-    @q = Prow.where('proforma_id in (?) and closed is false', profs).ransack(params[:q])
+    profs = Proforma.where(closed: [nil, false]).order(created_at: :desc).pluck(:id)
+    @q = Prow.where(proforma_id: profs, closed: false).ransack(params[:q])
     @rows = @q.result(distinct: true)
     @pagy, @rows = pagy(@rows)
 
@@ -27,10 +27,10 @@ class ProductionController < ApplicationController
 
   def checkpoint_single
     place = params[:place]
-    profs = Proforma.where('closed is not true').order('created_at desc').select(:id).map(&:id).compact
+    profs = Proforma.where(closed: [nil, false]).order(created_at: :desc).pluck(:id)
       @sez = params[:place]
 
-      @q = Prow.where('proforma_id in (?) and closed is false', profs).ransack(params[:q])
+      @q = Prow.where(proforma_id: profs, closed: false).ransack(params[:q])
       @rows = @q.result(distinct: true)
 
   end

@@ -1,6 +1,15 @@
 <% if params[:src].present? and params[:src] == 'fromapp' %>
 x
 <% else %>
+  <script>
+    document.addEventListener('turbo:load', () => {
+      const urlParams = new URLSearchParams(window.location.search)
+      const anchor = urlParams.get('row_anchor')
+      if (anchor) {
+        sessionStorage.setItem('highlightRow', anchor)
+      }
+    })
+  </script>
   <%= turbo_frame_tag 'report' do %>
     <div class="content">
       <div class="main">

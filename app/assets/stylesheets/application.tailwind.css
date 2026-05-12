@@ -364,3 +364,13 @@ body {
     width: 100%;
     height: auto;
 }
+
+@keyframes row-highlight {
+  0% { background-color: #bfdbfe; }
+  50% { background-color: #60a5fa; }
+  100% { background-color: transparent; }
+}
+
+.row-highlight {
+  animation: row-highlight 2s ease-out;
+}

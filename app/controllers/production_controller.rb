@@ -2,6 +2,10 @@ class ProductionController < ApplicationController
 
   include Pagy::Backend
 
+  def dashboard
+
+  end
+
   def research
     profs = Proforma.where(closed: [nil, false]).order(created_at: :desc).pluck(:id)
     @profs = Proforma.where(id: profs).select(:id, :customer, :data_in).order(created_at: :desc)

@@ -1,9 +1,9 @@
-<%= form_with(model: event, class: "contents") do |form| %>
+<%= form_with(model: event, data: { controller: "date-sync", turbo_frame: "_top" }) do |form| %>
+  <%= hidden_field_tag :selected_date, params[:selected_date] %>
   <% if event.errors.any? %>
-    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-lg mt-3">
+    <div class="bg-red-50 text-red-500 px-3 py-2 font-medium border border-red-200 mb-4">
       <h2><%= pluralize(event.errors.count, "error") %> prohibited this event from being saved:</h2>
-
-      <ul>
+      <ul class="text-xs mt-1">
         <% event.errors.each do |error| %>
           <li><%= error.full_message %></li>
         <% end %>
@@ -11,27 +11,47 @@
     </div>
   <% end %>
 
-  <div class="my-5">
-    <%= form.label :name %>
-    <%= form.text_field :name, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
+  <div class="mb-4">
+    <%= form.label :name, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+    <%= form.text_field :name, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", placeholder: "Nome evento" %>
   </div>
 
-  <div class="my-5">
-    <%= form.label :start_time %>
-    <%= form.datetime_field :start_time, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
+  <div class="mb-4">
+    <%= form.label :description, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+    <%= form.text_area :description, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm resize-none", rows: 2, placeholder: "Breve descrizione..." %>
   </div>
 
-  <div class="my-5">
-    <%= form.label :end_time %>
-    <%= form.datetime_field :end_time, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
+  <div class="mb-4">
+    <%= form.label :eventype_id, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+    <div class="flex gap-2">
+      <div id="eventype_select" class="grow">
+        <%= form.collection_select :eventype_id, Eventype.all, :id, :name,
+              { include_blank: "Seleziona tipo" },
+              class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm bg-white" %>
+      </div>
+      <%= link_to new_eventype_path,
+            class: "flex items-center justify-center px-3 border border-slate-300 bg-slate-50 hover:bg-slate-100 transition text-slate-500",
+            data: { turbo_frame: "quick_eventype_modal" } do %>
+        <span class="material-symbols-outlined text-sm">add</span>
+      <% end %>
+    </div>
   </div>
 
-  <div class="my-5">
-    <%= form.label :eventype_id %>
-    <%= form.text_field :eventype_id, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
+  <div class="grid grid-cols-2 gap-3 mb-4">
+    <div>
+      <%= form.label :start_time, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+      <%= form.date_field :start_time, data: { date_sync_target: "start", action: "change->date-sync#syncEnd" }, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+    </div>
+    <div>
+      <%= form.label :end_time, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+      <%= form.date_field :end_time, data: { date_sync_target: "end" }, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+    </div>
   </div>
 
-  <div class="inline">
-    <%= form.submit class: "rounded-lg py-3 px-5 bg-blue-600 text-white inline-block font-medium cursor-pointer" %>
+  <div class="flex gap-2">
+    <%= form.submit class: "p-3 bg-blue-500 inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer text-white" %>
+    <%= link_to "Annulla", events_path(start_date: (params[:start_date] || event.start_time || Date.today), selected_date: params[:selected_date]),
+          class: "p-3 bg-gray-300 inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer text-slate-700",
+          data: { turbo_frame: "_top" } %>
   </div>
 <% end %>

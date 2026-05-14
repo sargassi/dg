@@ -1,15 +1,26 @@
-<div class="mx-auto md:w-2/3 w-full flex">
-  <div class="mx-auto">
-    <% if notice.present? %>
-      <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-lg inline-block" id="notice"><%= notice %></p>
-    <% end %>
-
-    <%= render @location %>
-
-    <%= link_to "Edit this location", edit_location_path(@location), class: "mt-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
-    <div class="inline-block ml-2">
-      <%= button_to "Destroy this location", location_path(@location), method: :delete, class: "mt-2 rounded-lg py-3 px-5 bg-gray-100 font-medium" %>
-    </div>
-    <%= link_to "Back to locations", locations_path, class: "ml-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
-  </div>
+<% menu = [
+  { label: 'Dashboard', path: mainware_dashboard_path, active: false, icon: 'dashboard' },
+  { label: 'Articoli', path: mainware_index_path, active: false, icon: 'inventory_2' },
+  { label: 'Magazzini', path: warehouses_path, active: false, icon: 'warehouse' },
+  { label: 'Location', path: locations_path, active: true, icon: 'location_on' },
+] %>
+<div class="<%= style_main_header_container %>">
+  <%= render partial: 'atoms/header', locals: {link: '/', label: 'Generale / Location', menu: menu} %>
 </div>
+<section class="<%= style_main_cnt %>">
+  <% if notice.present? %>
+    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-lg inline-block" id="notice"><%= notice %></p>
+  <% end %>
+
+  <%= render @location %>
+
+  <div class="flex gap-2 mt-6">
+    <%= link_to "Modifica", edit_location_path(@location), class: style_import_btn %>
+    <%= link_to "Indietro", locations_path, class: "#{style_import_btn} bg-gray-400" %>
+  </div>
+  <div class="mt-2">
+    <%= button_to "Elimina", location_path(@location), method: :delete,
+          class: "p-3 my-4 inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer text-white bg-red-500",
+          data: { turbo_confirm: "Eliminare questa location?" } %>
+  </div>
+</section>

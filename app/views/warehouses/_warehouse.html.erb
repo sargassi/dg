@@ -1,42 +1,39 @@
-<div id="<%= dom_id warehouse %>">
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Code:</strong>
-    <%= warehouse.code %>
-  </p>
-
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Address:</strong>
-    <%= warehouse.address %>
-  </p>
-
-  <p class="my-5">
-    <strong class="block font-medium mb-1">City:</strong>
-    <%= warehouse.city %>
-  </p>
-
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Cap:</strong>
-    <%= warehouse.cap %>
-  </p>
-
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Civic:</strong>
-    <%= warehouse.civic %>
-  </p>
-
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Latitude:</strong>
-    <%= warehouse.latitude %>
-  </p>
-
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Longitude:</strong>
-    <%= warehouse.longitude %>
-  </p>
+<div id="<%= dom_id warehouse %>" class="border border-slate-200 p-4">
+  <div class="grid grid-cols-2 gap-4">
+    <div>
+      <span class="text-xs text-slate-400 uppercase tracking-wide">Codice</span>
+      <p class="text-sm font-semibold text-slate-700"><%= warehouse.code %></p>
+    </div>
+    <div>
+      <span class="text-xs text-slate-400 uppercase tracking-wide">Indirizzo</span>
+      <p class="text-sm text-slate-700"><%= warehouse.address %></p>
+    </div>
+    <div>
+      <span class="text-xs text-slate-400 uppercase tracking-wide">Città</span>
+      <p class="text-sm text-slate-700"><%= warehouse.city %></p>
+    </div>
+    <div>
+      <span class="text-xs text-slate-400 uppercase tracking-wide">CAP</span>
+      <p class="text-sm text-slate-700"><%= warehouse.cap %></p>
+    </div>
+    <div>
+      <span class="text-xs text-slate-400 uppercase tracking-wide">Civico</span>
+      <p class="text-sm text-slate-700"><%= warehouse.civic %></p>
+    </div>
+    <div>
+      <span class="text-xs text-slate-400 uppercase tracking-wide">Latitudine</span>
+      <p class="text-sm text-slate-700"><%= warehouse.latitude %></p>
+    </div>
+    <div>
+      <span class="text-xs text-slate-400 uppercase tracking-wide">Longitudine</span>
+      <p class="text-sm text-slate-700"><%= warehouse.longitude %></p>
+    </div>
+  </div>
 
   <% if action_name != "show" %>
-    <%= link_to "Show this warehouse", warehouse, class: "rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
-    <%= link_to "Edit this warehouse", edit_warehouse_path(warehouse), class: "rounded-lg py-3 ml-2 px-5 bg-gray-100 inline-block font-medium" %>
-    <hr class="mt-6">
+    <div class="flex gap-2 mt-4 pt-4 border-t border-slate-200">
+      <%= link_to "Mostra", warehouse, class: "#{style_main_btn} bg-blue-500" %>
+      <%= link_to "Modifica", edit_warehouse_path(warehouse), class: "#{style_main_btn} bg-slate-500" %>
+    </div>
   <% end %>
 </div>

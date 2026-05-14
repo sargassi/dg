@@ -1,6 +1,6 @@
 <%= form_with(model: location, class: "contents") do |form| %>
   <% if location.errors.any? %>
-    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-lg mt-3">
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium mt-3 border border-red-200">
       <h2><%= pluralize(location.errors.count, "error") %> prohibited this location from being saved:</h2>
 
       <ul>
@@ -12,21 +12,25 @@
   <% end %>
 
   <div class="my-5">
-    <%= form.label :code %>
-    <%= form.text_field :code, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
+    <%= form.label :code, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+    <%= form.text_field :code, class: "border border-slate-300 outline-none px-3 py-2 mt-2 w-full text-sm" %>
   </div>
 
   <div class="my-5">
-    <%= form.label :warehouse_id %>
-    <%= form.text_field :warehouse_id, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
+    <%= form.label :warehouse_id, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+    <%= form.collection_select :warehouse_id, Warehouse.all, :id, :code,
+          { include_blank: true },
+          class: "border border-slate-300 outline-none px-3 py-2 mt-2 w-full text-sm" %>
   </div>
 
   <div class="my-5">
-    <%= form.label :enabled %>
-    <%= form.check_box :enabled, class: "block mt-2 h-5 w-5" %>
+    <label class="text-xs text-slate-400 uppercase tracking-wide block mb-1">
+      <%= form.check_box :enabled, class: "mr-2" %>
+      Abilitato
+    </label>
   </div>
 
-  <div class="inline">
-    <%= form.submit class: "rounded-lg py-3 px-5 bg-blue-600 text-white inline-block font-medium cursor-pointer" %>
+  <div>
+    <%= form.submit class: style_import_btn %>
   </div>
 <% end %>

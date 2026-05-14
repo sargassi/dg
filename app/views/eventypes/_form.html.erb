@@ -17,11 +17,19 @@
   </div>
 
   <div class="my-5">
-    <%= form.label :enabled %>
-    <%= form.check_box :enabled, class: "block mt-2 h-5 w-5" %>
+    <%= form.label :color, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+    <div class="flex gap-3 items-center">
+      <%= form.color_field :color, class: "h-8 w-12 border border-slate-300 cursor-pointer" %>
+      <%= form.text_field :color, class: "border border-slate-300 outline-none px-3 py-2 w-32 text-xs font-mono" %>
+    </div>
   </div>
 
-  <div class="inline">
-    <%= form.submit class: "rounded-lg py-3 px-5 bg-blue-600 text-white inline-block font-medium cursor-pointer" %>
+  <div class="my-5 flex items-center gap-2">
+    <%= form.check_box :enabled, class: "h-4 w-4" %>
+    <%= form.label :enabled, class: "text-xs text-slate-500" %>
+  </div>
+
+  <div>
+    <%= form.submit class: "p-3 my-4 bg-blue-500 inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer text-white" %>
   </div>
 <% end %>

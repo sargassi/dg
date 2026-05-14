@@ -1,7 +1,44 @@
-<div class="mx-auto md:w-2/3 w-full">
-  <h1 class="font-bold text-4xl">New eventype</h1>
+<%= turbo_frame_tag "quick_eventype_modal" do %>
+  <div class="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-start justify-center pt-32" data-controller="insertevent" data-action="click->insertevent#closeModal">
+    <div class="bg-white border border-slate-200 shadow-lg w-full max-w-sm mx-4" data-action="click->insertevent#stopPropagation">
+      <div class="flex items-center justify-between border-b border-slate-200 px-4 py-3">
+        <h2 class="text-sm font-semibold text-slate-700">Nuovo Tipo Evento</h2>
+        <%= link_to events_path(start_date: params[:start_date] || Date.today),
+              class: "text-slate-400 hover:text-slate-600 transition",
+              data: { turbo_frame: "_top" } do %>
+          <span class="material-symbols-outlined text-lg">close</span>
+        <% end %>
+      </div>
+      <div class="p-4">
+        <%= form_with(model: @eventype, data: { turbo_frame: "_top" }) do |form| %>
+          <% if @eventype.errors.any? %>
+            <div class="bg-red-50 text-red-500 px-3 py-2 font-medium border border-red-200 mb-4">
+              <ul class="text-xs">
+                <% @eventype.errors.each do |error| %>
+                  <li><%= error.full_message %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
 
-  <%= render "form", eventype: @eventype %>
+          <div class="mb-4">
+            <%= form.label :name, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+            <%= form.text_field :name, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", placeholder: "Nome tipo", autofocus: true %>
+          </div>
 
-  <%= link_to "Back to eventypes", eventypes_path, class: "ml-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
-</div>
+          <div class="mb-4">
+            <%= form.label :color, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+            <div class="flex gap-3 items-center">
+              <%= form.color_field :color, class: "h-8 w-12 border border-slate-300 cursor-pointer" %>
+              <%= form.text_field :color, class: "border border-slate-300 outline-none px-3 py-2 w-32 text-xs font-mono" %>
+            </div>
+          </div>
+
+          <div class="flex gap-2">
+            <%= form.submit "Crea", class: "p-3 bg-blue-500 inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer text-white" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

@@ -2,8 +2,10 @@ Rails.application.routes.draw do
   resources :inventories
   resources :items
   resources :itemouts
-  resources :locations
-  resources :warehouses
+  scope '/mainware' do
+    resources :warehouses
+    resources :locations
+  end
   resources :itemins
   resources :operationtypes
   resources :uoms
@@ -38,6 +40,7 @@ Rails.application.routes.draw do
   resources :etilabs
   get 'stages/dashboard'
   get 'stages/sections'
+  get 'production/dashboard'
   get 'production/research'
   get 'production/research_qr'
   get 'production/checkpoint'

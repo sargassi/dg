@@ -1,0 +1,9 @@
+<%= turbo_stream.replace "eventype_select" do %>
+  <%= select_tag "event[eventype_id]",
+        options_from_collection_for_select(Eventype.all, :id, :name, @eventype.id),
+        prompt: "Seleziona tipo",
+        class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm bg-white",
+        id: "event_eventype_id" %>
+<% end %>
+
+<%= turbo_stream.remove "quick_eventype_modal" %>

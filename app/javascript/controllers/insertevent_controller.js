@@ -1,7 +1,27 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Connects to data-controller="insertevent"
 export default class extends Controller {
-  connect() {
+  selectDay(event) {
+    const cell = event.currentTarget
+    const day = cell.dataset.date
+
+    document.querySelectorAll("[data-date]").forEach(c =>
+      c.classList.remove("ring-2", "ring-blue-400", "ring-inset")
+    )
+    cell.classList.add("ring-2", "ring-blue-400", "ring-inset")
+
+    if (day) {
+      Turbo.visit(`/events?start_date=${day}&selected_date=${day}`, { frame: "calendar" })
+    }
+  }
+
+  closeModal(event) {
+    if (event.target === event.currentTarget) {
+      Turbo.visit(`/events${window.location.search}`, { frame: "_top" })
+    }
+  }
+
+  stopPropagation(event) {
+    event.stopPropagation()
   }
 }

@@ -1,6 +1,6 @@
 <%= form_with(model: warehouse, class: "contents") do |form| %>
   <% if warehouse.errors.any? %>
-    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-lg mt-3">
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium mt-3 border border-red-200">
       <h2><%= pluralize(warehouse.errors.count, "error") %> prohibited this warehouse from being saved:</h2>
 
       <ul>
@@ -12,41 +12,41 @@
   <% end %>
 
   <div class="my-5">
-    <%= form.label :code %>
-    <%= form.text_field :code, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
+    <%= form.label :code, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+    <%= form.text_field :code, class: "border border-slate-300 outline-none px-3 py-2 mt-2 w-full text-sm" %>
   </div>
 
   <div class="my-5">
-    <%= form.label :address %>
-    <%= form.text_field :address, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
+    <%= form.label :address, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+    <%= form.text_field :address, class: "border border-slate-300 outline-none px-3 py-2 mt-2 w-full text-sm" %>
   </div>
 
   <div class="my-5">
-    <%= form.label :city %>
-    <%= form.text_field :city, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
+    <%= form.label :city, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+    <%= form.text_field :city, class: "border border-slate-300 outline-none px-3 py-2 mt-2 w-full text-sm" %>
   </div>
 
   <div class="my-5">
-    <%= form.label :cap %>
-    <%= form.text_field :cap, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
+    <%= form.label :cap, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+    <%= form.text_field :cap, class: "border border-slate-300 outline-none px-3 py-2 mt-2 w-full text-sm" %>
   </div>
 
   <div class="my-5">
-    <%= form.label :civic %>
-    <%= form.text_field :civic, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
+    <%= form.label :civic, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+    <%= form.text_field :civic, class: "border border-slate-300 outline-none px-3 py-2 mt-2 w-full text-sm" %>
   </div>
 
   <div class="my-5">
-    <%= form.label :latitude %>
-    <%= form.text_field :latitude, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
+    <%= form.label :latitude, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+    <%= form.text_field :latitude, class: "border border-slate-300 outline-none px-3 py-2 mt-2 w-full text-sm" %>
   </div>
 
   <div class="my-5">
-    <%= form.label :longitude %>
-    <%= form.text_field :longitude, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
+    <%= form.label :longitude, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+    <%= form.text_field :longitude, class: "border border-slate-300 outline-none px-3 py-2 mt-2 w-full text-sm" %>
   </div>
 
-  <div class="inline">
-    <%= form.submit class: "rounded-lg py-3 px-5 bg-blue-600 text-white inline-block font-medium cursor-pointer" %>
+  <div>
+    <%= form.submit class: style_import_btn %>
   </div>
 <% end %>

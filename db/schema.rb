@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_05_08_154417) do
+ActiveRecord::Schema[7.2].define(version: 2026_05_14_143105) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
     t.text "body"
@@ -118,8 +118,10 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_08_154417) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "recurrent"
-    t.string "boolean", default: "f"
+    t.text "description"
+    t.index ["end_time"], name: "index_events_on_end_time"
     t.index ["eventype_id"], name: "index_events_on_eventype_id"
+    t.index ["start_time"], name: "index_events_on_start_time"
   end
 
   create_table "eventypes", force: :cascade do |t|
@@ -127,6 +129,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_08_154417) do
     t.boolean "enabled", default: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "color", default: "#3B82F6"
   end
 
   create_table "fabriclus", force: :cascade do |t|

@@ -1,58 +1,64 @@
+<% menu = [
+  { label: 'Dashboard', path: mainware_dashboard_path, active: true, icon: 'dashboard' },
+  { label: 'Articoli', path: mainware_index_path, active: false, icon: 'inventory_2' },
+  { label: 'Magazzini', path: warehouses_path, active: false, icon: 'warehouse' },
+  { label: 'Location', path: locations_path, active: false, icon: 'location_on' },
+] %>
 <div class="<%= style_main_header_container %>">
-  <%= render partial: 'atoms/header', locals: {link: '/', label: 'Generale / Dashboard'} %>
+  <%= render partial: 'atoms/header', locals: {link: '/', label: 'Generale / Dashboard', menu: menu} %>
 </div>
 
 <section class="<%= style_main_cnt %>">
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
+  <div class="<%= style_main_card_grid %>">
 
-    <div class="bg-white rounded-none border border-slate-200 p-5">
-      <h3 class="text-lg font-semibold text-slate-700 border-b border-slate-200 pb-2 mb-4 flex items-center gap-2">
+    <div class="<%= style_main_card %>">
+      <h3 class="<%= style_main_card_header %>">
         <span class="material-symbols-outlined">warehouse</span>
         Magazzino
       </h3>
       <div class="space-y-3">
-        <%= link_to warehouses_path, class: "flex items-center justify-between p-3 bg-slate-50 rounded shadow-sm hover:bg-slate-100 transition" do %>
+        <%= link_to warehouses_path, class: style_main_card_link do %>
           <span class="text-sm text-slate-700">Gestione Magazzini</span>
-          <span class="bg-slate-200 text-slate-600 text-xs font-semibold px-2 py-1 rounded"><%= @warehouses_count %></span>
+          <span class="<%= style_main_card_badge %>"><%= @warehouses_count %></span>
         <% end %>
-        <%= link_to locations_path, class: "flex items-center justify-between p-3 bg-slate-50 rounded shadow-sm hover:bg-slate-100 transition" do %>
+        <%= link_to locations_path, class: style_main_card_link do %>
           <span class="text-sm text-slate-700">Location / Scaffali</span>
-          <span class="bg-slate-200 text-slate-600 text-xs font-semibold px-2 py-1 rounded"><%= @locations_count %></span>
+          <span class="<%= style_main_card_badge %>"><%= @locations_count %></span>
         <% end %>
-        <%= link_to inventories_path, class: "flex items-center justify-between p-3 bg-slate-50 rounded shadow-sm hover:bg-slate-100 transition" do %>
+        <%= link_to inventories_path, class: style_main_card_link do %>
           <span class="text-sm text-slate-700">Giacenze / Inventario</span>
           <span class="material-symbols-outlined text-slate-400 text-base">arrow_forward_ios</span>
         <% end %>
       </div>
     </div>
 
-    <div class="bg-white rounded-none border border-slate-200 p-5">
-      <h3 class="text-lg font-semibold text-slate-700 border-b border-slate-200 pb-2 mb-4 flex items-center gap-2">
+    <div class="<%= style_main_card %>">
+      <h3 class="<%= style_main_card_header %>">
         <span class="material-symbols-outlined">inventory_2</span>
         Catalogo Articoli
       </h3>
       <div class="space-y-3">
-        <%= link_to mainware_index_path, class: "flex items-center justify-between p-3 bg-slate-50 rounded shadow-sm hover:bg-slate-100 transition" do %>
+        <%= link_to mainware_index_path, class: style_main_card_link do %>
           <span class="text-sm text-slate-700">Catalogo Articoli</span>
-          <span class="bg-slate-200 text-slate-600 text-xs font-semibold px-2 py-1 rounded"><%= @items_count %></span>
+          <span class="<%= style_main_card_badge %>"><%= @items_count %></span>
         <% end %>
-        <%= link_to items_path, class: "flex items-center justify-between p-3 bg-slate-50 rounded shadow-sm hover:bg-slate-100 transition" do %>
+        <%= link_to items_path, class: style_main_card_link do %>
           <span class="text-sm text-slate-700">Gestione Articoli</span>
           <span class="material-symbols-outlined text-slate-400 text-base">arrow_forward_ios</span>
         <% end %>
-        <%= link_to mainware_import_path, class: "flex items-center justify-between p-3 bg-slate-50 rounded shadow-sm hover:bg-slate-100 transition" do %>
+        <%= link_to mainware_import_path, class: style_main_card_link do %>
           <span class="text-sm text-slate-700">Importa da Excel</span>
           <span class="material-symbols-outlined text-slate-400 text-base">arrow_forward_ios</span>
         <% end %>
-        <%= link_to mainware_searchqr_path, class: "flex items-center justify-between p-3 bg-slate-50 rounded shadow-sm hover:bg-slate-100 transition" do %>
+        <%= link_to mainware_searchqr_path, class: style_main_card_link do %>
           <span class="text-sm text-slate-700">Ricerca QR</span>
           <span class="material-symbols-outlined text-slate-400 text-base">arrow_forward_ios</span>
         <% end %>
       </div>
     </div>
 
-    <div class="bg-white rounded-none border border-slate-200 p-5">
-      <h3 class="text-lg font-semibold text-slate-700 border-b border-slate-200 pb-2 mb-4 flex items-center gap-2">
+    <div class="<%= style_main_card %>">
+      <h3 class="<%= style_main_card_header %>">
         <span class="material-symbols-outlined">apps</span>
         Altre Sezioni
       </h3>

@@ -18,11 +18,11 @@
  </li>
 
  <li class="<%= style_side_li %>">
-     <%= link_to mainware_index_path, class: style_side_a(mainware_index_path) do %>
-         <span class="material-symbols-outlined">
-             shelf_position
-         </span>
-         <em>Prodotti
-         </em>
-     <% end %>
- </li>
+      <%= link_to mainware_dashboard_path, class: style_side_a(mainware_dashboard_path) + " " + active_class_for_controllers('mainware', 'warehouses', 'locations') do %>
+          <span class="material-symbols-outlined">
+              shelf_position
+          </span>
+          <em>Main
+          </em>
+      <% end %>
+  </li>

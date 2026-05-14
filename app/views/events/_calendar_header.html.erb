@@ -1,0 +1,19 @@
+<div class="flex items-center justify-between mb-6">
+  <%= link_to events_path(start_date: start_date.prev_month, selected_date: selected_date),
+        class: "flex items-center gap-1 text-slate-500 hover:text-slate-800 transition px-2 py-1",
+        data: { turbo_frame: "calendar" } do %>
+    <span class="material-symbols-outlined text-lg">chevron_left</span>
+    <span class="text-sm hidden sm:inline"><%= calendar_month_name(start_date.prev_month) %></span>
+  <% end %>
+
+  <h2 class="text-lg font-semibold text-slate-800">
+    <%= calendar_month_name(start_date) %> <%= start_date.year %>
+  </h2>
+
+  <%= link_to events_path(start_date: start_date.next_month, selected_date: selected_date),
+        class: "flex items-center gap-1 text-slate-500 hover:text-slate-800 transition px-2 py-1",
+        data: { turbo_frame: "calendar" } do %>
+    <span class="text-sm hidden sm:inline"><%= calendar_month_name(start_date.next_month) %></span>
+    <span class="material-symbols-outlined text-lg">chevron_right</span>
+  <% end %>
+</div>

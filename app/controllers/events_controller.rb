@@ -1,77 +1,74 @@
 class EventsController < ApplicationController
   before_action :set_event, only: %i[ show edit update destroy ]
 
-  # GET /events or /events.json
   def index
-    # Scope your query to the dates being shown:
-    start_date = params.fetch(:start_date, Date.today).to_date
-    @todate = start_date
-    @events = Event.where(starts_at: start_date.beginning_of_month.beginning_of_week..start_date.end_of_month.end_of_week)
-    @evx = Event.where(' start_time >= ? and end_time <= ?', start_date.beginning_of_month , start_date.end_of_month).group_by{|x| x.eventype_id}
+    @date = safe_date(:start_date)
+    @todate = safe_date(:selected_date, @date)
+    month_start = @date.beginning_of_month
+    month_end = @date.end_of_month
 
+    @events = Event.where(start_time: month_start..month_end)
+                   .or(Event.where(end_time: month_start..month_end))
+                   .or(Event.where("start_time < ? AND end_time > ?", month_start, month_end))
+                   .includes(:eventype)
 
-
+    @day_events = @events.select { |e| (e.start_time..e.end_time).cover?(@todate) }
+    @end_of_week = @todate.end_of_week(:sunday)
+    @week_events = @events.select { |e| e.start_time <= @end_of_week && e.end_time >= @todate + 1 }
   end
 
-  # GET /events/1 or /events/1.json
   def show
   end
 
-  # GET /events/new
   def new
     @event = Event.new
+    @event.start_time = safe_date(:start_date, nil)
+    @event.end_time = safe_date(:start_date, nil)
+    @event.eventype_id = params[:eventype_id] if params[:eventype_id].present?
   end
 
-  # GET /events/1/edit
   def edit
   end
 
-  # POST /events or /events.json
   def create
     @event = Event.new(event_params)
 
-    respond_to do |format|
-      if @event.save
-        format.html { redirect_to event_url(@event), notice: "Event was successfully created." }
-        format.json { render :show, status: :created, location: @event }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @event.errors, status: :unprocessable_entity }
-      end
+    if @event.save
+      redirect_to events_path(start_date: @event.start_time, selected_date: params[:selected_date]), notice: "Event created."
+    else
+      render :new, status: :unprocessable_entity
     end
   end
 
-  # PATCH/PUT /events/1 or /events/1.json
   def update
-    respond_to do |format|
-      if @event.update(event_params)
-        format.html { redirect_to event_url(@event), notice: "Event was successfully updated." }
-        format.json { render :show, status: :ok, location: @event }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @event.errors, status: :unprocessable_entity }
-      end
+    if @event.update(event_params)
+      redirect_to events_path(start_date: @event.start_time, selected_date: params[:selected_date]), notice: "Event updated."
+    else
+      render :edit, status: :unprocessable_entity
     end
   end
 
-  # DELETE /events/1 or /events/1.json
   def destroy
     @event.destroy
-
-    respond_to do |format|
-      format.html { redirect_to events_url, notice: "Event was successfully destroyed." }
-      format.json { head :no_content }
-    end
+    redirect_to events_url, notice: "Event deleted."
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
     def set_event
       @event = Event.find(params[:id])
     end
 
-    # Only allow a list of trusted parameters through.
     def event_params
-      params.require(:event).permit(:name, :start_time, :end_time, :eventype_id, :recurrent)
+      params.require(:event).permit(:name, :description, :start_time, :end_time, :eventype_id, :recurrent)
+    end
+
+    def safe_date(param_key, default = Date.today)
+      raw = params[param_key]
+      return default unless raw.present?
+      Date.parse(raw.to_s)
+    rescue ArgumentError, TypeError
+      default
     end
 end
+
+

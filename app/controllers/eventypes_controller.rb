@@ -25,7 +25,7 @@ class EventypesController < ApplicationController
 
     respond_to do |format|
       if @eventype.save
-        format.html { redirect_to eventype_url(@eventype), notice: "Eventype was successfully created." }
+        format.html { redirect_to new_event_path(eventype_id: @eventype.id, start_date: params[:start_date] || Date.today), notice: "Tipo evento creato." }
         format.json { render :show, status: :created, location: @eventype }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -65,6 +65,6 @@ class EventypesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def eventype_params
-      params.require(:eventype).permit(:name, :enabled)
+      params.require(:eventype).permit(:name, :enabled, :color)
     end
 end

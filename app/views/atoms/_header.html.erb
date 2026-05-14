@@ -1,6 +1,18 @@
- <h1 class="<%= style_main_header %> flex-none">
-   <a href="<%= link %>" class="font-semibold" data-turbo-frame="_top" >
-   <%= label %>
-   </a>
- </h1>
- <hr>
+<h1 class="<%= style_main_header %> flex-none">
+  <a href="<%= link %>" class="font-semibold" data-turbo-frame="_top">
+    <%= label %>
+  </a>
+</h1>
+<% if local_assigns[:menu] && menu.any? %>
+  <nav class="flex items-center gap-1 ml-auto">
+    <% menu.each do |item| %>
+      <%= link_to item[:path],
+            class: "#{item[:active] ? 'bg-slate-200 text-slate-800 font-semibold' : 'text-slate-500 hover:bg-slate-100 hover:text-slate-700'} px-3 py-1.5 text-xs lowercase rounded-none transition flex items-center gap-1",
+            data: { turbo_frame: "_top" } do %>
+        <% if item[:icon] %><span class="material-symbols-outlined text-base"><%= item[:icon] %></span><% end %>
+        <%= item[:label] %>
+      <% end %>
+    <% end %>
+  </nav>
+<% end %>
+<hr>

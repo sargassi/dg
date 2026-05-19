@@ -1,6 +1,6 @@
 <%# FILE UPLOAD %>
 <section class="<%= style_import_form %>" >
-  <%= form_for prods do |f| %>
+  <%= form_for prods, url: (defined?(form_url) ? form_url : prods) do |f| %>
     <div class="w-full flex gap-2 items-center">
     <% if defined?(customer) && customer == 'y' %>
 

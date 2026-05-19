@@ -235,7 +235,7 @@ module ApplicationHelper
   end
 
   def style_main_btn_icon
-    'my-6 bg-accent-800 text-white tracking-wide inline-block cursor-pointer hover:bg-accent-700 h-10 w-10'
+    'my-6 bg-accent-800 text-white tracking-wide inline-block cursor-pointer hover:bg-accent-700 h-10 w-10 rounded-sm'
   end
 
   def style_import_form
@@ -251,7 +251,7 @@ module ApplicationHelper
   end
 
   def style_import_btn_blank
-    'p-2 my-2  inline-block rounded-sm uppercase text-xs cursor-pointer font-semibold'
+    'p-2 my-2 rounded-sm inline-block rounded-sm uppercase text-xs cursor-pointer font-semibold'
   end
 
   def style_import_pdf
@@ -272,6 +272,10 @@ module ApplicationHelper
 
   def active_class_for_controllers(*controller_names)
     controller_names.include?(controller_name) ? 'active' : ''
+  end
+
+  def active_class_for_namespace(*namespaces)
+    namespaces.any? { |ns| controller_path == ns || controller_path.start_with?("#{ns}/") } ? 'active' : ''
   end
 
   def assign_fs(tem, sez)

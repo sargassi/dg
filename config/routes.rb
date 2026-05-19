@@ -48,7 +48,9 @@ Rails.application.routes.draw do
   get 'tempesta/set_f'
   resources :tempesta
   resources :prows
-  resources :proformas
+  namespace :production do
+    resources :proformas
+  end
   resources :stations
   devise_for :users
   resources :rails

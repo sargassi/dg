@@ -12,11 +12,58 @@
     <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-lg inline-block" id="notice"><%= notice %></p>
   <% end %>
 
-  <div class="flex justify-end mb-4">
-    <%= link_to "Nuovo Magazzino", new_warehouse_path, class: style_import_btn %>
-  </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
 
-  <div id="warehouses" class="min-w-full space-y-4">
-    <%= render @warehouses %>
+    <div>
+      <h3 class="text-sm font-semibold text-slate-600 uppercase tracking-wide mb-4">Elenco Magazzini</h3>
+      <div id="warehouses">
+        <%= render @warehouses %>
+      </div>
+      <%= turbo_frame_tag "warehouse_modal" %>
+    </div>
+
+    <div>
+      <h3 class="text-sm font-semibold text-slate-600 uppercase tracking-wide mb-4">Nuovo Magazzino</h3>
+      <div class="bg-white border border-slate-200 shadow-sm p-6">
+        <%= form_with(model: @warehouse, class: "contents") do |form| %>
+          <% if @warehouse.errors.any? %>
+            <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium mb-4 border border-red-200 text-sm">
+              <h2><%= pluralize(@warehouse.errors.count, "error") %> impediscono il salvataggio:</h2>
+              <ul class="mt-1 list-disc list-inside">
+                <% @warehouse.errors.each do |error| %>
+                  <li><%= error.full_message %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <div class="mb-4">
+            <%= form.label :code, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+            <%= form.text_field :code, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", placeholder: "Codice magazzino", required: true %>
+          </div>
+
+          <div class="mb-4">
+            <%= form.label :address, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+            <%= form.text_field :address, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", placeholder: "Indirizzo" %>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 mb-4">
+            <div>
+              <%= form.label :city, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= form.text_field :city, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", placeholder: "Città" %>
+            </div>
+            <div>
+              <%= form.label :cap, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= form.text_field :cap, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", placeholder: "CAP" %>
+            </div>
+          </div>
+
+          <div>
+            <%= form.submit "Crea Magazzino", class: "p-3 bg-blue-500 inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer text-white" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
   </div>
 </section>

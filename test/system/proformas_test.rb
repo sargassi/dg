@@ -1,17 +1,17 @@
 require "application_system_test_case"
 
-class ProformasTest < ApplicationSystemTestCase
+class Production::ProformasTest < ApplicationSystemTestCase
   setup do
     @proforma = proformas(:one)
   end
 
   test "visiting the index" do
-    visit proformas_url
+    visit production_proformas_url
     assert_selector "h1", text: "Proformas"
   end
 
   test "should create proforma" do
-    visit proformas_url
+    visit production_proformas_url
     click_on "New proforma"
 
     check "Closed" if @proforma.closed
@@ -26,7 +26,7 @@ class ProformasTest < ApplicationSystemTestCase
   end
 
   test "should update Proforma" do
-    visit proforma_url(@proforma)
+    visit production_proforma_url(@proforma)
     click_on "Edit this proforma", match: :first
 
     check "Closed" if @proforma.closed
@@ -41,7 +41,7 @@ class ProformasTest < ApplicationSystemTestCase
   end
 
   test "should destroy Proforma" do
-    visit proforma_url(@proforma)
+    visit production_proforma_url(@proforma)
     click_on "Destroy this proforma", match: :first
 
     assert_text "Proforma was successfully destroyed"

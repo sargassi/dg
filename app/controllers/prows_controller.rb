@@ -59,7 +59,7 @@ class ProwsController < ApplicationController
     temp.each(&:destroy)
     @prow.destroy
     respond_to do |format|
-      format.html { redirect_to proforma_path(id: params[:bck]), notice: 'eliminato.' }
+      format.html { redirect_to production_proforma_path(id: params[:bck]), notice: 'eliminato.' }
       format.json { head :no_content }
     end
   end

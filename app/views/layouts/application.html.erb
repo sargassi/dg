@@ -15,13 +15,6 @@
 
     <% if controller_name == 'app' %>
       <%= render partial: 'layouts/headers/app' %>
-      <%= turbo_frame_tag 'success' %>
-      <% if notice %>
-
-        <p id="notice" class="bg-green-400 p-4 w-full text-white absolute bottom-0 left-0 delay-300" data-controller="notifications"><%= notice %></p>
-
-      <% end %>
-
       <%= yield %>
 
     <% else %>
@@ -32,11 +25,38 @@
 
             <section class="home px-4 my-2 ml-16 grow">
             <%= render partial: 'layouts/menus/top/structure' %>
-            <%= turbo_frame_tag 'success' %>
             <%= yield %>
             </section>
         </main>
 
+    <% end %>
+
+    <%= turbo_frame_tag 'success' %>
+
+    <% if notice %>
+      <div data-controller="notifications"
+           data-notifications-auto-dismiss-value="4000"
+           class="fixed bottom-4 right-4 z-50 max-w-sm w-full
+                  translate-x-full opacity-0
+                  transition-all duration-300 ease-out
+                  bg-white rounded-lg shadow-xl border-l-4 border-emerald-500 p-4
+                  flex items-start gap-3">
+        <span class="material-symbols-outlined text-emerald-500 text-xl flex-shrink-0">check_circle</span>
+        <span class="text-sm text-slate-800 pt-0.5"><%= notice %></span>
+      </div>
+    <% end %>
+
+    <% if alert %>
+      <div data-controller="notifications"
+           data-notifications-auto-dismiss-value="4000"
+           class="fixed bottom-4 right-4 z-50 max-w-sm w-full
+                  translate-x-full opacity-0
+                  transition-all duration-300 ease-out
+                  bg-white rounded-lg shadow-xl border-l-4 border-red-500 p-4
+                  flex items-start gap-3">
+        <span class="material-symbols-outlined text-red-500 text-xl flex-shrink-0">error</span>
+        <span class="text-sm text-slate-800 pt-0.5"><%= alert %></span>
+      </div>
     <% end %>
 
     <script>

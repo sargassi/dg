@@ -1,17 +1,18 @@
 <% defined?(redir) ? bck = redir : bck = '' %>
+
 <div class="<%= style_main_header_container %>">
  <% if defined? var %>
    <% case var %>
    <% when 'proformas' %>
-     <%= render partial: 'atoms/header', locals: {link: '/proformas', label: "Lancio / #{@proforma.id} del #{@proforma.data_in.strftime('%d/%m/%Y')}"} %>
+      <%= render partial: 'atoms/header', locals: {link: '/production/proformas', label: "Lancio #{@proforma.customer} del #{@proforma.data_in.strftime('%d/%m/%Y')}"} %>
    <% when 'prows' %>
-     <%= render partial: 'atoms/header', locals: {link: "/proformas/#{back}", label: "Lancio #{back} / #{@prow.description }"} %>
+      <%= render partial: 'atoms/header', locals: {link: "/production/proformas/#{back}", label: "Lancio #{back} / #{@prow.description }"} %>
   <% else %>
   <% end %>
  <% end %>
  <% if defined?(pdf) && pdf == 'prof' %>
    <div class="link_to_pdf w-40 ">
-   <%= link_to "QR Codes", proforma_path(:id => @proforma.id, :format => :pdf), target: "_blank", class: style_action_pdf %>
+    <%= link_to "QR Codes", production_proforma_path(:id => @proforma.id, :format => :pdf), target: "_blank", class: style_action_pdf %>
    </div>
  <% end %>
  <% if defined?(note) && note != '' %>
@@ -25,8 +26,8 @@
 
  <div class="grow text-end flex gap-4">
 
-
- <% button_to "/#{var}/#{target.id}?bck=#{bck}", method: :delete, class: style_actions_linx, data: {turbo_frame: '_top'} do %>
+ <% delete_base = var == 'proformas' ? '/production/proformas' : "/#{var}" %>
+ <% button_to "#{delete_base}/#{target.id}?bck=#{bck}", method: :delete, class: style_actions_linx, data: {turbo_frame: '_top'} do %>
      <span class="material-symbols-outlined">
      delete
      </span>

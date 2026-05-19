@@ -1,0 +1,14 @@
+<% menu_proformas = [
+  { label: 'Dashboard', path: production_dashboard_path, active: false, icon: 'dashboard' },
+  { label: 'Lanci', path: production_proformas_path, active: true, icon: 'checklist_rtl' },
+  { label: 'Ricerca', path: production_research_path, active: false, icon: 'search_insights' },
+] %>
+<div class="<%= style_main_header_container %>">
+    <%= render partial: 'atoms/header', locals: {link: 'dashboard', label: 'Produzione / Lanci', menu: menu_proformas} %>
+</div>
+
+<%= render partial: 'atoms/form_import', locals: {prods: @profnew, pdf: 'n', customer: 'y', form_url: production_proformas_path} %>
+
+<%= render partial: 'atoms/ux/pagy' %>
+
+<%= render partial: 'profs' %>

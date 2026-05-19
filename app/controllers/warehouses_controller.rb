@@ -4,6 +4,7 @@ class WarehousesController < ApplicationController
   # GET /warehouses or /warehouses.json
   def index
     @warehouses = Warehouse.all
+    @warehouse = Warehouse.new
   end
 
   # GET /warehouses/1 or /warehouses/1.json
@@ -25,10 +26,11 @@ class WarehousesController < ApplicationController
 
     respond_to do |format|
       if @warehouse.save
-        format.html { redirect_to warehouse_url(@warehouse), notice: "Warehouse was successfully created." }
+        format.html { redirect_to warehouses_url, notice: "Warehouse was successfully created." }
         format.json { render :show, status: :created, location: @warehouse }
       else
-        format.html { render :new, status: :unprocessable_entity }
+        @warehouses = Warehouse.all
+        format.html { render :index, status: :unprocessable_entity }
         format.json { render json: @warehouse.errors, status: :unprocessable_entity }
       end
     end
@@ -38,7 +40,7 @@ class WarehousesController < ApplicationController
   def update
     respond_to do |format|
       if @warehouse.update(warehouse_params)
-        format.html { redirect_to warehouse_url(@warehouse), notice: "Warehouse was successfully updated." }
+        format.html { redirect_to warehouses_url, notice: "Warehouse was successfully updated." }
         format.json { render :show, status: :ok, location: @warehouse }
       else
         format.html { render :edit, status: :unprocessable_entity }

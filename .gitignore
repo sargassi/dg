@@ -35,3 +35,12 @@
 
 /app/assets/builds/*
 !/app/assets/builds/.keep
+
+# Ignore assets/ folder (spreadsheets, etc.)
+/assets/
+
+# Ignore Claude/opencode related .md files
+**/CLAUDE.md
+**/*claude*.md
+**/*opencode*.md
+.opencode/**/*

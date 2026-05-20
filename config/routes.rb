@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  resources :collections
+  get 'etichecks/etichette'
+  resources :etichecks
   resources :inventories
   resources :items
   resources :itemouts
@@ -59,9 +62,11 @@ Rails.application.routes.draw do
   get 'dashboard/home'
   get 'utilities/dashboard'
   get 'utilities/etichette'
+  get 'utilities/etichette_check'
   get 'utilities/etichette_camp'
   get 'utilities/etichette_lab'
   get 'utilities/etichette_gen'
+  post 'utilities/eticheckimp'
   post 'utilities/eticampimp'
   post 'utilities/etilabimp'
   post 'utilities/etilgenimp'

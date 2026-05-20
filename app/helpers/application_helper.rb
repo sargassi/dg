@@ -231,7 +231,7 @@ module ApplicationHelper
   end
 
   def style_select_class
-    'w-80 bg-accent-100 uppercase text-xs'
+    'w-full bg-white border border-slate-300 rounded px-3 py-2 text-xs'
   end
 
   def style_search_input
@@ -247,15 +247,15 @@ module ApplicationHelper
   end
 
   def style_import_form
-    'files flex justify-between items-center bg-accent-50 px-4'
+    'bg-accent-50 p-6'
   end
 
   def style_import_field
-    'py-2 my-2 bg-accent-50 inline-block rounded-sm'
+    'w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs file:bg-accent file:text-white file:border-0 file:rounded file:px-3 file:py-1 file:mr-2 file:cursor-pointer file:text-xs file:font-medium'
   end
 
   def style_import_btn
-    'p-3 my-4 bg-accent inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer text-white'
+    'px-5 py-2 bg-accent text-white tracking-wider rounded-sm uppercase text-xs cursor-pointer hover:bg-accent-700 transition-colors'
   end
 
   def style_import_btn_blank

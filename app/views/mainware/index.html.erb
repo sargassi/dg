@@ -11,13 +11,19 @@
   <div class="flex gap-4 items-center mb-4 flex-none">
     <%= form_with url: mainware_index_path, method: :get,
                   data: { search_filter_target: "form", turbo_frame: "items-table" },
-                  class: "relative" do |f| %>
-      <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none">search</span>
-      <%= f.search_field :q,
-            value: params[:q],
-            placeholder: "Cerca in tutte le colonne",
-            class: "#{style_search_input} rounded-lg pl-10 font-mono text-blue-600",
-            data: { action: "input->search-filter#filter", search_filter_target: "input" } %>
+                  class: "flex items-center gap-3" do |f| %>
+      <div class="relative">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none">search</span>
+        <%= f.search_field :q,
+              value: params[:q],
+              placeholder: "Cerca in tutte le colonne",
+              class: "#{style_search_input} rounded-lg pl-10 font-mono text-blue-600",
+              data: { action: "input->search-filter#filter", search_filter_target: "input" } %>
+      </div>
+      <%= f.collection_select :collection_id, @collections, :id, :description,
+            { include_blank: "-", selected: @collection_id },
+            class: "border border-accent-100 outline-none p-2 text-xs bg-white rounded-lg shadow-sm w-32",
+            data: { action: "change->search-filter#filter" } %>
     <% end %>
     <span class="text-sm text-slate-500 whitespace-nowrap" data-search-filter-target="count"><%= @pagy.count %> articoli</span>
     <%= link_to "Importa da Excel", mainware_import_path, class: "#{style_import_btn} ml-auto" %>
@@ -35,7 +41,7 @@
         <table class="min-w-full">
           <thead>
             <tr>
-              <% %w[Gencode Item Fabric Var. Descrizione Tg Fabric Color Unitprice Materiale Note QR].each do |h| %>
+              <% %w[Gencode Item Fabric Var. Descrizione Tg Fabric Color Unitprice Materiale Note Collezione QR Azioni].each do |h| %>
                 <th class="<%= style_table_th %> sticky top-0 z-10"><%= h %></th>
               <% end %>
             </tr>
@@ -54,8 +60,23 @@
                 <td class="<%= style_table_td %>"><%= item.unit_price %></td>
                 <td class="<%= style_table_td %>"><%= item.materiale %></td>
                 <td class="<%= style_table_td %>"><%= item.note %></td>
+                <td class="<%= style_table_td %>"><%= item.collection&.description %></td>
                 <td class="<%= style_table_td %>" style="width:130px">
                   <%= item.qrcode_svg.html_safe %>
+                </td>
+                <td class="<%= style_table_td %> whitespace-nowrap">
+                  <div class="flex gap-1">
+                    <%= link_to edit_item_path(item),
+                          class: "p-1.5 rounded text-blue-600 hover:text-blue-800 hover:bg-blue-50 transition",
+                          data: { turbo_frame: "item_modal" } do %>
+                      <span class="material-symbols-outlined text-lg">edit</span>
+                    <% end %>
+                    <%= button_to item_path(item), method: :delete,
+                          class: "p-1.5 rounded text-red-600 hover:text-red-800 hover:bg-red-50 transition",
+                          data: { turbo_confirm: "Eliminare questo articolo?", turbo_frame: "_top" } do %>
+                      <span class="material-symbols-outlined text-lg">delete</span>
+                    <% end %>
+                  </div>
                 </td>
               </tr>
             <% end %>
@@ -120,3 +141,5 @@
     </div>
   <% end %>
 </section>
+
+<%= turbo_frame_tag "item_modal" %>

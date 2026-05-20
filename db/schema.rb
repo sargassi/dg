@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_05_19_164528) do
+ActiveRecord::Schema[7.2].define(version: 2026_05_20_140938) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
     t.text "body"
@@ -64,12 +64,35 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_19_164528) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "collections", force: :cascade do |t|
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "eticamps", force: :cascade do |t|
     t.string "itemcode"
     t.string "fabricode"
     t.string "varcode"
     t.string "season"
     t.integer "group", default: 1
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "etichecks", force: :cascade do |t|
+    t.string "itemcode"
+    t.string "fabricode"
+    t.string "varcode"
+    t.integer "group", default: 1
+    t.string "description"
+    t.string "tg"
+    t.string "fabric"
+    t.integer "qt", default: 1
+    t.string "materiale"
+    t.string "chi"
+    t.string "dove"
+    t.string "cspediti"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -204,6 +227,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_19_164528) do
     t.datetime "updated_at", null: false
     t.string "gencode"
     t.text "qrcode_svg"
+    t.integer "collection_id"
+    t.index ["collection_id"], name: "index_items_on_collection_id"
   end
 
   create_table "locations", force: :cascade do |t|
@@ -451,6 +476,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_19_164528) do
   add_foreign_key "inventories", "warehouses"
   add_foreign_key "itemins", "operators"
   add_foreign_key "itemouts", "operators"
+  add_foreign_key "items", "collections"
   add_foreign_key "locations", "warehouses"
   add_foreign_key "prodrow", "areas"
   add_foreign_key "prodrow", "prodcodes"

@@ -2,7 +2,18 @@ class MainwareController < ApplicationController
   include Pagy::Backend
 
   def index
+    @collections = Collection.joins("INNER JOIN items ON items.collection_id = collections.id").distinct.order(created_at: :desc)
+
     @itemz = Item.all
+
+    if params[:collection_id].present?
+      @collection_id = params[:collection_id]
+      @itemz = @itemz.where(collection_id: @collection_id)
+    elsif !params.key?(:collection_id) && @collections.any?
+      @collection_id = @collections.first.id.to_s
+      @itemz = @itemz.where(collection_id: @collections.first.id)
+    end
+
     if params[:q].present?
       q = "%#{params[:q]}%"
       @itemz = @itemz.where(
@@ -23,13 +34,15 @@ class MainwareController < ApplicationController
 
   def import
     @data = Rails.cache.read(import_cache_key)
+    @collections = Collection.all
   end
 
   def import_parse
     return redirect_to mainware_import_path, alert: "Seleziona un file" unless params[:file].present?
+    return redirect_to mainware_import_path, alert: "Seleziona una collezione" unless params[:collection_id].present?
 
     service = ImportGeneralService.new
-    data = service.parse(params[:file])
+    data = service.parse(params[:file], params[:collection_id])
     Rails.cache.write(import_cache_key, data, expires_in: 30.minutes)
     redirect_to mainware_import_path, notice: "#{data[:rows].size} righe caricate. Verifica e modifica."
   end

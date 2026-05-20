@@ -1,0 +1,22 @@
+<section class="<%= style_import_form %>" >
+  <%= form_with url:"/utilities/eticheckimp" do |f| %>
+  <%= f.hidden_field :dategroup, :value => @working_date %>
+  <%= hidden_field_tag :eticheck, nil, :value => 'y' %>
+  <%= f.hidden_field :group, :value => @group %>
+
+    <%= hidden_field_tag :import, nil, :value => 'y' %>
+
+    <%= f.file_field :file, class: style_import_field, :required => true %>
+    <%= f.submit "Importa", target: "_blank", class: style_import_btn %>
+<% end %>
+  <% if pdf.present? && pdf == 'y' %>
+  <div class="link_to_pdf">
+    <%= link_to "PDF", etichecks_etichette_path(:format => :pdf), target: "_blank", class: style_import_pdf_small %>
+  </div>
+<% end %>
+
+</section>
+
+<%# END FILE UPLOAD %>
+
+<hr>

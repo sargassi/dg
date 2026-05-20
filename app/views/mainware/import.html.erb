@@ -7,20 +7,25 @@
   <%= render partial: 'atoms/header', locals: {link: '/', label: 'Generale / Import', menu: menu} %>
 </div>
 
-<section class="<%= style_main_cnt %>">
+<section class="<%= style_main_cnt %> flex flex-col overflow-hidden min-w-0" style="height: calc(100vh - 140px);">
   <% if @data.present? %>
 
-    <h2 class="<%= style_main_sub_header %>">
+    <h2 class="<%= style_main_sub_header %> flex-none">
       Anteprima importazione (<span id="import-count"><%= @data[:rows].size %></span> righe)
+      <% if @data[:collection_id].present? %>
+        <span class="ml-4 text-xs text-slate-400 font-normal">
+          — Collezione: <%= Collection.find(@data[:collection_id]).description %>
+        </span>
+      <% end %>
     </h2>
 
-    <div class="overflow-x-auto max-h-[800px] overflow-y-auto">
+    <div class="overflow-x-auto flex-1 min-h-0 overflow-y-auto">
       <table class="min-w-full" data-controller="inline-edit">
         <thead>
           <tr>
-            <th class="<%= style_table_th %> sticky top-0 z-10"></th>
-            <th class="<%= style_table_th %> sticky top-0 z-10">Riga</th>
-            <th class="<%= style_table_th %> sticky top-0 z-10">Gencode</th>
+            <th class="<%= style_table_th %> sticky top-0 z-10 w-12 text-center"></th>
+            <th class="<%= style_table_th %> sticky top-0 z-10 w-16 text-center">Riga</th>
+            <th class="<%= style_table_th %> sticky top-0 z-10 w-40">Gencode</th>
             <% @data[:headers].each do |h| %>
               <th class="<%= style_table_th %> sticky top-0 z-10"><%= h %></th>
             <% end %>
@@ -67,7 +72,7 @@
       </table>
     </div>
 
-    <div class="flex gap-4 mt-6">
+    <div class="flex gap-4 mt-6 flex-none">
       <%= form_with url: mainware_import_confirm_path, method: :post do %>
         <button type="submit" class="<%= style_import_btn %> bg-green-600">
           Conferma importazione (<span id="import-count-btn"><%= @data[:rows].size %></span>)
@@ -79,13 +84,29 @@
 
   <% else %>
 
-    <section class="<%= style_import_form %>" data-controller="loader">
+    <section class="bg-accent-50 p-6" data-controller="loader">
       <div data-loader-target="form">
         <%= form_with url: mainware_import_parse_path, method: :post, multipart: true,
                      data: { action: "submit->loader#show" } do |f| %>
-          <div class="w-full flex gap-2 items-center">
-            <%= f.file_field :file, class: style_import_field, required: true %>
-            <%= f.submit "Carica", class: style_import_btn, data: { turbo_submits_with: "Caricamento..." } %>
+
+          <div class="flex items-center gap-3">
+            <div class="w-72">
+              <%= f.file_field :file,
+                  class: style_import_field,
+                  required: true %>
+            </div>
+            <div class="w-56 flex items-center gap-1">
+              <%= f.collection_select :collection_id, @collections, :id, :description,
+                  { include_blank: "Seleziona una collezione" },
+                  required: true,
+                  class: "#{style_select_class} py-1.5" %>
+              <%= link_to new_collection_path, data: { turbo_frame: "collection_modal" }, class: "flex items-center justify-center w-9 h-9 bg-white border border-slate-300 rounded text-slate-500 hover:text-accent hover:border-accent transition-colors flex-shrink-0" do %>
+                <span class="material-symbols-outlined text-base">add</span>
+              <% end %>
+            </div>
+            <%= f.submit "Carica",
+                class: style_import_btn,
+                data: { turbo_submits_with: "Caricamento..." } %>
           </div>
         <% end %>
       </div>
@@ -98,6 +119,8 @@
         <span class="ml-3 text-slate-600">Caricamento in corso...</span>
       </div>
     </section>
+
+    <%= turbo_frame_tag "collection_modal" %>
 
   <% end %>
 </section>

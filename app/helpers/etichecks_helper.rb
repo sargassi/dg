@@ -1,0 +1,2 @@
+module EtichecksHelper
+end

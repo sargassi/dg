@@ -1,36 +1,9 @@
 <li class="<%= style_side_li %>">
-      <%= link_to utilities_etichette_path, class: style_side_a(utilities_etichette_path) do %>
-          <span class="material-symbols-outlined">
-          sell
-          </span>
-          <em>Etichette Proforma
-          </em>
-      <% end %>
-  </li>
-  <li class="<%= style_side_li %>">
-      <%= link_to utilities_etichette_gen_path, class: style_side_a(utilities_etichette_gen_path) do %>
-          <span class="material-symbols-outlined">
-              bookmark
-          </span>
-          <em>Etichette Generiche
-          </em>
-      <% end %>
-  </li>
-  <li class="<%= style_side_li %>">
-      <%= link_to utilities_etichette_lab_path, class: style_side_a(utilities_etichette_lab_path) do %>
-          <span class="material-symbols-outlined">
-              bookmark_check
-          </span>
-          <em>Etichette Laboratorio
-          </em>
-      <% end %>
-  </li>
-  <li class="<%= style_side_li %>">
-      <%= link_to utilities_etichette_camp_path, class: style_side_a(utilities_etichette_camp_path) do %>
-          <span class="material-symbols-outlined">
-              description
-          </span>
-          <em>Etichette Campione
-          </em>
-      <% end %>
-  </li>
+    <%= link_to utilities_dashboard_path, class: style_side_a(utilities_dashboard_path) + " " + active_class_for_controllers('utilities') do %>
+        <span class="material-symbols-outlined">
+            description
+        </span>
+        <em>Utilità
+        </em>
+    <% end %>
+</li>

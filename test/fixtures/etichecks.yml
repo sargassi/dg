@@ -1,0 +1,29 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  itemcode: MyString
+  fabricode: MyString
+  varcode: MyString
+  group: 1
+  description: MyString
+  tg: MyString
+  fabric: MyString
+  qt: 1
+  materiale: MyString
+  chi: MyString
+  dove: MyString
+  cspediti: MyString
+
+two:
+  itemcode: MyString
+  fabricode: MyString
+  varcode: MyString
+  group: 1
+  description: MyString
+  tg: MyString
+  fabric: MyString
+  qt: 1
+  materiale: MyString
+  chi: MyString
+  dove: MyString
+  cspediti: MyString

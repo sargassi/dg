@@ -13,10 +13,12 @@ class ItemsController < ApplicationController
   # GET /items/new
   def new
     @item = Item.new
+    @collections = Collection.all
   end
 
   # GET /items/1/edit
   def edit
+    @collections = Collection.all
   end
 
   # POST /items or /items.json
@@ -38,7 +40,7 @@ class ItemsController < ApplicationController
   def update
     respond_to do |format|
       if @item.update(item_params)
-        format.html { redirect_to item_url(@item), notice: "Item was successfully updated." }
+        format.html { redirect_to mainware_index_path, notice: "Item was successfully updated." }
         format.json { render :show, status: :ok, location: @item }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -52,7 +54,8 @@ class ItemsController < ApplicationController
     @item.destroy
 
     respond_to do |format|
-      format.html { redirect_to items_url, notice: "Item was successfully destroyed." }
+      format.html { redirect_to mainware_index_path, notice: "Item was successfully destroyed." }
+      format.turbo_stream { redirect_to mainware_index_path, notice: "Item was successfully destroyed." }
       format.json { head :no_content }
     end
   end
@@ -65,6 +68,6 @@ class ItemsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def item_params
-      params.require(:item).permit(:itemcode, :fabricode, :varcode, :description, :tg, :note, :fabric, :colour, :unit_price, :gencode, :materiale, pics: [])
+      params.require(:item).permit(:itemcode, :fabricode, :varcode, :description, :tg, :note, :fabric, :colour, :unit_price, :gencode, :materiale, :collection_id, pics: [])
     end
 end

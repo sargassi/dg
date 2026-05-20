@@ -15,18 +15,18 @@ class ImportGeneralService
     'materiale'     => :materiale
   }
 
-  def parse(file)
+  def parse(file, collection_id = nil)
     spreadsheet = Roo::Excelx.new(file)
     headers = spreadsheet.row(1)
 
     rows = (2..spreadsheet.last_row).map do |i|
       row = Hash[[headers, spreadsheet.row(i)].transpose]
       row[:_index] = i
-      row[:_gencode] = [row['Item Code:'], row['Fabric code:'], row['var. code:']].map(&:to_s).join
+      row[:_gencode] = [row['Item Code:'], row['Fabric code:'], row['var. code:']].map(&:to_s).join + "_#{collection_id}"
       row
     end
 
-    { headers: headers, rows: rows }
+    { headers: headers, rows: rows, collection_id: collection_id }
   end
 
   def save(data)
@@ -34,7 +34,7 @@ class ImportGeneralService
 
     data[:rows].each do |row|
       stats[:total] += 1
-      gencode = [row['Item Code:'], row['Fabric code:'], row['var. code:']].map(&:to_s).join
+      gencode = [row['Item Code:'], row['Fabric code:'], row['var. code:']].map(&:to_s).join + "_#{data[:collection_id]}"
 
       begin
         item = Item.find_or_initialize_by(gencode: gencode)
@@ -47,6 +47,7 @@ class ImportGeneralService
         end
 
         item.gencode = gencode
+        item.collection_id = data[:collection_id]
         item.qrcode_svg = RQRCode::QRCode.new(gencode).as_svg(module_size: 6, use_path: true, viewbox: true).sub(/^<\?xml[^>]*>/, "")
         item.save!
       rescue => e

@@ -1,0 +1,2 @@
+class Eticheck < ApplicationRecord
+end

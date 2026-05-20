@@ -1,9 +1,8 @@
-<%= form_with(model: item, class: "contents") do |form| %>
+<%= form_with(model: item, data: { turbo_frame: "_top" }) do |form| %>
   <% if item.errors.any? %>
-    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-lg mt-3">
-      <h2><%= pluralize(item.errors.count, "error") %> prohibited this item from being saved:</h2>
-
-      <ul>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium mb-4 border border-red-200 text-sm">
+      <h2><%= pluralize(item.errors.count, "error") %> impediscono il salvataggio:</h2>
+      <ul class="mt-1 list-disc list-inside">
         <% item.errors.each do |error| %>
           <li><%= error.full_message %></li>
         <% end %>
@@ -11,57 +10,78 @@
     </div>
   <% end %>
 
-  <div class="my-5">
-    <%= form.label :itemcode %>
-    <%= form.text_field :itemcode, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
+  <div class="space-y-3">
+    <div class="flex gap-3">
+      <div class="flex-1">
+        <%= form.label :itemcode, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+        <%= form.text_field :itemcode, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+      </div>
+      <div class="flex-1">
+        <%= form.label :fabricode, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+        <%= form.text_field :fabricode, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+      </div>
+      <div class="flex-1">
+        <%= form.label :varcode, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+        <%= form.text_field :varcode, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+      </div>
+    </div>
+
+    <div>
+      <%= form.label :description, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+      <%= form.text_field :description, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+    </div>
+
+    <div class="flex gap-3">
+      <div class="flex-1">
+        <%= form.label :tg, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+        <%= form.text_field :tg, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+      </div>
+      <div class="flex-[2]">
+        <%= form.label :fabric, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+        <%= form.text_field :fabric, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+      </div>
+      <div class="flex-1">
+        <%= form.label :colour, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+        <%= form.text_field :colour, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+      </div>
+      <% if false %>
+      <div class="flex-1">
+        <%= form.label :unit_price, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+        <%= form.text_field :unit_price, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+      </div>
+      <% end %>
+      <div class="flex-1">
+        <%= form.label :materiale, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+        <%= form.text_field :materiale, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+      </div>
+    </div>
+
+    <div class="flex gap-3">
+      <div class="flex-1">
+        <%= form.label :collection_id, "Collezione", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+        <%= form.collection_select :collection_id, @collections || [], :id, :description,
+              { include_blank: "-" },
+              class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm bg-white" %>
+      </div>
+      <div class="flex-[2]">
+        <%= form.label :note, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+        <%= form.text_area :note, rows: 1, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm resize-none" %>
+      </div>
+    </div>
   </div>
 
-  <div class="my-5">
-    <%= form.label :fabricode %>
-    <%= form.text_field :fabricode, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
-  </div>
-
-  <div class="my-5">
-    <%= form.label :varcode %>
-    <%= form.text_field :varcode, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
-  </div>
-
-  <div class="my-5">
-    <%= form.label :description %>
-    <%= form.text_field :description, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
-  </div>
-
-  <div class="my-5">
-    <%= form.label :tg %>
-    <%= form.text_field :tg, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
-  </div>
-
-  <div class="my-5">
-    <%= form.label :note %>
-    <%= form.text_area :note, rows: 4, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
-  </div>
-
-  <div class="my-5">
-    <%= form.label :fabric %>
-    <%= form.text_field :fabric, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
-  </div>
-
-  <div class="my-5">
-    <%= form.label :colour %>
-    <%= form.text_field :colour, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
-  </div>
-
-  <div class="my-5">
-    <%= form.label :unit_price %>
-    <%= form.text_field :unit_price, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
-  </div>
-
-  <div class="my-5">
-    <%= form.label :materiale %>
-    <%= form.text_field :materiale, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
-  </div>
-
-  <div class="inline">
-    <%= form.submit class: "rounded-lg py-3 px-5 bg-blue-600 text-white inline-block font-medium cursor-pointer" %>
+  <div class="flex gap-2 mt-4 pt-4 border-t border-slate-200 items-center">
+    <%= form.submit "Modifica", class: "p-3 bg-accent inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer text-white" %>
+    <%= link_to "Annulla", mainware_index_path,
+          class: "p-3 bg-gray-300 inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer text-slate-700",
+          data: { turbo_frame: "_top" } %>
+    <% if item.persisted? %>
+      <%= button_to item_path(item), method: :delete,
+            class: "ml-auto p-3 inline-flex items-center gap-1.5 tracking-wider rounded-sm uppercase text-xs cursor-pointer text-red-500 border border-red-500 hover:bg-red-50 transition",
+            data: { turbo_confirm: "Eliminare questo articolo?" } do %>
+        <span class="material-symbols-outlined text-sm leading-none">delete</span>
+        Elimina
+      <% end %>
+    <% end %>
   </div>
 <% end %>

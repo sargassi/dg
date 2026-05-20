@@ -1,8 +1,40 @@
-<div class="mx-auto md:w-2/3 w-full">
-  <h1 class="font-bold text-4xl">Editing item</h1>
-
-  <%= render "form", item: @item %>
-
-  <%= link_to "Show this item", @item, class: "ml-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
-  <%= link_to "Back to items", items_path, class: "ml-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
-</div>
+<%= turbo_frame_tag "item_modal" do %>
+  <div class="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center p-6" data-controller="insertevent" data-action="click->insertevent#closeModal">
+    <div class="bg-white border border-slate-200 shadow-lg w-full max-w-4xl mx-4" data-action="click->insertevent#stopPropagation">
+      <%# Dim header with riepilogo articolo %>
+      <div class="bg-slate-800 px-6 py-4">
+        <div class="flex items-center gap-4">
+          <div>
+            <span class="text-xxs uppercase tracking-wider text-slate-400 block leading-none mb-0.5">Itemcode</span>
+            <span class="text-sm font-mono text-slate-100"><%= @item.itemcode %></span>
+          </div>
+          <span class="text-slate-600 select-none text-xs">|</span>
+          <div>
+            <span class="text-xxs uppercase tracking-wider text-slate-400 block leading-none mb-0.5">Fabricode</span>
+            <span class="text-sm font-mono text-slate-100"><%= @item.fabricode %></span>
+          </div>
+          <span class="text-slate-600 select-none text-xs">|</span>
+          <div>
+            <span class="text-xxs uppercase tracking-wider text-slate-400 block leading-none mb-0.5">Varcode</span>
+            <span class="text-sm font-mono text-slate-100"><%= @item.varcode %></span>
+          </div>
+          <% if @item.description.present? %>
+            <span class="w-px h-8 bg-slate-700"></span>
+            <span class="text-xs text-slate-300 truncate max-w-48"><%= @item.description %></span>
+          <% end %>
+          <span class="w-px h-8 bg-slate-700"></span>
+          <span class="text-xs text-slate-300 whitespace-nowrap font-medium">Collezione: <%= @item.collection&.description || "—" %></span>
+          <%= link_to mainware_index_path,
+                class: "text-slate-500 hover:text-slate-300 transition shrink-0 ml-auto",
+                data: { turbo_frame: "_top" } do %>
+            <span class="material-symbols-outlined text-lg">close</span>
+          <% end %>
+        </div>
+      </div>
+      <%# Form content %>
+      <div class="p-5">
+        <%= render "form", item: @item %>
+      </div>
+    </div>
+  </div>
+<% end %>

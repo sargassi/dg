@@ -26,14 +26,14 @@
 
  <div class="grow text-end flex gap-4">
 
- <% delete_base = var == 'proformas' ? '/production/proformas' : "/#{var}" %>
- <% button_to "#{delete_base}/#{target.id}?bck=#{bck}", method: :delete, class: style_actions_linx, data: {turbo_frame: '_top'} do %>
+  <% delete_base = var == 'proformas' ? production_proformas_path : "/#{var}" %>
+  <%= button_to "#{delete_base}/#{target.id}?bck=#{bck}", method: :delete, class: style_actions_linx, data: {turbo_frame: '_top'} do %>
      <span class="material-symbols-outlined">
      delete
      </span>
  <% end %>
  <div class="grow text-end">
-     <a href="/production/research#prow-<%= target.id %>" class="<%= style_actions_linx %>" data-turbo-frame="rez"><span class="material-symbols-outlined">close_small</span></a>
+      <a href="<%= (params[:back_url].presence || production_research_path) %>#prow-<%= target.id %>" class="<%= style_actions_linx %>" data-turbo-frame="_top"><span class="material-symbols-outlined">close_small</span></a>
  </div>
 </div>
 

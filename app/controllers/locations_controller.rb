@@ -3,7 +3,7 @@ class LocationsController < ApplicationController
 
   # GET /locations or /locations.json
   def index
-    @locations = Location.all
+    @locations = Location.all.order(:code).includes(:warehouse)
   end
 
   # GET /locations/1 or /locations/1.json
@@ -25,34 +25,37 @@ class LocationsController < ApplicationController
 
     respond_to do |format|
       if @location.save
-        format.html { redirect_to location_url(@location), notice: "Location was successfully created." }
+        format.html { redirect_to warehouses_url, notice: "Ubica creata con successo." }
+        format.turbo_stream { redirect_to warehouses_url, notice: "Ubica creata con successo." }
         format.json { render :show, status: :created, location: @location }
       else
-        format.html { render :new, status: :unprocessable_entity }
+        format.html { redirect_to warehouses_url, alert: @location.errors.full_messages.to_sentence }
+        format.turbo_stream { redirect_to warehouses_url, alert: @location.errors.full_messages.to_sentence }
         format.json { render json: @location.errors, status: :unprocessable_entity }
       end
     end
   end
 
-  # PATCH/PUT /locations/1 or /locations/1.json
   def update
     respond_to do |format|
       if @location.update(location_params)
-        format.html { redirect_to location_url(@location), notice: "Location was successfully updated." }
+        format.html { redirect_to warehouses_url, notice: "Ubica aggiornata con successo." }
+        format.turbo_stream { redirect_to warehouses_url, notice: "Ubica aggiornata con successo." }
         format.json { render :show, status: :ok, location: @location }
       else
-        format.html { render :edit, status: :unprocessable_entity }
+        format.html { redirect_to warehouses_url, alert: @location.errors.full_messages.to_sentence }
+        format.turbo_stream { redirect_to warehouses_url, alert: @location.errors.full_messages.to_sentence }
         format.json { render json: @location.errors, status: :unprocessable_entity }
       end
     end
   end
 
-  # DELETE /locations/1 or /locations/1.json
   def destroy
     @location.destroy
 
     respond_to do |format|
-      format.html { redirect_to locations_url, notice: "Location was successfully destroyed." }
+      format.html { redirect_to warehouses_url, notice: "Ubica eliminata con successo." }
+      format.turbo_stream { redirect_to warehouses_url, notice: "Ubica eliminata con successo." }
       format.json { head :no_content }
     end
   end

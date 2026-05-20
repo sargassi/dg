@@ -1,14 +1,46 @@
-<div id="<%= dom_id warehouse %>" class="flex items-center justify-between py-2 px-3 border-b border-slate-200 hover:bg-slate-50">
-  <div class="flex gap-3 items-baseline">
-    <span class="text-sm font-semibold text-slate-800"><%= warehouse.code %></span>
-    <span class="text-xs text-slate-400"><%= warehouse.city %></span>
+<div id="<%= dom_id warehouse %>" class="mb-0 last:border-b-0">
+  <div class="flex items-center justify-between py-2.5 px-3 hover:bg-slate-50 transition-colors cursor-default border-b border-slate-200">
+    <div class="flex items-center gap-3">
+      <span class="material-symbols-outlined text-slate-300 text-xl">store</span>
+      <div>
+        <span class="text-sm font-semibold text-slate-800"><%= warehouse.code %></span>
+        <% if warehouse.city.present? %>
+          <span class="text-xs text-slate-400 ml-1"><%= warehouse.city %></span>
+        <% end %>
+      </div>
+      <% if warehouse.locations.any? %>
+        <span class="text-xs text-slate-400"><%= warehouse.locations.count %> ubic<%= warehouse.locations.count == 1 ? 'a' : 'i' %></span>
+      <% end %>
+    </div>
+    <div class="flex gap-0.5 items-center">
+      <%= link_to edit_warehouse_path(warehouse), data: { turbo_frame: "warehouse_modal" }, class: "p-1.5 text-slate-300 hover:text-accent rounded-sm hover:bg-slate-100 transition-colors" do %>
+        <span class="material-symbols-outlined text-lg">edit</span>
+      <% end %>
+      <%= button_to warehouse_path(warehouse), method: :delete, data: { turbo_frame: "_top", turbo_confirm: warehouse.locations.any? ? "Stai eliminando '#{warehouse.code}' e le sue #{warehouse.locations.count} ubic#{warehouse.locations.count == 1 ? 'a' : 'i'}. Continuare?" : "Eliminare '#{warehouse.code}'?" }, class: "p-1.5 text-slate-300 hover:text-red-500 rounded-sm hover:bg-slate-100 transition-colors" do %>
+        <span class="material-symbols-outlined text-lg">delete</span>
+      <% end %>
+    </div>
   </div>
-  <div class="flex gap-1 items-center">
-    <%= link_to edit_warehouse_path(warehouse), data: { turbo_frame: "warehouse_modal" }, class: "p-2 text-blue-500 hover:text-blue-700" do %>
-      <span class="material-symbols-outlined text-xl">edit</span>
-    <% end %>
-    <%= button_to warehouse_path(warehouse), method: :delete, data: { turbo_frame: "_top" }, class: "p-2 text-red-400 hover:text-red-600" do %>
-      <span class="material-symbols-outlined text-xl">close</span>
-    <% end %>
-  </div>
+
+  <% if warehouse.locations.any? %>
+    <div class="ml-8 space-y-0">
+      <% warehouse.locations.order(:code).each do |loc| %>
+        <div id="<%= dom_id loc %>" class="flex items-center justify-between py-1.5 px-3 hover:bg-slate-50 transition-colors group border-b border-dashed border-slate-100 last:border-b-0">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-slate-300 text-sm">radio_button_checked</span>
+            <span class="text-xs text-slate-500"><%= loc.code %></span>
+            <span class="text-xs <%= loc.enabled ? 'text-emerald-600' : 'text-slate-300' %>"><%= loc.enabled ? 'attiva' : 'disabilitata' %></span>
+          </div>
+          <div class="flex gap-0.5 items-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <%= link_to edit_location_path(loc), data: { turbo_frame: "warehouse_modal" }, class: "p-1 text-slate-300 hover:text-accent rounded-sm hover:bg-slate-100 transition-colors" do %>
+              <span class="material-symbols-outlined text-sm">edit</span>
+            <% end %>
+            <%= button_to location_path(loc), method: :delete, data: { turbo_frame: "_top", turbo_confirm: "Eliminare '#{loc.code}'?" }, class: "p-1 text-slate-300 hover:text-red-500 rounded-sm hover:bg-slate-100 transition-colors" do %>
+              <span class="material-symbols-outlined text-sm">delete</span>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
 </div>

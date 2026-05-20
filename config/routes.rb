@@ -57,6 +57,7 @@ Rails.application.routes.draw do
   resources :taglia
   resources :areas
   get 'dashboard/home'
+  get 'utilities/dashboard'
   get 'utilities/etichette'
   get 'utilities/etichette_camp'
   get 'utilities/etichette_lab'

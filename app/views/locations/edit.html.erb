@@ -1,17 +1,17 @@
-<% menu = [
-  { label: 'Dashboard', path: mainware_dashboard_path, active: false, icon: 'dashboard' },
-  { label: 'Articoli', path: mainware_index_path, active: false, icon: 'inventory_2' },
-  { label: 'Magazzini', path: warehouses_path, active: false, icon: 'warehouse' },
-  { label: 'Location', path: locations_path, active: true, icon: 'location_on' },
-] %>
-<div class="<%= style_main_header_container %>">
-  <%= render partial: 'atoms/header', locals: {link: '/', label: 'Generale / Location / Modifica', menu: menu} %>
-</div>
-<section class="<%= style_main_cnt %>">
-  <%= render "form", location: @location %>
-
-  <div class="flex gap-2 mt-4">
-    <%= link_to "Mostra", @location, class: style_import_btn %>
-    <%= link_to "Indietro", locations_path, class: "#{style_import_btn} bg-gray-400" %>
+<%= turbo_frame_tag "warehouse_modal" do %>
+  <div class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center" data-controller="modal" data-action="keydown.esc->modal#close click->modal#backdropClose">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between p-4 border-b border-slate-200">
+        <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-600">Modifica Ubica</h2>
+        <%= link_to warehouses_path, class: "text-slate-400 hover:text-slate-600", data: { turbo_frame: "_top" } do %>
+          <span class="material-symbols-outlined text-base">close</span>
+        <% end %>
+      </div>
+      <div class="p-4">
+        <div class="bg-white border border-slate-200 shadow-sm p-6">
+          <%= render "form", location: @location %>
+        </div>
+      </div>
+    </div>
   </div>
-</section>
+<% end %>

@@ -4,7 +4,8 @@ export default class extends Controller {
   static targets = ["form", "spinner"]
 
   show() {
-    this.formTarget.hidden = true
-    this.spinnerTarget.hidden = false
+    this.formTarget.classList.add("hidden")
+    this.spinnerTarget.classList.remove("hidden")
+    this.spinnerTarget.classList.add("flex")
   }
 }

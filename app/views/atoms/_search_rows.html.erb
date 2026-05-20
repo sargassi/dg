@@ -1,90 +1,60 @@
- <div class="overflow-x-auto my-8 w-full">
-   <table class="table w-full">
-     <thead class="align-top">
-       <th class="<%= style_table_th %> w-56">Code</th>
-       <th class="<%= style_table_th %>">Descrizione</th>
-       <th class="<%= style_table_th %>">Riferimento</th>
-       <th class="<%= style_table_th %> w-24">Qty</th>
-       <th class="<%= style_table_th %> w-24">Tg</th>
-       <th class="<%= style_table_th %> w-24">Materiale</th>
-       <th class="<%= style_table_th %> w-16">Origine</th>
-       <th class="<%= style_table_th %> w-24">Lavaggio</th>
-       <th class="<%= style_table_th %> ">Dettagli</th>
-       <th class="<%= style_table_th %> w-24">Col Filo Cucito</th>
-       <th class="<%= style_table_th %> w-24">Note</th>
-       <th class="<%= style_table_th %> w-24">Fornitore</th>
-       <th class="<%= style_table_th %> w-24">Dove</th>
-       <th class="<%= style_table_th %> w-24">Fabric</th>
-       <th class="<%= style_table_th %> w-24">QR</th>
-       <th class="<%= style_table_th %> w-16 text-center"></th>
-       <th class="<%= style_table_th %> w-16 text-center"></th>
+<div class="overflow-x-auto flex-1 min-h-0 overflow-y-auto">
+  <table class="min-w-full">
+    <thead>
+      <tr>
+        <th class="<%= style_table_th %> sticky top-0 z-10 w-56">Code</th>
+        <th class="<%= style_table_th %> sticky top-0 z-10">Descrizione</th>
+        <th class="<%= style_table_th %> sticky top-0 z-10">Riferimento</th>
+        <th class="<%= style_table_th %> sticky top-0 z-10 w-24">Qty</th>
+        <th class="<%= style_table_th %> sticky top-0 z-10 w-24">Tg</th>
+        <th class="<%= style_table_th %> sticky top-0 z-10 w-24">Materiale</th>
+        <th class="<%= style_table_th %> sticky top-0 z-10 w-16">Origine</th>
+        <th class="<%= style_table_th %> sticky top-0 z-10 w-24">Lavaggio</th>
+        <th class="<%= style_table_th %> sticky top-0 z-10">Dettagli</th>
+        <th class="<%= style_table_th %> sticky top-0 z-10 w-24">Col Filo Cucito</th>
+        <th class="<%= style_table_th %> sticky top-0 z-10 w-24">Note</th>
+        <th class="<%= style_table_th %> sticky top-0 z-10 w-24">Fornitore</th>
+        <th class="<%= style_table_th %> sticky top-0 z-10 w-24">Dove</th>
+        <th class="<%= style_table_th %> sticky top-0 z-10 w-24">Fabric</th>
+        <th class="<%= style_table_th %> sticky top-0 z-10 w-24">QR</th>
+        <th class="<%= style_table_th %> sticky top-0 z-10 w-16 text-center"></th>
+        <th class="<%= style_table_th %> sticky top-0 z-10 w-16 text-center"></th>
+      </tr>
+    </thead>
 
-     </thead>
-
-  <% @rows.each do |row| %>
-    <% colo = '' %>
-    <% colo = 'bg-green-300' if row.done == true %>
-
-    <tr id="prow-<%= row.id %>" class="<%= colo %>">
-      <td class="<%= style_table_td %>"> <%= row.itemcode %>
-      <%= row.fabricode %>
-      <%= row.varcode %>
-      </td>
-      <td class="<%= style_table_td %>">
-        <%= row.description %>
-      </td>
-      <td class="<%= style_table_td %>">
-        <%= row.code %> - <%= row.proforma_id %> del <%= row.proforma.data_in.strftime('%d-%m-%Y') %>
-      </td>
-      <td class="<%= style_table_td %>">
-        <%= row.qty %>
-      </td>
-      <td class="<%= style_table_td %>">
-        <%= row.tg %>
-      </td>
-      <td class="<%= style_table_td %>">
-        <%= row.materiale %>
-      </td>
-      <td class="<%= style_table_td %>">
-        <%= row.origine %>
-      </td>
-      <td class="<%= style_table_td %>">
-        <%= row.lavaggio %>
-      </td>
-      <td class="<%= style_table_td %>">
-        <%= row.dettagli %>
-      </td>
-      <td class="<%= style_table_td %>">
-        <%= row.colfilcuc %>
-      </td>
-      <td class="<%= style_table_td %>">
-        <%= row.note %>
-      </td>
-      <td class="<%= style_table_td %>">
-        <%= row.fornitore %>
-      </td>
-      <td class="<%= style_table_td %>">
-        <%= row.doe %>
-      </td>
-      <td class="<%= style_table_td %>">
-        <%= row.fabric %>
-      </td>
-      <td class="text-xs p-2  border border-slate-300 qrs">
-          <% qr = CreateQrService.new %>
-          <%= image_tag(qr.call(row.qr).to_data_url) %>
-      </td>
-      <td class="<%= style_table_td_parent %>">
-        <%= render partial: 'prows/avanzamento', locals: {row: row} %>
-      </td>
-      <td class="<%= style_table_td_children %> text-center">
-        <%= link_to prow_path(:id => row.id, :proforma => row.proforma.id, :src => 'searchplain', :row_anchor => "prow-#{row.id}"), data: {turbo_frame: 'report'} do %>
-          <span class="material-symbols-outlined">
-          key_visualizer
-          </span>
-          <% end %>
-      </td>
-    </tr>
-
-  <% end %>
- </table>
- </div>
+    <tbody>
+      <% qr_service = CreateQrService.new %>
+      <% @rows.each do |row| %>
+        <% colo = '' %>
+        <% colo = 'bg-green-300' if row.done == true %>
+        <tr id="prow-<%= row.id %>" class="<%= colo %>">
+          <td class="<%= style_table_td %>"><%= row.itemcode %> <%= row.fabricode %> <%= row.varcode %></td>
+          <td class="<%= style_table_td %>"><%= row.description %></td>
+          <td class="<%= style_table_td %>"><%= row.code %> - <%= row.proforma_id %> del <%= row.proforma.data_in.strftime('%d-%m-%Y') %></td>
+          <td class="<%= style_table_td %>"><%= row.qty %></td>
+          <td class="<%= style_table_td %>"><%= row.tg %></td>
+          <td class="<%= style_table_td %>"><%= row.materiale %></td>
+          <td class="<%= style_table_td %>"><%= row.origine %></td>
+          <td class="<%= style_table_td %>"><%= row.lavaggio %></td>
+          <td class="<%= style_table_td %>"><%= row.dettagli %></td>
+          <td class="<%= style_table_td %>"><%= row.colfilcuc %></td>
+          <td class="<%= style_table_td %>"><%= row.note %></td>
+          <td class="<%= style_table_td %>"><%= row.fornitore %></td>
+          <td class="<%= style_table_td %>"><%= row.doe %></td>
+          <td class="<%= style_table_td %>"><%= row.fabric %></td>
+          <td class="text-xs p-2 border border-slate-300 qrs">
+            <%= raw qr_service.svg(row.qr) %>
+          </td>
+          <td class="<%= style_table_td_parent %>">
+            <%= render partial: 'prows/avanzamento', locals: {row: row} %>
+          </td>
+          <td class="<%= style_table_td_children %> text-center">
+            <%= link_to prow_path(id: row.id, proforma: row.proforma_id, src: 'searchplain', row_anchor: "prow-#{row.id}", back_url: request.fullpath), data: {turbo_frame: 'report'} do %>
+              <span class="material-symbols-outlined">key_visualizer</span>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

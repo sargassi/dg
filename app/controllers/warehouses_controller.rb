@@ -3,8 +3,9 @@ class WarehousesController < ApplicationController
 
   # GET /warehouses or /warehouses.json
   def index
-    @warehouses = Warehouse.all
+    @warehouses = Warehouse.all.order(:code).includes(:locations)
     @warehouse = Warehouse.new
+    @location = Location.new(enabled: true)
   end
 
   # GET /warehouses/1 or /warehouses/1.json
@@ -54,7 +55,8 @@ class WarehousesController < ApplicationController
     @warehouse.destroy
 
     respond_to do |format|
-      format.html { redirect_to warehouses_url, notice: "Warehouse was successfully destroyed." }
+      format.html { redirect_to warehouses_url, notice: "Magazzino eliminato con successo." }
+      format.turbo_stream { redirect_to warehouses_url, notice: "Magazzino eliminato con successo." }
       format.json { head :no_content }
     end
   end
@@ -67,6 +69,6 @@ class WarehousesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def warehouse_params
-      params.require(:warehouse).permit(:code, :address, :city, :cap, :civic, :latitude, :longitude)
+      params.require(:warehouse).permit(:code, :address, :city, :cap, :civic, :latitude, :longitude, :enabled)
     end
 end

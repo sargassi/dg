@@ -51,6 +51,14 @@ module ApplicationHelper
     style_main_btn(add)
   end
 
+  def style_toggle_switch(form, attribute, label_text)
+    toggle_html = form.check_box(attribute, class: "sr-only peer") +
+      tag.div("", class: "w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-accent")
+    tag.label(class: "relative inline-flex items-center gap-2 cursor-pointer") do
+      (toggle_html + tag.span(label_text, class: "text-xs text-slate-400 uppercase tracking-wide")).html_safe
+    end
+  end
+
 
   # end forms
 

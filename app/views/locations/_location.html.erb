@@ -1,23 +1,16 @@
-<div id="<%= dom_id location %>" class="border border-slate-200 p-4">
-  <div class="grid grid-cols-2 gap-4">
-    <div>
-      <span class="text-xs text-slate-400 uppercase tracking-wide">Codice</span>
-      <p class="text-sm font-semibold text-slate-700"><%= location.code %></p>
-    </div>
-    <div>
-      <span class="text-xs text-slate-400 uppercase tracking-wide">Magazzino</span>
-      <p class="text-sm text-slate-700"><%= location.warehouse&.code || location.warehouse_id %></p>
-    </div>
-    <div>
-      <span class="text-xs text-slate-400 uppercase tracking-wide">Abilitato</span>
-      <p class="text-sm text-slate-700"><%= location.enabled ? 'Sì' : 'No' %></p>
-    </div>
+<div id="<%= dom_id location %>" class="flex items-center justify-between py-2.5 px-3 hover:bg-slate-50 transition-colors border-b border-slate-200 last:border-b-0">
+  <div class="flex items-center gap-3">
+    <span class="material-symbols-outlined text-slate-300 text-sm">radio_button_checked</span>
+    <span class="text-sm font-semibold text-slate-800"><%= location.code %></span>
+    <span class="text-xs text-slate-400"><%= location.warehouse&.code %></span>
+    <span class="text-xs <%= location.enabled ? 'text-emerald-600' : 'text-slate-300' %>"><%= location.enabled ? 'attiva' : 'disabilitata' %></span>
   </div>
-
-  <% if action_name != "show" %>
-    <div class="flex gap-2 mt-4 pt-4 border-t border-slate-200">
-      <%= link_to "Mostra", location, class: "#{style_main_btn} bg-blue-500" %>
-      <%= link_to "Modifica", edit_location_path(location), class: "#{style_main_btn} bg-slate-500" %>
-    </div>
-  <% end %>
+  <div class="flex gap-0.5 items-center">
+    <%= link_to edit_location_path(location), data: { turbo_frame: "warehouse_modal" }, class: "p-1.5 text-slate-300 hover:text-accent rounded-sm hover:bg-slate-100 transition-colors" do %>
+      <span class="material-symbols-outlined text-lg">edit</span>
+    <% end %>
+    <%= button_to location_path(location), method: :delete, data: { turbo_frame: "_top", turbo_confirm: "Eliminare '#{location.code}'?" }, class: "p-1.5 text-slate-300 hover:text-red-500 rounded-sm hover:bg-slate-100 transition-colors" do %>
+      <span class="material-symbols-outlined text-lg">delete</span>
+    <% end %>
+  </div>
 </div>

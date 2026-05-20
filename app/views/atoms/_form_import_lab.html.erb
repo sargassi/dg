@@ -14,7 +14,7 @@
 
       <% @search.compact.each_with_index do |x, i| %>
 
-        <% if i < 5 %>
+        <% if i < 4 %>
         <option value="<%= x[1].first.group %>"  <%= ' selected' if params[:group] == x[1].first.group.to_s %>>
          <%= x[1].first.group %> <%= x[1].first.created_at.strftime("%d-%m | %H:%m") %>
         </option>

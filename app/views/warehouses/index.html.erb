@@ -2,11 +2,11 @@
   { label: 'Dashboard', path: mainware_dashboard_path, active: false, icon: 'dashboard' },
   { label: 'Articoli', path: mainware_index_path, active: false, icon: 'inventory_2' },
   { label: 'Magazzini', path: warehouses_path, active: true, icon: 'warehouse' },
-  { label: 'Location', path: locations_path, active: false, icon: 'location_on' },
 ] %>
 <div class="<%= style_main_header_container %>">
   <%= render partial: 'atoms/header', locals: {link: '/', label: 'Generale / Magazzini', menu: menu} %>
 </div>
+
 <section class="<%= style_main_cnt %>">
   <% if notice.present? %>
     <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-lg inline-block" id="notice"><%= notice %></p>
@@ -15,16 +15,24 @@
   <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
 
     <div>
-      <h3 class="text-sm font-semibold text-slate-600 uppercase tracking-wide mb-4">Elenco Magazzini</h3>
-      <div id="warehouses">
-        <%= render @warehouses %>
+      <div class="<%= style_main_card %>">
+        <h3 class="<%= style_main_card_header %>">
+          <span class="material-symbols-outlined">warehouse</span>
+          Magazzini
+          <span class="<%= style_main_card_badge %>"><%= @warehouses.count %></span>
+        </h3>
+        <div id="warehouses" class="space-y-0">
+          <%= render @warehouses %>
+          <% if @warehouses.empty? %>
+            <div class="text-sm text-slate-400 italic py-4">Nessun magazzino configurato</div>
+          <% end %>
+        </div>
       </div>
-      <%= turbo_frame_tag "warehouse_modal" %>
     </div>
 
     <div>
-      <h3 class="text-sm font-semibold text-slate-600 uppercase tracking-wide mb-4">Nuovo Magazzino</h3>
-      <div class="bg-white border border-slate-200 shadow-sm p-6">
+      <div class="<%= style_main_card %> mb-8">
+
         <%= form_with(model: @warehouse, class: "contents") do |form| %>
           <% if @warehouse.errors.any? %>
             <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium mb-4 border border-red-200 text-sm">
@@ -37,32 +45,55 @@
             </div>
           <% end %>
 
-          <div class="mb-4">
-            <%= form.label :code, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
-            <%= form.text_field :code, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", placeholder: "Codice magazzino", required: true %>
-          </div>
-
-          <div class="mb-4">
-            <%= form.label :address, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
-            <%= form.text_field :address, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", placeholder: "Indirizzo" %>
-          </div>
-
-          <div class="grid grid-cols-2 gap-3 mb-4">
+          <div class="grid grid-cols-[2fr_auto_auto] gap-6 items-end mb-4">
             <div>
-              <%= form.label :city, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
-              <%= form.text_field :city, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", placeholder: "Città" %>
+              <%= form.label 'Descrizione magazzino', class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= form.text_field :code, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", placeholder: "Descrizione magazzino", required: true %>
             </div>
             <div>
-              <%= form.label :cap, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
-              <%= form.text_field :cap, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", placeholder: "CAP" %>
+              <%= style_toggle_switch(form, :enabled, "Abilitato") %>
             </div>
-          </div>
-
-          <div>
-            <%= form.submit "Crea Magazzino", class: "p-3 bg-blue-500 inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer text-white" %>
+            <div>
+              <%= form.submit "Crea Magazzino", class: "p-3 bg-accent inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer text-white" %>
+            </div>
           </div>
         <% end %>
       </div>
+
+      <div class="<%= style_main_card %>">
+
+        <%= form_with(model: @location, url: locations_path, class: "contents") do |form| %>
+          <% if @location.errors.any? %>
+            <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium mb-4 border border-red-200 text-sm">
+              <h2><%= pluralize(@location.errors.count, "error") %> impediscono il salvataggio:</h2>
+              <ul class="mt-1 list-disc list-inside">
+                <% @location.errors.each do |error| %>
+                  <li><%= error.full_message %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <div class="grid grid-cols-[1fr_1fr_auto_auto] gap-3 items-end mb-4">
+            <div>
+              <%= form.label "Descrizione ubica", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= form.text_field :code, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", placeholder: "Descrizione ubica", required: true %>
+            </div>
+            <div>
+              <%= form.label :warehouse_id, "Magazzino", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= form.collection_select :warehouse_id, Warehouse.all, :id, :code, { prompt: "Seleziona magazzino" }, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", required: true %>
+            </div>
+            <div>
+              <%= style_toggle_switch(form, :enabled, "Abilitata") %>
+            </div>
+            <div>
+              <%= form.submit "Crea Ubica", class: "p-3 bg-accent inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer text-white" %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <%= turbo_frame_tag "warehouse_modal" %>
     </div>
 
   </div>

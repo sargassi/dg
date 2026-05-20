@@ -1,5 +1,13 @@
+<% menu = [
+  { label: 'Dashboard Etichette', path: utilities_dashboard_path, active: false, icon: 'dashboard' },
+  { label: 'Proforma', path: utilities_etichette_path, active: true, icon: 'label' },
+  { label: 'Campagna', path: utilities_etichette_camp_path, active: false, icon: 'agriculture' },
+  { label: 'Laboratorio', path: utilities_etichette_lab_path, active: false, icon: 'science' },
+  { label: 'Generiche', path: utilities_etichette_gen_path, active: false, icon: 'description' },
+] %>
+
 <div class="<%= style_main_header_container %>">
-    <%= render partial: 'atoms/header', locals: {link: '/', label: 'Utilities / Stampa etichette proforma'} %>
+    <%= render partial: 'atoms/header', locals: {link: '/', label: 'Utilities / Stampa etichette proforma', menu: menu} %>
 </div>
 <%= render partial: 'atoms/form_import', locals: {prods: @products_import,  pdf: 'y'} %>
 

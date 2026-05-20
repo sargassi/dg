@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_05_14_143105) do
+ActiveRecord::Schema[7.2].define(version: 2026_05_19_164528) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
     t.text "body"
@@ -431,6 +431,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_14_143105) do
     t.float "longitude"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "enabled", default: true
   end
 
   create_table "zones", force: :cascade do |t|

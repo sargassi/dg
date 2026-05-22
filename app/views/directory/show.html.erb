@@ -1,0 +1,81 @@
+<%= turbo_frame_tag "user_modal" do %>
+  <div class="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-start justify-center pt-20 overflow-y-auto"
+       data-action="click->search-filter#highlight">
+    <div class="bg-white border border-slate-200 shadow-lg w-full max-w-lg mx-4 my-4"
+         data-action="click->search-filter#highlight">
+      <div class="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+        <h2 class="text-base font-semibold text-slate-700 flex items-center gap-2">
+          <span class="material-symbols-outlined text-slate-400">person</span>
+          <%= @user.name %> <%= @user.lastname %>
+        </h2>
+        <%= link_to directory_path(q: params[:q]), class: "text-slate-400 hover:text-slate-600 transition", data: { turbo_frame: "_top" } do %>
+          <span class="material-symbols-outlined text-lg">close</span>
+        <% end %>
+      </div>
+
+      <div class="p-5 space-y-4 text-sm">
+        <div class="grid grid-cols-[auto_1fr] gap-x-6 gap-y-3">
+          <span class="text-slate-400">Email</span>
+          <span class="text-slate-700"><%= @user.email %></span>
+
+          <span class="text-slate-400">Tipo</span>
+          <span class="text-slate-700">
+            <% case @user.user_type
+               when 'company_operator' %>Operatore
+            <% when 'customer' %>Cliente
+            <% when 'supplier' %>Fornitore
+            <% end %>
+          </span>
+
+          <% if @user.company_operator? %>
+            <span class="text-slate-400">Ruolo</span>
+            <span class="text-slate-700">
+              <% if @user.roles.any? %>
+                <%= @user.roles.map { |r| { ufficio: 'Ufficio', lab: 'Lab', magazzino: 'Magazzino' }[r.to_sym] }.join(', ') %>
+              <% else %>
+                <span class="text-slate-400 italic">Nessuno</span>
+              <% end %>
+            </span>
+
+            <span class="text-slate-400">Godlike</span>
+            <span class="<%= @user.godlike? ? 'text-amber-600' : 'text-slate-400' %>"><%= @user.godlike? ? 'Sì' : 'No' %></span>
+
+            <span class="text-slate-400">Data assunzione</span>
+            <span class="text-slate-700"><%= @user.date_of_hiring&.strftime("%d/%m/%Y") %></span>
+          <% end %>
+
+          <% if @user.user_type == 'customer' || @user.user_type == 'supplier' %>
+            <span class="text-slate-400">Codice Fiscale</span>
+            <span class="text-slate-700 font-mono"><%= @user.fiscal_code %></span>
+
+            <span class="text-slate-400">Partita IVA</span>
+            <span class="text-slate-700 font-mono"><%= @user.vat %></span>
+
+            <span class="text-slate-400">Abilitato</span>
+            <span class="<%= @user.enabled? ? 'text-emerald-600' : 'text-red-500' %> font-semibold"><%= @user.enabled? ? 'Sì' : 'No' %></span>
+
+            <span class="text-slate-400">Data di nascita</span>
+            <span class="text-slate-700"><%= @user.date_of_birth&.strftime("%d/%m/%Y") %></span>
+          <% end %>
+
+          <span class="text-slate-400">Data creazione</span>
+          <span class="text-slate-700"><%= @user.created_at&.strftime("%d/%m/%Y") %></span>
+
+          <span class="text-slate-400">Ultimo accesso</span>
+          <span class="text-slate-700"><%= @user.last_sign_in_at ? @user.last_sign_in_at.strftime("%d/%m/%Y %H:%M") : 'Mai' %></span>
+        </div>
+
+        <% if @user.user_abilities.any? %>
+          <div class="border-t border-slate-200 pt-4 mt-4">
+            <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Abilitazioni</h4>
+            <div class="flex flex-wrap gap-1.5">
+              <% @user.abilities.each do |ability| %>
+                <span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded"><%= ability.name %></span>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

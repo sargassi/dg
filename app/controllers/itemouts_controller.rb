@@ -65,6 +65,6 @@ class ItemoutsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def itemout_params
-      params.require(:itemout).permit(:indate, :operator_id)
+      params.require(:itemout).permit(:indate)
     end
 end

@@ -65,6 +65,6 @@ class IteminsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def itemin_params
-      params.require(:itemin).permit(:indate, :operator_id)
+      params.require(:itemin).permit(:indate)
     end
 end

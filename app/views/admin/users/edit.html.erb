@@ -1,0 +1,8 @@
+<section class="<%= style_main_cnt %>">
+  <div class="<%= style_main_header_container %>">
+    <%= link_to "Torna alla lista", admin_users_path, class: style_main_btn %>
+    <h1 class="<%= style_main_header %>">Modifica: <%= @user.name %> <%= @user.lastname %></h1>
+  </div>
+
+  <%= render "form" %>
+</section>

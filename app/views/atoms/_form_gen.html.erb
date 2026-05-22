@@ -1,23 +1,18 @@
-<section class="<%= style_import_form %>" >
-  <%= form_with url:"/utilities/etilgenimp" do |f| %>
-  <%= f.hidden_field :dategroup, :value => @working_date %>
-  <%= hidden_field_tag :etigen, nil, :value => 'y' %>
-  <%= f.hidden_field :group, :value => @group %>
-  <div class="w-1/2 flex gap-2 items-center">
-    <p class="flex-none w-32">
-    <%= f.number_field :pages , class: style_main_input + ' w-32 ', required: true, placeholder: 'Num pagine' %>
-    </p>
-    <%= f.submit "Crea", target: "_blank", class: style_import_btn %>
+<section class="<%= style_import_form %>">
+  <div class="flex items-center gap-3">
+    <%= form_with url:"/utilities/etilgenimp", class: "flex items-center gap-2 flex-1" do |f| %>
+      <%= f.hidden_field :dategroup, :value => @working_date %>
+      <%= hidden_field_tag :etigen, nil, :value => 'y' %>
+      <%= f.hidden_field :group, :value => @group %>
+      <%= f.number_field :pages, class: "#{style_main_input} w-54 py-1", required: true, placeholder: 'Num pagine' %>
+      <%= f.submit "Crea", target: "_blank", class: style_import_btn %>
+    <% end %>
+    <% if pdf.present? && pdf == 'y' %>
+      <%= link_to "PDF", etigens_etichette_path(:format => :pdf), target: "_blank", class: "#{style_import_pdf_small} ml-auto" %>
+    <% end %>
   </div>
-<% end %>
-  <% if pdf.present? && pdf == 'y' %>
-  <div class="link_to_pdf">
-    <%= link_to "PDF", etigens_etichette_path(:format => :pdf), target: "_blank", class: style_import_pdf_small %>
-  </div>
-<% end %>
-
 </section>
 
-<%# END FILE UPLOAD  %>
+<%# END FILE UPLOAD %>
 
 <hr>

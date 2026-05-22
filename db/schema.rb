@@ -10,7 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_05_20_140938) do
+ActiveRecord::Schema[7.2].define(version: 2026_05_21_100006) do
+  create_table "abilities", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "description"
+    t.string "category"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_abilities_on_name", unique: true
+  end
+
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
     t.text "body"
@@ -198,18 +207,14 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_20_140938) do
 
   create_table "itemins", force: :cascade do |t|
     t.date "indate"
-    t.integer "operator_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["operator_id"], name: "index_itemins_on_operator_id"
   end
 
   create_table "itemouts", force: :cascade do |t|
     t.date "indate"
-    t.integer "operator_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["operator_id"], name: "index_itemouts_on_operator_id"
   end
 
   create_table "items", force: :cascade do |t|
@@ -243,14 +248,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_20_140938) do
   create_table "operationtypes", force: :cascade do |t|
     t.string "code"
     t.string "description"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "operators", force: :cascade do |t|
-    t.string "name"
-    t.string "lastname"
-    t.integer "role", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -425,6 +422,27 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_20_140938) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "user_abilities", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "ability_id", null: false
+    t.integer "granted_by_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ability_id"], name: "index_user_abilities_on_ability_id"
+    t.index ["granted_by_id"], name: "index_user_abilities_on_granted_by_id"
+    t.index ["user_id", "ability_id"], name: "index_user_abilities_on_user_id_and_ability_id", unique: true
+    t.index ["user_id"], name: "index_user_abilities_on_user_id"
+  end
+
+  create_table "user_roles", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "role", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "role"], name: "index_user_roles_on_user_id_and_role", unique: true
+    t.index ["user_id"], name: "index_user_roles_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -441,7 +459,15 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_20_140938) do
     t.datetime "locked_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "role", default: "ufficio"
+    t.string "name"
+    t.string "lastname"
+    t.string "user_type", default: "company_operator", null: false
+    t.boolean "godlike", default: false, null: false
+    t.date "date_of_birth"
+    t.date "date_of_hiring"
+    t.boolean "enabled", default: true, null: false
+    t.string "fiscal_code"
+    t.string "vat"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
@@ -474,8 +500,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_20_140938) do
   add_foreign_key "inventories", "locations"
   add_foreign_key "inventories", "operationtypes"
   add_foreign_key "inventories", "warehouses"
-  add_foreign_key "itemins", "operators"
-  add_foreign_key "itemouts", "operators"
   add_foreign_key "items", "collections"
   add_foreign_key "locations", "warehouses"
   add_foreign_key "prodrow", "areas"
@@ -486,4 +510,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_20_140938) do
   add_foreign_key "tempesta", "proformas"
   add_foreign_key "tempesta", "prows"
   add_foreign_key "tempesta", "users"
+  add_foreign_key "user_abilities", "abilities"
+  add_foreign_key "user_abilities", "users"
+  add_foreign_key "user_abilities", "users", column: "granted_by_id"
+  add_foreign_key "user_roles", "users"
 end

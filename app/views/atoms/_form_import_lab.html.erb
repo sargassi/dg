@@ -1,35 +1,27 @@
 <%# FILE UPLOAD %>
 <section class="<%= style_import_form %>" data-controller="autosub">
-  <%= form_with url:"/utilities/etilabimp" do |f| %>
+  <div class="flex items-center gap-3">
+    <%= form_with url:"/utilities/etilabimp", class: "flex items-center gap-2" do |f| %>
+      <%= hidden_field_tag :import, nil, :value => 'y' %>
+      <%= f.file_field :file, class: "#{style_import_field} !w-auto", :required => true %>
+      <%= f.submit "Importa", target: "_blank", class: style_import_btn %>
+    <% end %>
 
-    <%= hidden_field_tag :import, nil, :value => 'y' %>
-
-    <%= f.file_field :file, class: style_import_field, :required => true %>
-    <%= f.submit "Importa", target: "_blank", class: style_import_btn %>
-<% end %>
-
-<form action="/utilities/etichette_lab" class="p-2" data-controller="setpdfilter">
-
-    <select name="group" id="group" class="<%= style_select_class %>" data-action="change->setpdfilter#set">
-
-      <% @search.compact.each_with_index do |x, i| %>
-
-        <% if i < 4 %>
-        <option value="<%= x[1].first.group %>"  <%= ' selected' if params[:group] == x[1].first.group.to_s %>>
-         <%= x[1].first.group %> <%= x[1].first.created_at.strftime("%d-%m | %H:%m") %>
-        </option>
-        <% i = i + 1 %>
+    <form action="/utilities/etichette_lab" class="flex items-center" data-controller="setpdfilter">
+      <select name="group" id="group" class="<%= style_select_class %> w-64" data-action="change->setpdfilter#set">
+        <% @search.compact.each_with_index do |x, i| %>
+          <% next unless i < 4 %>
+          <option value="<%= x[1].first.group %>" <%= ' selected' if params[:group] == x[1].first.group.to_s %>>
+            <%= x[1].first.group %> <%= x[1].first.created_at.strftime("%d-%m | %H:%m") %>
+          </option>
         <% end %>
-      <% end %>
-    </select>
-</form>
+      </select>
+    </form>
 
-  <% if pdf.present? && pdf == 'y' %>
-<div class="link_to_pdf">
-<%= link_to "PDF", etilabs_etichette_path(:format => :pdf, :group => params[:group]), target: "_blank", id:'pdfet', data: {group: ''}, class: style_import_pdf_small %>
-</div>
-<% end %>
-
+    <% if pdf.present? && pdf == 'y' %>
+      <%= link_to "PDF", etilabs_etichette_path(:format => :pdf, :group => params[:group]), target: "_blank", id:'pdfet', data: {group: ''}, class: "#{style_import_pdf_small} ml-auto" %>
+    <% end %>
+  </div>
 </section>
 
 <%# END FILE UPLOAD %>

@@ -17,7 +17,7 @@ class ItemoutsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create itemout" do
     assert_difference("Itemout.count") do
-      post itemouts_url, params: { itemout: { indate: @itemout.indate, operator_id: @itemout.operator_id } }
+      post itemouts_url, params: { itemout: { indate: @itemout.indate } }
     end
 
     assert_redirected_to itemout_url(Itemout.last)
@@ -34,7 +34,7 @@ class ItemoutsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update itemout" do
-    patch itemout_url(@itemout), params: { itemout: { indate: @itemout.indate, operator_id: @itemout.operator_id } }
+    patch itemout_url(@itemout), params: { itemout: { indate: @itemout.indate } }
     assert_redirected_to itemout_url(@itemout)
   end
 

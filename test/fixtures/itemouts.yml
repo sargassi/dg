@@ -2,8 +2,6 @@
 
 one:
   indate: 2026-03-19
-  operator: one
 
 two:
   indate: 2026-03-19
-  operator: two

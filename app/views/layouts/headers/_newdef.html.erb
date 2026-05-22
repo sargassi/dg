@@ -4,13 +4,14 @@
        <p class="text-muted text-xs my-4 flex items-center w-1/3 max-w-1/3 font-semibold text-slate-400 px-2">
            <span><%= current_user.email if current_user.present? %></span>
        </p>
-     <% if current_user.role == 'ufficio' %>
+      <% if current_user.has_role?(:ufficio) %>
 
-        <%= render partial: 'atoms/menu/ufficio'%>
-        <%= render partial: 'atoms/ux/legenda'%>
+         <%= render partial: 'atoms/menu/ufficio'%>
+         <%= render partial: 'atoms/ux/legenda'%>
 
 
-     <% elsif current_user.role == 'lab' %>
+      <% end %>
+      <% if current_user.has_role?(:lab) %>
 
         <%= render partial: 'atoms/menu/lab'%>
      <% end %>

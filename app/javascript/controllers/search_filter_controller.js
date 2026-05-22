@@ -29,10 +29,10 @@ export default class extends Controller {
 
     const re = new RegExp(`(${this._escapeRegExp(query)})`, "gi");
 
-    this.element.querySelectorAll("td").forEach((td) => {
-      if (td.closest("[data-search-filter-target]")) return;
-      if (td.querySelector("svg")) return;
-      this._highlightTextNode(td, re);
+    this.element.querySelectorAll("td, [data-highlightable]").forEach((el) => {
+      if (el.closest("[data-search-filter-target]")) return;
+      if (el.querySelector("svg, img")) return;
+      this._highlightTextNode(el, re);
     });
   }
 

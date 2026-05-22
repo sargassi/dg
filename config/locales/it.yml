@@ -5,6 +5,25 @@ it:
       header:
         one: "1 errore impedisce il salvataggio -  %{model}"
         other: "%{count} errori impediscono il salvataggio - %{model}"
+    messages:
+      blank: "non può essere vuoto"
+      required: "è obbligatorio"
+      taken: "è già stato preso"
+      invalid: "non è valido"
+      too_short: "è troppo corto"
+      too_long: "è troppo lungo"
+      inclusion: "non è incluso nella lista"
+      not_a_number: "non è un numero"
+      greater_than: "deve essere maggiore di %{count}"
+      greater_than_or_equal_to: "deve essere maggiore o uguale a %{count}"
+      less_than: "deve essere minore di %{count}"
+      less_than_or_equal_to: "deve essere minore o uguale a %{count}"
+      confirmation: "non corrisponde alla conferma"
+      accepted: "deve essere accettato"
+      empty: "non può essere vuoto"
+      not_an_integer: "non è un numero intero"
+      odd: "deve essere dispari"
+      even: "deve essere pari"
   activerecord:
     errors:
       models:
@@ -13,6 +32,14 @@ it:
             description:
               taken: "già esistente"
               blank: "non può essere vuoto"
+    attributes:
+      event:
+        name: "Nome"
+        eventype: "Tipologia"
+        start_time: "Inizio"
+        end_time: "Fine"
+        recurrent: "Ricorrenza"
+        description: "Descrizione"
   date:
     month_names:
       [

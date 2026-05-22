@@ -1,0 +1,244 @@
+<div class="<%= style_main_header_container %>">
+  <h1 class="<%= style_main_header %>">
+
+    Amministrazione Operatori
+  </h1>
+</div>
+
+<section class="<%= style_main_cnt %>">
+  <% if notice.present? %>
+    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-lg inline-block" id="notice"><%= notice %></p>
+  <% end %>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+    <!-- LEFT: users list -->
+    <div data-controller="search-filter">
+      <div class="<%= style_main_card %>">
+
+
+        <div class="px-3 pt-2 pb-1">
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none">search</span>
+            <input type="search" data-action="input->search-filter#filter" data-search-filter-target="input"
+                   placeholder="Cerca nome, email..."
+                   class="<%= style_search_input %> rounded-lg pl-10 font-mono text-blue-600 text-sm w-full">
+          </div>
+        </div>
+
+        <div id="users" class="space-y-0">
+          <% grouped = @users.group_by(&:user_type) %>
+          <% { 'company_operator' => 'Operatori', 'customer' => 'Clienti', 'supplier' => 'Fornitori' }.each do |type, label| %>
+            <% next unless grouped[type]&.any? %>
+            <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider px-3 py-2 bg-slate-50 border-b border-slate-200"><%= label %></div>
+            <% grouped[type].each do |user| %>
+              <div id="<%= dom_id user %>" class="mb-0 last:border-b-0" data-search-filter-target="row">
+                <div class="flex items-center justify-between py-2.5 px-3 hover:bg-slate-50 transition-colors cursor-default border-b border-slate-200">
+                  <div class="flex items-center gap-3 min-w-0">
+                    <span class="material-symbols-outlined text-slate-300 text-xl flex-shrink-0">person</span>
+                    <div class="min-w-0">
+                      <div class="flex items-center gap-2 flex-wrap">
+                        <span class="text-sm font-semibold text-slate-800"><%= user.name %> <%= user.lastname %></span>
+                        <% user.roles.each do |role| %>
+                          <span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded"><%= role %></span>
+                        <% end %>
+                        <% if user.godlike? %>
+                          <span class="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded">godlike</span>
+                        <% end %>
+                      </div>
+                      <span class="text-xs text-slate-400"><%= user.email %></span>
+                    </div>
+                  </div>
+                  <div class="flex gap-0.5 items-center flex-shrink-0 ml-2">
+                    <%= link_to edit_admin_user_path(user), class: "p-1.5 text-slate-300 hover:text-accent rounded-sm hover:bg-slate-100 transition-colors" do %>
+                      <span class="material-symbols-outlined text-lg">edit</span>
+                    <% end %>
+                    <%= button_to admin_user_path(user), method: :delete, data: { turbo_frame: "_top", turbo_confirm: "Eliminare '#{user.name} #{user.lastname}'?" }, class: "p-1.5 text-slate-300 hover:text-red-500 rounded-sm hover:bg-slate-100 transition-colors" do %>
+                      <span class="material-symbols-outlined text-lg">delete</span>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          <% end %>
+          <% unless @users.any? %>
+            <div class="text-sm text-slate-400 italic py-4">Nessun utente configurato</div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: create forms -->
+    <div>
+      <%# ── New Operator ──────────────────────────────────────────────────────── %>
+      <div class="<%= style_main_card %> mb-8">
+        <h3 class="<%= style_main_card_header %>">
+          <span class="material-symbols-outlined">badge</span>
+          Nuovo Operatore
+        </h3>
+
+        <%= form_with(model: @operator, url: admin_users_path, class: "contents") do |form| %>
+          <%= form.hidden_field :user_type %>
+          <% if @operator.errors.any? %>
+            <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium mb-4 border border-red-200 text-sm">
+              <h2><%= pluralize(@operator.errors.count, "error") %> impediscono il salvataggio:</h2>
+              <ul class="mt-1 list-disc list-inside">
+                <% @operator.errors.each do |error| %>
+                  <li><%= error.full_message %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <div class="grid grid-cols-[1fr_1fr] gap-3 items-end mb-3">
+            <div>
+              <%= form.label :name, "Nome", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= form.text_field :name, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", placeholder: "Nome operatore" %>
+            </div>
+            <div>
+              <%= form.label :email, "Email", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= form.email_field :email, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", placeholder: "Email", required: true %>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-[1fr_1fr_auto] gap-3 items-end mb-3">
+            <div>
+              <%= form.label :password, "Password", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= form.password_field :password, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", placeholder: "Password" %>
+            </div>
+            <div>
+              <%= form.label :password_confirmation, "Conferma", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= form.password_field :password_confirmation, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", placeholder: "Conferma password" %>
+            </div>
+            <div>
+              <%= form.submit "Crea", class: "p-3 bg-accent inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer text-white" %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <%# ── New Customer ───────────────────────────────────────────────────────── %>
+      <div class="<%= style_main_card %> mb-8">
+        <h3 class="<%= style_main_card_header %>">
+          <span class="material-symbols-outlined">enterprise</span>
+          Nuovo Cliente
+        </h3>
+
+        <%= form_with(model: @customer, url: admin_users_path, class: "contents") do |form| %>
+          <%= form.hidden_field :user_type %>
+          <% if @customer.errors.any? %>
+            <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium mb-4 border border-red-200 text-sm">
+              <h2><%= pluralize(@customer.errors.count, "error") %> impediscono il salvataggio:</h2>
+              <ul class="mt-1 list-disc list-inside">
+                <% @customer.errors.each do |error| %>
+                  <li><%= error.full_message %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <div class="grid grid-cols-[1fr_1fr] gap-3 items-end mb-3">
+            <div>
+              <%= form.label :name, "Nome", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= form.text_field :name, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", placeholder: "Nome cliente" %>
+            </div>
+            <div>
+              <%= form.label :email, "Email", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= form.email_field :email, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", placeholder: "Email", required: true %>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-[1fr_1fr_auto] gap-3 items-end mb-3">
+            <div>
+              <%= form.label :fiscal_code, "Codice fiscale", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= form.text_field :fiscal_code, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+            </div>
+            <div>
+              <%= form.label :vat, "Partita IVA", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= form.text_field :vat, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+            </div>
+            <div>
+              <%= style_toggle_switch(form, :enabled, "Abilitato") %>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-[1fr_1fr_auto] gap-3 items-end mb-3">
+            <div>
+              <%= form.label :password, "Password", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= form.password_field :password, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", placeholder: "Password" %>
+            </div>
+            <div>
+              <%= form.label :password_confirmation, "Conferma", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= form.password_field :password_confirmation, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", placeholder: "Conferma password" %>
+            </div>
+            <div>
+              <%= form.submit "Crea", class: "p-3 bg-accent inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer text-white" %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <%# ── New Supplier ───────────────────────────────────────────────────────── %>
+      <div class="<%= style_main_card %> mb-8">
+        <h3 class="<%= style_main_card_header %>">
+          <span class="material-symbols-outlined">package</span>
+          Nuovo Fornitore
+        </h3>
+
+        <%= form_with(model: @supplier, url: admin_users_path, class: "contents") do |form| %>
+          <%= form.hidden_field :user_type %>
+          <% if @supplier.errors.any? %>
+            <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium mb-4 border border-red-200 text-sm">
+              <h2><%= pluralize(@supplier.errors.count, "error") %> impediscono il salvataggio:</h2>
+              <ul class="mt-1 list-disc list-inside">
+                <% @supplier.errors.each do |error| %>
+                  <li><%= error.full_message %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <div class="grid grid-cols-[1fr_1fr] gap-3 items-end mb-3">
+            <div>
+              <%= form.label :name, "Nome", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= form.text_field :name, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", placeholder: "Nome fornitore" %>
+            </div>
+            <div>
+              <%= form.label :email, "Email", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= form.email_field :email, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", placeholder: "Email", required: true %>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-[1fr_1fr_auto] gap-3 items-end mb-3">
+            <div>
+              <%= form.label :fiscal_code, "Codice fiscale", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= form.text_field :fiscal_code, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+            </div>
+            <div>
+              <%= form.label :vat, "Partita IVA", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= form.text_field :vat, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+            </div>
+            <div>
+              <%= style_toggle_switch(form, :enabled, "Abilitato") %>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-[1fr_1fr_auto] gap-3 items-end mb-3">
+            <div>
+              <%= form.label :password, "Password", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= form.password_field :password, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", placeholder: "Password" %>
+            </div>
+            <div>
+              <%= form.label :password_confirmation, "Conferma", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= form.password_field :password_confirmation, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", placeholder: "Conferma password" %>
+            </div>
+            <div>
+              <%= form.submit "Crea", class: "p-3 bg-accent inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer text-white" %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+  </div>
+</section>

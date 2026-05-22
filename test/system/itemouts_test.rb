@@ -15,7 +15,6 @@ class ItemoutsTest < ApplicationSystemTestCase
     click_on "New itemout"
 
     fill_in "Indate", with: @itemout.indate
-    fill_in "Operator", with: @itemout.operator_id
     click_on "Create Itemout"
 
     assert_text "Itemout was successfully created"
@@ -27,7 +26,6 @@ class ItemoutsTest < ApplicationSystemTestCase
     click_on "Edit this itemout", match: :first
 
     fill_in "Indate", with: @itemout.indate
-    fill_in "Operator", with: @itemout.operator_id
     click_on "Update Itemout"
 
     assert_text "Itemout was successfully updated"

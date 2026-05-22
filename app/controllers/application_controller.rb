@@ -1,6 +1,20 @@
 class ApplicationController < ActionController::Base
   before_action :authenticate_user!
 
+  private
+
+  def require_ability!(ability_name)
+    unless current_user.can?(ability_name)
+      redirect_to root_path, alert: "Non hai i permessi per questa azione."
+    end
+  end
+
+  def require_godlike!
+    unless current_user.godlike?
+      redirect_to root_path, alert: "Solo l'amministratore puo' accedere."
+    end
+  end
+
   def hasDoneTempestas?(prow_id)
       prow = Prow.find(prow_id)
       qty = prow.qty.to_i

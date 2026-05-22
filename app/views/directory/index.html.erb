@@ -1,0 +1,165 @@
+<% menu = [
+  { label: 'Dashboard', path: dashboard_home_path, active: false, icon: 'dashboard' },
+  { label: 'Rubrica', path: directory_path, active: true, icon: 'contact_page' },
+] %>
+<div class="<%= style_main_header_container %>">
+  <%= render partial: 'atoms/header', locals: {link: '/', label: 'Generale / Rubrica', menu: menu} %>
+</div>
+
+<section class="<%= style_main_cnt %> flex flex-col" style="height: calc(100vh - 140px);" data-controller="search-filter">
+  <% if notice.present? %>
+    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-lg inline-block" id="notice"><%= notice %></p>
+  <% end %>
+  <% if alert.present? %>
+    <p class="py-2 px-3 bg-red-50 mb-5 text-red-500 font-medium rounded-lg inline-block" id="alert"><%= alert %></p>
+  <% end %>
+  <div class="flex gap-4 items-center mb-4 flex-none">
+    <%= form_with url: directory_path, method: :get,
+                  data: { search_filter_target: "form", turbo_frame: "users-cards" },
+                  class: "flex items-center gap-3" do |f| %>
+      <div class="relative">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none">search</span>
+        <%= f.search_field :q,
+              value: params[:q],
+              placeholder: "Cerca nome, email, CF, P.IVA",
+              class: "#{style_search_input} rounded-lg pl-10 font-mono text-blue-600",
+              data: { action: "input->search-filter#filter", search_filter_target: "input" } %>
+      </div>
+    <% end %>
+    <span class="text-sm text-slate-500 whitespace-nowrap" data-search-filter-target="count"><%= @pagy.count %> utenti</span>
+  </div>
+
+  <style>
+    turbo-frame#users-cards[busy] .users-cards-content { display: none; }
+    turbo-frame#users-cards[busy] .users-cards-loader { display: flex; }
+  </style>
+  <%= turbo_frame_tag "users-cards", class: "flex flex-col flex-1 min-h-0", data: { action: "turbo:frame-load->search-filter#onFrameLoad" } do %>
+    <div class="users-cards-content flex flex-col flex-1 min-h-0">
+      <span hidden data-filtered-count><%= @pagy.count %></span>
+      <% grouped = @users.group_by(&:user_type) %>
+      <% { 'company_operator' => 'Operatori', 'customer' => 'Clienti', 'supplier' => 'Fornitori' }.each do |type, label| %>
+        <% next unless grouped[type]&.any? %>
+        <div class="mb-8 last:mb-0">
+          <h4 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2">
+            <span class="material-symbols-outlined text-base">circle</span>
+            <%= label %>
+          </h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <% grouped[type].each do |user| %>
+              <div class="<%= style_main_card %>">
+                <h3 class="<%= style_main_card_header %> flex items-center justify-between">
+                  <span class="flex items-center gap-2">
+                    <span class="material-symbols-outlined">person</span>
+                    <%= user.name %> <%= user.lastname %>
+                  </span>
+                  <span class="flex items-center gap-2">
+                    <%= link_to directory_user_path(user, q: params[:q]), data: { turbo_frame: "user_modal" },
+                          class: "inline-flex items-center justify-center px-1.5 py-0.5 rounded-full text-blue-700 hover:text-blue-900 hover:bg-blue-50 transition border border-blue-300" do %>
+                      <span class="material-symbols-outlined text-sm">visibility</span>
+                    <% end %>
+                    <% if current_user.godlike? %>
+                      <%= link_to edit_directory_user_path(user, q: params[:q]),
+                            class: "inline-flex items-center justify-center px-1.5 py-0.5 rounded-full text-slate-600 hover:text-slate-800 hover:bg-slate-100 transition border border-slate-300",
+                            data: { turbo_frame: "user_modal" } do %>
+                        <span class="material-symbols-outlined text-sm">edit</span>
+                      <% end %>
+                    <% end %>
+                  </span>
+                </h3>
+
+                <div class="space-y-3 text-sm">
+                  <div class="flex justify-between">
+                    <span class="text-slate-400">Email</span>
+                    <span class="text-slate-700" data-highlightable="true"><%= user.email %></span>
+                  </div>
+
+                  <% if user.company_operator? %>
+                    <div class="flex justify-between">
+                      <span class="text-slate-400">Ruolo</span>
+                      <span class="text-slate-700" data-highlightable="true">
+                        <% if user.roles.any? %>
+                          <%= user.roles.map { |r| { ufficio: 'Ufficio', lab: 'Lab', magazzino: 'Magazzino' }[r.to_sym] }.join(', ') %>
+                        <% else %>
+                          <span class="text-slate-400 italic">Nessuno</span>
+                        <% end %>
+                      </span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-slate-400">Ultimo accesso</span>
+                      <span class="text-slate-700" data-highlightable="true"><%= user.last_sign_in_at ? user.last_sign_in_at.strftime("%d/%m/%Y %H:%M") : 'Mai' %></span>
+                    </div>
+                  <% end %>
+
+                  <% if type == 'customer' || type == 'supplier' %>
+                    <div class="flex justify-between">
+                      <span class="text-slate-400">Codice Fiscale</span>
+                      <span class="text-slate-700 font-mono" data-highlightable="true"><%= user.fiscal_code %></span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-slate-400">Partita IVA</span>
+                      <span class="text-slate-700 font-mono" data-highlightable="true"><%= user.vat %></span>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <% if @pagy.pages > 1 %>
+        <div class="mt-4 flex items-center gap-0.5 justify-end">
+          <% if @pagy.prev %>
+            <a href="<%= pagy_url_for(@pagy, @pagy.prev) %>"
+               data-turbo-frame="users-cards"
+               class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm text-slate-700 hover:bg-slate-100 transition-colors">
+              <span class="material-symbols-outlined text-base">chevron_left</span>
+            </a>
+          <% else %>
+            <span class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm text-slate-300 pointer-events-none">
+              <span class="material-symbols-outlined text-base">chevron_left</span>
+            </span>
+          <% end %>
+
+          <% @pagy.series.each do |item| %>
+            <% if item.is_a?(Integer) %>
+              <a href="<%= pagy_url_for(@pagy, item) %>"
+                 data-turbo-frame="users-cards"
+                 class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm text-slate-700 hover:bg-slate-100 transition-colors">
+                <%= item %>
+              </a>
+            <% elsif item == :gap %>
+              <span class="px-1 text-slate-400 text-xs">…</span>
+            <% elsif item == @pagy.page %>
+              <span class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm bg-accent text-white font-medium">
+                <%= item %>
+              </span>
+            <% end %>
+          <% end %>
+
+          <% if @pagy.next %>
+            <a href="<%= pagy_url_for(@pagy, @pagy.next) %>"
+               data-turbo-frame="users-cards"
+               class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm text-slate-700 hover:bg-slate-100 transition-colors">
+              <span class="material-symbols-outlined text-base">chevron_right</span>
+            </a>
+          <% else %>
+            <span class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm text-slate-300 pointer-events-none">
+              <span class="material-symbols-outlined text-base">chevron_right</span>
+            </span>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="users-cards-loader hidden justify-center items-center py-12">
+      <svg class="animate-spin h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      <span class="ml-3 text-slate-600">Ricerca in corso...</span>
+    </div>
+  <% end %>
+</section>
+
+<%= turbo_frame_tag "user_modal" %>

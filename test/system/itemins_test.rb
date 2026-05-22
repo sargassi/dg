@@ -15,7 +15,6 @@ class IteminsTest < ApplicationSystemTestCase
     click_on "New itemin"
 
     fill_in "Indate", with: @itemin.indate
-    fill_in "Operator", with: @itemin.operator_id
     click_on "Create Itemin"
 
     assert_text "Itemin was successfully created"
@@ -27,7 +26,6 @@ class IteminsTest < ApplicationSystemTestCase
     click_on "Edit this itemin", match: :first
 
     fill_in "Indate", with: @itemin.indate
-    fill_in "Operator", with: @itemin.operator_id
     click_on "Update Itemin"
 
     assert_text "Itemin was successfully updated"

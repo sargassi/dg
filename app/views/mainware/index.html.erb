@@ -41,7 +41,7 @@
         <table class="min-w-full">
           <thead>
             <tr>
-              <% %w[Gencode Item Fabric Var. Descrizione Tg Fabric Color Unitprice Materiale Note Collezione QR Azioni].each do |h| %>
+              <% %w[Gencode Item Fabric Var. Descrizione Tg Fabric Color Unitprice Materiale Note Collezione QR Immagini Azioni].each do |h| %>
                 <th class="<%= style_table_th %> sticky top-0 z-10"><%= h %></th>
               <% end %>
             </tr>
@@ -64,17 +64,29 @@
                 <td class="<%= style_table_td %>" style="width:130px">
                   <%= item.qrcode_svg.html_safe %>
                 </td>
-                <td class="<%= style_table_td %> whitespace-nowrap">
-                  <div class="flex gap-1">
+                <td class="<%= style_table_td %> align-top" style="width:120px">
+                  <% if item.pictures.attached? %>
+                    <%= link_to gallery_item_path(item, index: 0), data: { turbo_frame: "item_modal" } do %>
+                      <div class="relative inline-block">
+                        <%= image_tag item.pictures.first, class: "w-[100px] h-[100px] object-cover border border-slate-200 block" %>
+                        <% if item.pictures.count > 1 %>
+                          <span class="absolute -top-1.5 -right-1.5 bg-accent text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center leading-none">+<%= item.pictures.count - 1 %></span>
+                        <% end %>
+                      </div>
+                    <% end %>
+                  <% end %>
+                </td>
+                <td class="<%= style_table_td %> whitespace-nowrap align-middle">
+                  <div class="flex flex-col items-center gap-0.5">
                     <%= link_to edit_item_path(item),
-                          class: "p-1.5 rounded text-blue-600 hover:text-blue-800 hover:bg-blue-50 transition",
+                          class: "p-2 rounded text-blue-600 hover:text-blue-800 hover:bg-blue-50 transition border border-blue-200",
                           data: { turbo_frame: "item_modal" } do %>
-                      <span class="material-symbols-outlined text-lg">edit</span>
+                      <span class="material-symbols-outlined text-2xl">edit</span>
                     <% end %>
                     <%= button_to item_path(item), method: :delete,
-                          class: "p-1.5 rounded text-red-600 hover:text-red-800 hover:bg-red-50 transition",
+                          class: "p-2 rounded text-red-600 hover:text-red-800 hover:bg-red-50 transition border border-red-200",
                           data: { turbo_confirm: "Eliminare questo articolo?", turbo_frame: "_top" } do %>
-                      <span class="material-symbols-outlined text-lg">delete</span>
+                      <span class="material-symbols-outlined text-2xl">delete</span>
                     <% end %>
                   </div>
                 </td>

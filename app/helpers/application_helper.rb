@@ -91,7 +91,7 @@ module ApplicationHelper
   end
 
   def style_main_card
-    'bg-white border border-slate-200 shadow-sm px-6 py-8'
+    'bg-white border border-slate-200 shadow-sm px-6 py-4'
   end
 
   def style_main_card_header
@@ -247,7 +247,7 @@ module ApplicationHelper
   end
 
   def style_import_form
-    'bg-accent-50 p-6'
+    'bg-accent-50 p-4'
   end
 
   def style_import_field

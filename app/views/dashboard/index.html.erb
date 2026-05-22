@@ -1,11 +1,11 @@
 <section class="home py-4 ">
-
-    <% if current_user.role == 'ufficio' %>
-
+    <% if current_user.has_role?(:ufficio) %>
         <%= render partial: 'dashboard/atoms/ufficio' %>
-
-    <% elsif  current_user.role == 'lab' %>
+    <% end %>
+    <% if current_user.has_role?(:lab) %>
         <%= render partial: 'dashboard/atoms/lab' %>
     <% end %>
-
+    <% if current_user.has_role?(:magazzino) %>
+        <%= render partial: 'dashboard/atoms/magazzino' %>
+    <% end %>
 </section>

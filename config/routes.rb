@@ -3,7 +3,12 @@ Rails.application.routes.draw do
   get 'etichecks/etichette'
   resources :etichecks
   resources :inventories
-  resources :items
+  resources :items do
+    member do
+      delete 'delete_picture'
+      get 'gallery'
+    end
+  end
   resources :itemouts
   scope '/mainware' do
     resources :warehouses
@@ -12,7 +17,7 @@ Rails.application.routes.draw do
   resources :itemins
   resources :operationtypes
   resources :uoms
-  resources :operators
+
   get 'mainware/home'
   get 'mainware/index'
   get 'mainware/search'
@@ -55,10 +60,18 @@ Rails.application.routes.draw do
     resources :proformas
   end
   resources :stations
+  namespace :admin do
+    resources :users, only: [:index, :new, :create, :edit, :update, :destroy]
+  end
+
   devise_for :users
   resources :rails
   resources :taglia
   resources :areas
+  get 'directory' => 'directory#index'
+  get 'directory/:id' => 'directory#show', as: :directory_user
+  get 'directory/:id/edit' => 'directory#edit', as: :edit_directory_user
+  patch 'directory/:id' => 'directory#update'
   get 'dashboard/home'
   get 'utilities/dashboard'
   get 'utilities/etichette'

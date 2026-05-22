@@ -17,7 +17,7 @@ class IteminsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create itemin" do
     assert_difference("Itemin.count") do
-      post itemins_url, params: { itemin: { indate: @itemin.indate, operator_id: @itemin.operator_id } }
+      post itemins_url, params: { itemin: { indate: @itemin.indate } }
     end
 
     assert_redirected_to itemin_url(Itemin.last)
@@ -34,7 +34,7 @@ class IteminsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update itemin" do
-    patch itemin_url(@itemin), params: { itemin: { indate: @itemin.indate, operator_id: @itemin.operator_id } }
+    patch itemin_url(@itemin), params: { itemin: { indate: @itemin.indate } }
     assert_redirected_to itemin_url(@itemin)
   end
 

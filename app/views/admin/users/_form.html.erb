@@ -1,0 +1,120 @@
+<% opts = { model: [:admin, @user], class: "contents" } %>
+<% opts[:local] = local_assigns[:local] unless local_assigns[:local].nil? %>
+<% opts[:url] = local_assigns[:url] if local_assigns[:url] %>
+<% opts[:method] = local_assigns[:method] if local_assigns[:method] %>
+<%= form_with(**opts) do |f| %>
+
+  <%# ── Identity Card ──────────────────────────────────────────────────────────── %>
+  <div class="<%= style_main_card %> mb-8">
+    <h3 class="<%= style_main_card_header %>">
+      <span class="material-symbols-outlined">person</span>
+      Dati utente
+    </h3>
+
+    <% if @user.errors.any? %>
+      <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium mb-4 border border-red-200 text-sm">
+        <h2><%= pluralize(@user.errors.count, "error") %> impediscono il salvataggio:</h2>
+        <ul class="mt-1 list-disc list-inside">
+          <% @user.errors.each do |error| %>
+            <li><%= error.full_message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 mb-6">
+      <div>
+        <%= f.label :name, "Nome", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+        <%= f.text_field :name, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+      </div>
+      <div>
+        <%= f.label :lastname, "Cognome", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+        <%= f.text_field :lastname, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+      </div>
+      <div>
+        <%= f.label :email, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+        <%= f.email_field :email, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+      </div>
+      <div>
+        <%= f.label :user_type, "Tipo", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+        <%= f.select :user_type, [['Operatore', 'company_operator'], ['Cliente', 'customer'], ['Fornitore', 'supplier']], {}, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm bg-white" %>
+      </div>
+      <div>
+        <%= f.label :date_of_birth, "Data di nascita", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+        <%= f.date_field :date_of_birth, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+      </div>
+      <div>
+        <%= f.label :date_of_hiring, "Data assunzione", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+        <%= f.date_field :date_of_hiring, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+      </div>
+      <div>
+        <%= f.label :fiscal_code, "Codice fiscale", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+        <%= f.text_field :fiscal_code, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+      </div>
+      <div>
+        <%= f.label :vat, "Partita IVA", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+        <%= f.text_field :vat, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+      </div>
+    </div>
+
+    <div class="flex gap-8 mb-2">
+      <div>
+        <%= style_toggle_switch(f, :enabled, "Abilitato") %>
+      </div>
+      <div>
+        <label class="inline-flex items-center gap-2 cursor-pointer">
+          <%= f.check_box :godlike, class: "rounded border-slate-300 text-accent focus:ring-accent" %>
+          <span class="text-sm text-slate-700">Amministratore (godlike) — accesso totale al sistema</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <%# ── Roles Card ─────────────────────────────────────────────────────────────── %>
+  <div class="<%= style_main_card %> mb-8">
+    <h3 class="<%= style_main_card_header %>">
+      <span class="material-symbols-outlined">badge</span>
+      Ruoli
+    </h3>
+    <div class="flex gap-8">
+      <% %w[ufficio lab magazzino].each do |role| %>
+        <label class="inline-flex items-center gap-2 cursor-pointer">
+          <%= check_box_tag "roles[]", role, @user.has_role?(role), class: "rounded border-slate-300 text-accent focus:ring-accent" %>
+          <span class="text-sm text-slate-700 capitalize"><%= role %></span>
+        </label>
+      <% end %>
+    </div>
+  </div>
+
+  <%# ── Abilities Card ─────────────────────────────────────────────────────────── %>
+  <div class="<%= style_main_card %> mb-8">
+    <h3 class="<%= style_main_card_header %>">
+      <span class="material-symbols-outlined">admin_panel_settings</span>
+      Abilitazioni
+    </h3>
+    <% categories = @all_abilities.map(&:category).uniq %>
+    <% categories.each do |cat| %>
+      <div class="mt-4">
+        <h4 class="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2"><%= cat %></h4>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-0.5">
+          <% @all_abilities.select { |a| a.category == cat }.each do |ability| %>
+            <label class="inline-flex items-center gap-2 py-0.5 px-1 rounded hover:bg-slate-50 cursor-pointer">
+              <%= check_box_tag "ability_ids[]", ability.id, @user.can?(ability.name), class: "rounded border-slate-300 text-accent focus:ring-accent" %>
+              <span class="text-xs text-slate-700"><%= ability.description %></span>
+            </label>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <%# ── Actions ────────────────────────────────────────────────────────── %>
+  <div class="flex items-center gap-4 pt-5 border-t border-slate-200">
+    <%= f.submit "Salva", class: style_main_btn %>
+    <% unless @user == current_user %>
+      <%= link_to "Elimina utente", admin_user_path(@user), method: :delete,
+          data: { turbo_confirm: "Sei sicuro?" },
+          class: "py-1 px-2 text-xs tracking-wide text-white rounded-sm inline-block cursor-pointer bg-red-500 hover:bg-red-600" %>
+    <% end %>
+  </div>
+<% end %>

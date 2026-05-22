@@ -7,25 +7,29 @@
              <% qty = product.qt.to_i %>
              <% cqty  = 0 %>
               <% qty.times do %>
-                  <div class="cell sm" style="border: 1px solid; padding: 2mm 4mm">
-                    <div class="sub" style="height:32mm">
-                    <p class="sm" style="border-bottom: 1px dashed #ccc; padding-bottom:.35mm; font-size: 8pt!important; height: 12mm">
-                        <span style="font-weight:bold">articolo:</span> <%= product.itemcode %> <%= product.fabricode %> <%= product.varcode %>
+                 <% cqty = cqty + 1 %>
+                  <div class="cell sm" style="padding: 2mm 4mm">
+                    <div class="sub" style="height:32mm;">
+                    <p class="sm" style="border-bottom: 1px dashed #ccc; padding-bottom:.35mm; font-size: 8pt!important; height: 13mm; line-height: 9pt!important">
+                        <span style="font-weight:bold;">articolo:</span>
+                        <span style="margin-right:2mm">
+                        <%= product.itemcode %> <%= product.fabricode %> <%= product.varcode %> </span>
+                        <span style="font-weight:bold; position:absolute; right:2mm"> <%= cqty %> / <%= qty %></span>
+
+                        <br>
+
 
                       <%= raw(product.description.gsub(/\R+/, '<br/>')) %> <%= product.materiale %> <%= product.fabric  %>
                    tg <%= product.tg %></p>
 
-                 <% cqty = cqty + 1 %>
 
                 <p class="sm" style="border-bottom: 1px dashed #ccc; padding-bottom:.35mm; padding-top:.5mm; font-size: 8pt!important">
                 <span style="font-weight:bold; margin-right: 1mm">cliente:</span><%= product.chi %>
-                <% if qty > 1 %>
-                  <%= cqty %> / <%= qty %>
-                  <% end %>
+
                 </p>
 
                 <p class="sm" style="border-bottom: 1px dashed #ccc; padding-bottom:.35mm; padding-top:.5mm; font-size: 8pt!important">
-                <span style="font-weight:bold; margin-right: 1mm">tagliato da:</span>
+                <span style="font-weight:bold; margin-right: 1mm">tagliato da:</span>JS
                 </p>
                 <p class="sm" style="border-bottom: 1px dashed #ccc; padding-bottom:.35mm; padding-top:.5mm; font-size: 8pt!important">
                 <span style="font-weight:bold; margin-right: 1mm">cucito da:</span>

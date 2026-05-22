@@ -1,7 +1,7 @@
 
 <section class="home py-4 my-8">
 
-  <% if current_user.role == 'ufficio'  %>
+  <% if current_user.has_role?(:ufficio) %>
 
     <div class="utilities flex justify-between items-stretch gap-8">
 
@@ -65,7 +65,7 @@
 
     </div>
 
-    <% elsif current_user.role == 'lab' %>
+    <% elsif current_user.has_role?(:lab) %>
         <div class="utilities flex justify-between items-stretch gap-8">
 
           <div class="utility py-4 xl:w-1/2">

@@ -1,0 +1,18 @@
+<%= turbo_frame_tag "user_modal" do %>
+  <div class="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-start justify-center pt-10 overflow-y-auto">
+    <div class="bg-white border border-slate-200 shadow-lg w-full max-w-2xl mx-4 my-4">
+      <div class="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+        <h2 class="text-base font-semibold text-slate-700 flex items-center gap-2">
+          <span class="material-symbols-outlined text-slate-400">edit</span>
+          Modifica: <%= @user.name %> <%= @user.lastname %>
+        </h2>
+        <%= link_to directory_path(q: params[:q]), class: "text-slate-400 hover:text-slate-600 transition", data: { turbo_frame: "_top" } do %>
+          <span class="material-symbols-outlined text-lg">close</span>
+        <% end %>
+      </div>
+      <div class="p-5 max-h-[80vh] overflow-y-auto">
+        <%= render partial: "admin/users/form", locals: { url: admin_user_path(@user, return_to: directory_path(q: params[:q])), local: false } %>
+      </div>
+    </div>
+  </div>
+<% end %>

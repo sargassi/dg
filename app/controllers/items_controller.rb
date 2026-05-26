@@ -58,7 +58,7 @@ class ItemsController < ApplicationController
     end
     respond_to do |format|
       if @item.update(item_params.except(:pictures))
-        format.html { redirect_to mainware_index_path(q: params[:q], collection_id: params[:collection_id]), notice: "Item was successfully updated." }
+        format.html { redirect_to params[:return_to].presence || mainware_index_path(q: params[:q], collection_id: params[:collection_id]), notice: "Item was successfully updated." }
         format.json { render :show, status: :ok, location: @item }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -103,8 +103,8 @@ class ItemsController < ApplicationController
     @item.destroy
 
     respond_to do |format|
-      format.html { redirect_to mainware_index_path(q: params[:q], collection_id: params[:collection_id]), notice: "Item was successfully destroyed." }
-      format.turbo_stream { redirect_to mainware_index_path(q: params[:q], collection_id: params[:collection_id]), notice: "Item was successfully destroyed." }
+      format.html { redirect_to params[:return_to].presence || mainware_index_path(q: params[:q], collection_id: params[:collection_id]), notice: "Item was successfully destroyed." }
+      format.turbo_stream { redirect_to params[:return_to].presence || mainware_index_path(q: params[:q], collection_id: params[:collection_id]), notice: "Item was successfully destroyed." }
       format.json { head :no_content }
     end
   end

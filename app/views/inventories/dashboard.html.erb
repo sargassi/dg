@@ -1,7 +1,8 @@
 <% menu = [
   { label: 'Dashboard', path: inventories_dashboard_path, active: true, icon: 'dashboard' },
   { label: 'Ricerca magazzino', path: inventories_path, active: false, icon: 'inventory_2' },
-  { label: 'Magazzino e ubiche', path: warehouses_path, active: false, icon: 'warehouse' },
+  { label: 'Movimenti', path: inventories_movements_path, active: false, icon: 'swap_vert' },
+  { label: 'Magazzini e ubiche', path: warehouses_path, active: false, icon: 'warehouse' },
 ] %>
 <div class="<%= style_main_header_container %>">
   <%= render partial: 'atoms/header', locals: { link: '/', label: 'Inventario / Dashboard', menu: menu } %>
@@ -44,6 +45,10 @@
           <span class="text-sm text-slate-700">Uscita da Magazzino</span>
           <span class="material-symbols-outlined text-slate-300 text-base">arrow_forward_ios</span>
         <% end %>
+        <%= link_to inventories_movements_path, class: style_main_card_link do %>
+          <span class="text-sm text-slate-700">Tutti i Movimenti</span>
+          <span class="material-symbols-outlined text-slate-300 text-base">arrow_forward_ios</span>
+        <% end %>
         <a href="#" class="<%= style_main_card_link %>">
           <span class="text-sm text-slate-700">Variazione Magazzino</span>
           <span class="material-symbols-outlined text-slate-300 text-base">arrow_forward_ios</span>
@@ -71,30 +76,88 @@
 
   <div class="<%= style_main_card %>">
     <h3 class="<%= style_main_card_header %>">
-      <span class="material-symbols-outlined text-slate-400">inventory_2</span>
+      <span class="material-symbols-outlined text-slate-400">history</span>
       Ultimi Movimenti
-    </h3>
-    <div class="divide-y divide-slate-100 -mx-6">
-      <% if @latest_inventories.present? %>
-        <% @latest_inventories.each do |inv| %>
-          <%= link_to inventory_path(inv),
-                class: "flex items-center justify-between px-6 py-3 hover:bg-slate-50 transition" do %>
-            <div class="flex-1 min-w-0">
-              <div class="text-sm font-medium text-slate-800 truncate uppercase"><%= inv.itemcode %></div>
-              <div class="text-xs text-slate-400">
-                QTA: <%= inv.qtyavailable %>
-              </div>
-            </div>
-            <div class="text-xs font-semibold text-indigo-700 ml-4 whitespace-nowrap">
-              Min: <%= inv.minstock %>
-            </div>
-          <% end %>
-        <% end %>
-      <% else %>
-        <div class="flex items-center justify-center h-32 text-sm text-slate-400 italic px-6">
-          Nessun movimento presente
-        </div>
+      <%= link_to inventories_movements_path, class: "ml-auto text-xs text-accent hover:text-accent-700 font-medium" do %>
+        Vedi tutti
+        <span class="material-symbols-outlined text-base align-middle">arrow_forward_ios</span>
       <% end %>
+    </h3>
+    <div class="grid grid-cols-3 gap-4 px-0">
+      <div>
+        <h4 class="text-xs font-semibold text-emerald-700 uppercase tracking-wider mb-2 flex items-center gap-1">
+          <span class="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
+          Entrate
+        </h4>
+        <% if @latest_itemins.any? %>
+          <div class="divide-y divide-slate-100 border border-slate-200 rounded-lg overflow-hidden">
+            <% @latest_itemins.each do |mov| %>
+              <%= link_to itemin_path(mov),
+                    class: "flex items-center justify-between px-3 py-2 hover:bg-emerald-50 transition" do %>
+                <div class="flex-1 min-w-0">
+                  <div class="text-xs text-slate-400"><%= mov.indate.strftime("%d-%m-%Y") %></div>
+                  <div class="text-sm font-medium text-slate-800 truncate">
+                    <%= mov.itemins_details.map { |d| d.item&.gencode.presence || d.itemcode }.compact.first || "—" %>
+                  </div>
+                  <div class="text-[10px] text-slate-400">
+                    <% if mov.itemins_details.any? %>
+                      <%= mov.itemins_details.first.warehouse&.code %> / <%= mov.itemins_details.first.location&.code %>
+                    <% end %>
+                  </div>
+                </div>
+                <div class="text-[10px] text-slate-500 ml-2 whitespace-nowrap uppercase font-bold"><%= mov.operator&.name %></div>
+              <% end %>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="flex items-center justify-center h-24 text-sm text-slate-400 bg-slate-50 rounded-lg">
+            Nessuna entrata recente
+          </div>
+        <% end %>
+      </div>
+
+      <div>
+        <h4 class="text-xs font-semibold text-red-700 uppercase tracking-wider mb-2 flex items-center gap-1">
+          <span class="inline-block w-2 h-2 rounded-full bg-red-500"></span>
+          Uscite
+        </h4>
+        <% if @latest_itemouts.any? %>
+          <div class="divide-y divide-slate-100 border border-slate-200 rounded-lg overflow-hidden">
+            <% @latest_itemouts.each do |mov| %>
+              <%= link_to itemout_path(mov),
+                    class: "flex items-center justify-between px-3 py-2 hover:bg-red-50 transition" do %>
+                <div class="flex-1 min-w-0">
+                  <div class="text-xs text-slate-400"><%= mov.indate.strftime("%d-%m-%Y") %></div>
+                  <div class="text-sm font-medium text-slate-800 truncate">
+                    <%= mov.itemouts_details.map { |d| d.item&.gencode.presence || d.itemcode }.compact.first || "—" %>
+                  </div>
+                  <div class="text-[10px] text-slate-400">
+                    <% if mov.itemouts_details.any? %>
+                      <%= mov.itemouts_details.first.warehouse&.code %> / <%= mov.itemouts_details.first.location&.code %>
+                    <% end %>
+                  </div>
+                </div>
+                <div class="text-[10px] text-slate-500 ml-2 whitespace-nowrap uppercase font-bold"><%= mov.operator&.name %></div>
+              <% end %>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="flex items-center justify-center h-24 text-sm text-slate-400 bg-slate-50 rounded-lg">
+            Nessuna uscita recente
+          </div>
+        <% end %>
+      </div>
+
+      <div>
+        <h4 class="text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1">
+          <span class="inline-block w-2 h-2 rounded-full bg-slate-300"></span>
+          Variazioni
+        </h4>
+        <div class="flex items-center justify-center min-h-32 text-sm text-slate-400 bg-slate-50 rounded-lg">
+          <span class="material-symbols-outlined text-slate-300 mr-2">construction</span>
+          Prossimamente
+        </div>
+      </div>
     </div>
   </div>
 </section>

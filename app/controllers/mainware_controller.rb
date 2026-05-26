@@ -25,13 +25,18 @@ class MainwareController < ApplicationController
     @pagy, @itemz = pagy(@itemz)
 
     base_keys = @itemz.pluck(:itemcode, :fabricode, :varcode).uniq
-    if base_keys.any?
-      t = Item.arel_table
-      condition = base_keys.map { |ic, fc, vc|
-        t[:itemcode].eq(ic).and(t[:fabricode].eq(fc).and(t[:varcode].eq(vc)))
-      }.reduce(:or)
+    if base_keys.any? && @collection_id.present?
       item_ids = @itemz.map(&:id)
-      @siblings_by_parent = Item.where(condition).where.not(id: item_ids)
+      sibling_ids = {}
+      base_keys.each_slice(50) do |batch|
+        t = Item.arel_table
+        condition = batch.map { |ic, fc, vc|
+          t[:itemcode].eq(ic).and(t[:fabricode].eq(fc).and(t[:varcode].eq(vc)))
+        }.reduce(:or)
+        Item.where(condition).where.not(id: item_ids).pluck(:id).each { |id| sibling_ids[id] = true }
+      end
+
+      @siblings_by_parent = Item.where(id: sibling_ids.keys)
                                 .includes(:collection)
                                 .order("collections.created_at DESC")
                                 .group_by { |s| [s.itemcode, s.fabricode, s.varcode] }

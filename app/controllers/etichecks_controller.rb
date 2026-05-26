@@ -25,7 +25,7 @@ class EtichecksController < ApplicationController
     respond_to do |format|
       format.pdf do
         render pdf: @products.count.to_s, orientation: 'portrait', page_size: 'A4',
-               margin: { top: '0mm', bottom: '0m', left: '0mm', right: '0mm' }, disable_smart_shrinking: true, show_as_html: params.key?('debug')
+               margin: { top: '2mm', bottom: '2mm', left: '0mm', right: '0mm' }, disable_smart_shrinking: true, show_as_html: params.key?('debug')
       end
     end
   end

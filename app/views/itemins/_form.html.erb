@@ -14,8 +14,11 @@
           <thead>
             <tr>
               <th class="<%= style_table_th %>">Codice Articolo</th>
-              <th class="<%= style_table_th %> w-24">Q.tà</th>
-              <th class="<%= style_table_th %> w-12"></th>
+              <th class="<%= style_table_th %> w-20">Q.tà</th>
+              <th class="<%= style_table_th %> w-32">Magazzino</th>
+              <th class="<%= style_table_th %> w-28">Ubica</th>
+              <th class="<%= style_table_th %> w-36">Operazione</th>
+              <th class="<%= style_table_th %> w-10"></th>
             </tr>
           </thead>
           <tbody data-nested-form-target="rows">
@@ -40,20 +43,20 @@
       </div>
     </div>
 
-    <div class="bg-amber-50 rounded-lg p-5 sticky top-0 self-start space-y-6">
+    <div class="bg-amber-50 rounded-lg p-5 sticky top-0 self-start space-y-4">
       <div class="flex items-end gap-4">
         <div class="w-64 flex-shrink-0">
           <%= form.label :indate, "Data", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
           <%= form.date_field :indate, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
         </div>
         <div class="ml-auto">
-          <%= form.submit "Aggiungi", class: "rounded-lg py-3 px-5 bg-accent text-white inline-block font-medium cursor-pointer" %>
+          <%= form.submit "Anteprima", class: "rounded-lg py-3 px-5 bg-accent text-white inline-block font-medium cursor-pointer" %>
         </div>
       </div>
 
       <div>
         <%= form.label :notes, "Note", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
-        <%= form.text_area :notes, rows: 3, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+        <%= form.text_area :notes, rows: 2, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
       </div>
     </div>
   </div>

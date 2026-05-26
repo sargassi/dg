@@ -11,8 +11,13 @@ x
     })
   </script>
   <%= turbo_frame_tag 'report' do %>
-    <div class="content">
-      <div class="main">
+    <div class="fixed inset-0 bg-black/70 z-50 flex items-start justify-center pt-12 pb-8">
+      <div class="relative bg-white rounded-sm shadow-lg w-[1200px] max-h-[90vh] overflow-y-auto p-6">
+
+        <a href="#" onclick="document.querySelector('turbo-frame#report').innerHTML = ''; return false;"
+           class="absolute top-3 right-3 z-10 w-8 h-8 bg-white rounded-full shadow flex items-center justify-center text-slate-400 hover:text-slate-600 transition">
+          <span class="material-symbols-outlined text-lg">close</span>
+        </a>
 
         <% if params[:src].present? && params[:src] == 'searchplain' %>
           <%= render partial: 'atoms/actions', locals: {target: @prow, var: "prows", redir: "production/research", back: @proforma.id} %>
@@ -20,7 +25,6 @@ x
         <% elsif params[:src].present? and params[:src] == 'list' %>
           <%= render partial: 'atoms/actions', locals: {target: @prow, var: "prows", redir: "proformas/#{@proforma.id}", back: @proforma.id} %>
         <% end %>
-
 
         <%= render @prow %>
       </div>

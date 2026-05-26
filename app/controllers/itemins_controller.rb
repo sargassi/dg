@@ -1,5 +1,6 @@
 class IteminsController < ApplicationController
   before_action :set_itemin, only: %i[ show edit update destroy ]
+  before_action :load_warehouses_locations_operationtypes, only: %i[ new edit ]
 
   # GET /itemins or /itemins.json
   def index
@@ -12,25 +13,76 @@ class IteminsController < ApplicationController
 
   # GET /itemins/new
   def new
-    @itemin = Itemin.new(indate: Date.current)
+    if session[:itemin_preview].present?
+      preview = session[:itemin_preview]
+      @itemin = Itemin.new(indate: preview["indate"], notes: preview["notes"])
+      details = (preview["itemins_details_attributes"] || {}).values
+        .reject { |d| d["_destroy"] == "1" }
+        .reject { |d| d["itemcode"].blank? && d["item_id"].blank? }
+        .map { |d| d.except("_destroy") }
+      @itemin.itemins_details.build(details)
+    else
+      @itemin = Itemin.new(indate: Date.current)
+    end
   end
 
   # GET /itemins/1/edit
   def edit
   end
 
-  # POST /itemins or /itemins.json
+  # POST /inventories/itemins
   def create
-    @itemin = Itemin.new(itemin_params)
+    @itemin = Itemin.new(indate: itemin_params[:indate], notes: itemin_params[:notes], operator_id: itemin_params[:operator_id])
 
-    respond_to do |format|
-      if @itemin.save
-        format.html { redirect_to itemin_url(@itemin), notice: "Itemin was successfully created." }
-        format.json { render :show, status: :created, location: @itemin }
-      else
-        format.html { redirect_to new_itemin_path, alert: @itemin.errors.full_messages.join(". ") }
-        format.json { render json: @itemin.errors, status: :unprocessable_entity }
+    details = (itemin_params[:itemins_details_attributes]&.values || []).reject { |d| d[:_destroy] == "1" }.reject { |d| d[:itemcode].blank? && d[:item_id].blank? }.map { |d| d.except(:_destroy) }
+    @itemin.itemins_details.build(details)
+
+    if @itemin.valid?
+      session[:itemin_preview] = itemin_params.to_unsafe_h
+      @params = itemin_params.to_unsafe_h.with_indifferent_access
+      load_preview_data
+
+      respond_to do |format|
+        format.html { redirect_to preview_itemins_path, notice: "Anteprima carico pronta" }
+        format.turbo_stream { redirect_to preview_itemins_path, notice: "Anteprima carico pronta" }
       end
+    else
+      load_warehouses_locations_operationtypes
+      flash.now[:alert] = @itemin.errors.full_messages.to_sentence
+      render :new, status: :unprocessable_entity
+    end
+  end
+
+  # GET /inventories/itemins/preview
+  def preview
+    @params = session[:itemin_preview]&.with_indifferent_access
+    return redirect_to new_itemin_path, alert: "Nessun dato in anteprima" unless @params
+
+    load_preview_data
+  end
+
+  # POST /inventories/itemins/confirm
+  def confirm
+    @params = session[:itemin_preview]&.with_indifferent_access
+    return redirect_to new_itemin_path, alert: "Nessun dato, riprova" unless @params
+
+    @itemin = Itemin.new(@params.except(:itemins_details_attributes))
+
+    details = (@params[:itemins_details_attributes] || {}).values
+      .reject { |d| d["_destroy"] == "1" }
+      .map { |d| d.slice("itemcode", "qty", "item_id", "collection_id", "warehouse_id", "location_id", "operationtype_id") }
+    @itemin.itemins_details.build(details)
+
+    begin
+      ActiveRecord::Base.transaction do
+        @itemin.save!
+        CreateInventoriesFromItemin.new.call(@itemin)
+      end
+
+      session.delete(:itemin_preview)
+      redirect_to inventories_dashboard_path, notice: "Carico creato con #{@itemin.itemins_details.size} articoli"
+    rescue => e
+      redirect_to new_itemin_path, alert: "Errore durante il salvataggio: #{e.message}"
     end
   end
 
@@ -58,14 +110,29 @@ class IteminsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
     def set_itemin
       @itemin = Itemin.find(params[:id])
     end
 
-    # Only allow a list of trusted parameters through.
+    def load_warehouses_locations_operationtypes
+      @warehouses = Warehouse.all
+      @locations = Location.all
+      @operationtypes = Operationtype.all
+    end
+
+    def load_preview_data
+      @details = (@params[:itemins_details_attributes] || {}).values.reject { |d| d[:_destroy] == "1" }
+      warehouse_ids = @details.map { |d| d[:warehouse_id] }.compact.uniq
+      location_ids = @details.map { |d| d[:location_id] }.compact.uniq
+      operationtype_ids = @details.map { |d| d[:operationtype_id] }.compact.uniq
+      @warehouse_idx = Warehouse.where(id: warehouse_ids).index_by { |w| w.id.to_s }
+      @location_idx = Location.where(id: location_ids).index_by { |l| l.id.to_s }
+      @operationtype_idx = Operationtype.where(id: operationtype_ids).index_by { |o| o.id.to_s }
+      @operator = User.find_by(id: @params[:operator_id])
+    end
+
     def itemin_params
-      params.require(:itemin).permit(:indate, :notes, :operator_id, :description,
-        itemins_details_attributes: [:id, :itemcode, :qty, :item_id, :collection_id, :_destroy])
+      params.require(:itemin).permit(:indate, :notes, :operator_id,
+        itemins_details_attributes: [:id, :itemcode, :qty, :item_id, :collection_id, :warehouse_id, :location_id, :operationtype_id, :_destroy])
     end
 end

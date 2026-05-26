@@ -1,15 +1,64 @@
-<div class="mx-auto md:w-2/3 w-full flex">
-  <div class="mx-auto">
-    <% if notice.present? %>
-      <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-lg inline-block" id="notice"><%= notice %></p>
-    <% end %>
-
-    <%= render @itemout %>
-
-    <%= link_to "Edit this itemout", edit_itemout_path(@itemout), class: "mt-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
-    <div class="inline-block ml-2">
-      <%= button_to "Destroy this itemout", itemout_path(@itemout), method: :delete, class: "mt-2 rounded-lg py-3 px-5 bg-gray-100 font-medium" %>
-    </div>
-    <%= link_to "Back to itemouts", itemouts_path, class: "ml-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
-  </div>
+<% menu = [
+  { label: 'Dashboard', path: inventories_dashboard_path, active: false, icon: 'dashboard' },
+  { label: 'Ricerca magazzino', path: inventories_path, active: false, icon: 'inventory_2' },
+  { label: 'Magazzino e ubiche', path: warehouses_path, active: false, icon: 'warehouse' },
+] %>
+<div class="<%= style_main_header_container %>">
+  <%= render partial: 'atoms/header', locals: { link: '/', label: 'Inventario / Dettaglio Scarico', menu: menu } %>
 </div>
+
+<section class="<%= style_main_cnt %> max-w-5xl mx-auto">
+  <div class="<%= style_main_card %> mb-6">
+    <h3 class="<%= style_main_card_header %>">
+      <span class="material-symbols-outlined text-slate-400">description</span>
+      Scarico #<%= @itemout.id %>
+    </h3>
+
+    <div class="grid grid-cols-3 gap-4 text-sm mb-6">
+      <div>
+        <span class="text-xs text-slate-400 uppercase block">Data</span>
+        <span class="font-medium"><%= @itemout.indate %></span>
+      </div>
+      <div>
+        <span class="text-xs text-slate-400 uppercase block">Operatore</span>
+        <span class="font-medium"><%= @itemout.operator_id %></span>
+      </div>
+      <div>
+        <span class="text-xs text-slate-400 uppercase block">Note</span>
+        <span class="font-medium"><%= @itemout.notes.presence || "-" %></span>
+      </div>
+    </div>
+
+    <h4 class="text-sm font-semibold text-slate-700 mb-3">
+      Articoli scaricati (<%= @itemout.itemouts_details.size %>)
+    </h4>
+
+    <table class="min-w-full">
+      <thead>
+        <tr>
+          <th class="<%= style_table_th %>">Codice</th>
+          <th class="<%= style_table_th %> w-20 text-right">Q.tà</th>
+          <th class="<%= style_table_th %> w-32">Magazzino</th>
+          <th class="<%= style_table_th %> w-28">Ubica</th>
+          <th class="<%= style_table_th %> w-36">Operazione</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @itemout.itemouts_details.each do |detail| %>
+          <tr class="hover:bg-slate-50">
+            <td class="<%= style_table_td %>"><%= detail.itemcode %></td>
+            <td class="<%= style_table_td %> text-right font-mono text-blue-600"><%= detail.qty %></td>
+            <td class="<%= style_table_td %>"><%= detail.warehouse&.code || "-" %></td>
+            <td class="<%= style_table_td %>"><%= detail.location&.code || "-" %></td>
+            <td class="<%= style_table_td %>"><%= detail.operationtype&.description || "-" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="flex gap-4">
+    <%= link_to "Nuovo scarico", new_itemout_path, class: "#{style_import_btn} bg-accent text-center" %>
+    <%= link_to "Tutti gli scarichi", itemouts_path, class: "#{style_import_btn} bg-gray-400 text-center" %>
+  </div>
+</section>

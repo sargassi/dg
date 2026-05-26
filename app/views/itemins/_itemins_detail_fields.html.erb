@@ -11,10 +11,21 @@
     <ul data-autocomplete-target="results"
         class="hidden absolute left-0 right-0 top-full mt-0.5 bg-white border border-slate-200 rounded-sm shadow-lg z-50 max-h-48 overflow-y-auto"></ul>
   </td>
-  <td class="<%= style_table_td %> p-1">
-    <%= f.number_field :qty, class: "w-full px-2 py-1 text-xs border border-slate-200 outline-none focus:border-accent rounded-sm" %>
+  <td class="<%= style_table_td %> p-1 w-20">
+    <%= f.number_field :qty, value: 1, min: 1, class: "w-full px-2 py-1 text-xs border border-slate-200 outline-none focus:border-accent rounded-sm" %>
   </td>
-  <td class="<%= style_table_td %> p-1 text-center">
+  <td class="<%= style_table_td %> p-1 w-32">
+    <%= f.collection_select :warehouse_id, @warehouses, :id, :code,
+          { include_blank: "Mag." },
+          class: "w-full px-1 py-1 text-xs border border-slate-200 outline-none focus:border-accent rounded-sm bg-white" %>
+  </td>
+  <td class="<%= style_table_td %> p-1 w-28">
+    <%= f.collection_select :location_id, @locations, :id, :code,
+          { include_blank: "-" },
+          class: "w-full px-1 py-1 text-xs border border-slate-200 outline-none focus:border-accent rounded-sm bg-white" %>
+  </td>
+  <%= f.hidden_field :operationtype_id, value: 1 %>
+  <td class="<%= style_table_td %> p-1 text-center w-10">
     <button type="button"
             data-action="nested-form#remove"
             class="text-red-500 hover:text-red-700">

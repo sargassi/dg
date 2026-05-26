@@ -1,0 +1,73 @@
+<% menu = [
+  { label: 'Dashboard', path: inventories_dashboard_path, active: false, icon: 'dashboard' },
+  { label: 'Ricerca magazzino', path: inventories_path, active: false, icon: 'inventory_2' },
+  { label: 'Movimenti', path: inventories_movements_path, active: false, icon: 'swap_vert' },
+  { label: 'Magazzini e ubiche', path: warehouses_path, active: false, icon: 'warehouse' },
+] %>
+<div class="<%= style_main_header_container %>">
+  <%= render partial: 'atoms/header', locals: { link: '/', label: 'Inventario / Anteprima Scarico', menu: menu } %>
+</div>
+
+<section class="<%= style_main_cnt %> max-w-5xl mx-auto">
+  <div class="<%= style_main_card %> mb-6">
+    <h3 class="<%= style_main_card_header %>">
+      <span class="material-symbols-outlined text-slate-400">description</span>
+      Riepilogo Scarico
+    </h3>
+
+    <div class="grid grid-cols-3 gap-4 text-sm mb-6">
+      <div>
+        <span class="text-xs text-slate-400 uppercase block">Data</span>
+        <span class="font-medium"><%= @params[:indate] %></span>
+      </div>
+      <div>
+        <span class="text-xs text-slate-400 uppercase block">Operatore</span>
+        <span class="font-medium"><%= User.find_by(id: @params[:operator_id])&.name || @params[:operator_id] %></span>
+      </div>
+      <div>
+        <span class="text-xs text-slate-400 uppercase block">Note</span>
+        <span class="font-medium"><%= @params[:notes].presence || "-" %></span>
+      </div>
+    </div>
+
+    <h4 class="text-sm font-semibold text-slate-700 mb-3">
+      Articoli da scaricare (<%= @details.size %>)
+    </h4>
+
+    <table class="min-w-full">
+      <thead>
+        <tr>
+          <th class="<%= style_table_th %>">Codice</th>
+          <th class="<%= style_table_th %> w-20 text-right">Q.tà</th>
+          <th class="<%= style_table_th %> w-32">Magazzino</th>
+          <th class="<%= style_table_th %> w-28">Ubica</th>
+          <th class="<%= style_table_th %> w-36">Operazione</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @details.each do |detail| %>
+          <% wh = Warehouse.find_by(id: detail[:warehouse_id]) %>
+          <% loc = Location.find_by(id: detail[:location_id]) %>
+          <% op = Operationtype.find_by(id: detail[:operationtype_id]) %>
+          <tr class="hover:bg-slate-50">
+            <td class="<%= style_table_td %>"><%= detail[:itemcode] %></td>
+            <td class="<%= style_table_td %> text-right font-mono text-blue-600"><%= detail[:qty] %></td>
+            <td class="<%= style_table_td %>"><%= wh&.code || "-" %></td>
+            <td class="<%= style_table_td %>"><%= loc&.code || "-" %></td>
+            <td class="<%= style_table_td %>"><%= op&.description || "-" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="flex gap-4">
+    <%= form_with url: confirm_itemouts_path, method: :post do %>
+      <button type="submit" class="<%= style_import_btn %> bg-green-600">
+        Conferma e Salva (<%= @details.size %> articoli)
+      </button>
+    <% end %>
+
+    <%= link_to "Annulla", new_itemout_path, class: "#{style_import_btn} bg-gray-400 text-center" %>
+  </div>
+</section>

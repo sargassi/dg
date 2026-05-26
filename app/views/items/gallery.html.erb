@@ -1,7 +1,8 @@
 <%= turbo_frame_tag "item_modal" do %>
   <div class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-6">
     <div class="relative bg-white rounded-sm shadow-lg">
-      <%= link_to mainware_index_path,
+      <% return_to = params[:return_to].presence || mainware_index_path %>
+      <%= link_to return_to,
             class: "absolute -top-3 -right-3 z-10 w-8 h-8 bg-white rounded-full shadow flex items-center justify-center text-slate-500 hover:text-slate-700 transition",
             data: { turbo_frame: "_top" } do %>
         <span class="material-symbols-outlined text-lg">close</span>
@@ -11,11 +12,13 @@
           <% @pictures.each_with_index do |pic, i| %>
             <div data-carousel-target="slide" class="relative <%= i == @index ? '' : 'hidden' %>">
               <%= image_tag pic, class: "max-w-full max-h-[70vh] object-contain" %>
-              <%= button_to delete_picture_item_path(@item, picture_id: pic.id, index: i),
-                    method: :delete,
-                    class: "absolute top-2 right-2 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center opacity-70 hover:opacity-100 transition shadow",
-                    data: { turbo_confirm: "Rimuovere questa immagine?", turbo_frame: @pictures.count == 1 ? "_top" : "item_modal" } do %>
-                <span class="material-symbols-outlined text-base leading-none">delete</span>
+              <% unless params[:return_to].present? %>
+                <%= button_to delete_picture_item_path(@item, picture_id: pic.id, index: i),
+                      method: :delete,
+                      class: "absolute top-2 right-2 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center opacity-70 hover:opacity-100 transition shadow",
+                      data: { turbo_confirm: "Rimuovere questa immagine?", turbo_frame: @pictures.count == 1 ? "_top" : "item_modal" } do %>
+                  <span class="material-symbols-outlined text-base leading-none">delete</span>
+                <% end %>
               <% end %>
             </div>
           <% end %>

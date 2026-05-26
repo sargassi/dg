@@ -2,9 +2,14 @@ import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
   static targets = ["detail", "colprice"];
+  static values = { id: Number };
 
   connect() {
     this.open = false;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("expand_history") == String(this.idValue)) {
+      this._expand();
+    }
   }
 
   toggle() {

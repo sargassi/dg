@@ -1,14 +1,50 @@
-<div class="w-full">
-  <% if notice.present? %>
-    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-lg inline-block" id="notice"><%= notice %></p>
-  <% end %>
-
-  <div class="flex justify-between items-center">
-    <h1 class="font-bold text-4xl">Itemouts</h1>
-    <%= link_to "New itemout", new_itemout_path, class: "rounded-lg py-3 px-5 bg-accent text-white block font-medium" %>
-  </div>
-
-  <div id="itemouts" class="min-w-full">
-    <%= render @itemouts %>
-  </div>
+<% menu = [
+  { label: 'Dashboard', path: inventories_dashboard_path, active: false, icon: 'dashboard' },
+  { label: 'Ricerca magazzino', path: inventories_path, active: false, icon: 'inventory_2' },
+  { label: 'Magazzino e ubiche', path: warehouses_path, active: false, icon: 'warehouse' },
+] %>
+<div class="<%= style_main_header_container %>">
+  <%= render partial: 'atoms/header', locals: { link: '/', label: 'Inventario / Scarichi', menu: menu } %>
 </div>
+
+<section class="<%= style_main_cnt %>">
+  <div class="<%= style_main_card %>">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="<%= style_main_card_header %> !mb-0">
+        <span class="material-symbols-outlined text-slate-400">outbound</span>
+        Elenco Scarichi
+      </h3>
+      <%= link_to new_itemout_path, class: "px-4 py-2 text-xs bg-accent text-white rounded-sm hover:bg-accent-700 transition-colors flex items-center gap-1" do %>
+        <span class="material-symbols-outlined text-base">add</span>
+        Nuovo scarico
+      <% end %>
+    </div>
+
+    <div id="itemouts">
+      <table class="min-w-full">
+        <thead>
+          <tr>
+            <th class="<%= style_table_th %>">ID</th>
+            <th class="<%= style_table_th %>">Data</th>
+            <th class="<%= style_table_th %>">Articoli</th>
+            <th class="<%= style_table_th %>">Note</th>
+            <th class="<%= style_table_th %> w-24"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @itemouts.each do |itemout| %>
+            <tr class="hover:bg-slate-50 border-b border-slate-100">
+              <td class="<%= style_table_td %> font-mono text-xs"><%= itemout.id %></td>
+              <td class="<%= style_table_td %>"><%= itemout.indate %></td>
+              <td class="<%= style_table_td %>"><%= itemout.itemouts_details.size %></td>
+              <td class="<%= style_table_td %> text-xs text-slate-400 max-w-[200px] truncate"><%= itemout.notes.presence || "-" %></td>
+              <td class="<%= style_table_td %> text-right">
+                <%= link_to "Dettaglio", itemout_path(itemout), class: "text-xs text-accent hover:text-accent-700" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

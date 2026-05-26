@@ -1,22 +1,63 @@
-<%= form_with(model: itemout, class: "contents") do |form| %>
-  <% if itemout.errors.any? %>
-    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-lg mt-3">
-      <h2><%= pluralize(itemout.errors.count, "error") %> prohibited this itemout from being saved:</h2>
+<%= form_with(model: itemout, class: "contents", id: "itemout-form") do |form| %>
 
-      <ul>
-        <% itemout.errors.each do |error| %>
-          <li><%= error.full_message %></li>
-        <% end %>
-      </ul>
+  <%= form.hidden_field :operator_id, value: current_user.id %>
+
+  <div class="grid grid-cols-3 gap-8">
+    <div class="col-span-2 bg-slate-50 rounded-lg p-4" data-controller="nested-form">
+      <div class="<%= style_main_card %>">
+        <h3 class="<%= style_main_card_header %>">
+          <span class="material-symbols-outlined text-slate-400">inventory_2</span>
+          Dettaglio Scarico
+        </h3>
+
+        <table class="min-w-full">
+          <thead>
+            <tr>
+              <th class="<%= style_table_th %>">Codice Articolo</th>
+              <th class="<%= style_table_th %> w-20">Q.tà</th>
+              <th class="<%= style_table_th %> w-32">Magazzino</th>
+              <th class="<%= style_table_th %> w-28">Ubica</th>
+              <th class="<%= style_table_th %> w-36">Operazione</th>
+              <th class="<%= style_table_th %> w-10"></th>
+            </tr>
+          </thead>
+          <tbody data-nested-form-target="rows">
+            <%= form.fields_for :itemouts_details do |detail_form| %>
+              <%= render 'itemouts_detail_fields', f: detail_form %>
+            <% end %>
+          </tbody>
+        </table>
+
+        <template data-nested-form-target="template">
+          <%= form.fields_for :itemouts_details, ItemoutsDetail.new, child_index: '__NEW__' do |detail_form| %>
+            <%= render 'itemouts_detail_fields', f: detail_form %>
+          <% end %>
+        </template>
+
+        <button type="button"
+                data-action="nested-form#add"
+                class="mt-3 px-4 py-2 text-xs text-accent hover:text-accent-700 hover:bg-accent-50 border border-accent-200 rounded-sm transition-colors flex items-center gap-1">
+          <span class="material-symbols-outlined text-base">add</span>
+          Aggiungi riga
+        </button>
+      </div>
     </div>
-  <% end %>
 
-  <div class="my-5">
-    <%= form.label :indate %>
-    <%= form.date_field :indate, class: "block shadow rounded-sm border border-slate-200 outline-none px-3 py-2 mt-2 w-full" %>
-  </div>
+    <div class="bg-amber-50 rounded-lg p-5 sticky top-0 self-start space-y-4">
+      <div class="flex items-end gap-4">
+        <div class="w-64 flex-shrink-0">
+          <%= form.label :indate, "Data", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+          <%= form.date_field :indate, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+        </div>
+        <div class="ml-auto">
+          <%= form.submit "Anteprima", class: "rounded-lg py-3 px-5 bg-accent text-white inline-block font-medium cursor-pointer" %>
+        </div>
+      </div>
 
-  <div class="inline">
-    <%= form.submit class: "rounded-lg py-3 px-5 bg-accent text-white inline-block font-medium cursor-pointer" %>
+      <div>
+        <%= form.label :notes, "Note", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+        <%= form.text_area :notes, rows: 2, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+      </div>
+    </div>
   </div>
 <% end %>

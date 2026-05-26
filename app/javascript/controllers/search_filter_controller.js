@@ -1,16 +1,21 @@
 import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
-  static targets = ["input", "row", "count", "form"];
+  static targets = ["input", "row", "count", "form", "select"];
   static values = { debounce: { type: Number, default: 150 } };
 
   initialize() {
     this.timeout = null;
   }
 
+  connect() {
+    this.selectTargets.forEach(el => this.highlightSelect(el));
+  }
+
   onFrameLoad() {
     this.highlight();
     this.updateCount();
+    this.selectTargets.forEach(el => this.highlightSelect(el));
   }
 
   updateCount() {
@@ -63,7 +68,18 @@ export default class extends Controller {
     return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }
 
+  highlightSelect(select) {
+    if (select.value) {
+      select.classList.add("bg-blue-400", "text-white");
+      select.classList.remove("bg-white");
+    } else {
+      select.classList.remove("bg-blue-400", "text-white");
+      select.classList.add("bg-white");
+    }
+  }
+
   filter(event) {
+    if (event.target.matches("select")) this.highlightSelect(event.target);
     clearTimeout(this.timeout);
     this.timeout = setTimeout(() => {
       if (this.hasFormTarget) {

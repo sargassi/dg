@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   get 'etichecks/etichette'
   resources :etichecks
   get 'inventories/dashboard'
+  get 'inventories/movements'
   get 'inventories/import'
   post   'inventories/import/parse',      to: 'inventories#import_parse'
   put    'inventories/import/update_row', to: 'inventories#import_update_row'
@@ -14,13 +15,26 @@ Rails.application.routes.draw do
     resources :warehouses
     resources :locations
     resources :itemins do
+      collection do
+        get  :preview
+        post :confirm
+      end
       resources :itemins_details, only: [:index, :create, :update, :destroy]
     end
-    resources :itemouts
+    resources :itemouts do
+      collection do
+        get  :preview
+        post :confirm
+      end
+    end
   end
   get '/itemins(/*path)' => redirect('/inventories/itemins/%{path}')
   get '/itemouts(/*path)' => redirect('/inventories/itemouts/%{path}')
-  resources :inventories
+  resources :inventories do
+    collection do
+      get 'autocomplete'
+    end
+  end
   resources :items do
     collection do
       get 'autocomplete'

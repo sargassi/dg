@@ -1,10 +1,18 @@
 <% if siblings.any? %>
   <table class="w-full">
+    <thead>
+      <tr class="text-slate-500 text-[10px] uppercase tracking-wider">
+        <th class="p-2 border border-slate-300 text-left font-medium">Prezzo</th>
+        <th class="p-2 border border-slate-300 text-left font-medium">Collection</th>
+        <th class="p-2 border border-slate-300 text-left font-medium">Data</th>
+      </tr>
+    </thead>
     <tbody>
       <% siblings.each do |s| %>
         <tr class="hover:bg-slate-50">
           <td class="p-2 text-xs border border-slate-300 font-mono text-blue-600"><%= number_to_currency(s.unit_price, unit: "€") %></td>
           <td class="p-2 text-xs border border-slate-300"><%= s.collection&.description || "-" %></td>
+          <td class="p-2 text-xs border border-slate-300"><%= s.created_at&.strftime("%d-%m-%Y") %></td>
         </tr>
       <% end %>
     </tbody>

@@ -1,7 +1,8 @@
 <% menu = [
   { label: 'Dashboard', path: inventories_dashboard_path, active: false, icon: 'dashboard' },
   { label: 'Ricerca magazzino', path: inventories_path, active: true, icon: 'inventory_2' },
-  { label: 'Magazzino e ubiche', path: warehouses_path, active: false, icon: 'warehouse' },
+  { label: 'Movimenti', path: inventories_movements_path, active: false, icon: 'swap_vert' },
+  { label: 'Magazzini e ubiche', path: warehouses_path, active: false, icon: 'warehouse' },
 ] %>
 <div class="<%= style_main_header_container %>">
   <%= render partial: 'atoms/header', locals: {link: '/', label: 'Inventario / Ricerca magazzino', menu: menu} %>
@@ -16,13 +17,21 @@
         <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none">search</span>
         <%= f.search_field :q,
               value: params[:q],
-              placeholder: "Cerca in tutte le colonne",
+              placeholder: "Cerca articolo",
               class: "#{style_search_input} rounded-lg pl-10 font-mono text-blue-600",
               data: { action: "input->search-filter#filter", search_filter_target: "input" } %>
       </div>
+      <%= f.date_field :date,
+            value: @date,
+            class: "border border-slate-300 outline-none px-2 py-1.5 text-xs rounded-lg",
+            data: { action: "change->search-filter#filter" } %>
+      <%= f.select :warehouse_id,
+            options_from_collection_for_select(@warehouses, :id, :code, params[:warehouse_id]),
+            { include_blank: "Tutti i magazzini" },
+            class: "border border-slate-300 outline-none px-4 py-2 text-xs rounded-lg min-w-[180px] uppercase #{params[:warehouse_id].present? ? 'bg-blue-400 text-white' : 'bg-white'}",
+            data: { action: "change->search-filter#filter", search_filter_target: "select" } %>
     <% end %>
     <span class="text-sm font-bold text-slate-700 whitespace-nowrap border border-slate-300 rounded-full px-3 py-1" data-search-filter-target="count"><%= @pagy.count %> articoli</span>
-    <%= link_to "Nuovo Movimento", new_inventory_path, class: "#{style_import_btn} ml-auto" %>
   </div>
 
   <style>
@@ -36,7 +45,13 @@
         <table class="min-w-full">
           <thead>
             <tr>
-              <% %w[ID Itemcode QTA Min Max Magazzino Posizione Operazione Creato Azioni].each do |h| %>
+              <% %w[Codice Collezione].each do |h| %>
+                <th class="<%= style_table_th %> sticky top-0 z-10"><%= h %></th>
+              <% end %>
+              <th class="<%= style_table_th %> sticky top-0 z-10">
+                QTA <span class="text-[9px] text-slate-500 ml-1 font-normal">al <span class="font-bold"><%= @date.strftime("%d-%m-%Y") %></span></span>
+              </th>
+              <% %w[Movimenti QR Immagine].each do |h| %>
                 <th class="<%= style_table_th %> sticky top-0 z-10"><%= h %></th>
               <% end %>
             </tr>
@@ -44,28 +59,68 @@
           <tbody>
             <% @inventories.each do |inv| %>
               <tr class="hover:bg-slate-50">
-                <td class="<%= style_table_td %> text-xs font-mono text-blue-600"><%= inv.id %></td>
-                <td class="<%= style_table_td %>"><%= inv.itemcode %></td>
-                <td class="<%= style_table_td %>"><%= inv.qtyavailable %></td>
-                <td class="<%= style_table_td %>"><%= inv.minstock %></td>
-                <td class="<%= style_table_td %>"><%= inv.maxstock %></td>
-                <td class="<%= style_table_td %>"><%= inv.warehouse&.description || inv.warehouse_id %></td>
-                <td class="<%= style_table_td %>"><%= inv.location&.description || inv.location_id %></td>
-                <td class="<%= style_table_td %>"><%= inv.operationtype&.description || inv.operationtype_id %></td>
-                <td class="<%= style_table_td %> text-xs"><%= inv.created_at&.strftime('%d-%m-%Y') %></td>
-                <td class="<%= style_table_td %> whitespace-nowrap align-middle">
-                  <div class="flex flex-col items-center gap-0.5">
-                    <%= link_to edit_inventory_path(inv, q: params[:q]),
-                          class: "p-2 rounded text-accent hover:text-accent-700 hover:bg-accent-50 transition border border-accent-200",
-                          data: { turbo_frame: "inventory_modal" } do %>
-                      <span class="material-symbols-outlined text-2xl">edit</span>
+                <td class="<%= style_table_td %> font-mono whitespace-nowrap">
+                  <% item = @items_by_gencode[inv.gencode] %>
+                  <%= item.itemcode %><%= item.fabricode %><%= item.varcode %>
+                </td>
+                <td class="<%= style_table_td %> text-xs font-bold uppercase whitespace-nowrap"><%= @collection_by_gencode[inv.gencode] %></td>
+                <td class="<%= style_table_td %> font-mono font-bold text-lg <%= inv.net_qty.to_i >= 0 ? 'text-green-600' : 'text-red-600' %>"><%= inv.net_qty %></td>
+                <td class="<%= style_table_td %> p-0 w-[800px]">
+                  <table class="w-[800px] text-xs border-collapse border border-slate-300 table-fixed">
+                    <colgroup>
+                      <col class="w-16">
+                      <col class="w-10">
+                      <col class="w-12">
+                      <col class="w-14">
+                      <col class="w-16">
+                    </colgroup>
+                    <tbody>
+                      <% (@history_by_gencode[inv.gencode] || {}).each do |wh_id, records| %>
+                          <tr>
+                            <td colspan="5" class="px-2 py-1.5 font-bold text-slate-700 bg-slate-100 border border-slate-300 border-l-4 border-l-accent text-sm">
+                            <%= records.first.warehouse&.code || wh_id %>
+                            <span class="font-mono text-slate-500 ml-2">
+                              (<%= records.sum { |r| r.operationtype_id == 1 ? r.qtyavailable.to_i : -r.qtyavailable.to_i } %>)
+                            </span>
+                          </td>
+                        </tr>
+                        <% records.each_with_index do |h, i| %>
+                          <% date = h.itemins_id ? @itemins_by_id[h.itemins_id]&.indate : @itemouts_by_id[h.itemouts_id]&.indate %>
+                          <% operator = h.itemins_id ? @itemins_by_id[h.itemins_id]&.operator : @itemouts_by_id[h.itemouts_id]&.operator %>
+                          <tr class="<%= i == records.length - 1 ? 'border-b border-slate-200' : '' %> <%= i.even? ? 'bg-white' : 'bg-slate-50/50' %>">
+                            <td class="p-1">
+                              <% if h.operationtype_id == 1 %>
+                                <span class="inline-block bg-green-100 text-green-700 px-1.5 py-0.5 rounded text-[10px] font-semibold leading-tight">Entrata</span>
+                              <% else %>
+                                <span class="inline-block bg-red-100 text-red-700 px-1.5 py-0.5 rounded text-[10px] font-semibold leading-tight">Uscita</span>
+                              <% end %>
+                              <span class="text-[10px] text-slate-500 block leading-tight mt-0.5"><%= date&.strftime("%d-%m-%Y") %></span>
+                            </td>
+                            <td class="px-2 py-1 text-right font-mono font-bold border border-slate-300 <%= h.operationtype_id == 1 ? 'text-green-600' : 'text-red-600' %>"><%= h.qtyavailable %></td>
+                            <td class="px-2 py-1 border border-slate-300"><%= h.location&.code || "-" %></td>
+                            <td class="px-2 py-1 font-mono text-blue-600 whitespace-nowrap border border-slate-300">#<%= h.itemins_id || h.itemouts_id %></td>
+                            <td class="px-2 py-1 border border-slate-300 text-xs"><%= operator&.name %></td>
+                          </tr>
+                        <% end %>
+                      <% end %>
+                    </tbody>
+                  </table>
+                </td>
+                <% item = @items_by_gencode[inv.gencode] %>
+                <td class="<%= style_table_td %>" style="width:130px">
+                  <%= item&.qrcode_svg&.html_safe %>
+                </td>
+                <td class="<%= style_table_td %> align-middle" style="width:120px">
+                  <% if item&.pictures&.attached? %>
+                    <%= link_to gallery_item_path(item, index: 0, q: params[:q], return_to: inventories_path(q: params[:q], date: params[:date], warehouse_id: params[:warehouse_id])), data: { turbo_frame: "item_modal" } do %>
+                      <div class="relative inline-block">
+                        <%= image_tag item.pictures.first, class: "w-[100px] h-[100px] object-cover border border-slate-200 block" %>
+                        <% if item.pictures.count > 1 %>
+                          <span class="absolute -top-1.5 -right-1.5 bg-accent text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center leading-none">+<%= item.pictures.count - 1 %></span>
+                        <% end %>
+                      </div>
                     <% end %>
-                    <%= button_to inventory_path(inv, q: params[:q]), method: :delete,
-                          class: "p-2 rounded text-red-600 hover:text-red-800 hover:bg-red-50 transition border border-red-200",
-                          data: { turbo_confirm: "Eliminare questo articolo?", turbo_frame: "_top" } do %>
-                      <span class="material-symbols-outlined text-2xl">delete</span>
-                    <% end %>
-                  </div>
+                  <% end %>
                 </td>
               </tr>
             <% end %>
@@ -128,4 +183,4 @@
   <% end %>
 </section>
 
-<%= turbo_frame_tag "inventory_modal" %>
+<%= turbo_frame_tag "item_modal" %>

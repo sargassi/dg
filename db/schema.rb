@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_05_26_102135) do
+ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
   create_table "abilities", force: :cascade do |t|
     t.string "name", null: false
     t.string "description"
@@ -198,6 +198,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_102135) do
     t.boolean "enabled", default: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "gencode"
+    t.integer "item_id"
+    t.index ["item_id"], name: "index_inventories_on_item_id"
     t.index ["itemins_id"], name: "index_inventories_on_itemins_id"
     t.index ["itemouts_id"], name: "index_inventories_on_itemouts_id"
     t.index ["location_id"], name: "index_inventories_on_location_id"
@@ -222,6 +225,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_102135) do
     t.datetime "updated_at", null: false
     t.integer "item_id"
     t.integer "collection_id"
+    t.integer "warehouse_id"
+    t.integer "location_id"
+    t.integer "operationtype_id"
     t.index ["itemin_id"], name: "index_itemins_details_on_itemin_id"
   end
 
@@ -229,6 +235,22 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_102135) do
     t.date "indate"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "notes"
+    t.integer "operator_id"
+  end
+
+  create_table "itemouts_details", force: :cascade do |t|
+    t.integer "itemout_id", null: false
+    t.string "itemcode"
+    t.integer "qty"
+    t.integer "item_id"
+    t.integer "collection_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "warehouse_id"
+    t.integer "location_id"
+    t.integer "operationtype_id"
+    t.index ["itemout_id"], name: "index_itemouts_details_on_itemout_id"
   end
 
   create_table "items", force: :cascade do |t|
@@ -513,10 +535,12 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_102135) do
   add_foreign_key "events", "eventypes"
   add_foreign_key "inventories", "itemins", column: "itemins_id"
   add_foreign_key "inventories", "itemouts", column: "itemouts_id"
+  add_foreign_key "inventories", "items"
   add_foreign_key "inventories", "locations"
   add_foreign_key "inventories", "operationtypes"
   add_foreign_key "inventories", "warehouses"
   add_foreign_key "itemins_details", "itemins"
+  add_foreign_key "itemouts_details", "itemouts"
   add_foreign_key "items", "collections"
   add_foreign_key "locations", "warehouses"
   add_foreign_key "prodrow", "areas"

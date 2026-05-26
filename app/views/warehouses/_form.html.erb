@@ -46,6 +46,16 @@
     <%= form.text_field :longitude, class: "border border-slate-300 outline-none px-3 py-2 mt-2 w-full text-sm" %>
   </div>
 
+  <% if warehouse.persisted? && warehouse.qrcode_svg.present? %>
+    <div class="my-5 flex items-center gap-4 p-3 bg-slate-50 rounded-sm">
+      <span class="inline-block w-12 h-12"><%= warehouse.qrcode_svg.html_safe %></span>
+      <div>
+        <div class="text-xs text-slate-400 uppercase tracking-wide mb-1">QR Code</div>
+        <div class="text-xs font-mono text-slate-600"><%= warehouse.gencode %></div>
+      </div>
+    </div>
+  <% end %>
+
   <div>
     <%= form.submit class: style_import_btn %>
   </div>

@@ -2,6 +2,9 @@
   <div class="flex items-center justify-between py-2.5 px-3 hover:bg-slate-50 transition-colors cursor-default border-b border-slate-200">
     <div class="flex items-center gap-3">
       <span class="material-symbols-outlined text-slate-300 text-xl">store</span>
+      <% if warehouse.qrcode_svg.present? %>
+        <span class="inline-block w-8 h-8 overflow-hidden"><%= warehouse.qrcode_svg.html_safe %></span>
+      <% end %>
       <div>
         <span class="text-sm font-semibold text-slate-800"><%= warehouse.code %></span>
         <% if warehouse.city.present? %>
@@ -28,6 +31,9 @@
         <div id="<%= dom_id loc %>" class="flex items-center justify-between py-1.5 px-3 hover:bg-slate-50 transition-colors group border-b border-dashed border-slate-100 last:border-b-0">
           <div class="flex items-center gap-2">
             <span class="material-symbols-outlined text-slate-300 text-sm">radio_button_checked</span>
+            <% if loc.qrcode_svg.present? %>
+              <span class="inline-block w-6 h-6 overflow-hidden"><%= loc.qrcode_svg.html_safe %></span>
+            <% end %>
             <span class="text-xs text-slate-500"><%= loc.code %></span>
             <span class="text-xs <%= loc.enabled ? 'text-emerald-600' : 'text-slate-300' %>"><%= loc.enabled ? 'attiva' : 'disabilitata' %></span>
           </div>

@@ -10,6 +10,8 @@
         <%= render partial: "/layouts/menus/side/lab" %>
         <% end %>
 
+        <%= render partial: "/layouts/menus/side/mag" %>
+
         <% if current_user.has_role?(:lab) %>
             <%= render partial: "/layouts/menus/side/utilities_lab" %>
         <% end %>

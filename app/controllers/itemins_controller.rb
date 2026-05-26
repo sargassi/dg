@@ -12,7 +12,7 @@ class IteminsController < ApplicationController
 
   # GET /itemins/new
   def new
-    @itemin = Itemin.new
+    @itemin = Itemin.new(indate: Date.current)
   end
 
   # GET /itemins/1/edit
@@ -28,7 +28,7 @@ class IteminsController < ApplicationController
         format.html { redirect_to itemin_url(@itemin), notice: "Itemin was successfully created." }
         format.json { render :show, status: :created, location: @itemin }
       else
-        format.html { render :new, status: :unprocessable_entity }
+        format.html { redirect_to new_itemin_path, alert: @itemin.errors.full_messages.join(". ") }
         format.json { render json: @itemin.errors, status: :unprocessable_entity }
       end
     end
@@ -65,6 +65,7 @@ class IteminsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def itemin_params
-      params.require(:itemin).permit(:indate)
+      params.require(:itemin).permit(:indate, :notes, :operator_id, :description,
+        itemins_details_attributes: [:id, :itemcode, :qty, :item_id, :collection_id, :_destroy])
     end
 end

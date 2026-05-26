@@ -1,0 +1,100 @@
+<% menu = [
+  { label: 'Dashboard', path: inventories_dashboard_path, active: true, icon: 'dashboard' },
+  { label: 'Ricerca magazzino', path: inventories_path, active: false, icon: 'inventory_2' },
+  { label: 'Magazzino e ubiche', path: warehouses_path, active: false, icon: 'warehouse' },
+] %>
+<div class="<%= style_main_header_container %>">
+  <%= render partial: 'atoms/header', locals: { link: '/', label: 'Inventario / Dashboard', menu: menu } %>
+</div>
+
+<section class="<%= style_main_cnt %> space-y-8">
+  <div class="<%= style_main_card_grid %>">
+    <div class="<%= style_main_card %>">
+      <h3 class="<%= style_main_card_header %>">
+        <span class="material-symbols-outlined text-slate-400">inventory_2</span>
+        Magazzino
+      </h3>
+      <div class="space-y-3">
+        <%= link_to inventories_path, class: style_main_card_link do %>
+          <span class="text-sm text-slate-700">Ricerca Magazzino</span>
+          <span class="material-symbols-outlined text-slate-300 text-base">arrow_forward_ios</span>
+        <% end %>
+        <%= link_to new_inventory_path, class: style_main_card_link do %>
+          <span class="text-sm text-slate-700">Nuovo Articolo</span>
+          <span class="material-symbols-outlined text-slate-300 text-base">arrow_forward_ios</span>
+        <% end %>
+        <%= link_to inventories_import_path, class: style_main_card_link do %>
+          <span class="text-sm text-slate-700">Importa da Excel</span>
+          <span class="material-symbols-outlined text-slate-300 text-base">arrow_forward_ios</span>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="<%= style_main_card %>">
+      <h3 class="<%= style_main_card_header %>">
+        <span class="material-symbols-outlined text-slate-400">warehouse</span>
+        Movimenti Magazzino
+      </h3>
+      <div class="space-y-3">
+        <%= link_to new_itemin_path, class: style_main_card_link do %>
+          <span class="text-sm text-slate-700">Aggiunta a Magazzino</span>
+          <span class="material-symbols-outlined text-slate-300 text-base">arrow_forward_ios</span>
+        <% end %>
+        <%= link_to new_itemout_path, class: style_main_card_link do %>
+          <span class="text-sm text-slate-700">Uscita da Magazzino</span>
+          <span class="material-symbols-outlined text-slate-300 text-base">arrow_forward_ios</span>
+        <% end %>
+        <a href="#" class="<%= style_main_card_link %>">
+          <span class="text-sm text-slate-700">Variazione Magazzino</span>
+          <span class="material-symbols-outlined text-slate-300 text-base">arrow_forward_ios</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="<%= style_main_card %>">
+      <h3 class="<%= style_main_card_header %>">
+        <span class="material-symbols-outlined text-slate-400">shelves</span>
+        Magazzini e Ubiche
+      </h3>
+      <div class="space-y-3">
+        <%= link_to warehouses_path, class: style_main_card_link do %>
+          <span class="text-sm text-slate-700">Elenco Magazzini</span>
+          <span class="material-symbols-outlined text-slate-300 text-base">arrow_forward_ios</span>
+        <% end %>
+        <%= link_to locations_path, class: style_main_card_link do %>
+          <span class="text-sm text-slate-700">Elenco Ubiche</span>
+          <span class="material-symbols-outlined text-slate-300 text-base">arrow_forward_ios</span>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="<%= style_main_card %>">
+    <h3 class="<%= style_main_card_header %>">
+      <span class="material-symbols-outlined text-slate-400">inventory_2</span>
+      Ultimi Movimenti
+    </h3>
+    <div class="divide-y divide-slate-100 -mx-6">
+      <% if @latest_inventories.present? %>
+        <% @latest_inventories.each do |inv| %>
+          <%= link_to inventory_path(inv),
+                class: "flex items-center justify-between px-6 py-3 hover:bg-slate-50 transition" do %>
+            <div class="flex-1 min-w-0">
+              <div class="text-sm font-medium text-slate-800 truncate uppercase"><%= inv.itemcode %></div>
+              <div class="text-xs text-slate-400">
+                QTA: <%= inv.qtyavailable %>
+              </div>
+            </div>
+            <div class="text-xs font-semibold text-indigo-700 ml-4 whitespace-nowrap">
+              Min: <%= inv.minstock %>
+            </div>
+          <% end %>
+        <% end %>
+      <% else %>
+        <div class="flex items-center justify-center h-32 text-sm text-slate-400 italic px-6">
+          Nessun movimento presente
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_05_21_100006) do
+ActiveRecord::Schema[7.2].define(version: 2026_05_26_102135) do
   create_table "abilities", force: :cascade do |t|
     t.string "name", null: false
     t.string "description"
@@ -209,6 +209,20 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_21_100006) do
     t.date "indate"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "notes"
+    t.integer "operator_id"
+    t.string "description"
+  end
+
+  create_table "itemins_details", force: :cascade do |t|
+    t.integer "itemin_id", null: false
+    t.string "itemcode"
+    t.integer "qty"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "item_id"
+    t.integer "collection_id"
+    t.index ["itemin_id"], name: "index_itemins_details_on_itemin_id"
   end
 
   create_table "itemouts", force: :cascade do |t|
@@ -242,6 +256,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_21_100006) do
     t.boolean "enabled"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "qrcode_svg"
     t.index ["warehouse_id"], name: "index_locations_on_warehouse_id"
   end
 
@@ -483,6 +498,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_21_100006) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "enabled", default: true
+    t.text "qrcode_svg"
   end
 
   create_table "zones", force: :cascade do |t|
@@ -500,6 +516,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_21_100006) do
   add_foreign_key "inventories", "locations"
   add_foreign_key "inventories", "operationtypes"
   add_foreign_key "inventories", "warehouses"
+  add_foreign_key "itemins_details", "itemins"
   add_foreign_key "items", "collections"
   add_foreign_key "locations", "warehouses"
   add_foreign_key "prodrow", "areas"

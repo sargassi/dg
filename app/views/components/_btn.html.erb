@@ -1,0 +1,24 @@
+<% variant = local_assigns[:variant] || :primary %>
+<% size = local_assigns[:size] || :sm %>
+<% extra = local_assigns[:extra] || '' %>
+<% btn_class = "#{style_btn(variant: variant, size: size, extra: extra)} inline-flex items-center gap-1" %>
+
+<% if local_assigns[:method] && local_assigns[:path] %>
+  <%= button_to local_assigns[:path], method: local_assigns[:method],
+        data: local_assigns[:data] || {},
+        class: btn_class do %>
+    <% if local_assigns[:icon] %><span class="material-symbols-outlined text-base"><%= local_assigns[:icon] %></span><% end %>
+    <%= local_assigns[:label] if local_assigns[:label] %>
+  <% end %>
+<% elsif local_assigns[:path] %>
+  <%= link_to local_assigns[:path], data: local_assigns[:data] || {},
+        class: btn_class do %>
+    <% if local_assigns[:icon] %><span class="material-symbols-outlined text-base"><%= local_assigns[:icon] %></span><% end %>
+    <%= local_assigns[:label] if local_assigns[:label] %>
+  <% end %>
+<% else %>
+  <button type="button" class="<%= btn_class %>" data-action="<%= local_assigns[:action] %>">
+    <% if local_assigns[:icon] %><span class="material-symbols-outlined text-base"><%= local_assigns[:icon] %></span><% end %>
+    <%= local_assigns[:label] if local_assigns[:label] %>
+  </button>
+<% end %>

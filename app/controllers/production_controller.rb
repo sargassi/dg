@@ -3,7 +3,7 @@ class ProductionController < ApplicationController
   include Pagy::Backend
 
   def dashboard
-
+    @latest_proformas = Proforma.open.includes(prows: :tempestas).order(id: :desc).limit(5)
   end
 
   def research

@@ -6,11 +6,27 @@ class EventsController < ApplicationController
     @todate = safe_date(:selected_date, @date)
     month_start = @date.beginning_of_month
     month_end = @date.end_of_month
+    year = @date.year
 
-    @events = Event.where(start_time: month_start..month_end)
-                   .or(Event.where(end_time: month_start..month_end))
-                   .or(Event.where("start_time < ? AND end_time > ?", month_start, month_end))
-                   .includes(:eventype)
+    non_yearly = Event.recurrents.except(:yearly).values + [nil]
+    base = Event.where(recurrent: non_yearly)
+    @events = base.where(start_time: month_start..month_end)
+                  .or(base.where(end_time: month_start..month_end))
+                  .or(base.where("start_time < ? AND end_time > ?", month_start, month_end))
+                  .includes(:eventype)
+                  .to_a
+
+    Event.where(recurrent: :yearly).includes(:eventype).find_each do |event|
+      projected_start = Date.new(year, event.start_time.month, event.start_time.day)
+      projected_end = event.end_time ? Date.new(year, event.end_time.month, event.end_time.day) : projected_start
+      projected_end = projected_end.next_year if projected_end < projected_start
+
+      if projected_start <= month_end && projected_end >= month_start
+        event.start_time = projected_start
+        event.end_time = projected_end
+        @events << event
+      end
+    end
 
     @day_events = @events.select { |e| (e.start_time..e.end_time).cover?(@todate) }
     @end_of_week = @todate.end_of_week(:sunday)

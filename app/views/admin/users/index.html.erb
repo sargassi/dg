@@ -19,7 +19,7 @@
 
         <div class="px-3 pt-2 pb-1">
           <div class="relative">
-            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none">search</span>
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-base pointer-events-none">search</span>
             <input type="search" data-action="input->search-filter#filter" data-search-filter-target="input"
                    placeholder="Cerca nome, email..."
                    class="<%= style_search_input %> rounded-lg pl-10 font-mono text-blue-600 text-sm w-full">
@@ -30,7 +30,7 @@
           <% grouped = @users.group_by(&:user_type) %>
           <% { 'company_operator' => 'Operatori', 'customer' => 'Clienti', 'supplier' => 'Fornitori' }.each do |type, label| %>
             <% next unless grouped[type]&.any? %>
-            <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider px-3 py-2 bg-slate-50 border-b border-slate-200"><%= label %></div>
+            <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 py-2 bg-slate-50 border-b border-slate-200"><%= label %></div>
             <% grouped[type].each do |user| %>
               <div id="<%= dom_id user %>" class="mb-0 last:border-b-0" data-search-filter-target="row">
                 <div class="flex items-center justify-between py-2.5 px-3 hover:bg-slate-50 transition-colors cursor-default border-b border-slate-200">
@@ -46,7 +46,7 @@
                           <span class="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded">godlike</span>
                         <% end %>
                       </div>
-                      <span class="text-xs text-slate-400"><%= user.email %></span>
+                      <span class="text-xs text-slate-600"><%= user.email %></span>
                     </div>
                   </div>
                   <div class="flex gap-0.5 items-center flex-shrink-0 ml-2">
@@ -62,7 +62,7 @@
             <% end %>
           <% end %>
           <% unless @users.any? %>
-            <div class="text-sm text-slate-400 italic py-4">Nessun utente configurato</div>
+            <div class="text-sm text-slate-500 italic py-4">Nessun utente configurato</div>
           <% end %>
         </div>
       </div>
@@ -92,22 +92,22 @@
 
           <div class="grid grid-cols-[1fr_1fr] gap-3 items-end mb-3">
             <div>
-              <%= form.label :name, "Nome", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= form.label :name, "Nome", class: "text-xs text-slate-500 uppercase tracking-wide block mb-1" %>
               <%= form.text_field :name, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", placeholder: "Nome operatore" %>
             </div>
             <div>
-              <%= form.label :email, "Email", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= form.label :email, "Email", class: "text-xs text-slate-500 uppercase tracking-wide block mb-1" %>
               <%= form.email_field :email, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", placeholder: "Email", required: true %>
             </div>
           </div>
 
           <div class="grid grid-cols-[1fr_1fr_auto] gap-3 items-end mb-3">
             <div>
-              <%= form.label :password, "Password", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= form.label :password, "Password", class: "text-xs text-slate-500 uppercase tracking-wide block mb-1" %>
               <%= form.password_field :password, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", placeholder: "Password" %>
             </div>
             <div>
-              <%= form.label :password_confirmation, "Conferma", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= form.label :password_confirmation, "Conferma", class: "text-xs text-slate-500 uppercase tracking-wide block mb-1" %>
               <%= form.password_field :password_confirmation, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", placeholder: "Conferma password" %>
             </div>
             <div>
@@ -139,22 +139,22 @@
 
           <div class="grid grid-cols-[1fr_1fr] gap-3 items-end mb-3">
             <div>
-              <%= form.label :name, "Nome", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= form.label :name, "Nome", class: "text-xs text-slate-500 uppercase tracking-wide block mb-1" %>
               <%= form.text_field :name, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", placeholder: "Nome cliente" %>
             </div>
             <div>
-              <%= form.label :email, "Email", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= form.label :email, "Email", class: "text-xs text-slate-500 uppercase tracking-wide block mb-1" %>
               <%= form.email_field :email, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", placeholder: "Email", required: true %>
             </div>
           </div>
 
           <div class="grid grid-cols-[1fr_1fr_auto] gap-3 items-end mb-3">
             <div>
-              <%= form.label :fiscal_code, "Codice fiscale", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= form.label :fiscal_code, "Codice fiscale", class: "text-xs text-slate-500 uppercase tracking-wide block mb-1" %>
               <%= form.text_field :fiscal_code, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
             </div>
             <div>
-              <%= form.label :vat, "Partita IVA", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= form.label :vat, "Partita IVA", class: "text-xs text-slate-500 uppercase tracking-wide block mb-1" %>
               <%= form.text_field :vat, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
             </div>
             <div>
@@ -164,11 +164,11 @@
 
           <div class="grid grid-cols-[1fr_1fr_auto] gap-3 items-end mb-3">
             <div>
-              <%= form.label :password, "Password", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= form.label :password, "Password", class: "text-xs text-slate-500 uppercase tracking-wide block mb-1" %>
               <%= form.password_field :password, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", placeholder: "Password" %>
             </div>
             <div>
-              <%= form.label :password_confirmation, "Conferma", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= form.label :password_confirmation, "Conferma", class: "text-xs text-slate-500 uppercase tracking-wide block mb-1" %>
               <%= form.password_field :password_confirmation, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", placeholder: "Conferma password" %>
             </div>
             <div>
@@ -200,22 +200,22 @@
 
           <div class="grid grid-cols-[1fr_1fr] gap-3 items-end mb-3">
             <div>
-              <%= form.label :name, "Nome", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= form.label :name, "Nome", class: "text-xs text-slate-500 uppercase tracking-wide block mb-1" %>
               <%= form.text_field :name, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", placeholder: "Nome fornitore" %>
             </div>
             <div>
-              <%= form.label :email, "Email", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= form.label :email, "Email", class: "text-xs text-slate-500 uppercase tracking-wide block mb-1" %>
               <%= form.email_field :email, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", placeholder: "Email", required: true %>
             </div>
           </div>
 
           <div class="grid grid-cols-[1fr_1fr_auto] gap-3 items-end mb-3">
             <div>
-              <%= form.label :fiscal_code, "Codice fiscale", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= form.label :fiscal_code, "Codice fiscale", class: "text-xs text-slate-500 uppercase tracking-wide block mb-1" %>
               <%= form.text_field :fiscal_code, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
             </div>
             <div>
-              <%= form.label :vat, "Partita IVA", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= form.label :vat, "Partita IVA", class: "text-xs text-slate-500 uppercase tracking-wide block mb-1" %>
               <%= form.text_field :vat, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
             </div>
             <div>
@@ -225,11 +225,11 @@
 
           <div class="grid grid-cols-[1fr_1fr_auto] gap-3 items-end mb-3">
             <div>
-              <%= form.label :password, "Password", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= form.label :password, "Password", class: "text-xs text-slate-500 uppercase tracking-wide block mb-1" %>
               <%= form.password_field :password, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", placeholder: "Password" %>
             </div>
             <div>
-              <%= form.label :password_confirmation, "Conferma", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= form.label :password_confirmation, "Conferma", class: "text-xs text-slate-500 uppercase tracking-wide block mb-1" %>
               <%= form.password_field :password_confirmation, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", placeholder: "Conferma password" %>
             </div>
             <div>

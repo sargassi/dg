@@ -8,12 +8,22 @@
      <% end %>
  </li>
 
- <li class="<%= style_side_li %>">
-      <%= link_to mainware_dashboard_path, class: style_side_a(mainware_dashboard_path) + " " + active_class_for_controllers('mainware', 'warehouses', 'locations') do %>
+  <li class="<%= style_side_li %>">
+      <%= link_to mainware_dashboard_path, class: style_side_a(mainware_dashboard_path) + " " + active_class_for_controllers('mainware') do %>
           <span class="material-symbols-outlined">
               shelf_position
           </span>
           <em>Main
+          </em>
+      <% end %>
+  </li>
+
+  <li class="<%= style_side_li %>">
+      <%= link_to inventories_dashboard_path, class: style_side_a(inventories_dashboard_path) + " " + active_class_for_controllers('inventories', 'itemins', 'itemouts', 'warehouses', 'locations') do %>
+          <span class="material-symbols-outlined">
+              inventory_2
+          </span>
+          <em>Mag
           </em>
       <% end %>
   </li>

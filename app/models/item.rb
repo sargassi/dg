@@ -1,5 +1,6 @@
 class Item < ApplicationRecord
   belongs_to :collection, optional: true
+  validates :gencode, uniqueness: true
   before_save :rebuild_gencode
   before_save :regenerate_qr, if: :gencode_changed?
 

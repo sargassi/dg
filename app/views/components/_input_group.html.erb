@@ -1,0 +1,33 @@
+<% placeholder = local_assigns[:placeholder] || 'Cerca...' %>
+<% count = local_assigns[:count] %>
+<% form_action = local_assigns[:form_action] %>
+<% input_name = local_assigns[:input_name] || 'q' %>
+<% turbo_frame = local_assigns[:turbo_frame] %>
+<% stimulus_controller = local_assigns[:stimulus_controller] || 'search-filter' %>
+
+<% if form_action %>
+  <%= form_with url: form_action, method: :get,
+        data: { search_filter_target: "form", turbo_frame: turbo_frame },
+        class: "flex items-center gap-3" do |f| %>
+    <div class="relative">
+      <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none">search</span>
+      <%= f.search_field input_name, value: params[input_name],
+            placeholder: placeholder,
+            class: "#{style_search_input} rounded-lg pl-10 font-mono text-blue-600",
+            data: { action: "input->search-filter#filter", search_filter_target: "input" } %>
+    </div>
+    <% if count %>
+      <span class="text-sm text-slate-500 whitespace-nowrap" data-search-filter-target="count"><%= count %></span>
+    <% end %>
+  <% end %>
+<% else %>
+  <div class="relative">
+    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none">search</span>
+    <input type="search" data-action="input->search-filter#filter" data-search-filter-target="input"
+           placeholder="<%= placeholder %>"
+           class="<%= style_search_input %> rounded-lg pl-10 font-mono text-blue-600 text-sm w-full">
+  </div>
+  <% if count %>
+    <span class="text-sm text-slate-500 whitespace-nowrap" data-search-filter-target="count"><%= count %></span>
+  <% end %>
+<% end %>

@@ -119,7 +119,7 @@ module ApplicationHelper
     base = 'text-xs leading-none'
     base += ' text-slate-900 font-medium' if day == today
     base += ' text-slate-700' if day != today && day.month == today.month
-    base += ' text-slate-400' if day.month != today.month
+    base += ' text-slate-500' if day.month != today.month
     base
   end
 

@@ -18,7 +18,7 @@
                   data: { search_filter_target: "form", turbo_frame: "users-cards" },
                   class: "flex items-center gap-3" do |f| %>
       <div class="relative">
-        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none">search</span>
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-base pointer-events-none">search</span>
         <%= f.search_field :q,
               value: params[:q],
               placeholder: "Cerca nome, email, CF, P.IVA",
@@ -48,13 +48,13 @@
             <% grouped[type].each do |user| %>
               <div class="<%= style_main_card %>">
                 <h3 class="<%= style_main_card_header %> flex items-center justify-between">
-                  <span class="flex items-center gap-2">
-                    <span class="material-symbols-outlined">person</span>
-                    <%= user.name %> <%= user.lastname %>
-                  </span>
+                    <span class="flex items-center gap-2">
+                      <span class="material-symbols-outlined">person</span>
+                      <span data-highlightable="true"><%= user.name %> <%= user.lastname %></span>
+                    </span>
                   <span class="flex items-center gap-2">
                     <%= link_to directory_user_path(user, q: params[:q]), data: { turbo_frame: "user_modal" },
-                          class: "inline-flex items-center justify-center px-1.5 py-0.5 rounded-full text-blue-700 hover:text-blue-900 hover:bg-blue-50 transition border border-blue-300" do %>
+                          class: "inline-flex items-center justify-center px-1.5 py-0.5 rounded-full text-blue-700 hover:text-blue-900 hover:bg-accent-50 transition border border-blue-300" do %>
                       <span class="material-symbols-outlined text-sm">visibility</span>
                     <% end %>
                     <% if current_user.godlike? %>
@@ -69,34 +69,34 @@
 
                 <div class="space-y-3 text-sm">
                   <div class="flex justify-between">
-                    <span class="text-slate-400">Email</span>
+                    <span class="text-slate-500">Email</span>
                     <span class="text-slate-700" data-highlightable="true"><%= user.email %></span>
                   </div>
 
                   <% if user.company_operator? %>
                     <div class="flex justify-between">
-                      <span class="text-slate-400">Ruolo</span>
+                      <span class="text-slate-500">Ruolo</span>
                       <span class="text-slate-700" data-highlightable="true">
                         <% if user.roles.any? %>
                           <%= user.roles.map { |r| { ufficio: 'Ufficio', lab: 'Lab', magazzino: 'Magazzino' }[r.to_sym] }.join(', ') %>
                         <% else %>
-                          <span class="text-slate-400 italic">Nessuno</span>
+                          <span class="text-slate-500 italic">Nessuno</span>
                         <% end %>
                       </span>
                     </div>
                     <div class="flex justify-between">
-                      <span class="text-slate-400">Ultimo accesso</span>
+                      <span class="text-slate-500">Ultimo accesso</span>
                       <span class="text-slate-700" data-highlightable="true"><%= user.last_sign_in_at ? user.last_sign_in_at.strftime("%d/%m/%Y %H:%M") : 'Mai' %></span>
                     </div>
                   <% end %>
 
                   <% if type == 'customer' || type == 'supplier' %>
                     <div class="flex justify-between">
-                      <span class="text-slate-400">Codice Fiscale</span>
+                      <span class="text-slate-500">Codice Fiscale</span>
                       <span class="text-slate-700 font-mono" data-highlightable="true"><%= user.fiscal_code %></span>
                     </div>
                     <div class="flex justify-between">
-                      <span class="text-slate-400">Partita IVA</span>
+                      <span class="text-slate-500">Partita IVA</span>
                       <span class="text-slate-700 font-mono" data-highlightable="true"><%= user.vat %></span>
                     </div>
                   <% end %>
@@ -129,7 +129,7 @@
                 <%= item %>
               </a>
             <% elsif item == :gap %>
-              <span class="px-1 text-slate-400 text-xs">…</span>
+              <span class="px-1 text-slate-500 text-xs">…</span>
             <% elsif item == @pagy.page %>
               <span class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm bg-accent text-white font-medium">
                 <%= item %>

@@ -4,6 +4,9 @@
     <span class="text-sm font-semibold text-slate-800"><%= location.code %></span>
     <span class="text-xs text-slate-400"><%= location.warehouse&.code %></span>
     <span class="text-xs <%= location.enabled ? 'text-emerald-600' : 'text-slate-300' %>"><%= location.enabled ? 'attiva' : 'disabilitata' %></span>
+    <% if location.qrcode_svg.present? %>
+      <span class="inline-block w-6 h-6 overflow-hidden"><%= location.qrcode_svg.html_safe %></span>
+    <% end %>
   </div>
   <div class="flex gap-0.5 items-center">
     <%= link_to edit_location_path(location), data: { turbo_frame: "warehouse_modal" }, class: "p-1.5 text-slate-300 hover:text-accent rounded-sm hover:bg-slate-100 transition-colors" do %>

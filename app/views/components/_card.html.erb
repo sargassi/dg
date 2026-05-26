@@ -1,0 +1,12 @@
+<div class="<%= style_main_card %> <%= local_assigns[:extra] || '' %>">
+  <% if local_assigns[:title] %>
+    <h3 class="<%= style_main_card_header %>">
+      <% if local_assigns[:icon] %><span class="material-symbols-outlined text-slate-400"><%= local_assigns[:icon] %></span><% end %>
+      <%= local_assigns[:title] %>
+      <% if local_assigns[:badge] %>
+        <span class="<%= style_main_card_badge %>"><%= local_assigns[:badge] %></span>
+      <% end %>
+    </h3>
+  <% end %>
+  <%= content %>
+</div>

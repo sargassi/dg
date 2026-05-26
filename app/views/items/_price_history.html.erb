@@ -1,0 +1,14 @@
+<% if siblings.any? %>
+  <table class="w-full">
+    <tbody>
+      <% siblings.each do |s| %>
+        <tr class="hover:bg-slate-50">
+          <td class="p-2 text-xs border border-slate-300 font-mono text-blue-600"><%= number_to_currency(s.unit_price, unit: "€") %></td>
+          <td class="p-2 text-xs border border-slate-300"><%= s.collection&.description || "-" %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p class="text-xs text-slate-500 p-2">Nessuna cronologia prezzi disponibile.</p>
+<% end %>

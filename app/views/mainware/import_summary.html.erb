@@ -1,6 +1,7 @@
 <% menu = [
   { label: 'Dashboard', path: mainware_dashboard_path, active: false, icon: 'dashboard' },
   { label: 'Articoli', path: mainware_index_path, active: true, icon: 'inventory_2' },
+  { label: 'Storico Prezzi', path: mainware_prices_compare_path, active: false, icon: 'payments' },
   { label: 'Magazzini', path: warehouses_path, active: false, icon: 'warehouse' },
   { label: 'Ubiche', path: locations_path, active: false, icon: 'location_on' },
 ] %>
@@ -23,7 +24,7 @@
         <p class="text-xs text-green-600 uppercase">Nuovi</p>
       </div>
 
-      <div class="bg-blue-50 p-4 rounded-lg">
+      <div class="bg-accent-50 p-4 rounded-lg">
         <p class="text-3xl font-bold text-blue-700"><%= @stats[:updated] %></p>
         <p class="text-xs text-blue-600 uppercase">Aggiornati</p>
       </div>

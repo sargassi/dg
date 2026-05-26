@@ -2,19 +2,35 @@ Rails.application.routes.draw do
   resources :collections
   get 'etichecks/etichette'
   resources :etichecks
+  get 'inventories/dashboard'
+  get 'inventories/import'
+  post   'inventories/import/parse',      to: 'inventories#import_parse'
+  put    'inventories/import/update_row', to: 'inventories#import_update_row'
+  delete 'inventories/import/delete_row', to: 'inventories#import_delete_row'
+  post   'inventories/import/confirm',    to: 'inventories#import_confirm'
+  delete 'inventories/import/cancel',     to: 'inventories#import_cancel'
+  get    'inventories/import/summary',    to: 'inventories#import_summary'
+  scope '/inventories' do
+    resources :warehouses
+    resources :locations
+    resources :itemins do
+      resources :itemins_details, only: [:index, :create, :update, :destroy]
+    end
+    resources :itemouts
+  end
+  get '/itemins(/*path)' => redirect('/inventories/itemins/%{path}')
+  get '/itemouts(/*path)' => redirect('/inventories/itemouts/%{path}')
   resources :inventories
   resources :items do
+    collection do
+      get 'autocomplete'
+    end
     member do
       delete 'delete_picture'
       get 'gallery'
+      get 'price_history'
     end
   end
-  resources :itemouts
-  scope '/mainware' do
-    resources :warehouses
-    resources :locations
-  end
-  resources :itemins
   resources :operationtypes
   resources :uoms
 
@@ -29,6 +45,7 @@ Rails.application.routes.draw do
   delete 'mainware/import/cancel',     to: 'mainware#import_cancel'
   get    'mainware/import/summary',    to: 'mainware#import_summary'
   get 'mainware/dashboard'
+  get 'mainware/prices_compare', to: 'mainware#prices_compare'
   get 'mainware/searchqr'
   mount API::Base, at: "/"
 

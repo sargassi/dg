@@ -48,8 +48,21 @@
     </div>
   </div>
 
+  <div class="mb-4">
+    <%= form.label :recurrent, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+    <%= form.select :recurrent,
+          options_for_select([
+            ['Non ricorrente', 'none'],
+            ['Ogni giorno', 'daily'],
+            ['Ogni settimana', 'weekly'],
+            ['Ogni mese', 'monthly'],
+            ['Ogni anno', 'yearly']
+          ], event.recurrent.presence || 'none'),
+          {}, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm bg-white" %>
+  </div>
+
   <div class="flex gap-2">
-    <%= form.submit class: "p-3 bg-blue-500 inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer text-white" %>
+    <%= form.submit class: "p-3 bg-accent inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer text-white" %>
     <%= link_to "Annulla", events_path(start_date: (params[:start_date] || event.start_time || Date.today), selected_date: params[:selected_date]),
           class: "p-3 bg-gray-300 inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer text-slate-700",
           data: { turbo_frame: "_top" } %>

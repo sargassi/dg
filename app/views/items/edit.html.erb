@@ -32,7 +32,7 @@
           <% end %>
           <span class="w-px h-8 bg-slate-700"></span>
           <span class="text-xs text-slate-300 whitespace-nowrap font-medium">Collezione: <%= @item.collection&.description || "—" %></span>
-          <%= link_to mainware_index_path,
+          <%= link_to mainware_index_path(q: params[:q], collection_id: params[:collection_id]),
                 class: "text-slate-500 hover:text-slate-300 transition shrink-0 ml-auto",
                 data: { turbo_frame: "_top" } do %>
             <span class="material-symbols-outlined text-lg">close</span>

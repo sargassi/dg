@@ -1,0 +1,46 @@
+<% menu = [
+  { label: 'Dashboard', path: inventories_dashboard_path, active: false, icon: 'dashboard' },
+  { label: 'Ricerca magazzino', path: inventories_path, active: false, icon: 'inventory_2' },
+  { label: 'Magazzino e ubiche', path: warehouses_path, active: false, icon: 'warehouse' },
+] %>
+<div class="<%= style_main_header_container %>">
+  <%= render partial: 'atoms/header', locals: {link: '/', label: 'Inventario / Import', menu: menu} %>
+</div>
+
+<section class="<%= style_main_cnt %>">
+  <div class="max-w-md mx-auto bg-white border border-slate-200 rounded-lg p-8 text-center">
+    <h2 class="text-2xl font-bold text-slate-800 mb-6">Importazione completata</h2>
+
+    <div class="grid grid-cols-2 gap-4 mb-8">
+      <div class="bg-slate-50 p-4 rounded-lg">
+        <p class="text-3xl font-bold text-slate-700"><%= @stats[:total] %></p>
+        <p class="text-xs text-slate-500 uppercase">Righe processate</p>
+      </div>
+
+      <div class="bg-green-50 p-4 rounded-lg">
+        <p class="text-3xl font-bold text-green-700"><%= @stats[:created] %></p>
+        <p class="text-xs text-green-600 uppercase">Nuovi</p>
+      </div>
+
+      <div class="<%= @stats[:errors].any? ? 'bg-red-50' : 'bg-slate-50' %> p-4 rounded-lg">
+        <p class="text-3xl font-bold <%= @stats[:errors].any? ? 'text-red-700' : 'text-slate-300' %>"><%= @stats[:errors].size %></p>
+        <p class="text-xs <%= @stats[:errors].any? ? 'text-red-600' : 'text-slate-400' %> uppercase">Errori</p>
+      </div>
+    </div>
+
+    <% if @stats[:errors].any? %>
+      <div class="text-left bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+        <p class="text-sm font-semibold text-red-800 mb-2">Dettagli errori:</p>
+        <ul class="text-xs text-red-700 space-y-1">
+          <% @stats[:errors].each do |err| %>
+            <li>Riga <%= err[:row] %>: <%= err[:error] %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <%= link_to inventories_path, class: "block w-full #{style_import_btn} bg-green-600 text-center cursor-pointer" do %>
+      Vai alla lista articoli
+    <% end %>
+  </div>
+</section>

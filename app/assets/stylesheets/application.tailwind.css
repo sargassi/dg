@@ -35,35 +35,6 @@
 }
 
 @layer components {
-  /* Pagination */
-  .pagination {
-    width: 100%;
-    display: flex;
-    gap: 0;
-    justify-content: end;
-    font-size: 0.9em;
-  }
-
-  .pagination > span {
-    display: block;
-    padding: 0.1rem 0.4rem;
-    font-weight: 600;
-    font-size: 0.9em;
-  }
-
-  .pagination .active,
-  .pagination .disabled {
-    color: #ccc;
-    background: transparent;
-  }
-
-  .pagination .active,
-  .pagination span:hover {
-    border-bottom: 1px solid rgb(229, 231, 235);
-    background: rgba(37, 99, 235, 0.9);
-    color: #fcfcfc;
-  }
-
   /* Navigation links */
   .linx {
     transition: all 0.2s ease;
@@ -82,72 +53,12 @@
     color: #333;
   }
 
-  .sez .active {
-    background: rgba(37, 99, 235, 0.4);
-    color: #fff;
-    border: 1px solid #d5d5d5;
-  }
-
   .sidelinx em {
     font-size: 0.7em;
     line-height: 1em;
     display: block;
     margin-top: 0.5em;
     font-weight: 600;
-  }
-
-  /* Report overlay */
-  #report > .content {
-    position: fixed;
-    width: 100%;
-    height: 100vh;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    top: 0;
-    left: 0;
-    z-index: -1;
-    visibility: hidden;
-    padding: 2rem;
-    background: rgba(66, 76, 97, 0.6);
-  }
-
-  #report[complete] > .content {
-    opacity: 1;
-    z-index: 4;
-    visibility: visible;
-  }
-
-  #report[complete] > .content .main {
-    background: #fcfcfc;
-    padding: 4rem;
-  }
-
-  /* Success overlay */
-  #success > .cont {
-    position: fixed;
-    z-index: -10;
-    left: 0;
-    right: 0;
-  }
-
-  #success[complete] > .cont {
-    visibility: visible;
-    position: fixed;
-    z-index: 99999;
-    top: 10vh;
-    left: 0;
-    right: 0;
-    margin: 0;
-  }
-
-  /* Sprawl overlay */
-  #sprawl,
-  #success {
-    visibility: hidden;
-  }
-
-  #sprawl[complete] > .cont {
-    visibility: visible;
   }
 
   /* Legend */
@@ -200,12 +111,6 @@
     width: 60%;
     font-style: italic;
     font-size: 0.8em;
-  }
-
-  /* Out border */
-  .out {
-    border-bottom: 3px solid rgba(0, 0, 0, 0.1);
-    background: #fff;
   }
 
   /* QR gallery */
@@ -313,13 +218,5 @@
     transform: scale(-1, -1);
   }
 
-  @keyframes row-highlight {
-    0% { background-color: #bfdbfe; }
-    50% { background-color: #60a5fa; }
-    100% { background-color: transparent; }
-  }
 
-  .row-highlight {
-    animation: row-highlight 2s ease-out;
-  }
 }

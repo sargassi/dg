@@ -4,7 +4,8 @@ class MainwareController < ApplicationController
   def index
     @collections = Collection.joins("INNER JOIN items ON items.collection_id = collections.id").distinct.order(created_at: :desc)
 
-    @itemz = Item.all
+    siblings_count_sql = "(SELECT COUNT(*) FROM items AS s WHERE s.itemcode = items.itemcode AND s.fabricode = items.fabricode AND s.varcode = items.varcode)"
+    @itemz = Item.select("items.*, #{siblings_count_sql} AS siblings_count")
 
     if params[:collection_id].present?
       @collection_id = params[:collection_id]
@@ -22,9 +23,40 @@ class MainwareController < ApplicationController
       )
     end
     @pagy, @itemz = pagy(@itemz)
+
+    base_keys = @itemz.pluck(:itemcode, :fabricode, :varcode).uniq
+    if base_keys.any?
+      t = Item.arel_table
+      condition = base_keys.map { |ic, fc, vc|
+        t[:itemcode].eq(ic).and(t[:fabricode].eq(fc).and(t[:varcode].eq(vc)))
+      }.reduce(:or)
+      item_ids = @itemz.map(&:id)
+      @siblings_by_parent = Item.where(condition).where.not(id: item_ids)
+                                .includes(:collection)
+                                .order("collections.created_at DESC")
+                                .group_by { |s| [s.itemcode, s.fabricode, s.varcode] }
+    else
+      @siblings_by_parent = {}
+    end
   end
 
 
+
+  def prices_compare
+    items = Item.includes(:collection).order(:itemcode, :fabricode, :varcode, "collections.created_at DESC")
+
+    if params[:q].present?
+      q = "%#{params[:q]}%"
+      items = items.where(
+        "items.gencode LIKE :q OR items.itemcode LIKE :q OR items.fabricode LIKE :q OR items.varcode LIKE :q OR items.description LIKE :q OR items.tg LIKE :q OR items.fabric LIKE :q OR items.colour LIKE :q OR items.materiale LIKE :q",
+        q: q
+      )
+    end
+
+    groups = items.group_by { |i| [i.itemcode, i.fabricode, i.varcode] }
+
+    @grouped_items = groups.sort_by { |(ic, fc, vc), _| [ic.to_s, fc.to_s, vc.to_s] }
+  end
 
   def dashboard
     @items_count = Item.count

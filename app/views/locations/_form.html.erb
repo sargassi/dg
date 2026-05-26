@@ -30,6 +30,16 @@
     </label>
   </div>
 
+  <% if location.persisted? && location.qrcode_svg.present? %>
+    <div class="my-5 flex items-center gap-4 p-3 bg-slate-50 rounded-sm">
+      <span class="inline-block w-12 h-12"><%= location.qrcode_svg.html_safe %></span>
+      <div>
+        <div class="text-xs text-slate-400 uppercase tracking-wide mb-1">QR Code</div>
+        <div class="text-xs font-mono text-slate-600"><%= location.gencode %></div>
+      </div>
+    </div>
+  <% end %>
+
   <div>
     <%= form.submit  class: style_import_btn %>
   </div>

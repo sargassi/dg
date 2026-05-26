@@ -1,0 +1,16 @@
+<% form = local_assigns[:form] %>
+<% field = local_assigns[:field] %>
+<% label = local_assigns[:label] || field.to_s.humanize %>
+<% input_type = local_assigns[:input_type] || :text_field %>
+<% placeholder = local_assigns[:placeholder] || '' %>
+<% required = local_assigns[:required] || false %>
+<% variant = local_assigns[:variant] || :default %>
+<% container_class = local_assigns[:container_class] || '' %>
+
+<div class="<%= container_class %>">
+  <%= form.label field, label, class: 'text-xs text-slate-400 uppercase tracking-wide block mb-1' %>
+  <%= form.send(input_type, field,
+        class: style_input(variant: variant),
+        placeholder: placeholder,
+        required: required) %>
+</div>

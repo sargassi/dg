@@ -1,10 +1,11 @@
 <% menu = [
   { label: 'Dashboard', path: mainware_dashboard_path, active: false, icon: 'dashboard' },
   { label: 'Articoli', path: mainware_index_path, active: true, icon: 'inventory_2' },
+  { label: 'Storico Prezzi', path: mainware_prices_compare_path, active: false, icon: 'payments' },
   { label: 'Magazzini', path: warehouses_path, active: false, icon: 'warehouse' },
 ] %>
 <div class="<%= style_main_header_container %>">
-  <%= render partial: 'atoms/header', locals: {link: '/', label: 'Generale / Articoli', menu: menu} %>
+  <%= render partial: 'atoms/header', locals: {link: '/', label: 'Main / Articoli', menu: menu} %>
 </div>
 
 <section class="<%= style_main_cnt %> flex flex-col" style="height: calc(100vh - 140px);" data-controller="search-filter">
@@ -25,7 +26,7 @@
             class: "border border-accent-100 outline-none p-2 text-xs bg-white rounded-lg shadow-sm w-32",
             data: { action: "change->search-filter#filter" } %>
     <% end %>
-    <span class="text-sm text-slate-500 whitespace-nowrap" data-search-filter-target="count"><%= @pagy.count %> articoli</span>
+    <span class="text-sm font-bold text-slate-700 whitespace-nowrap border border-slate-300 rounded-full px-3 py-1" data-search-filter-target="count"><%= @pagy.count %> articoli</span>
     <%= link_to "Importa da Excel", mainware_import_path, class: "#{style_import_btn} ml-auto" %>
   </div>
 
@@ -41,15 +42,26 @@
         <table class="min-w-full">
           <thead>
             <tr>
-              <% %w[Gencode Item Fabric Var. Descrizione Tg Fabric Color Unitprice Materiale Note Collezione QR Immagini Azioni].each do |h| %>
+              <% %w[Gencode Item Fabric Var. Descrizione Tg Fabric Color Materiale Note Collezione Prezzo QR Immagini Azioni].each do |h| %>
                 <th class="<%= style_table_th %> sticky top-0 z-10"><%= h %></th>
               <% end %>
             </tr>
           </thead>
-          <tbody>
-            <% @itemz.each do |item| %>
+          <% @itemz.each do |item| %>
+            <tbody data-controller="price-history" data-price-history-id-value="<%= item.id %>">
               <tr class="hover:bg-slate-50">
-                <td class="<%= style_table_td %> text-xs font-mono text-blue-600"><%= item.gencode %></td>
+                <td class="<%= style_table_td %> text-xs font-mono text-blue-600">
+                  <div><%= item.itemcode %><%= item.fabricode %><%= item.varcode %></div>
+                  <% if item.siblings_count.to_i > 1 %>
+                    <button data-action="click->price-history#toggle"
+                            data-price-history-target="button"
+                            class="mt-1 px-2 py-0.5 rounded text-green-700 hover:text-green-900 hover:bg-green-50 transition border border-green-300 text-[10px] leading-none inline-flex items-center gap-1"
+                            title="Cronologia prezzi">
+                      <span class="material-symbols-outlined text-sm">history</span>
+                      <span>Storico</span>
+                    </button>
+                  <% end %>
+                </td>
                 <td class="<%= style_table_td %>"><%= item.itemcode %></td>
                 <td class="<%= style_table_td %>"><%= item.fabricode %></td>
                 <td class="<%= style_table_td %>"><%= item.varcode %></td>
@@ -57,16 +69,16 @@
                 <td class="<%= style_table_td %>"><%= item.tg %></td>
                 <td class="<%= style_table_td %>"><%= item.fabric %></td>
                 <td class="<%= style_table_td %>"><%= item.colour %></td>
-                <td class="<%= style_table_td %>"><%= item.unit_price %></td>
                 <td class="<%= style_table_td %>"><%= item.materiale %></td>
                 <td class="<%= style_table_td %>"><%= item.note %></td>
-                <td class="<%= style_table_td %>"><%= item.collection&.description %></td>
+                <td class="<%= style_table_td %>" data-price-history-target="colprice"><%= item.collection&.description %></td>
+                <td class="<%= style_table_td %> font-mono text-blue-600" data-price-history-target="colprice"><%= number_to_currency(item.unit_price, unit: "€") %></td>
                 <td class="<%= style_table_td %>" style="width:130px">
                   <%= item.qrcode_svg.html_safe %>
                 </td>
                 <td class="<%= style_table_td %> align-top" style="width:120px">
-                  <% if item.pictures.attached? %>
-                    <%= link_to gallery_item_path(item, index: 0), data: { turbo_frame: "item_modal" } do %>
+                    <% if item.pictures.attached? %>
+                    <%= link_to gallery_item_path(item, index: 0, q: params[:q], collection_id: params[:collection_id]), data: { turbo_frame: "item_modal" } do %>
                       <div class="relative inline-block">
                         <%= image_tag item.pictures.first, class: "w-[100px] h-[100px] object-cover border border-slate-200 block" %>
                         <% if item.pictures.count > 1 %>
@@ -78,12 +90,12 @@
                 </td>
                 <td class="<%= style_table_td %> whitespace-nowrap align-middle">
                   <div class="flex flex-col items-center gap-0.5">
-                    <%= link_to edit_item_path(item),
-                          class: "p-2 rounded text-blue-600 hover:text-blue-800 hover:bg-blue-50 transition border border-blue-200",
+                    <%= link_to edit_item_path(item, q: params[:q], collection_id: params[:collection_id]),
+                          class: "p-2 rounded text-accent hover:text-accent-700 hover:bg-accent-50 transition border border-accent-200",
                           data: { turbo_frame: "item_modal" } do %>
                       <span class="material-symbols-outlined text-2xl">edit</span>
                     <% end %>
-                    <%= button_to item_path(item), method: :delete,
+                    <%= button_to item_path(item, q: params[:q], collection_id: params[:collection_id]), method: :delete,
                           class: "p-2 rounded text-red-600 hover:text-red-800 hover:bg-red-50 transition border border-red-200",
                           data: { turbo_confirm: "Eliminare questo articolo?", turbo_frame: "_top" } do %>
                       <span class="material-symbols-outlined text-2xl">delete</span>
@@ -91,8 +103,17 @@
                   </div>
                 </td>
               </tr>
-            <% end %>
-          </tbody>
+              <% key = [item.itemcode, item.fabricode, item.varcode] %>
+              <% (@siblings_by_parent[key] || []).each do |sibling| %>
+                <tr class="hidden hover:bg-slate-50" data-price-history-target="detail">
+                  <td colspan="10" class="p-0"></td>
+                  <td class="<%= style_table_td %> bg-green-50"><%= sibling.collection&.description || "-" %></td>
+                  <td class="<%= style_table_td %> font-mono text-blue-600 bg-green-50"><%= number_to_currency(sibling.unit_price, unit: "€") %></td>
+                  <td colspan="3" class="p-0"></td>
+                </tr>
+              <% end %>
+            </tbody>
+          <% end %>
         </table>
       </div>
 

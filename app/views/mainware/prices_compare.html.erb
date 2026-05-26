@@ -1,0 +1,83 @@
+<% menu = [
+  { label: 'Dashboard', path: mainware_dashboard_path, active: false, icon: 'dashboard' },
+  { label: 'Articoli', path: mainware_index_path, active: false, icon: 'inventory_2' },
+  { label: 'Storico Prezzi', path: mainware_prices_compare_path, active: true, icon: 'payments' },
+  { label: 'Magazzini', path: warehouses_path, active: false, icon: 'warehouse' },
+] %>
+<div class="<%= style_main_header_container %>">
+  <%= render partial: 'atoms/header', locals: {link: '/', label: 'Main / Storico Prezzi', menu: menu} %>
+</div>
+
+<section class="<%= style_main_cnt %> flex flex-col" style="height: calc(100vh - 140px);" data-controller="search-filter">
+  <div class="flex gap-4 items-center mb-4 flex-none">
+    <%= form_with url: mainware_prices_compare_path, method: :get,
+                  data: { search_filter_target: "form", turbo_frame: "price-table" },
+                  class: "flex items-center gap-3" do |f| %>
+      <div class="relative">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none">search</span>
+        <%= f.search_field :q,
+              value: params[:q],
+              placeholder: "Cerca prodotto...",
+              class: "#{style_search_input} rounded-lg pl-10 font-mono text-blue-600",
+              data: { action: "input->search-filter#filter", search_filter_target: "input" } %>
+      </div>
+    <% end %>
+    <span class="text-sm font-bold text-slate-700 whitespace-nowrap border border-slate-300 rounded-full px-3 py-1" data-search-filter-target="count"><%= @grouped_items.size %> prodotti</span>
+    <%= link_to "Tutti gli articoli", mainware_index_path, class: "#{style_import_btn} ml-auto" %>
+  </div>
+
+  <style>
+    turbo-frame#price-table[busy] .price-table-content { display: none; }
+    turbo-frame#price-table[busy] .price-table-loader { display: flex; }
+  </style>
+  <%= turbo_frame_tag "price-table", class: "flex flex-col flex-1 min-h-0", data: { action: "turbo:frame-load->search-filter#onFrameLoad" } do %>
+    <div class="price-table-content flex flex-col flex-1 min-h-0">
+      <span hidden data-filtered-count><%= @grouped_items.size %></span>
+      <div class="overflow-x-auto flex-1 min-h-0 overflow-y-auto">
+        <table class="min-w-full">
+          <thead>
+            <tr>
+              <% %w[Item Fabric Var Descrizione Tg Fabric Color Collezione Prezzo].each do |h| %>
+                <th class="<%= style_table_th %> sticky top-0 z-10"><%= h %></th>
+              <% end %>
+            </tr>
+          </thead>
+          <% @grouped_items.each do |(itemcode, fabricode, varcode), siblings| %>
+            <tbody class="border-t-2 border-slate-300">
+              <% siblings.each_with_index do |item, idx| %>
+                <tr class="hover:bg-slate-50 <%= 'bg-slate-50/50' if idx == 0 %>">
+                  <% if idx == 0 %>
+                    <td class="<%= style_table_td %> font-mono text-blue-600" rowspan="<%= siblings.size %>"><%= itemcode %></td>
+                    <td class="<%= style_table_td %> font-mono text-blue-600" rowspan="<%= siblings.size %>"><%= fabricode %></td>
+                    <td class="<%= style_table_td %> font-mono text-blue-600" rowspan="<%= siblings.size %>"><%= varcode %></td>
+                    <td class="<%= style_table_td %>" rowspan="<%= siblings.size %>"><%= item.description %></td>
+                    <td class="<%= style_table_td %>" rowspan="<%= siblings.size %>"><%= item.tg %></td>
+                    <td class="<%= style_table_td %>" rowspan="<%= siblings.size %>"><%= item.fabric %></td>
+                    <td class="<%= style_table_td %>" rowspan="<%= siblings.size %>"><%= item.colour %></td>
+                  <% end %>
+                  <td class="<%= style_table_td %>"><%= item.collection&.description || "-" %></td>
+                  <td class="<%= style_table_td %> font-mono text-blue-600"><%= number_to_currency(item.unit_price, unit: "€") %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          <% end %>
+        </table>
+      </div>
+
+      <% if @grouped_items.empty? %>
+        <div class="flex items-center justify-center py-12 text-slate-400">
+          <span class="material-symbols-outlined text-4xl mr-2">payments</span>
+          <span class="text-sm">Nessun prodotto trovato.</span>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="price-table-loader hidden justify-center items-center py-12">
+      <svg class="animate-spin h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      <span class="ml-3 text-slate-600">Ricerca in corso...</span>
+    </div>
+  <% end %>
+</section>

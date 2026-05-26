@@ -1,0 +1,115 @@
+<% menu = [
+  { label: 'Dashboard', path: inventories_dashboard_path, active: false, icon: 'dashboard' },
+  { label: 'Ricerca magazzino', path: inventories_path, active: false, icon: 'inventory_2' },
+  { label: 'Magazzino e ubiche', path: warehouses_path, active: false, icon: 'warehouse' },
+] %>
+<div class="<%= style_main_header_container %>">
+  <%= render partial: 'atoms/header', locals: {link: '/', label: 'Inventario / Import', menu: menu} %>
+</div>
+
+<section class="<%= style_main_cnt %> flex flex-col overflow-hidden min-w-0" style="height: calc(100vh - 140px);">
+  <% if @data.present? %>
+
+    <h2 class="<%= style_main_sub_header %> flex-none">
+      Anteprima importazione (<span id="import-count"><%= @data[:rows].size %></span> righe)
+      <% if @data[:warehouse_id].present? %>
+        <span class="ml-4 text-xs text-slate-400 font-normal">
+          — Magazzino: <%= Warehouse.find(@data[:warehouse_id]).code %>
+        </span>
+      <% end %>
+    </h2>
+
+    <div class="overflow-x-auto flex-1 min-h-0 overflow-y-auto">
+      <table class="min-w-full">
+        <thead>
+          <tr>
+            <th class="<%= style_table_th %> sticky top-0 z-10 w-12 text-center"></th>
+            <th class="<%= style_table_th %> sticky top-0 z-10 w-16 text-center">Riga</th>
+            <% @data[:headers].each do |h| %>
+              <th class="<%= style_table_th %> sticky top-0 z-10"><%= h %></th>
+            <% end %>
+          </tr>
+        </thead>
+        <tbody>
+          <% @data[:rows].each do |row| %>
+            <tr class="hover:bg-slate-50">
+              <td class="<%= style_table_td %> text-center">
+                <%= button_to inventories_import_delete_row_path(row_index: row[:_index]), method: :delete,
+                      class: "text-red-500 hover:text-red-700 cursor-pointer bg-transparent border-0",
+                      data: { turbo_confirm: "Eliminare questa riga?" },
+                      form: { style: "display: contents" } do %>
+                  <span class="material-symbols-outlined text-sm">delete</span>
+                <% end %>
+              </td>
+              <td class="<%= style_table_td %> text-center text-xs text-slate-400"><%= row[:_index] %></td>
+              <% @data[:headers].each do |header| %>
+                <td class="<%= style_table_td %> text-xs"><%= row[header] %></td>
+              <% end %>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="flex gap-4 mt-6 flex-none">
+      <%= form_with url: inventories_import_confirm_path, method: :post do %>
+        <button type="submit" class="<%= style_import_btn %> bg-green-600">
+          Conferma importazione (<span id="import-count-btn"><%= @data[:rows].size %></span>)
+        </button>
+      <% end %>
+
+      <%= button_to "Annulla", inventories_import_cancel_path, method: :delete, class: "#{style_import_btn} bg-gray-400" %>
+    </div>
+
+  <% else %>
+
+    <section class="bg-accent-50 p-6" data-controller="loader">
+      <div data-loader-target="form">
+        <%= form_with url: inventories_import_parse_path, method: :post, multipart: true,
+                     data: { action: "submit->loader#show" } do |f| %>
+
+          <div class="flex flex-wrap items-end gap-4">
+            <div class="w-72">
+              <label class="text-xs text-slate-400 uppercase tracking-wide block mb-1">File Excel</label>
+              <%= f.file_field :file,
+                  class: style_import_field,
+                  required: true %>
+            </div>
+            <div>
+              <label class="text-xs text-slate-400 uppercase tracking-wide block mb-1">Magazzino</label>
+              <%= f.collection_select :warehouse_id, @warehouses, :id, :code,
+                  { include_blank: "Seleziona magazzino" },
+                  required: true,
+                  class: style_select_class %>
+            </div>
+            <div>
+              <label class="text-xs text-slate-400 uppercase tracking-wide block mb-1">Ubica</label>
+              <%= f.collection_select :location_id, @locations, :id, :code,
+                  { include_blank: "-" },
+                  class: style_select_class %>
+            </div>
+            <div>
+              <label class="text-xs text-slate-400 uppercase tracking-wide block mb-1">Operazione</label>
+              <%= f.collection_select :operationtype_id, @operationtypes, :id, :description,
+                  { include_blank: "Seleziona operazione" },
+                  required: true,
+                  class: style_select_class %>
+            </div>
+            <%= f.submit "Carica",
+                class: style_import_btn,
+                data: { turbo_submits_with: "Caricamento..." } %>
+          </div>
+        <% end %>
+      </div>
+
+      <div data-loader-target="spinner" class="hidden justify-center items-center py-12">
+        <svg class="animate-spin h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span class="ml-3 text-slate-600">Caricamento in corso...</span>
+      </div>
+    </section>
+
+  <% end %>
+</section>

@@ -1,4 +1,3 @@
-<<~RUBY
 # app/services/tempesta_check_service.rb
 class TempestaCheckService
   # Checks and updates the Tempesta record based on stage, assuming success/failure determines Prow finalization.
@@ -54,4 +53,3 @@ class TempestaCheckService
     )
   end
 end
-RUBY

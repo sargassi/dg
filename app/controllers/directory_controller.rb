@@ -38,6 +38,8 @@ class DirectoryController < ApplicationController
     attrs['godlike'] = ActiveModel::Type::Boolean.new.cast(attrs['godlike'])
     attrs['enabled'] = ActiveModel::Type::Boolean.new.cast(attrs['enabled'])
     if @user.update(attrs)
+      sync_birthday_event(@user)
+
       if params[:roles].present?
         @user.user_roles.destroy_all
         params[:roles].each do |role|
@@ -70,5 +72,35 @@ class DirectoryController < ApplicationController
 
   def user_params
     params.require(:user).permit(:name, :lastname, :email, :user_type, :godlike, :password, :password_confirmation, :date_of_birth, :date_of_hiring, :enabled, :fiscal_code, :vat)
+  end
+
+  def sync_birthday_event(user)
+    compleanno = Eventype.find_by(name: "Compleanno")
+    return unless compleanno
+
+    if user.date_of_birth.present?
+      existing = user.events.find_by(eventype: compleanno)
+      if existing
+        existing.update!(
+          name: "Compleanno #{user.name} #{user.lastname}",
+          start_time: user.date_of_birth,
+          end_time: user.date_of_birth,
+          enabled: true
+        )
+      else
+        user.events.create!(
+          name: "Compleanno #{user.name} #{user.lastname}",
+          eventype: compleanno,
+          start_time: user.date_of_birth,
+          end_time: user.date_of_birth,
+          recurrent: :yearly,
+          enabled: true
+        )
+      end
+    else
+      user.events.where(eventype: compleanno).destroy_all
+    end
+  rescue => e
+    Rails.logger.warn "Failed to sync birthday event for user #{user.id}: #{e.message}"
   end
 end

@@ -18,11 +18,7 @@ test:
   timeout: 5000
 
 production:
-  adapter: mysql2
-  encoding: utf8mb4
-  database: dg_production
-  host: <%= ENV.fetch("DB_HOST") { "localhost" } %>
-  port: 3306
-  username: <%= ENV.fetch("DB_USERNAME") { "deploy" } %>
-  password: <%= ENV.fetch("DB_PASSWORD") { "" } %>
+  adapter: sqlite3
+  database: db/production.sqlite3
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 10 } %>
+  timeout: 5000

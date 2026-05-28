@@ -66,7 +66,11 @@ Rails.application.routes.draw do
   get 'eticamps/etichette'
   resources :eticamps
   namespace :directory do
-    resources :events
+    resources :events do
+      member do
+        patch :toggle_enabled
+      end
+    end
   end
   resources :eventypes
   get 'etigens/etichette'

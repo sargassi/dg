@@ -1,6 +1,6 @@
 class Directory::EventsController < ApplicationController
   before_action -> { require_ability!('manage_events_calendar') }
-  before_action :set_event, only: %i[ show edit update destroy ]
+  before_action :set_event, only: %i[ show edit update destroy toggle_enabled ]
 
   def index
     @date = safe_date(:start_date)
@@ -10,14 +10,14 @@ class Directory::EventsController < ApplicationController
     year = @date.year
 
     non_yearly = Event.recurrents.except(:yearly).values + [nil]
-    base = Event.where(recurrent: non_yearly)
+    base = Event.enabled.where(recurrent: non_yearly)
     @events = base.where(start_time: month_start..month_end)
                   .or(base.where(end_time: month_start..month_end))
                   .or(base.where("start_time < ? AND end_time > ?", month_start, month_end))
                   .includes(:eventype)
                   .to_a
 
-    Event.where(recurrent: :yearly).includes(:eventype).find_each do |event|
+    Event.enabled.where(recurrent: :yearly).includes(:eventype).find_each do |event|
       projected_start = Date.new(year, event.start_time.month, event.start_time.day)
       projected_end = event.end_time ? Date.new(year, event.end_time.month, event.end_time.day) : projected_start
       projected_end = projected_end.next_year if projected_end < projected_start
@@ -68,6 +68,11 @@ class Directory::EventsController < ApplicationController
   def destroy
     @event.destroy
     redirect_to directory_events_url, notice: "Event deleted."
+  end
+
+  def toggle_enabled
+    @event.update(enabled: !@event.enabled)
+    redirect_to directory_events_path(start_date: params[:start_date] || @event.start_time, selected_date: params[:selected_date] || Date.today)
   end
 
   private

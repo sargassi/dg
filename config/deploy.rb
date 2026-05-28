@@ -21,7 +21,16 @@ set :deploy_to, "/home/deploy/#{fetch :application}"
 # Default value for :pty is false
 # set :pty, true
 
-append :linked_files, "config/master.key"
+append :linked_files, "config/master.key", "db/production.sqlite3"
+
+namespace :deploy do
+  before 'check:linked_files', :ensure_db_file do
+    on roles(:app) do
+      execute :mkdir, '-p', shared_path.join('db')
+      execute :touch, shared_path.join('db/production.sqlite3')
+    end
+  end
+end
 
 append :linked_dirs, 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'vendor/bundle', '.bundle', 'public/system', 'public/uploads', 'public/img', 'public'
 

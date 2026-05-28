@@ -35,7 +35,7 @@ ssh deploy@79.137.27.165 "
 
 ---
 
-## Phase 1: Code Preparation
+## Phase 1: Code Preparati  on
 
 ### 1.1 — Gemfile
 
@@ -81,28 +81,53 @@ docker compose up -d
 | `TEXT` | `TEXT` | Direct |
 | `VARCHAR` | `VARCHAR(255)` | Rails default |
 
-### Schema Loading
+### Schema Loading — Known Fixes
 
+`bin/rails db:schema:load` will fail on MariaDB for two reasons:
+
+1. **FK column type mismatch:** SQLite3 schema.rb uses `t.integer` for FK columns, but MariaDB creates PKs as `bigint(20)`. Fix: change all FK columns from `t.integer` to `t.bigint` in `schema.rb`. This affects ~25 FK columns (api_tokens.user_id, events.eventype_id, inventories.*_id, etc.).
+2. **Missing referenced table:** `add_foreign_key "prodrow", "prodcodes"` references a table `prodcodes` that doesn't exist in the schema. SQLite3 ignores this; MariaDB errors. Fix: remove this line from `schema.rb`.
+
+Run the fix script:
 ```bash
-bin/rails db:schema:load
+ruby -e '
+schema = File.read("db/schema.rb")
+
+# Fix FK columns to bigint
+schema.scan(/add_foreign_key "([^"]+)", "([^"]+)"(?:, column: "([^"]+)")?/) do |table, ref, col|
+  fk_col = col || "#{ref.singularize}_id"
+  schema.gsub!(/(create_table "#{table}"[^}]*?)(t\.integer "#{fk_col}")/) { "#{$1}#{$2.sub("t.integer", "t.bigint")}" }
+end
+
+# Remove dangling FK to non-existent prodcodes table
+schema.gsub!(/  add_foreign_key "prodrow", "prodcodes"\n/, "")
+
+File.write("db/schema.rb", schema)
+puts "Fixed schema.rb"
+'
 ```
 
-Rails handles adapter differences automatically. The generated `schema.rb` maps column types correctly for MariaDB.
+### Data Export
 
-### Data Export (Rake Task)
+Use the standalone script (not a Rails rake task, since Rails will be connected to MariaDB):
 
-A custom rake task exports data row-by-row using ActiveRecord's quoting and type coercion — safer than raw `.dump`. Outputs a MySQL-compatible SQL file with:
+```bash
+ruby script/export_data.rb
+```
 
+This reads SQLite3 directly and outputs `tmp/mysql_import.sql` with:
 - `SET foreign_key_checks = 0` / `SET unique_checks = 0` for fast import
 - `LOCK TABLES` / `UNLOCK TABLES` per table
 - Explicit `id` values to preserve auto-increment sequences
-- Rails `.quote()` for proper escaping
+- Proper SQL escaping via raw SQLite3 access
 
 ### Data Import
 
 ```bash
-mysql -h 127.0.0.1 -u dg_dev -p dg_development < tmp/mysql_import.sql
+mysql -h 127.0.0.1 -u dg_dev -pdg_dev_pass dg_development --ssl=false < tmp/mysql_import.sql
 ```
+
+`--ssl=false` is needed when connecting to Docker MariaDB (no SSL support).
 
 ---
 
@@ -195,10 +220,15 @@ After 1 week of stability:
 | Issue | Severity | Mitigation |
 |-------|----------|------------|
 | `force: :cascade` in schema.rb | None | Rails mysql2 adapter ignores cascade, just does `DROP TABLE IF EXISTS` |
+| FK columns typed `integer` vs `bigint` | ⚠️ High | Must change FK columns to `t.bigint` in schema.rb (script in Phase 2) |
+| Missing referenced table (`prodcodes`) | ⚠️ High | Remove dangling `add_foreign_key` from schema.rb |
 | Booleans as 0/1 | None | ActiveRecord handles transparently |
 | Table name case sensitivity | ⚠️ Medium | Set `lower_case_table_names=1` in MariaDB config (SQLite is case-insensitive, MariaDB on Linux isn't) |
 | `datetime` precision | None | Rails defaults are second-precision for both adapters |
-| Migration SQLite-specific syntax | None | Running migrations against MariaDB after switch — old migrations already applied |
+| `--ssl=false` needed for Docker MariaDB | 🟡 Low | Add flag to `mysql` CLI commands connecting to Docker |
+| Migration SQLite-specific syntax | None | Old migrations already applied, schema.rb is source of truth |
+| `ar_internal_metadata` has 2 rows after schema:load | None | Expected — `schema:load` creates its own metadata entry |
+| `schema_migrations` count may differ from old SQLite3 | None | Old SQLite3 may have orphaned versions from consolidated migrations |
 
 ### Critical: Case Sensitivity
 

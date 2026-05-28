@@ -11,8 +11,7 @@ gem "activesupport", ">= 7.2.3.1"
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
 
-# Use sqlite3 as the database for Active Record
-gem "sqlite3", "~> 1.7"
+
 
 # Use the Puma web server [https://github.com/puma/puma]
 #gem "puma", "~> 5.0"
@@ -34,6 +33,9 @@ gem "jbuilder"
 
 # Use Redis adapter to run Action Cable in production
 gem "redis", "~> 4.0"
+
+# Use MariaDB/MySQL in development and production
+gem "mysql2", "~> 0.5"
 
 # Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
 # gem "kredis"
@@ -68,7 +70,10 @@ gem 'trix'
 gem "image_processing", "~> 1.2"
 
 group :development, :test do
-  # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
+
+  # Use sqlite3 as the database for Active Record
+  gem "sqlite3", "~> 1.7"
+    # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri mingw x64_mingw ]
 end
 

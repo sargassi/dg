@@ -59,7 +59,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
   end
 
   create_table "api_tokens", force: :cascade do |t|
-    t.integer "user_id", null: false
+    t.bigint "user_id", null: false
     t.boolean "active"
     t.text "token"
     t.datetime "created_at", null: false
@@ -146,7 +146,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
     t.string "name"
     t.date "start_time"
     t.date "end_time"
-    t.integer "eventype_id", null: false
+    t.bigint "eventype_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "recurrent"
@@ -189,17 +189,17 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
     t.integer "qtyavailable"
     t.integer "minstock"
     t.integer "maxstock"
-    t.integer "warehouse_id", null: false
-    t.integer "location_id"
+    t.bigint "warehouse_id", null: false
+    t.bigint "location_id"
     t.string "itemcode"
-    t.integer "operationtype_id", null: false
-    t.integer "itemins_id"
-    t.integer "itemouts_id"
+    t.bigint "operationtype_id", null: false
+    t.bigint "itemins_id"
+    t.bigint "itemouts_id"
     t.boolean "enabled", default: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "gencode"
-    t.integer "item_id"
+    t.bigint "item_id"
     t.index ["item_id"], name: "index_inventories_on_item_id"
     t.index ["itemins_id"], name: "index_inventories_on_itemins_id"
     t.index ["itemouts_id"], name: "index_inventories_on_itemouts_id"
@@ -218,7 +218,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
   end
 
   create_table "itemins_details", force: :cascade do |t|
-    t.integer "itemin_id", null: false
+    t.bigint "itemin_id", null: false
     t.string "itemcode"
     t.integer "qty"
     t.datetime "created_at", null: false
@@ -240,7 +240,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
   end
 
   create_table "itemouts_details", force: :cascade do |t|
-    t.integer "itemout_id", null: false
+    t.bigint "itemout_id", null: false
     t.string "itemcode"
     t.integer "qty"
     t.integer "item_id"
@@ -268,13 +268,13 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
     t.datetime "updated_at", null: false
     t.string "gencode"
     t.text "qrcode_svg"
-    t.integer "collection_id"
+    t.bigint "collection_id"
     t.index ["collection_id"], name: "index_items_on_collection_id"
   end
 
   create_table "locations", force: :cascade do |t|
     t.string "code"
-    t.integer "warehouse_id", null: false
+    t.bigint "warehouse_id", null: false
     t.boolean "enabled"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -291,8 +291,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
 
   create_table "prodrow", force: :cascade do |t|
     t.string "prodrow"
-    t.integer "prodcode_id", null: false
-    t.integer "area_id", null: false
+    t.bigint "prodcode_id", null: false
+    t.bigint "area_id", null: false
     t.integer "user"
     t.integer "pub", default: 0
     t.datetime "created_at", null: false
@@ -348,7 +348,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
 
   create_table "prows", force: :cascade do |t|
     t.text "code"
-    t.integer "proforma_id", null: false
+    t.bigint "proforma_id", null: false
     t.text "description"
     t.text "note"
     t.integer "qty"
@@ -401,8 +401,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
   end
 
   create_table "size_zone_qties", force: :cascade do |t|
-    t.integer "size_id", null: false
-    t.integer "zone_id", null: false
+    t.bigint "size_id", null: false
+    t.bigint "zone_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["size_id"], name: "index_size_zone_qties_on_size_id"
@@ -429,7 +429,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
   end
 
   create_table "tempesta", force: :cascade do |t|
-    t.integer "prow_id", null: false
+    t.bigint "prow_id", null: false
     t.boolean "f0", default: true
     t.boolean "f1"
     t.boolean "f2"
@@ -443,8 +443,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
     t.date "f5date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "proforma_id", null: false
-    t.integer "user_id", default: 2, null: false
+    t.bigint "proforma_id", null: false
+    t.bigint "user_id", default: 2, null: false
     t.integer "qty", default: 1
     t.string "qrcode"
     t.integer "order", default: 1
@@ -460,9 +460,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
   end
 
   create_table "user_abilities", force: :cascade do |t|
-    t.integer "user_id", null: false
-    t.integer "ability_id", null: false
-    t.integer "granted_by_id", null: false
+    t.bigint "user_id", null: false
+    t.bigint "ability_id", null: false
+    t.bigint "granted_by_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["ability_id"], name: "index_user_abilities_on_ability_id"
@@ -472,7 +472,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
   end
 
   create_table "user_roles", force: :cascade do |t|
-    t.integer "user_id", null: false
+    t.bigint "user_id", null: false
     t.string "role", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -544,7 +544,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
   add_foreign_key "items", "collections"
   add_foreign_key "locations", "warehouses"
   add_foreign_key "prodrow", "areas"
-  add_foreign_key "prodrow", "prodcodes"
   add_foreign_key "prows", "proformas"
   add_foreign_key "size_zone_qties", "sizes"
   add_foreign_key "size_zone_qties", "zones"

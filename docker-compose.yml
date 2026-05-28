@@ -1,0 +1,21 @@
+services:
+  mariadb:
+    image: mariadb:10.11
+    container_name: dg_mariadb
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: dg_development
+      MYSQL_USER: dg_dev
+      MYSQL_PASSWORD: dg_dev_pass
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-time-zone=+00:00
+
+volumes:
+  mariadb_data:

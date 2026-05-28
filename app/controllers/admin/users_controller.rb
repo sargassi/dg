@@ -104,8 +104,7 @@ module Admin
           existing.update!(
             name: "Compleanno #{[user.name, user.lastname].compact.join(' ')}".strip,
             start_time: user.date_of_birth,
-            end_time: user.date_of_birth,
-            enabled: true
+            end_time: user.date_of_birth
           )
         else
           user.events.create!(

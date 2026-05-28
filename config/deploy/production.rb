@@ -41,22 +41,14 @@
 #
 # Global options
 # --------------
-set :ssh_options, {
-  keys: %w(/home/user_name/.ssh/id_ed25519),
-  forward_agent: true,
-  auth_methods: %w(password),
-  port: 22
- }
 #
 # The server-based syntax can be used to override options:
 # ------------------------------------
-server '79.137.27.165',
+server 'okam.it',
 user: "deploy",
-roles: %w{app db web}
-#   ssh_options: {
-#     user: "user_name", # overrides user setting above
-#     keys: %w(/home/user_name/.ssh/id_rsa),
-#     forward_agent: false,
-#     auth_methods: %w(publickey password)
-#     # password: "please use keys"
-#   }
+roles: %w{app db web},
+ssh_options: {
+  auth_methods: %w(password),
+  password: ENV.fetch("DEPLOY_PASSWORD", "babelnoume"),
+  port: 22
+}

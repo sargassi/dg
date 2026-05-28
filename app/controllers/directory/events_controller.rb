@@ -1,4 +1,5 @@
 class Directory::EventsController < ApplicationController
+  include Pagy::Backend
   before_action -> { require_ability!('manage_events_calendar') }
   before_action :set_event, only: %i[ show edit update destroy toggle_enabled ]
 
@@ -32,6 +33,25 @@ class Directory::EventsController < ApplicationController
     @day_events = @events.select { |e| (e.start_time..e.end_time).cover?(@todate) }
     @end_of_week = @todate.end_of_week(:sunday)
     @week_events = @events.select { |e| e.start_time <= @end_of_week && e.end_time >= @todate + 1 }
+  end
+
+  def search
+    @eventypes = Eventype.all
+    @events = Event.includes(:eventype, :user)
+
+    if params[:eventype_id].present?
+      @events = @events.where(eventype_id: params[:eventype_id])
+    end
+
+    if params[:q].present?
+      q = "%#{params[:q]}%"
+      @events = @events.where(
+        "events.name LIKE :q OR events.description LIKE :q",
+        q: q
+      )
+    end
+
+    @pagy, @events = pagy(@events.order(created_at: :desc))
   end
 
   def show

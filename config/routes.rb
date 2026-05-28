@@ -67,6 +67,9 @@ Rails.application.routes.draw do
   resources :eticamps
   namespace :directory do
     resources :events do
+      collection do
+        get :search
+      end
       member do
         patch :toggle_enabled
       end

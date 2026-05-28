@@ -71,3 +71,11 @@ ABILITIES.each do |attrs|
   a = Ability.find_or_initialize_by(name: attrs[:name])
   a.update!(description: attrs[:description], category: attrs[:category])
 end
+
+# ── Eventypes ─────────────────────────────────────────────────────────────
+%w[Compleanno].each do |name|
+  Eventype.find_or_create_by!(name: name) do |e|
+    e.enabled = true
+    e.color = "#EC4899"
+  end
+end

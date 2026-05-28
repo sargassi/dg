@@ -6,6 +6,7 @@ class User < ApplicationRecord
   has_many :itemins
   has_many :itemouts
   has_many :tempestas
+  has_many :events, dependent: :nullify
 
   devise :database_authenticatable, :recoverable, :rememberable, :validatable, :lockable, :trackable
 

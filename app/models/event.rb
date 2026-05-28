@@ -1,5 +1,8 @@
 class Event < ApplicationRecord
   belongs_to :eventype
+  belongs_to :user, optional: true
+
+  scope :enabled, -> { where(enabled: true) }
 
   validates :name, :start_time, presence: true
   validate :end_time_after_start_time

@@ -72,7 +72,8 @@ class Directory::EventsController < ApplicationController
 
   def toggle_enabled
     @event.update(enabled: !@event.enabled)
-    redirect_to directory_events_path(start_date: params[:start_date] || @event.start_time, selected_date: params[:selected_date] || Date.today)
+    redirect_to directory_events_path(start_date: params[:start_date] || @event.start_time, selected_date: params[:selected_date] || Date.today),
+                notice: @event.enabled? ? "Evento abilitato." : "Evento disabilitato."
   end
 
   private

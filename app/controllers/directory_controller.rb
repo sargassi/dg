@@ -82,14 +82,14 @@ class DirectoryController < ApplicationController
       existing = user.events.find_by(eventype: compleanno)
       if existing
         existing.update!(
-          name: "Compleanno #{user.name} #{user.lastname}",
-          start_time: user.date_of_birth,
-          end_time: user.date_of_birth,
-          enabled: true
-        )
-      else
-        user.events.create!(
-          name: "Compleanno #{user.name} #{user.lastname}",
+            name: "Compleanno #{[user.name, user.lastname].compact.join(' ')}".strip,
+            start_time: user.date_of_birth,
+            end_time: user.date_of_birth,
+            enabled: true
+          )
+        else
+          user.events.create!(
+            name: "Compleanno #{[user.name, user.lastname].compact.join(' ')}".strip,
           eventype: compleanno,
           start_time: user.date_of_birth,
           end_time: user.date_of_birth,

@@ -73,7 +73,7 @@ ABILITIES.each do |attrs|
 end
 
 # ── Eventypes ─────────────────────────────────────────────────────────────
-%w[Compleanno].each do |name|
+%w[compleanno].each do |name|
   Eventype.find_or_create_by!(name: name) do |e|
     e.enabled = true
     e.color = "#EC4899"

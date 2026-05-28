@@ -95,7 +95,7 @@ module Admin
     end
 
     def sync_birthday_event(user)
-      compleanno = Eventype.find_by(name: "Compleanno")
+      compleanno = Eventype.find_by("LOWER(name) = ?", "compleanno")
       return unless compleanno
 
       if user.date_of_birth.present?

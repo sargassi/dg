@@ -16,6 +16,7 @@ module Admin
     def create
       @user = User.new(user_params)
       if @user.save
+        sync_birthday_event(@user)
         redirect_to admin_users_path, notice: "Utente creato."
       else
         @users = User.includes(:user_roles, :abilities).order(:user_type, :email)
@@ -37,6 +38,7 @@ module Admin
       attrs['godlike'] = ActiveModel::Type::Boolean.new.cast(attrs['godlike']) if attrs.key?('godlike')
       attrs['enabled'] = ActiveModel::Type::Boolean.new.cast(attrs['enabled']) if attrs.key?('enabled')
       if @user.update(attrs)
+        sync_birthday_event(@user)
         if params[:roles].present?
           @user.user_roles.destroy_all
           params[:roles].each do |role|
@@ -90,6 +92,36 @@ module Admin
 
     def user_params
       params.fetch(:user, {}).permit(:name, :lastname, :email, :user_type, :godlike, :password, :password_confirmation, :date_of_birth, :date_of_hiring, :enabled, :fiscal_code, :vat)
+    end
+
+    def sync_birthday_event(user)
+      compleanno = Eventype.find_by(name: "Compleanno")
+      return unless compleanno
+
+      if user.date_of_birth.present?
+        existing = user.events.find_by(eventype: compleanno)
+        if existing
+          existing.update!(
+            name: "Compleanno #{user.name} #{user.lastname}",
+            start_time: user.date_of_birth,
+            end_time: user.date_of_birth,
+            enabled: true
+          )
+        else
+          user.events.create!(
+            name: "Compleanno #{user.name} #{user.lastname}",
+            eventype: compleanno,
+            start_time: user.date_of_birth,
+            end_time: user.date_of_birth,
+            recurrent: :yearly,
+            enabled: true
+          )
+        end
+      else
+        user.events.where(eventype: compleanno).destroy_all
+      end
+    rescue => e
+      Rails.logger.warn "Failed to sync birthday event for user #{user.id}: #{e.message}"
     end
   end
 end

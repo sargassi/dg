@@ -1,6 +1,6 @@
 require "test_helper"
 
-class ApiTokenTest < ActiveSupport::TestCase
+class APITokenTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end

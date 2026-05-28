@@ -1,4 +1,4 @@
-class ApiToken < ApplicationRecord
+class APIToken < ApplicationRecord
   belongs_to :user
   validates :token, presence: true, uniqueness: true
 

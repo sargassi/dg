@@ -5,15 +5,15 @@ module ApplicationHelper
 
   #styles
     def style_side_ul
-      'flex flex-col gap-0 m-0 p-0 h-screen bg-slate-100 w-16'
+      'flex flex-col gap-0 m-0 p-0 h-screen bg-slate-100 dark:bg-slate-800 w-16'
     end
 
     def style_side_li
-      'w-16 h-16 bg-slate-50 flex flex-col items-center justify-center rounded shadow-sm hover:bg-slate-100'
+      'w-16 h-16 bg-slate-50 dark:bg-slate-900 flex flex-col items-center justify-center rounded shadow-sm hover:bg-slate-100 dark:hover:bg-slate-800'
     end
 
     def style_side_a(link = '/')
-      "text-xs flex flex-col justify-center h-full w-full items-center text-center sidelinx text-slate-700 hover:text-slate-900 #{active_class(link)} "
+      "text-xs flex flex-col justify-center h-full w-full items-center text-center sidelinx text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 #{active_class(link)} "
     end
 
     def style_side_a_home
@@ -28,7 +28,7 @@ module ApplicationHelper
   # forms
   #
   def form_container
-    'shadow-sm p-2 bg-slate-50'
+    'shadow-sm p-2 bg-slate-50 dark:bg-slate-800/50'
   end
 
   def style_form_group
@@ -40,11 +40,11 @@ module ApplicationHelper
   end
 
   def select_class
-    input_class + ' bg-white selex'
+    input_class(' bg-white dark:bg-slate-700') + ' dark:border-slate-600 selex'
   end
 
-  def input_class(add = ' bg-white')
-    'text-xs w-full  shadow block rounded-sm border-slate-50 outline-none px-3 py-2 mt-2' + add
+  def input_class(add = ' bg-white dark:bg-slate-700')
+    'text-xs w-full  shadow block rounded-sm border-slate-50 dark:border-slate-600 outline-none px-3 py-2 mt-2' + add
   end
 
   def button_class(add = ' bg-green-600')
@@ -53,9 +53,9 @@ module ApplicationHelper
 
   def style_toggle_switch(form, attribute, label_text)
     toggle_html = form.check_box(attribute, class: "sr-only peer") +
-      tag.div("", class: "w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-accent")
+      tag.div("", class: "w-9 h-5 bg-slate-200 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white dark:after:bg-slate-300 after:border-slate-300 dark:after:border-slate-600 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-accent")
     tag.label(class: "relative inline-flex items-center gap-2 cursor-pointer") do
-      (toggle_html + tag.span(label_text, class: "text-xs text-slate-400 uppercase tracking-wide")).html_safe
+      (toggle_html + tag.span(label_text, class: "text-xs text-slate-400 dark:text-slate-300 uppercase tracking-wide")).html_safe
     end
   end
 
@@ -63,7 +63,7 @@ module ApplicationHelper
   # end forms
 
   def style_container_head
-    'flex gap-4 justify-between items-center border-b border-slate-300 text-center'
+    'flex gap-4 justify-between items-center border-b border-slate-300 dark:border-slate-600 text-center'
   end
 
   def style_subcontainer_hor
@@ -71,19 +71,19 @@ module ApplicationHelper
   end
 
   def style_subcontainer_linx(link = '/')
-    "block w-12 h-12 p-2 border border-slate-100 flex items-center justify-center rounded-full #{active_class(link)}"
+    "block w-12 h-12 p-2 border border-slate-100 dark:border-slate-600 flex items-center justify-center rounded-full #{active_class(link)}"
   end
 
   def style_main_cnt
-    'bg-white rounded-none border-l border-r border-b border-slate-200 p-5'
+    'bg-white dark:bg-slate-800 rounded-none border-l border-r border-b border-slate-200 dark:border-slate-600 py-16 px-5'
   end
 
   def style_main_header_container
-    'flex gap-8 items-center py-4 bg-slate-50 border-b border-slate-300'
+    'flex gap-8 items-center py-4 bg-slate-50 dark:bg-slate-800 border-b-4 border-slate-200 dark:border-slate-700 overflow-hidden relative'
   end
 
   def style_main_header
-    'text-xl flex items-center p-2 lowercase font-semibold text-slate-600 px-4'
+    'title-gen'
   end
 
   def style_main_card_grid
@@ -91,35 +91,35 @@ module ApplicationHelper
   end
 
   def style_main_card
-    'bg-white border border-slate-200 shadow-sm px-6 py-4'
+    'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 shadow-sm px-6 py-4'
   end
 
   def style_main_card_header
-    'text-base font-semibold text-slate-800 border-b border-slate-100 pb-3 mb-5 flex items-center gap-2'
+    'text-base font-semibold text-slate-800 dark:text-slate-200 border-b border-slate-100 dark:border-slate-600 pb-3 mb-5 flex items-center gap-2'
   end
 
   def style_main_card_link
-    'flex items-center justify-between px-3 py-2.5 bg-slate-50 hover:bg-slate-100 hover:border-l-2 hover:border-accent transition-all rounded-sm'
+    'flex items-center justify-between px-3 py-2.5 bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-700 hover:border-l-2 hover:border-accent transition-all rounded-sm text-slate-700 dark:text-slate-200'
   end
 
   def style_main_card_badge
-    'bg-slate-100 text-slate-600 text-xs font-semibold px-2.5 py-0.5 rounded'
+    'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-200 text-xs font-semibold px-2.5 py-0.5 rounded'
   end
 
   # calendar
   def calendar_cell_classes(day, today, selected)
-    base = 'border-r border-b border-slate-200 p-1.5 h-24 align-top relative'
-    base += ' bg-slate-50' if day.month != today.month && day != selected
-    base += ' bg-amber-50' if day == today
-    base += ' bg-accent-100' if day == selected
+    base = 'border-r border-b border-slate-200 dark:border-slate-700 p-1.5 h-24 align-top relative'
+    base += ' bg-slate-50 dark:bg-slate-800/50' if day.month != today.month && day != selected
+    base += ' bg-amber-50 dark:bg-amber-900/30' if day == today
+    base += ' bg-accent-100 dark:bg-accent-800' if day == selected
     base
   end
 
   def calendar_day_classes(day, today, selected)
     base = 'text-xs leading-none'
-    base += ' text-slate-900 font-medium' if day == today
-    base += ' text-slate-700' if day != today && day.month == today.month
-    base += ' text-slate-500' if day.month != today.month
+    base += ' text-slate-900 dark:text-slate-100 font-medium' if day == today
+    base += ' text-slate-700 dark:text-slate-300' if day != today && day.month == today.month
+    base += ' text-slate-500 dark:text-slate-400' if day.month != today.month
     base
   end
 
@@ -147,7 +147,7 @@ module ApplicationHelper
   # end calendar
 
   def style_main_sub_header
-    'text-2xl my-4 flex items-center p-2 lowercase font-semibold text-slate-600 border-b border-t border-slate-200 py-4'
+    'text-2xl my-4 flex items-center p-2 lowercase font-semibold text-slate-600 dark:text-slate-200 border-b border-t border-slate-200 dark:border-slate-600 py-4'
   end
 
   def style_main_lists
@@ -163,7 +163,7 @@ module ApplicationHelper
   end
 
   def style_main_lists_head
-    'uppercase text-xl border-b border-slate-200 p-2'
+    'uppercase text-xl border-b border-slate-200 dark:border-slate-600 p-2'
   end
 
   def style_main_lists_p
@@ -171,18 +171,18 @@ module ApplicationHelper
   end
 
   def style_main_lists_p_border
-    'p-4 text-sm border border-slate-400 h-14'
+    'p-4 text-sm border border-slate-400 dark:border-slate-500 h-14'
   end
 
   def style_agenda_ul
     'flex flex-col gap-4 py-4 text-xs '
   end
   def style_agenda_li
-    'border-b p-1 border-slate-200  w-full'
+    'border-b p-1 border-slate-200 dark:border-slate-700 w-full'
   end
 
   def style_actions_linx
-    'rounded-lg py-1 px-3 bg-gray-100 inline-block font-semibold text-xs whitespace-nowrap'
+    'rounded-lg py-1 px-3 bg-gray-100 dark:bg-slate-700 inline-block font-semibold text-xs whitespace-nowrap'
   end
 
   def style_action_pdf
@@ -194,48 +194,48 @@ module ApplicationHelper
   end
 
   def style_main_lists_subtitle
-    'my-6 grow uppercase text-sm text-slate-600'
+    'my-6 grow uppercase text-sm text-slate-600 dark:text-slate-300'
   end
 
   def style_main_lists_subtitle_nomarg
-    'grow uppercase text-sm text-slate-600'
+    'grow uppercase text-sm text-slate-600 dark:text-slate-300'
   end
 
   def style_main_input
-    'p-2 border border-slate-500'
+    'p-2 border border-slate-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200'
   end
 
   def style_table_th
-    'p-3 bg-slate-100 text-xs font-normal lowercase text-start border border-slate-200'
+    'p-3 bg-slate-100 dark:bg-slate-700 text-xs font-normal lowercase text-start border border-slate-200 dark:border-slate-700'
   end
 
   def style_table_td
-    'text-xs p-3 border border-slate-300'
+    'text-xs p-3 border border-slate-300 dark:border-slate-600'
   end
 
   def style_table_td_parent
-    'text-sm border border-slate-300'
+    'text-sm border border-slate-300 dark:border-slate-600'
   end
 
   def style_table_th_children
-    'p-2 bg-slate-50 text-xs uppercase text-start border-r border-slate-200'
+    'p-2 bg-slate-50 dark:bg-slate-800 text-xs uppercase text-start border-r border-slate-200 dark:border-slate-700'
   end
 
   def style_table_td_children
-    'p-2 text-sm border border-slate-300'
+    'p-2 text-sm border border-slate-300 dark:border-slate-600'
   end
 
 
   def style_input
-    'p-2 border-slate-400 text-xs'
+    'p-2 border-slate-400 dark:border-slate-500 text-xs dark:bg-slate-700 dark:text-slate-200'
   end
 
   def style_select_class
-    'w-full bg-white border border-slate-300 rounded px-3 py-2 text-xs'
+    'w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded px-3 py-2 text-xs'
   end
 
   def style_search_input
-    style_input + ' w-96 border border-accent-100 shadow-sm'
+    style_input + ' w-96 border border-accent-100 dark:border-accent-700 shadow-sm'
   end
 
   def style_main_btn(add = ' bg-accent')
@@ -247,11 +247,11 @@ module ApplicationHelper
   end
 
   def style_import_form
-    'bg-accent-50 p-4'
+    'bg-slate-50 dark:bg-slate-900 p-4'
   end
 
   def style_import_field
-    'w-full bg-white border border-slate-300 rounded px-3 py-1.5 text-xs file:bg-accent file:text-white file:border-0 file:rounded file:px-3 file:py-1 file:mr-2 file:cursor-pointer file:text-xs file:font-medium'
+    'w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded px-3 py-1.5 text-xs file:bg-accent file:text-white file:border-0 file:rounded file:px-3 file:py-1 file:mr-2 file:cursor-pointer file:text-xs file:font-medium'
   end
 
   def style_import_btn

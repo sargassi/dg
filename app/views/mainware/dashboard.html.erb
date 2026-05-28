@@ -1,11 +1,11 @@
 <% menu = [
-  { label: 'Dashboard', path: mainware_dashboard_path, active: true, icon: 'dashboard' },
-  { label: 'Articoli', path: mainware_index_path, active: false, icon: 'inventory_2' },
-  { label: 'Storico Prezzi', path: mainware_prices_compare_path, active: false, icon: 'payments' },
-  { label: 'Magazzini', path: warehouses_path, active: false, icon: 'warehouse' },
+  { label: 'Dashboard', path: mainware_dashboard_path, active: true, icon: 'dashboard', can: 'manage_mainware' },
+  { label: 'Articoli', path: mainware_index_path, active: false, icon: 'inventory_2', can: 'manage_mainware' },
+  { label: 'Storico Prezzi', path: mainware_prices_compare_path, active: false, icon: 'payments', can: 'manage_mainware' },
+  { label: 'Magazzini', path: warehouses_path, active: false, icon: 'warehouse', can: 'manage_warehouses' },
 ] %>
 <div class="<%= style_main_header_container %>">
-  <%= render partial: 'atoms/header', locals: {link: '/', label: 'Main / Dashboard', menu: menu} %>
+  <%= render partial: 'atoms/header', locals: {link: '/', label: 'Articoli', menu: menu} %>
 </div>
 
 <section class="<%= style_main_cnt %>">
@@ -18,18 +18,18 @@
       </h3>
       <div class="space-y-3">
         <%= link_to mainware_index_path, class: style_main_card_link do %>
-          <span class="text-sm text-slate-700">Articoli</span>
+          <span class="text-sm text-slate-700 dark:text-slate-200">Articoli</span>
           <span class="<%= style_main_card_badge %>"><%= @items_count %></span>
         <% end %>
 
         <%= link_to mainware_prices_compare_path, class: style_main_card_link do %>
-          <span class="text-sm text-slate-700">Storico Prezzi</span>
-          <span class="material-symbols-outlined text-slate-400 text-base">arrow_forward_ios</span>
+          <span class="text-sm text-slate-700 dark:text-slate-200">Storico Prezzi</span>
+          <span class="material-symbols-outlined text-slate-400 dark:text-slate-300 text-base">arrow_forward_ios</span>
         <% end %>
 
         <%= link_to mainware_import_path, class: style_main_card_link do %>
-          <span class="text-sm text-slate-700">Importa da Excel</span>
-          <span class="material-symbols-outlined text-slate-400 text-base">arrow_forward_ios</span>
+          <span class="text-sm text-slate-700 dark:text-slate-200">Importa da Excel</span>
+          <span class="material-symbols-outlined text-slate-400 dark:text-slate-300 text-base">arrow_forward_ios</span>
         <% end %>
 
       </div>
@@ -42,13 +42,13 @@
       </h3>
       <div class="space-y-3">
         <%= link_to warehouses_path, class: style_main_card_link do %>
-          <span class="text-sm text-slate-700">Gestione Magazzini</span>
+          <span class="text-sm text-slate-700 dark:text-slate-200">Gestione Magazzini</span>
           <span class="<%= style_main_card_badge %>"><%= @warehouses_count %></span>
         <% end %>
 
         <%= link_to inventories_path, class: style_main_card_link do %>
-          <span class="text-sm text-slate-700">Giacenze / Inventario</span>
-          <span class="material-symbols-outlined text-slate-400 text-base">arrow_forward_ios</span>
+          <span class="text-sm text-slate-700 dark:text-slate-200">Giacenze / Inventario</span>
+          <span class="material-symbols-outlined text-slate-400 dark:text-slate-300 text-base">arrow_forward_ios</span>
         <% end %>
       </div>
     </div>
@@ -58,7 +58,7 @@
         <span class="material-symbols-outlined">apps</span>
         Altre Sezioni
       </h3>
-      <div class="flex items-center justify-center h-32 text-sm text-slate-400 italic">
+      <div class="flex items-center justify-center h-32 text-sm text-slate-400 dark:text-slate-300 italic">
         Da implementare...
       </div>
     </div>

@@ -1,4 +1,5 @@
 class ItemoutsController < ApplicationController
+  before_action -> { require_ability!('manage_itemouts') }
   before_action :set_itemout, only: %i[ show edit update destroy ]
 
   def index

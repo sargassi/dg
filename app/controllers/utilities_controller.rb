@@ -1,4 +1,5 @@
 class UtilitiesController < ApplicationController
+  before_action -> { require_ability!('manage_utilities_labels') }
 
   def dashboard
 

@@ -1,4 +1,6 @@
 class StagesController < ApplicationController
+  before_action -> { require_ability!('manage_stages') }
+
   def dashboard
 
   end

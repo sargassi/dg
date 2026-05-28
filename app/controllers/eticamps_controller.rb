@@ -1,4 +1,5 @@
 class EticampsController < ApplicationController
+  before_action -> { require_ability!('manage_eticamps') }
   before_action :set_eticamp, only: %i[ show edit update destroy ]
 
   # GET /eticamps or /eticamps.json

@@ -1,4 +1,5 @@
 class LocationsController < ApplicationController
+  before_action -> { require_ability!('manage_locations') }
   before_action :set_location, only: %i[ show edit update destroy ]
 
   # GET /locations or /locations.json

@@ -1,4 +1,6 @@
 class ProductionController < ApplicationController
+  before_action -> { require_ability!('view_production') }, except: [:checkpoint, :checkpoint_single]
+  before_action -> { require_ability!('checkpoint_scan') }, only: [:checkpoint, :checkpoint_single]
 
   include Pagy::Backend
 

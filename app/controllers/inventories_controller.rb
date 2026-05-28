@@ -1,5 +1,6 @@
 class InventoriesController < ApplicationController
   include Pagy::Backend
+  before_action -> { require_ability!('manage_inventory') }
   before_action :set_inventory, only: %i[ show edit update destroy ]
 
   # GET /inventories or /inventories.json

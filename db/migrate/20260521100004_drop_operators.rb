@@ -1,10 +1,10 @@
 class DropOperators < ActiveRecord::Migration[7.2]
   def up
-    remove_foreign_key :itemins, :operators
-    remove_foreign_key :itemouts, :operators
-    remove_column :itemins, :operator_id
-    remove_column :itemouts, :operator_id
-    drop_table :operators
+    remove_foreign_key :itemins, :operators, if_exists: true
+    remove_foreign_key :itemouts, :operators, if_exists: true
+    remove_column :itemins, :operator_id, if_exists: true
+    remove_column :itemouts, :operator_id, if_exists: true
+    drop_table :operators, if_exists: true
   end
 
   def down

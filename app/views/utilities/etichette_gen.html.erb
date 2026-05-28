@@ -1,13 +1,13 @@
 <% menu = [
-  { label: 'Dashboard Etichette', path: utilities_dashboard_path, active: false, icon: 'dashboard' },
-  { label: 'Proforma', path: utilities_etichette_path, active: false, icon: 'label' },
-  { label: 'Generiche', path: utilities_etichette_gen_path, active: true, icon: 'description' },
-  { label: 'Laboratorio', path: utilities_etichette_lab_path, active: false, icon: 'science' },
-  { label: 'Campione', path: utilities_etichette_camp_path, active: false, icon: 'agriculture' },
-  { label: 'Lavaggio etc', path: utilities_etichette_check_path, active: false, icon: 'agriculture' },
+  { label: 'Dashboard Etichette', path: utilities_dashboard_path, active: false, icon: 'dashboard', can: 'manage_utilities_labels' },
+  { label: 'Proforma', path: utilities_etichette_path, active: false, icon: 'label', can: 'print_labels_proforma' },
+  { label: 'Generiche', path: utilities_etichette_gen_path, active: true, icon: 'description', can: 'print_labels_gen' },
+  { label: 'Laboratorio', path: utilities_etichette_lab_path, active: false, icon: 'science', can: 'print_labels_lab' },
+  { label: 'Campione', path: utilities_etichette_camp_path, active: false, icon: 'agriculture', can: 'print_labels_camp' },
+  { label: 'Taglio', path: utilities_etichette_check_path, active: false, icon: 'agriculture', can: 'print_labels_check' },
 ] %>
 <div class="<%= style_main_header_container %>">
-    <%= render partial: 'atoms/header', locals: {link: '/', label: 'Utilities / Stampa etichette generiche', menu: menu} %>
+    <%= render partial: 'atoms/header', locals: {link: '/', label: 'Etichette generiche', menu: menu} %>
 </div>
 <%= render partial: 'atoms/form_gen', locals: {pdf: 'y'} %>
 <% if @etigroup.present? %>

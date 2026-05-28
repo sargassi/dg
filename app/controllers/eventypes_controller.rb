@@ -1,4 +1,5 @@
 class EventypesController < ApplicationController
+  before_action -> { require_ability!('manage_eventypes') }
   before_action :set_eventype, only: %i[ show edit update destroy ]
 
   # GET /eventypes or /eventypes.json

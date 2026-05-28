@@ -1,4 +1,5 @@
 class EtichecksController < ApplicationController
+  before_action -> { require_ability!('manage_etichecks') }
   before_action :set_eticheck, only: %i[ show edit update destroy ]
 
   # GET /etichecks or /etichecks.json

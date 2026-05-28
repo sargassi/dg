@@ -1,4 +1,5 @@
 class TempestaController < ApplicationController
+  before_action -> { require_ability!('manage_tempesta') }
   before_action :set_tempestum, only: %i[ show edit update destroy ]
 
   # GET /tempesta or /tempesta.json

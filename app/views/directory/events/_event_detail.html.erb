@@ -1,0 +1,22 @@
+<% @evx.each do |ev| %>
+  <% typ = Eventype.find(ev[0]).name %>
+
+  <div class="my-4">
+  <% ev[1].each do |eve| %>
+      <% if defined?(section) && section == 'single' %>
+          <% if (eve.start_time..eve.end_time).cover?(date) %>
+            <div class="text-xs capitalize font-normal">
+                <%= link_to eve.name, edit_directory_event_path(:id => eve.id, :start_date => @todate) %>
+            </div>
+         <% end %>
+      <% elsif section == 'side' %>
+       <% if (eve.start_time..eve.end_time).cover?(@todate) %>
+          <h4 class="mb-2 text-slate-600 text-xs border-b p-2 w-full flex justify-between">
+              <span> <%= eve.name %>  </span>
+              <span class="text-xs text-slate-300 italic"> <%= typ %>  </span>
+          </h4>
+      <% end %>
+      <% end %>
+    <% end %>
+</div>
+  <% end %>

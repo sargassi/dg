@@ -1,4 +1,5 @@
 class Production::ProformasController < ApplicationController
+  before_action -> { require_ability!('manage_proformas') }
   before_action :set_proforma, only: %i[show edit update destroy]
 
   include Pagy::Backend

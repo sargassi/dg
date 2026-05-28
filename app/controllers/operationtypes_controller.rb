@@ -1,4 +1,5 @@
 class OperationtypesController < ApplicationController
+  before_action -> { require_ability!('manage_operationtypes') }
   before_action :set_operationtype, only: %i[ show edit update destroy ]
 
   # GET /operationtypes or /operationtypes.json

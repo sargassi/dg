@@ -1,4 +1,5 @@
 class WarehousesController < ApplicationController
+  before_action -> { require_ability!('manage_warehouses') }
   before_action :set_warehouse, only: %i[ show edit update destroy ]
 
   # GET /warehouses or /warehouses.json

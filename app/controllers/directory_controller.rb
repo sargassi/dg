@@ -1,5 +1,11 @@
 class DirectoryController < ApplicationController
   include Pagy::Backend
+  before_action -> { require_ability!('manage_directory') }
+
+  def dashboard
+    @users_count = User.count
+    @events_count = Event.count
+  end
 
   def index
     @users = User.all

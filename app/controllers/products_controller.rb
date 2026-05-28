@@ -1,5 +1,5 @@
 class ProductsController < ApplicationController
-
+  before_action -> { require_ability!('manage_products') }
   before_action :set_product, only: %i[ show edit update destroy ]
   # GET /products or /products.json
   # GET /products/1 or /products/1.json

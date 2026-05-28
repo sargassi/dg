@@ -1,7 +1,7 @@
     <% if section.present? %>
 
 
-        <section class="bg-accent-50 my-0">
+        <section class="bg-accent-50 dark:bg-accent-900/30 my-0">
         <div class="mx-auto section-qr">
             <div id="qr-reader">
 
@@ -37,7 +37,7 @@
     <% @sections.each do |sec| %>
       <li>
           <% params[:place].present? && params[:place] != '' && params[:place] == sec ? active = 'active' : active = '' %>
-        <a href="<%= "/app/sez?place=#{sec}" %>" class="p-2 bg-slate-50 rounded-sm uppercase <%= active %> ">
+        <a href="<%= "/app/sez?place=#{sec}" %>" class="p-2 bg-slate-50 dark:bg-slate-800 rounded-sm uppercase <%= active %> ">
 
           <%= sec %>
         </a>

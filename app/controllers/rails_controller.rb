@@ -1,4 +1,5 @@
 class RailsController < ApplicationController
+  before_action -> { require_ability!('manage_rails') }
   before_action :set_rail, only: %i[ show edit update destroy ]
 
   # GET /rails or /rails.json

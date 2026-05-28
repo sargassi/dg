@@ -34,8 +34,8 @@ module Admin
     def update
       @user = User.find(params[:id])
       attrs = user_params.to_h
-      attrs['godlike'] = ActiveModel::Type::Boolean.new.cast(attrs['godlike'])
-      attrs['enabled'] = ActiveModel::Type::Boolean.new.cast(attrs['enabled'])
+      attrs['godlike'] = ActiveModel::Type::Boolean.new.cast(attrs['godlike']) if attrs.key?('godlike')
+      attrs['enabled'] = ActiveModel::Type::Boolean.new.cast(attrs['enabled']) if attrs.key?('enabled')
       if @user.update(attrs)
         if params[:roles].present?
           @user.user_roles.destroy_all
@@ -70,6 +70,12 @@ module Admin
       end
     end
 
+    def abilities
+      @user = User.find(params[:id])
+      @all_abilities = Ability.includes(:user_abilities).order(:category, :name)
+      render layout: false
+    end
+
     def destroy
       @user = User.find(params[:id])
       if @user == current_user
@@ -83,7 +89,7 @@ module Admin
     private
 
     def user_params
-      params.require(:user).permit(:name, :lastname, :email, :user_type, :godlike, :password, :password_confirmation, :date_of_birth, :date_of_hiring, :enabled, :fiscal_code, :vat)
+      params.fetch(:user, {}).permit(:name, :lastname, :email, :user_type, :godlike, :password, :password_confirmation, :date_of_birth, :date_of_hiring, :enabled, :fiscal_code, :vat)
     end
   end
 end

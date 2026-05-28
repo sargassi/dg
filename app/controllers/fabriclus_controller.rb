@@ -1,4 +1,5 @@
 class FabriclusController < ApplicationController
+  before_action -> { require_ability!('manage_fabriclus') }
   before_action :set_fabriclu, only: %i[ show edit update destroy ]
 
   include Pagy::Backend

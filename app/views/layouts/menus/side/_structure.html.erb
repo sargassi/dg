@@ -2,38 +2,27 @@
 
     <%= render partial: "layouts/menus/side/home" %>
 
-
     <% if user_signed_in? %>
-        <% if current_user.has_role?(:ufficio) %>
-        <%= render partial: "/layouts/menus/side/ufficio" %>
-        <%= render partial: "/layouts/menus/side/utilities" %>
-        <%= render partial: "/layouts/menus/side/lab" %>
+        <% if current_user.godlike? || current_user.can?('print_labels_proforma') || current_user.can?('print_labels_lab') || current_user.can?('print_labels_camp') || current_user.can?('print_labels_gen') || current_user.can?('print_labels_check') || current_user.can?('manage_utilities_labels') || current_user.can?('manage_basic_qr_codes') || current_user.can?('manage_app_sectors') %>
+          <%= render partial: "/layouts/menus/side/utilities" %>
         <% end %>
 
-        <%= render partial: "/layouts/menus/side/mag" %>
-
-        <% if current_user.has_role?(:lab) %>
-            <%= render partial: "/layouts/menus/side/utilities_lab" %>
+        <% if current_user.godlike? || current_user.can?('manage_proformas') || current_user.can?('view_production') || current_user.can?('checkpoint_scan') || current_user.can?('manage_prows') || current_user.can?('manage_tempesta') || current_user.can?('manage_stages') || current_user.can?('manage_stations') || current_user.can?('manage_rails') || current_user.can?('manage_mainware') || current_user.can?('manage_items') || current_user.can?('manage_products') || current_user.can?('manage_collections') || current_user.can?('manage_areas') || current_user.can?('manage_uoms') || current_user.can?('manage_taglia') || current_user.can?('manage_products_imports') || current_user.can?('manage_rassegnas') || current_user.can?('manage_inventory') || current_user.can?('manage_itemins') || current_user.can?('manage_itemouts') || current_user.can?('manage_warehouses') || current_user.can?('manage_locations') || current_user.can?('manage_operationtypes') || current_user.can?('manage_etichecks') || current_user.can?('manage_eticamps') || current_user.can?('manage_etigens') || current_user.can?('manage_etilabs') || current_user.can?('manage_fabriclus') || current_user.can?('import_data') || current_user.can?('view_reports') %>
+          <%= render partial: "/layouts/menus/side/lab" %>
         <% end %>
 
-        <li class="<%= style_side_li %>">
-            <%= link_to directory_path, class: style_side_a(directory_path) do %>
-                <span class="material-symbols-outlined">contact_page</span>
-                <em>Rubrica</em>
-            <% end %>
-        </li>
+        <% if current_user.godlike? || current_user.can?('manage_directory') || current_user.can?('manage_users') || current_user.can?('manage_events_calendar') || current_user.can?('manage_events') || current_user.can?('manage_eventypes') %>
+          <%= render partial: "/layouts/menus/side/users" %>
+        <% end %>
 
         <% if current_user.godlike? %>
             <li class="<%= style_side_li %>">
                 <%= link_to admin_users_path, class: style_side_a(admin_users_path) do %>
                     <span class="material-symbols-outlined">admin_panel_settings</span>
-                    <em>Admin</em>
+                    <span>admin</span>
                 <% end %>
             </li>
         <% end %>
-
-        <%= render partial: "/layouts/menus/side/users" %>
-
         <%= render partial: "layouts/menus/side/logout" %>
 
     <% end %>

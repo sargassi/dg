@@ -1,4 +1,6 @@
 class AppController < ApplicationController
+  before_action -> { require_ability!('manage_app_sectors') }, except: [:sez, :check_qr, :check_single_qr]
+  before_action -> { require_ability!('checkpoint_scan') }, only: [:sez, :check_qr, :check_single_qr]
 
   ALLOWED_SECTORS = ['f1', 'f2', 'f3', 'f4', 'f5'].freeze
 

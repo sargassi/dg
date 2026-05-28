@@ -1,4 +1,5 @@
 class TagliaController < ApplicationController
+  before_action -> { require_ability!('manage_taglia') }
   before_action :set_taglium, only: %i[ show edit update destroy ]
 
   # GET /taglia or /taglia.json

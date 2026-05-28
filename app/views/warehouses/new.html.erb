@@ -1,7 +1,7 @@
 <% menu = [
-  { label: 'Dashboard', path: inventories_dashboard_path, active: false, icon: 'dashboard' },
-  { label: 'Ricerca magazzino', path: inventories_path, active: false, icon: 'inventory_2' },
-  { label: 'Magazzino e ubiche', path: warehouses_path, active: true, icon: 'warehouse' },
+  { label: 'Dashboard', path: inventories_dashboard_path, active: false, icon: 'dashboard', can: 'manage_inventory' },
+  { label: 'Ricerca magazzino', path: inventories_path, active: false, icon: 'inventory_2', can: 'manage_inventory' },
+  { label: 'Magazzino e ubiche', path: warehouses_path, active: true, icon: 'warehouse', can: 'manage_warehouses' },
 ] %>
 <div class="<%= style_main_header_container %>">
   <%= render partial: 'atoms/header', locals: {link: '/', label: 'Inventario / Magazzini / Nuovo', menu: menu} %>

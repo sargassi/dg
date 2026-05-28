@@ -1,29 +1,35 @@
- <li class="<%= style_side_li %>">
+<% if current_user.godlike? || current_user.can?('manage_proformas') || current_user.can?('view_production') || current_user.can?('checkpoint_scan') || current_user.can?('manage_prows') || current_user.can?('manage_tempesta') || current_user.can?('manage_stages') || current_user.can?('manage_stations') || current_user.can?('manage_rails') %>
+  <li class="<%= style_side_li %>">
       <%= link_to production_dashboard_path, class: style_side_a(production_dashboard_path) + " " + active_class_for_namespace('production') do %>
          <span class="material-symbols-outlined">
              checklist_rtl
          </span>
-         <em>Produzione
-         </em>
+         <span>produzione
+         </span>
      <% end %>
- </li>
+  </li>
+<% end %>
 
+<% if current_user.godlike? || current_user.can?('manage_mainware') || current_user.can?('manage_items') || current_user.can?('manage_products') || current_user.can?('manage_collections') || current_user.can?('manage_areas') || current_user.can?('manage_uoms') || current_user.can?('manage_taglia') || current_user.can?('manage_products_imports') || current_user.can?('manage_rassegnas') || current_user.can?('manage_etichecks') || current_user.can?('manage_eticamps') || current_user.can?('manage_etigens') || current_user.can?('manage_etilabs') || current_user.can?('manage_fabriclus') || current_user.can?('import_data') || current_user.can?('view_reports') %>
   <li class="<%= style_side_li %>">
       <%= link_to mainware_dashboard_path, class: style_side_a(mainware_dashboard_path) + " " + active_class_for_controllers('mainware') do %>
           <span class="material-symbols-outlined">
               shelf_position
           </span>
-          <em>Main
-          </em>
+          <span>articoli
+          </span>
       <% end %>
   </li>
+<% end %>
 
+<% if current_user.godlike? || current_user.can?('manage_inventory') || current_user.can?('manage_itemins') || current_user.can?('manage_itemouts') || current_user.can?('manage_warehouses') || current_user.can?('manage_locations') || current_user.can?('manage_operationtypes') %>
   <li class="<%= style_side_li %>">
       <%= link_to inventories_dashboard_path, class: style_side_a(inventories_dashboard_path) + " " + active_class_for_controllers('inventories', 'itemins', 'itemouts', 'warehouses', 'locations') do %>
           <span class="material-symbols-outlined">
               inventory_2
           </span>
-          <em>Mag
-          </em>
+          <span>mag
+          </span>
       <% end %>
   </li>
+<% end %>

@@ -1,5 +1,6 @@
 class MainwareController < ApplicationController
   include Pagy::Backend
+  before_action -> { require_ability!('manage_mainware') }
 
   def index
     @collections = Collection.joins("INNER JOIN items ON items.collection_id = collections.id").distinct.order(created_at: :desc)

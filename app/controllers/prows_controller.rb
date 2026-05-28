@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class ProwsController < ApplicationController
+  before_action -> { require_ability!('manage_prows') }
   before_action :set_prow, only: %i[show edit update destroy]
 
   # GET /prows or /prows.json

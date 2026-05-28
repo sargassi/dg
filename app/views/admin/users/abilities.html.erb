@@ -1,0 +1,36 @@
+<%= turbo_frame_tag "abilities_modal" do %>
+  <div class="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-start justify-center pt-10 overflow-y-auto">
+    <div class="bg-white border border-slate-200 shadow-lg w-full max-w-3xl mx-4 my-4">
+      <div class="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+        <h2 class="text-base font-semibold text-slate-700 flex items-center gap-2">
+          <span class="material-symbols-outlined text-slate-400">admin_panel_settings</span>
+          Abilitazioni: <%= @user.name %> <%= @user.lastname %>
+        </h2>
+        <%= link_to "#", data: { controller: "closemod", action: "closemod#close", closemod_target: "abilities_modal" }, class: "text-slate-400 hover:text-slate-600 transition" do %>
+          <span class="material-symbols-outlined text-lg">close</span>
+        <% end %>
+      </div>
+      <div class="p-5 max-h-[80vh] overflow-y-auto">
+        <%= form_with url: admin_user_path(@user, return_to: params[:return_to]), method: :patch, data: { turbo_frame: "_top" } do |f| %>
+          <% categories = @all_abilities.map(&:category).uniq %>
+          <% categories.each do |cat| %>
+            <div class="mb-6">
+              <h4 class="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2 border-b border-slate-100 pb-1"><%= cat %></h4>
+              <div class="grid grid-cols-2 gap-x-6 gap-y-0.5">
+                <% @all_abilities.select { |a| a.category == cat }.each do |ability| %>
+                  <label class="inline-flex items-center gap-2 py-0.5 px-1 rounded hover:bg-slate-50 cursor-pointer">
+                    <%= check_box_tag "ability_ids[]", ability.id, @user.can?(ability.name), class: "rounded border-slate-300 text-accent focus:ring-accent" %>
+                    <span class="text-xs text-slate-700"><%= ability.description %></span>
+                  </label>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+          <div class="flex items-center gap-4 pt-5 border-t border-slate-200">
+            <%= f.submit "Salva abilitazioni", class: "py-2 px-4 text-sm tracking-wide text-white rounded-sm inline-block cursor-pointer bg-accent hover:bg-accent/90" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

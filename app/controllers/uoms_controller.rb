@@ -1,4 +1,5 @@
 class UomsController < ApplicationController
+  before_action -> { require_ability!('manage_uoms') }
   before_action :set_uom, only: %i[ show edit update destroy ]
 
   # GET /uoms or /uoms.json

@@ -1,4 +1,5 @@
 class RassegnasController < ApplicationController
+  before_action -> { require_ability!('manage_rassegnas') }
   before_action :set_rassegna, only: %i[ show edit update destroy ]
   before_action :authenticate_user!, only: [:new, :create, :destroy]
 

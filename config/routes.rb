@@ -65,7 +65,9 @@ Rails.application.routes.draw do
 
   get 'eticamps/etichette'
   resources :eticamps
-  resources :events
+  namespace :directory do
+    resources :events
+  end
   resources :eventypes
   get 'etigens/etichette'
   resources :etigens
@@ -92,13 +94,18 @@ Rails.application.routes.draw do
   end
   resources :stations
   namespace :admin do
-    resources :users, only: [:index, :new, :create, :edit, :update, :destroy]
+    resources :users, only: [:index, :new, :create, :edit, :update, :destroy] do
+      member do
+        get :abilities
+      end
+    end
   end
 
   devise_for :users
   resources :rails
   resources :taglia
   resources :areas
+  get 'directory/dashboard' => 'directory#dashboard', as: :directory_dashboard
   get 'directory' => 'directory#index'
   get 'directory/:id' => 'directory#show', as: :directory_user
   get 'directory/:id/edit' => 'directory#edit', as: :edit_directory_user

@@ -1,11 +1,12 @@
 <div class="flex gap-4 grow justify-end">
-    <p class="h-12 flex items-center text-slate-600">
-      <%= role  %>
+    <p class="h-12 flex items-center text-slate-600 dark:text-slate-300">
+      <%= role %>
     </p>
 
-    <a href="#" class="linx <%= style_subcontainer_linx('') %>">
-      <span class="material-symbols-outlined font-bold">group_work</span>
 
+
+   <a href="#" class="linx <%= style_subcontainer_linx('') %>" data-action="click->theme#toggle">
+      <span class="material-symbols-outlined" data-theme-target="icon">light_mode</span>
    </a>
 
 </div>

@@ -157,6 +157,86 @@ _TBD_
 - Focus indicators: _TBD_
 - Touch targets: _TBD_
 
+## Dark Mode
+
+### Golden Rule
+**Never change light mode colors.** Only add `dark:` prefixed classes. Every `dark:` addition is an override — light mode stays untouched.
+
+### Palette (Tailwind Slate)
+| Token | Light | Dark |
+|---|---|---|
+| Page bg | white / slate-50 | `dark:bg-slate-900` |
+| Card bg | white | `dark:bg-slate-800` |
+| Input bg | white | `.dark input { background: #334155 }` (CSS rule) |
+| Text (primary) | slate-800/900 | `dark:text-slate-200` |
+| Text (body) | slate-700 | `dark:text-slate-200` |
+| Text (muted) | slate-400 | `dark:text-slate-300` or `dark:text-slate-400` |
+| Borders | slate-200/300 | `dark:border-slate-600/700` |
+| Hover bg | slate-50 | `dark:hover:bg-slate-700/50` or `dark:hover:bg-slate-700` |
+| Sidebar bg | slate-100 | `dark:bg-slate-800` |
+
+### White-on-Dark Cards (Labels / Etix)
+Some `.cell` divs must stay **white in both modes** (print-oriented label previews):
+```html
+<div class="cell bg-white text-slate-800 ...">
+```
+No `dark:` background override needed — the white is intentional for label rendering on any background.
+
+### Semantic Colors in Dark Mode
+Brand/status colors that are too dark on dark bg:
+| Light | Dark fix | Example |
+|---|---|---|
+| `text-emerald-700` | `dark:text-emerald-400` | Entrate title |
+| `text-red-700` | `dark:text-red-400` | Uscite title |
+| `text-indigo-700` | `dark:text-indigo-400` | Production percentage |
+| `text-blue-900` | `dark:text-blue-300` | Section headers |
+
+### Accent in Dark Mode
+- Links / hover: `dark:text-accent-300` (instead of `text-accent`)
+- Hover bg: `dark:bg-accent-900/30` (subtle accent tint on hover)
+- Icon buttons: keep `bg-accent-800` (already dark enough)
+
+### Hover States
+Always pair light hover with a dark variant:
+```erb
+hover:bg-slate-50 dark:hover:bg-slate-700/50
+```
+
+### Global CSS Overrides
+In `application.tailwind.css`:
+```css
+/* Dark mode inputs */
+.dark input[type="text"],
+.dark input[type="search"],
+.dark input[type="email"],
+.dark input[type="password"],
+.dark input[type="number"],
+.dark select,
+.dark textarea {
+  background-color: #334155;
+}
+
+/* QR code white bg on dark */
+.dark td svg { background: white; }
+```
+
+### JIT Safelist
+Dynamic ERB-injected classes won't be picked up by Tailwind JIT. Add to `tailwind.config.js`:
+```js
+safelist: [
+  'dark:bg-blue-600',
+  'dark:text-white',
+]
+```
+
+### Section Labels (Swiss Style)
+Section labels like "Ultimo inserimento" use a consistent dark-mode-safe treatment:
+```erb
+<h5 class="text-xs uppercase tracking-widest font-semibold text-slate-500 dark:text-slate-300 ml-2 -mt-4">
+```
+
+---
+
 ## PDF / Print
 _TBD_
 

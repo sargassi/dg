@@ -1,4 +1,5 @@
 class IteminsController < ApplicationController
+  before_action -> { require_ability!('manage_itemins') }
   before_action :set_itemin, only: %i[ show edit update destroy ]
   before_action :load_warehouses_locations_operationtypes, only: %i[ new edit ]
 

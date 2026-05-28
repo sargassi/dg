@@ -1,4 +1,6 @@
 class ProductsImportsController < ApplicationController
+  before_action -> { require_ability!('manage_products_imports') }
+
   def new
     @products_import = ProductsImport.new
   end

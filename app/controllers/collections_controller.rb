@@ -1,4 +1,5 @@
 class CollectionsController < ApplicationController
+  before_action -> { require_ability!('manage_collections') }
   before_action :set_collection, only: %i[ show edit update destroy ]
 
   # GET /collections or /collections.json

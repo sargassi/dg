@@ -1,4 +1,5 @@
 class EtigensController < ApplicationController
+  before_action -> { require_ability!('manage_etigens') }
   before_action :set_etigen, only: %i[ show edit update destroy ]
 
   # GET /etigens or /etigens.json

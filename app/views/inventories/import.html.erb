@@ -1,8 +1,8 @@
 <% menu = [
-  { label: 'Dashboard', path: inventories_dashboard_path, active: false, icon: 'dashboard' },
-  { label: 'Ricerca magazzino', path: inventories_path, active: true, icon: 'inventory_2' },
-  { label: 'Movimenti', path: inventories_movements_path, active: false, icon: 'swap_vert' },
-  { label: 'Magazzini e ubiche', path: warehouses_path, active: false, icon: 'warehouse' },
+  { label: 'Dashboard', path: inventories_dashboard_path, active: false, icon: 'dashboard', can: 'manage_inventory' },
+  { label: 'Ricerca magazzino', path: inventories_path, active: true, icon: 'inventory_2', can: 'manage_inventory' },
+  { label: 'Movimenti', path: inventories_movements_path, active: false, icon: 'swap_vert', can: 'manage_itemins' },
+  { label: 'Magazzini e ubiche', path: warehouses_path, active: false, icon: 'warehouse', can: 'manage_warehouses' },
 ] %>
 <div class="<%= style_main_header_container %>">
   <%= render partial: 'atoms/header', locals: {link: '/', label: 'Inventario / Import', menu: menu} %>
@@ -64,7 +64,7 @@
 
   <% else %>
 
-    <section class="bg-accent-50 p-6" data-controller="loader">
+    <section class="bg-accent-50 dark:bg-slate-800 p-6" data-controller="loader">
       <div data-loader-target="form">
         <%= form_with url: inventories_import_parse_path, method: :post, multipart: true,
                      data: { action: "submit->loader#show" } do |f| %>

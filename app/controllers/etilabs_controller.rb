@@ -1,4 +1,5 @@
 class EtilabsController < ApplicationController
+  before_action -> { require_ability!('manage_etilabs') }
   before_action :set_etilab, only: %i[show edit update destroy]
 
   # GET /etilabs or /etilabs.json

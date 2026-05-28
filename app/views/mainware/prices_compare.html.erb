@@ -1,11 +1,11 @@
 <% menu = [
-  { label: 'Dashboard', path: mainware_dashboard_path, active: false, icon: 'dashboard' },
-  { label: 'Articoli', path: mainware_index_path, active: false, icon: 'inventory_2' },
-  { label: 'Storico Prezzi', path: mainware_prices_compare_path, active: true, icon: 'payments' },
-  { label: 'Magazzini', path: warehouses_path, active: false, icon: 'warehouse' },
+  { label: 'Dashboard', path: mainware_dashboard_path, active: false, icon: 'dashboard', can: 'manage_mainware' },
+  { label: 'Articoli', path: mainware_index_path, active: false, icon: 'inventory_2', can: 'manage_mainware' },
+  { label: 'Storico Prezzi', path: mainware_prices_compare_path, active: true, icon: 'payments', can: 'manage_mainware' },
+  { label: 'Magazzini', path: warehouses_path, active: false, icon: 'warehouse', can: 'manage_warehouses' },
 ] %>
 <div class="<%= style_main_header_container %>">
-  <%= render partial: 'atoms/header', locals: {link: '/', label: 'Main / Storico Prezzi', menu: menu} %>
+  <%= render partial: 'atoms/header', locals: {link: '/', label: 'Storico Prezzi', menu: menu} %>
 </div>
 
 <section class="<%= style_main_cnt %> flex flex-col" style="height: calc(100vh - 140px);" data-controller="search-filter">
@@ -14,15 +14,15 @@
                   data: { search_filter_target: "form", turbo_frame: "price-table" },
                   class: "flex items-center gap-3" do |f| %>
       <div class="relative">
-        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none">search</span>
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 text-base pointer-events-none">search</span>
         <%= f.search_field :q,
               value: params[:q],
               placeholder: "Cerca prodotto...",
-              class: "#{style_search_input} rounded-lg pl-10 font-mono text-blue-600",
+              class: "#{style_search_input} rounded-lg pl-10 font-mono text-blue-600 dark:text-blue-400",
               data: { action: "input->search-filter#filter", search_filter_target: "input" } %>
       </div>
     <% end %>
-    <span class="text-sm font-bold text-slate-700 whitespace-nowrap border border-slate-300 rounded-full px-3 py-1" data-search-filter-target="count"><%= @grouped_items.size %> prodotti</span>
+    <span class="text-sm font-bold text-slate-700 dark:text-slate-200 whitespace-nowrap border border-slate-300 dark:border-slate-600 dark:bg-slate-700 rounded-full px-3 py-1" data-search-filter-target="count"><%= @grouped_items.size %> prodotti</span>
     <%= link_to "Tutti gli articoli", mainware_index_path, class: "#{style_import_btn} ml-auto" %>
   </div>
 
@@ -43,20 +43,20 @@
             </tr>
           </thead>
           <% @grouped_items.each do |(itemcode, fabricode, varcode), siblings| %>
-            <tbody class="border-t-2 border-slate-300">
+            <tbody class="border-t-2 border-slate-300 dark:border-slate-600">
               <% siblings.each_with_index do |item, idx| %>
-                <tr class="hover:bg-slate-50 <%= 'bg-slate-50/50' if idx == 0 %>">
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50 <%= 'bg-slate-50/50 dark:bg-slate-700/30' if idx == 0 %>">
                   <% if idx == 0 %>
-                    <td class="<%= style_table_td %> font-mono text-blue-600" rowspan="<%= siblings.size %>"><%= itemcode %></td>
-                    <td class="<%= style_table_td %> font-mono text-blue-600" rowspan="<%= siblings.size %>"><%= fabricode %></td>
-                    <td class="<%= style_table_td %> font-mono text-blue-600" rowspan="<%= siblings.size %>"><%= varcode %></td>
+                    <td class="<%= style_table_td %> font-mono text-blue-600 dark:text-blue-400" rowspan="<%= siblings.size %>"><%= itemcode %></td>
+                    <td class="<%= style_table_td %> font-mono text-blue-600 dark:text-blue-400" rowspan="<%= siblings.size %>"><%= fabricode %></td>
+                    <td class="<%= style_table_td %> font-mono text-blue-600 dark:text-blue-400" rowspan="<%= siblings.size %>"><%= varcode %></td>
                     <td class="<%= style_table_td %>" rowspan="<%= siblings.size %>"><%= item.description %></td>
                     <td class="<%= style_table_td %>" rowspan="<%= siblings.size %>"><%= item.tg %></td>
                     <td class="<%= style_table_td %>" rowspan="<%= siblings.size %>"><%= item.fabric %></td>
                     <td class="<%= style_table_td %>" rowspan="<%= siblings.size %>"><%= item.colour %></td>
                   <% end %>
                   <td class="<%= style_table_td %>"><%= item.collection&.description || "-" %></td>
-                  <td class="<%= style_table_td %> font-mono text-blue-600"><%= number_to_currency(item.unit_price, unit: "€") %></td>
+                  <td class="<%= style_table_td %> font-mono text-blue-600 dark:text-blue-400"><%= number_to_currency(item.unit_price, unit: "€") %></td>
                 </tr>
               <% end %>
             </tbody>
@@ -65,7 +65,7 @@
       </div>
 
       <% if @grouped_items.empty? %>
-        <div class="flex items-center justify-center py-12 text-slate-400">
+        <div class="flex items-center justify-center py-12 text-slate-400 dark:text-slate-300">
           <span class="material-symbols-outlined text-4xl mr-2">payments</span>
           <span class="text-sm">Nessun prodotto trovato.</span>
         </div>
@@ -77,7 +77,7 @@
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
       </svg>
-      <span class="ml-3 text-slate-600">Ricerca in corso...</span>
+      <span class="ml-3 text-slate-600 dark:text-slate-300">Ricerca in corso...</span>
     </div>
   <% end %>
 </section>

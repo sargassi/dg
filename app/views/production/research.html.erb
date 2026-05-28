@@ -1,10 +1,10 @@
 <% menu_research = [
-  { label: 'Dashboard', path: production_dashboard_path, active: false, icon: 'dashboard' },
-  { label: 'Lanci', path: production_proformas_path, active: false, icon: 'checklist_rtl' },
-  { label: 'Ricerca', path: production_research_path, active: true, icon: 'search_insights' },
+  { label: 'Dashboard', path: production_dashboard_path, active: false, icon: 'dashboard', can: 'view_production' },
+  { label: 'Lanci', path: production_proformas_path, active: false, icon: 'checklist_rtl', can: 'manage_proformas' },
+  { label: 'Ricerca', path: production_research_path, active: true, icon: 'search_insights', can: 'view_production' },
 ] %>
 <div class="<%= style_main_header_container %>">
-<%= render partial: 'atoms/header', locals: {link: '/', label: 'Produzione / Ricerca', menu: menu_research} %>
+<%= render partial: 'atoms/header', locals: {link: '/', label: 'Ricerca', menu: menu_research} %>
 </div>
 
 <section class="<%= style_main_cnt %> flex flex-col" style="height: calc(100vh - 140px);" data-controller="search-filter">

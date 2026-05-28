@@ -3,7 +3,7 @@
     <div class="bg-white border border-slate-200 shadow-lg w-full max-w-sm mx-4" data-action="click->insertevent#stopPropagation">
       <div class="flex items-center justify-between border-b border-slate-200 px-4 py-3">
         <h2 class="text-sm font-semibold text-slate-700">Nuovo Tipo Evento</h2>
-        <%= link_to events_path(start_date: params[:start_date] || Date.today),
+        <%= link_to directory_events_path(start_date: params[:start_date] || Date.today),
               class: "text-slate-400 hover:text-slate-600 transition",
               data: { turbo_frame: "_top" } do %>
           <span class="material-symbols-outlined text-lg">close</span>

@@ -4,8 +4,7 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   close(e) {
     e.preventDefault();
-    const frame = document.getElementById(e.target.parentNode.dataset.targ);
-    console.log(frame)
-    frame.src = '';
+    const frame = document.getElementById(this.data.get('target'));
+    frame.innerHTML = '';
   }
 }

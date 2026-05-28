@@ -1,11 +1,16 @@
 const defaultTheme = require('tailwindcss/defaultTheme')
 
 module.exports = {
+  darkMode: 'class',
   content: [
     './public/*.html',
     './app/helpers/**/*.rb',
     './app/javascript/**/*.js',
     './app/views/**/*.{erb,haml,html,slim}'
+  ],
+  safelist: [
+    'dark:bg-blue-600',
+    'dark:text-white',
   ],
   theme: {
     extend: {
@@ -14,6 +19,7 @@ module.exports = {
       },
       fontSize: {
         'xxs': '11px',
+        'xxxl': '4rem',
       },
       colors: {
         accent: {

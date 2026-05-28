@@ -1,0 +1,17 @@
+<%= turbo_frame_tag "event_modal" do %>
+  <div class="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-start justify-center pt-20" data-controller="insertevent" data-action="click->insertevent#closeModal">
+    <div class="bg-white border border-slate-200 shadow-lg w-full max-w-md mx-4" data-action="click->insertevent#stopPropagation">
+      <div class="flex items-center justify-between border-b border-slate-200 px-4 py-3">
+        <h2 class="text-sm font-semibold text-slate-700">Nuovo Evento</h2>
+        <%= link_to directory_events_path(start_date: params[:start_date] || @event.start_time, selected_date: params[:selected_date]),
+              class: "text-slate-400 hover:text-slate-600 transition",
+              data: { turbo_frame: "_top" } do %>
+          <span class="material-symbols-outlined text-lg">close</span>
+        <% end %>
+      </div>
+      <div class="p-4">
+        <%= render "form", event: @event %>
+      </div>
+    </div>
+  </div>
+<% end %>

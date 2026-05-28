@@ -1,17 +1,17 @@
 require "application_system_test_case"
 
-class EventsTest < ApplicationSystemTestCase
+class DirectoryEventsTest < ApplicationSystemTestCase
   setup do
     @event = events(:one)
   end
 
   test "visiting the index" do
-    visit events_url
+    visit directory_events_url
     assert_selector "h1", text: "Events"
   end
 
   test "should create event" do
-    visit events_url
+    visit directory_events_url
     click_on "New event"
 
     fill_in "End time", with: @event.end_time
@@ -25,7 +25,7 @@ class EventsTest < ApplicationSystemTestCase
   end
 
   test "should update Event" do
-    visit event_url(@event)
+    visit directory_event_url(@event)
     click_on "Edit this event", match: :first
 
     fill_in "End time", with: @event.end_time
@@ -39,7 +39,7 @@ class EventsTest < ApplicationSystemTestCase
   end
 
   test "should destroy Event" do
-    visit event_url(@event)
+    visit directory_event_url(@event)
     click_on "Destroy this event", match: :first
 
     assert_text "Event was successfully destroyed"

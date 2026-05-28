@@ -8,21 +8,22 @@
 
        <%= render partial: '/atoms/home/card', locals: {:title => 'Etichette Laboratorio', :subtitle => 'PDF etichette adesive 7x3.6cm', :link => '/utilities/etichette_lab'} %>
 
+
         <%= render partial: '/atoms/home/card', locals: {:title => 'Etichette Campione', :subtitle => 'PDF etichette adesive 7x3.6cm', :link => '/utilities/etichette_camp'} %>
 
+         <%= render partial: '/atoms/home/card', locals: {:title => 'Etichette Taglio', :subtitle => 'PDF etichette adesive 7x3.6cm', :link => '/utilities/etichette_check'} %>
+        <%= render partial: '/atoms/home/card', locals: {:title => 'Etichette generiche', :subtitle => 'PDF etichette adesive 7x3.6cm', :link => '/utilities/etichette_gen'} %>
       <%= render partial: '/atoms/home/card', locals: {:title => 'Etichette Proforma', :subtitle => 'PDF etichette adesive 7x3.6cm', :link => '/utilities/etichette'} %>
 
-          <%= render partial: '/atoms/home/card', locals: {:title => 'Etichette generiche', :subtitle => 'PDF etichette adesive 7x3.6cm', :link => '/utilities/etichette_gen'} %>
     </div>
         <div class="utility py-4 xl:w-1/2 flex flex-col gap-4">
-              <h3 class="<%= style_main_sub_header %>" >...</h3>
+              <h3 class="<%= style_main_sub_header %>" >Produzione</h3>
               <hr>
             <% render partial: 'atoms/form_import', locals: {prods: Proforma.new, pdf: 'n', customer: 'y', form_url: production_proformas_path} %>
 
-            <% render partial: '/atoms/home/card', locals: {:title => 'Avanzamento produzione', :subtitle => 'Elenco lanci,  consultazione avanzamento e stampa QR', :link => '/production/proformas'} %>
+            <%= render partial: '/atoms/home/card', locals: {:title => 'Avanzamento produzione', :subtitle => 'Elenco lanci,  consultazione avanzamento e stampa QR', :link => '/production/proformas'} %>
 
-            <% render partial: '/atoms/home/card', locals: {:title => 'Ricerca produzione', :subtitle => 'ricerca x codice e stampa QR', :link => '/production/research'} %>
-
+            <%= render partial: '/atoms/home/card', locals: {:title => 'Ricerca produzione', :subtitle => 'ricerca x codice e stampa QR', :link => '/production/research'} %>
 
         </div>
 

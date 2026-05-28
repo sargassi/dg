@@ -1,9 +1,9 @@
 <% menu = [
   { label: 'Dashboard', path: dashboard_home_path, active: false, icon: 'dashboard' },
-  { label: 'Rubrica', path: directory_path, active: true, icon: 'contact_page' },
+  { label: 'Rubrica', path: directory_path, active: true, icon: 'contact_page', can: 'manage_directory' },
 ] %>
 <div class="<%= style_main_header_container %>">
-  <%= render partial: 'atoms/header', locals: {link: '/', label: 'Generale / Rubrica', menu: menu} %>
+  <%= render partial: 'atoms/header', locals: {link: '/', label: 'Anagrafiche', menu: menu} %>
 </div>
 
 <section class="<%= style_main_cnt %> flex flex-col" style="height: calc(100vh - 140px);" data-controller="search-filter">
@@ -163,3 +163,4 @@
 </section>
 
 <%= turbo_frame_tag "user_modal" %>
+<%= turbo_frame_tag "abilities_modal" %>

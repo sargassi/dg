@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html data-controller="theme">
   <head>
     <title>Ok'am Srl</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -11,14 +11,14 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
+  <body class="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 transition-colors">
 
     <% if controller_name == 'app' %>
       <%= render partial: 'layouts/headers/app' %>
       <%= yield %>
 
     <% elsif controller_name == 'sessions' %>
-      <main class="min-h-screen flex items-center justify-center bg-slate-100">
+      <main class="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-slate-900">
         <%= yield %>
       </main>
 
@@ -44,10 +44,10 @@
            class="fixed bottom-4 right-4 z-50 max-w-sm w-full
                   translate-x-full opacity-0
                   transition-all duration-300 ease-out
-                  bg-white rounded-lg shadow-xl border-l-4 border-emerald-500 p-4
+                  bg-white dark:bg-slate-800 rounded-lg shadow-xl border-l-4 border-emerald-500 p-4
                   flex items-start gap-3">
         <span class="material-symbols-outlined text-emerald-500 text-xl flex-shrink-0">check_circle</span>
-        <span class="text-sm text-slate-800 pt-0.5"><%= notice %></span>
+        <span class="text-sm text-slate-800 dark:text-slate-200 pt-0.5"><%= notice %></span>
       </div>
     <% end %>
 
@@ -57,10 +57,10 @@
            class="fixed bottom-4 right-4 z-50 max-w-sm w-full
                   translate-x-full opacity-0
                   transition-all duration-300 ease-out
-                  bg-white rounded-lg shadow-xl border-l-4 border-red-500 p-4
+                  bg-white dark:bg-slate-800 rounded-lg shadow-xl border-l-4 border-red-500 p-4
                   flex items-start gap-3">
         <span class="material-symbols-outlined text-red-500 text-xl flex-shrink-0">error</span>
-        <span class="text-sm text-slate-800 pt-0.5"><%= alert %></span>
+        <span class="text-sm text-slate-800 dark:text-slate-200 pt-0.5"><%= alert %></span>
       </div>
     <% end %>
 

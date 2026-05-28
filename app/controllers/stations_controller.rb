@@ -1,4 +1,5 @@
 class StationsController < ApplicationController
+  before_action -> { require_ability!('manage_stations') }
   before_action :set_station, only: %i[ show edit update destroy ]
 
   # GET /stations or /stations.json

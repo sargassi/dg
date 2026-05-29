@@ -5,6 +5,10 @@ class DirectoryController < ApplicationController
   def dashboard
     @users_count = User.count
     @events_count = Event.count
+    @upcoming_events = Event.enabled
+                        .where(start_time: Date.current..(Date.current + 15.days))
+                        .order(:start_time)
+                        .limit(20)
   end
 
   def index

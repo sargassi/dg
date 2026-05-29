@@ -41,5 +41,27 @@
       </div>
     </div>
 
+    <div class="<%= style_main_card %>">
+      <h3 class="<%= style_main_card_header %>">
+        <span class="material-symbols-outlined">upcoming</span>
+        Prossimi Eventi
+      </h3>
+      <div class="space-y-2">
+        <% if @upcoming_events.any? %>
+          <% @upcoming_events.each do |event| %>
+            <%= link_to edit_directory_event_path(event, start_date: event.start_time, selected_date: event.start_time),
+                  class: "flex items-center gap-2 px-2 py-1.5 rounded text-sm hover:bg-slate-50 dark:hover:bg-slate-700/50 transition group",
+                  data: { turbo_frame: "event_modal" } do %>
+              <div class="w-2 h-2 rounded-full flex-shrink-0" style="background: <%= event.display_color %>"></div>
+              <span class="flex-1 min-w-0 truncate text-slate-700 dark:text-slate-200"><%= event.name %></span>
+              <span class="text-xs text-slate-400 dark:text-slate-500 font-mono flex-shrink-0"><%= l(event.start_time, format: '%d/%m') %></span>
+            <% end %>
+          <% end %>
+        <% else %>
+          <p class="text-sm text-slate-400 dark:text-slate-500 italic">Nessun evento in arrivo</p>
+        <% end %>
+      </div>
+    </div>
+
   </div>
 </section>

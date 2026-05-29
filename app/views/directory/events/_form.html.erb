@@ -1,4 +1,4 @@
-<%= form_with(model: event, data: { controller: "date-sync", turbo_frame: "_top" }) do |form| %>
+<%= form_with(model: [:directory, event], data: { controller: "date-sync", turbo_frame: "_top" }) do |form| %>
   <%= hidden_field_tag :selected_date, params[:selected_date] %>
   <% if event.errors.any? %>
     <div class="bg-red-50 text-red-500 px-3 py-2 font-medium border border-red-200 mb-4">

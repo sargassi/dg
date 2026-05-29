@@ -3,8 +3,14 @@
 <% days = (first_day..last_day).to_a %>
 <% today = Date.today %>
 
+<% menu = [
+  { label: 'Dashboard', path: directory_dashboard_path, active: false, icon: 'dashboard', can: 'manage_directory' },
+  { label: 'Anagrafiche', path: directory_path, active: false, icon: 'contact_page', can: 'manage_directory' },
+  { label: 'Calendario', path: directory_events_path, active: true, icon: 'calendar_month', can: 'manage_events_calendar' },
+  { label: 'Cerca Eventi', path: search_directory_events_path, active: false, icon: 'search', can: 'manage_events_calendar' },
+] %>
 <div class="<%= style_main_header_container %>">
-  <%= render partial: 'atoms/header', locals: {link: '/', label: 'Calendario'} %>
+  <%= render partial: 'atoms/header', locals: {link: '/', label: 'Calendario', menu: menu} %>
 </div>
 
 <section class="<%= style_main_cnt %>">

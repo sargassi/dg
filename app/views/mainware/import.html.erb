@@ -2,7 +2,6 @@
   { label: 'Dashboard', path: mainware_dashboard_path, active: false, icon: 'dashboard', can: 'manage_mainware' },
   { label: 'Articoli', path: mainware_index_path, active: true, icon: 'inventory_2', can: 'manage_mainware' },
   { label: 'Storico Prezzi', path: mainware_prices_compare_path, active: false, icon: 'payments', can: 'manage_mainware' },
-  { label: 'Magazzini', path: warehouses_path, active: false, icon: 'warehouse', can: 'manage_warehouses' },
 ] %>
 <div class="<%= style_main_header_container %>">
   <%= render partial: 'atoms/header', locals: {link: '/', label: 'Generale / Import', menu: menu} %>

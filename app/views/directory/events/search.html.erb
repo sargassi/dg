@@ -34,10 +34,10 @@
             class: "border border-accent-100 outline-none p-2 text-xs bg-white dark:bg-slate-700 dark:text-slate-200 dark:border-slate-600 rounded-lg shadow-sm w-36",
             data: { action: "change->search-filter#filter" } %>
       <div class="flex items-center gap-1.5">
-        <%= check_box_tag :enabled, "1", params[:enabled] == "1",
+        <%= check_box_tag :include_disabled, "1", params[:include_disabled] == "1",
               class: "rounded border-slate-300 text-accent focus:ring-accent w-4 h-4",
               data: { action: "change->search-filter#filter" } %>
-        <%= label_tag :enabled, "Solo abilitati", class: "text-xs text-slate-600 dark:text-slate-400 select-none whitespace-nowrap" %>
+        <%= label_tag :include_disabled, "Mostra disabilitati", class: "text-xs text-slate-600 dark:text-slate-400 select-none whitespace-nowrap" %>
       </div>
     <% end %>
     <span class="text-sm font-bold text-slate-700 dark:text-slate-200 whitespace-nowrap border border-slate-300 dark:border-slate-600 dark:bg-slate-700 rounded-full px-3 py-1" data-search-filter-target="count"><%= @pagy.count %> eventi</span>
@@ -67,7 +67,7 @@
           </thead>
           <tbody>
             <% @events.each do |event| %>
-              <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
+              <tr class="<%= 'bg-red-50 dark:bg-red-900/10' unless event.enabled? %> hover:bg-slate-50 dark:hover:bg-slate-700/50">
                 <td class="<%= style_table_td %> font-medium text-slate-900 dark:text-slate-100">
                   <div class="flex items-center gap-2">
                     <div class="w-2 h-2 rounded-full flex-shrink-0" style="background: <%= event.display_color %>"></div>

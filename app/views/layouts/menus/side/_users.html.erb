@@ -1,6 +1,6 @@
    <li class="<%= style_side_li %>">
-       <%= link_to directory_dashboard_path, class: style_side_a(directory_path) do %>
-           <span class="material-symbols-outlined">contact_page</span>
-           <span>anagr.</span>
-       <% end %>
-   </li>
+        <%= link_to directory_dashboard_path, class: "text-xs flex flex-col justify-center h-full w-full items-center text-center sidelinx text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 #{active_class_for_namespace('directory')}" do %>
+            <span class="material-symbols-outlined">contact_page</span>
+            <span>anagr.</span>
+        <% end %>
+    </li>

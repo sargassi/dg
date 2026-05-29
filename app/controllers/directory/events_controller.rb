@@ -51,6 +51,14 @@ class Directory::EventsController < ApplicationController
       )
     end
 
+    if params[:date_from].present?
+      @events = @events.where("events.start_time >= ? OR events.end_time >= ?", params[:date_from], params[:date_from])
+    end
+
+    if params[:date_to].present?
+      @events = @events.where("events.start_time <= ? OR events.end_time <= ?", params[:date_to], params[:date_to])
+    end
+
     @pagy, @events = pagy(@events.order(created_at: :desc))
   end
 

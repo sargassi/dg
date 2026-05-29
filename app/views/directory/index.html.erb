@@ -1,6 +1,8 @@
 <% menu = [
-  { label: 'Dashboard', path: dashboard_home_path, active: false, icon: 'dashboard' },
-  { label: 'Rubrica', path: directory_path, active: true, icon: 'contact_page', can: 'manage_directory' },
+  { label: 'Dashboard', path: directory_dashboard_path, active: false, icon: 'dashboard', can: 'manage_directory' },
+  { label: 'Anagrafiche', path: directory_path, active: true, icon: 'contact_page', can: 'manage_directory' },
+  { label: 'Calendario', path: directory_events_path, active: false, icon: 'calendar_month', can: 'manage_events_calendar' },
+  { label: 'Cerca Eventi', path: search_directory_events_path, active: false, icon: 'search', can: 'manage_events_calendar' },
 ] %>
 <div class="<%= style_main_header_container %>">
   <%= render partial: 'atoms/header', locals: {link: '/', label: 'Anagrafiche', menu: menu} %>

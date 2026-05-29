@@ -49,13 +49,15 @@
       <div class="space-y-1">
         <% if @upcoming_events.any? %>
           <% @upcoming_events.each do |event| %>
-            <div class="flex items-center gap-1 px-2 py-1 rounded text-sm hover:bg-slate-50 dark:hover:bg-slate-700/50 transition group">
+            <div class="flex items-start gap-1 px-2 py-1.5 rounded text-sm hover:bg-slate-50 dark:hover:bg-slate-700/50 transition group">
               <%= link_to edit_directory_event_path(event, start_date: event.start_time, selected_date: event.start_time),
-                    class: "flex items-center gap-2 flex-1 min-w-0",
+                    class: "flex-1 min-w-0",
                     data: { turbo_frame: "event_modal" } do %>
-                <div class="w-2 h-2 rounded-full flex-shrink-0" style="background: <%= event.display_color %>"></div>
-                <span class="truncate text-slate-700 dark:text-slate-200"><%= event.name %></span>
-                <span class="text-xs text-slate-400 dark:text-slate-500 font-mono flex-shrink-0"><%= l(event.start_time, format: '%d/%m') %></span>
+                <div class="flex items-center gap-1">
+                  <div class="w-2 h-2 rounded-full flex-shrink-0" style="background: <%= event.display_color %>"></div>
+                  <span class="text-xs text-slate-400 dark:text-slate-500 font-mono"><%= l(event.start_time, format: '%d/%m') %></span>
+                </div>
+                <div class="truncate text-slate-700 dark:text-slate-200 mt-0.5"><%= event.name %></div>
               <% end %>
               <%= button_to toggle_enabled_directory_event_path(event, start_date: event.start_time, selected_date: event.start_time),
                     method: :patch,

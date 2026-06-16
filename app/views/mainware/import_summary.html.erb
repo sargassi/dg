@@ -1,9 +1,4 @@
-<% menu = [
-  { label: 'Dashboard', path: mainware_dashboard_path, active: false, icon: 'dashboard', can: 'manage_mainware' },
-  { label: 'Articoli', path: mainware_index_path, active: true, icon: 'inventory_2', can: 'manage_mainware' },
-  { label: 'Storico Prezzi', path: mainware_prices_compare_path, active: false, icon: 'payments', can: 'manage_mainware' },
-  { label: 'Ubiche', path: locations_path, active: false, icon: 'location_on', can: 'manage_locations' },
-] %>
+<% menu = mainware_menu(active: 'articoli') + [{ label: 'Ubiche', path: locations_path, active: false, icon: 'location_on', can: 'manage_locations' }] %>
 <div class="<%= style_main_header_container %>">
   <%= render partial: 'atoms/header', locals: {link: '/', label: 'Generale / Import', menu: menu} %>
 </div>
@@ -45,8 +40,16 @@
       </div>
     <% end %>
 
-    <%= link_to mainware_index_path, class: "block w-full #{style_import_btn} bg-green-600 text-center cursor-pointer" do %>
+    <%= link_to mainware_index_path, class: "block w-full #{style_import_btn} bg-green-600 text-center cursor-pointer mb-3" do %>
       Vai alla lista articoli
+    <% end %>
+
+    <% if @stats[:created_ids]&.any? %>
+      <%= button_to mainware_import_rollback_path, method: :delete,
+            class: "block w-full #{style_import_btn} bg-red-600 text-center cursor-pointer",
+            data: { confirm: "Annullare l'importazione? (#{@stats[:created_ids].size} articoli creati verranno eliminati. #{@stats[:updated_ids]&.size || 0} aggiornamenti non verranno ripristinati.)", turbo_submits_with: "Rollback in corso..." } do %>
+        Rollback (<%= @stats[:created_ids].size %> nuovi)
+      <% end %>
     <% end %>
   </div>
 </section>

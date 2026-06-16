@@ -1,6 +1,6 @@
 <%# FILE UPLOAD %>
 <section class="<%= style_import_form %>">
-  <div class="flex items-center gap-3">
+  <div class="<%= style_form_row %>">
     <%= form_with url:"/utilities/eticheckimp", class: "flex items-center gap-2 flex-1" do |f| %>
       <%= f.hidden_field :dategroup, :value => @working_date %>
       <%= hidden_field_tag :eticheck, nil, :value => 'y' %>

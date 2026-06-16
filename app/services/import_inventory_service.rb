@@ -20,29 +20,70 @@ class ImportInventoryService
     }
   end
 
-  def save(data)
-    stats = { total: 0, created: 0, errors: [] }
+  def save(data, user = nil)
+    stats = { total: data[:rows].size, created: 0, errors: [], items: [], skipped: [] }
+    op_type_id = data[:operationtype_id].to_i
 
-    data[:rows].each do |row|
-      stats[:total] += 1
+    return stats unless [1, 2].include?(op_type_id)
 
-      begin
-        Inventory.create!(
-          itemcode: row['Item Code:'] || row['itemcode'] || row['Item Code'],
-          qtyavailable: row['Quantity'] || row['qtyavailable'] || row['QTA'] || 0,
+    warehouse = Warehouse.find(data[:warehouse_id])
+
+    ActiveRecord::Base.transaction do
+      movement = if op_type_id == 1
+        Itemin.new(indate: Date.current, operator_id: user&.id, notes: "Importazione Excel")
+      else
+        Itemout.new(indate: Date.current, operator_id: user&.id, notes: "Importazione Excel")
+      end
+
+      data[:rows].each do |row|
+        itemcode = row['Item Code:'] || row['itemcode'] || row['Item Code']
+        qty = (row['Qt.'] || row['Quantity'] || row['qtyavailable'] || row['QTA'] || 0).to_i
+
+        if qty == 0
+          stats[:skipped] << { itemcode: itemcode, row: row[:_index] }
+          next
+        end
+
+        detail_attrs = {
+          itemcode: itemcode,
+          qty: qty,
+          warehouse: warehouse,
+          location_id: data[:location_id].presence,
+          operationtype_id: op_type_id
+        }
+
+        if op_type_id == 1
+          movement.itemins_details.build(detail_attrs)
+        else
+          movement.itemouts_details.build(detail_attrs)
+        end
+      end
+
+      movement.save!
+
+      details = op_type_id == 1 ? movement.itemins_details : movement.itemouts_details
+      details.each_with_index do |detail, i|
+        row = data[:rows][i]
+        inventory = Inventory.create!(
+          itemcode: detail.itemcode,
+          qtyavailable: detail.qty,
           minstock: row['Min Stock'] || row['minstock'] || row['Min'] || 0,
           maxstock: row['Max Stock'] || row['maxstock'] || row['Max'] || 0,
           warehouse_id: data[:warehouse_id],
-          location_id: data[:location_id],
-          operationtype_id: data[:operationtype_id],
+          location_id: data[:location_id].presence,
+          operationtype_id: op_type_id,
+          itemins_id: (op_type_id == 1 ? movement.id : nil),
+          itemouts_id: (op_type_id == 2 ? movement.id : nil),
           enabled: true
         )
+        stats[:items] << { itemcode: detail.itemcode, qty: detail.qty, inventory_id: inventory.id }
         stats[:created] += 1
-      rescue => e
-        stats[:errors] << { row: row[:_index], error: e.message }
       end
     end
 
+    stats
+  rescue => e
+    stats[:errors] << { row: 0, error: e.message }
     stats
   end
 end

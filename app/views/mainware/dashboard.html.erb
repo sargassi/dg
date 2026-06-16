@@ -1,19 +1,37 @@
-<% menu = [
-  { label: 'Dashboard', path: mainware_dashboard_path, active: true, icon: 'dashboard', can: 'manage_mainware' },
-  { label: 'Articoli', path: mainware_index_path, active: false, icon: 'inventory_2', can: 'manage_mainware' },
-  { label: 'Storico Prezzi', path: mainware_prices_compare_path, active: false, icon: 'payments', can: 'manage_mainware' },
-] %>
+<% menu = mainware_menu(active: 'dashboard') %>
 <div class="<%= style_main_header_container %>">
-  <%= render partial: 'atoms/header', locals: {link: '/', label: 'Articoli', menu: menu} %>
+  <%= render partial: 'atoms/header', locals: {link: '/', label: 'Dashboard', menu: menu} %>
 </div>
 
-<section class="<%= style_main_cnt %>">
+<section class="<%= style_main_cnt %> space-y-8">
+  <div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <%= link_to new_item_path, class: "bg-blue-50 dark:bg-blue-900/20 p-4 card flex flex-col items-center justify-center text-center aspect-square shadow-md hover:bg-blue-100 dark:hover:bg-blue-900/40 transition" do %>
+        <span class="material-symbols-outlined text-4xl text-blue-600 dark:text-blue-400 mb-2">add_box</span>
+        <span class="text-lg font-semibold text-slate-700 dark:text-slate-200">Inserimento</span>
+        <p class="text-muted text-xs mt-1">Inserisci un nuovo articolo</p>
+      <% end %>
+
+      <%= link_to mainware_import_path, class: "bg-blue-50 dark:bg-blue-900/20 p-4 card flex flex-col items-center justify-center text-center aspect-square shadow-md hover:bg-blue-100 dark:hover:bg-blue-900/40 transition" do %>
+        <span class="material-symbols-outlined text-4xl text-blue-600 dark:text-blue-400 mb-2">upload_file</span>
+        <span class="text-lg font-semibold text-slate-700 dark:text-slate-200">Importa</span>
+        <p class="text-muted text-xs mt-1">Importa articoli da Excel</p>
+      <% end %>
+
+      <%= link_to mainware_index_path, class: "bg-blue-50 dark:bg-blue-900/20 p-4 card flex flex-col items-center justify-center text-center aspect-square shadow-md hover:bg-blue-100 dark:hover:bg-blue-900/40 transition" do %>
+        <span class="material-symbols-outlined text-4xl text-blue-600 dark:text-blue-400 mb-2">search</span>
+        <span class="text-lg font-semibold text-slate-700 dark:text-slate-200">Ricerca Articoli</span>
+        <p class="text-muted text-xs mt-1">Cerca articoli in magazzino</p>
+      <% end %>
+    </div>
+  </div>
+
   <div class="<%= style_main_card_grid %>">
 
     <div class="<%= style_main_card %>">
       <h3 class="<%= style_main_card_header %>">
-        <span class="material-symbols-outlined">inventory_2</span>
-        Articoli
+        <span class="material-symbols-outlined">dashboard</span>
+        Generale
       </h3>
       <div class="space-y-3">
         <%= link_to mainware_index_path, class: style_main_card_link do %>
@@ -21,32 +39,26 @@
           <span class="<%= style_main_card_badge %>"><%= @items_count %></span>
         <% end %>
 
-        <%= link_to mainware_prices_compare_path, class: style_main_card_link do %>
-          <span class="text-sm text-slate-700 dark:text-slate-200">Storico Prezzi</span>
+        <%= link_to collections_path, class: style_main_card_link do %>
+          <span class="text-sm text-slate-700 dark:text-slate-200">Collezioni</span>
           <span class="material-symbols-outlined text-slate-400 dark:text-slate-300 text-base">arrow_forward_ios</span>
         <% end %>
-
-        <%= link_to mainware_import_path, class: style_main_card_link do %>
-          <span class="text-sm text-slate-700 dark:text-slate-200">Importa da Excel</span>
-          <span class="material-symbols-outlined text-slate-400 dark:text-slate-300 text-base">arrow_forward_ios</span>
-        <% end %>
-
       </div>
     </div>
 
     <div class="<%= style_main_card %>">
       <h3 class="<%= style_main_card_header %>">
-        <span class="material-symbols-outlined">warehouse</span>
-        Magazzino
+        <span class="material-symbols-outlined">inventory_2</span>
+        Azioni
       </h3>
       <div class="space-y-3">
-        <%= link_to warehouses_path, class: style_main_card_link do %>
-          <span class="text-sm text-slate-700 dark:text-slate-200">Gestione Magazzini</span>
-          <span class="<%= style_main_card_badge %>"><%= @warehouses_count %></span>
+        <%= link_to new_item_path, class: style_main_card_link do %>
+          <span class="text-sm text-slate-700 dark:text-slate-200">Nuovo articolo</span>
+          <span class="material-symbols-outlined text-slate-400 dark:text-slate-300 text-base">add</span>
         <% end %>
 
-        <%= link_to inventories_path, class: style_main_card_link do %>
-          <span class="text-sm text-slate-700 dark:text-slate-200">Giacenze / Inventario</span>
+        <%= link_to mainware_import_path, class: style_main_card_link do %>
+          <span class="text-sm text-slate-700 dark:text-slate-200">Importa da Excel</span>
           <span class="material-symbols-outlined text-slate-400 dark:text-slate-300 text-base">arrow_forward_ios</span>
         <% end %>
       </div>
@@ -55,10 +67,23 @@
     <div class="<%= style_main_card %>">
       <h3 class="<%= style_main_card_header %>">
         <span class="material-symbols-outlined">apps</span>
-        Altre Sezioni
+        Consultazione
       </h3>
-      <div class="flex items-center justify-center h-32 text-sm text-slate-400 dark:text-slate-300 italic">
-        Da implementare...
+      <div class="space-y-3">
+        <%= link_to mainware_index_path, class: style_main_card_link do %>
+          <span class="text-sm text-slate-700 dark:text-slate-200">Ricerca articoli</span>
+          <span class="<%= style_main_card_badge %>"><%= @items_count %></span>
+        <% end %>
+
+        <%= link_to mainware_searchqr_path, class: style_main_card_link do %>
+          <span class="text-sm text-slate-700 dark:text-slate-200">Ricerca x QR Code</span>
+          <span class="material-symbols-outlined text-slate-400 dark:text-slate-300 text-base">qr_code_scanner</span>
+        <% end %>
+
+        <%= link_to mainware_prices_compare_path, class: style_main_card_link do %>
+          <span class="text-sm text-slate-700 dark:text-slate-200">Storico Prezzi</span>
+          <span class="material-symbols-outlined text-slate-400 dark:text-slate-300 text-base">arrow_forward_ios</span>
+        <% end %>
       </div>
     </div>
 

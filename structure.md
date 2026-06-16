@@ -1,7 +1,7 @@
 # DG Production Tracking App - Structure
 
 ## 1. Tech Stack
-- **Framework**: Rails 7.0.7, Ruby 3.2.2
+- **Framework**: Rails 7.0.7, Ruby 3.2.2 
 - **Database**: SQLite
 - **Styling**: TailwindCSS (via tailwindcss-rails)
 - **Auth**: Devise

@@ -26,7 +26,7 @@ class EventypesController < ApplicationController
 
     respond_to do |format|
       if @eventype.save
-        format.html { redirect_to new_event_path(eventype_id: @eventype.id, start_date: params[:start_date] || Date.today), notice: "Tipo evento creato." }
+        format.html { redirect_to new_directory_event_path(eventype_id: @eventype.id, start_date: params[:start_date] || Date.today), notice: "Tipo evento creato." }
         format.json { render :show, status: :created, location: @eventype }
       else
         format.html { render :new, status: :unprocessable_entity }

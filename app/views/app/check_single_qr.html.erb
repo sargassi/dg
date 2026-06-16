@@ -1,5 +1,6 @@
 <%= turbo_frame_tag 'success' do %>
 
+<% alert = '' %>
     <div class="cont <%= alert %> shadow-lg w-full bg-white fixed top-10 left-0 right-0 p-4">
     <% if @rows.empty? %>
         <p class="p-4">

@@ -1,4 +1,5 @@
-<%= form_with(model: item, url: item_path(item, q: params[:q], collection_id: params[:collection_id], return_to: params[:return_to]), data: { turbo_frame: "_top", action: "submit->loader#show" }, multipart: true) do |form| %>
+<% form_url = item.persisted? ? item_path(item, q: params[:q], collection_id: params[:collection_id], return_to: params[:return_to]) : items_path(q: params[:q], collection_id: params[:collection_id], return_to: params[:return_to]) %>
+<%= form_with(model: item, url: form_url, data: { turbo_frame: "_top", controller: "camera-capture", action: "submit->loader#show", item_clone_target: "form" }, multipart: true) do |form| %>
   <% if item.errors.any? %>
     <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium mb-4 border border-red-200 text-sm">
       <h2><%= pluralize(item.errors.count, "error") %> impediscono il salvataggio:</h2>
@@ -12,17 +13,38 @@
 
   <div class="space-y-3">
     <div class="flex gap-3">
-      <div class="flex-1">
+      <div class="flex-1 relative" data-controller="list-autocomplete"
+           data-list-autocomplete-url-value="<%= distinct_values_items_path %>"
+           data-list-autocomplete-field-value="itemcode">
         <%= form.label :itemcode, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
-        <%= form.text_field :itemcode, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+        <%= form.text_field :itemcode,
+              data: { list_autocomplete_target: "input", action: "input->list-autocomplete#search blur->list-autocomplete#hideResults" },
+              class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm",
+              autocomplete: "off" %>
+        <ul data-list-autocomplete-target="results"
+            class="hidden absolute left-0 right-0 top-full mt-0.5 bg-white border border-slate-200 rounded-b-lg shadow-lg z-50 max-h-48 overflow-y-auto text-sm"></ul>
       </div>
-      <div class="flex-1">
+      <div class="flex-1 relative" data-controller="list-autocomplete"
+           data-list-autocomplete-url-value="<%= distinct_values_items_path %>"
+           data-list-autocomplete-field-value="fabricode">
         <%= form.label :fabricode, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
-        <%= form.text_field :fabricode, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+        <%= form.text_field :fabricode,
+              data: { list_autocomplete_target: "input", action: "input->list-autocomplete#search blur->list-autocomplete#hideResults" },
+              class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm",
+              autocomplete: "off" %>
+        <ul data-list-autocomplete-target="results"
+            class="hidden absolute left-0 right-0 top-full mt-0.5 bg-white border border-slate-200 rounded-b-lg shadow-lg z-50 max-h-48 overflow-y-auto text-sm"></ul>
       </div>
-      <div class="flex-1">
+      <div class="flex-1 relative" data-controller="list-autocomplete"
+           data-list-autocomplete-url-value="<%= distinct_values_items_path %>"
+           data-list-autocomplete-field-value="varcode">
         <%= form.label :varcode, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
-        <%= form.text_field :varcode, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+        <%= form.text_field :varcode,
+              data: { list_autocomplete_target: "input", action: "input->list-autocomplete#search blur->list-autocomplete#hideResults" },
+              class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm",
+              autocomplete: "off" %>
+        <ul data-list-autocomplete-target="results"
+            class="hidden absolute left-0 right-0 top-full mt-0.5 bg-white border border-slate-200 rounded-b-lg shadow-lg z-50 max-h-48 overflow-y-auto text-sm"></ul>
       </div>
     </div>
 
@@ -58,7 +80,7 @@
 
     <div class="flex gap-3">
       <div class="flex-1">
-        <%= form.label :collection_id, "Collezione", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+        <%= form.label :collection_id, "Collezione *", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
         <%= form.collection_select :collection_id, @collections || [], :id, :description,
               { include_blank: "-" },
               class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm bg-white" %>
@@ -72,6 +94,7 @@
 
   <div class="mt-4 pt-4 border-t border-slate-200" data-controller="image-preview">
     <h3 class="text-xs text-slate-400 uppercase tracking-wide mb-2">Immagini</h3>
+    <% if item.persisted? %>
     <div class="flex flex-wrap gap-2 mb-3" data-image-preview-target="existing">
       <% item.pictures.each do |pic| %>
         <div class="relative group" data-signed-id="<%= pic.signed_id %>">
@@ -84,14 +107,72 @@
         </div>
       <% end %>
     </div>
-    <div class="flex items-center gap-3">
+    <% end %>
+
+    <div class="flex items-center gap-3 mb-2">
+      <button type="button"
+              data-action="camera-capture#open"
+              class="flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-dashed border-accent-300 text-accent-700 bg-accent-50 hover:bg-accent-100 transition text-sm font-bold whitespace-nowrap">
+        <span class="material-symbols-outlined text-lg">camera_alt</span>
+        Scatta foto
+      </button>
       <div class="flex-1">
         <%= hidden_field_tag "item[pictures][]", "", id: nil %>
         <%= form.file_field :pictures, multiple: true, direct_upload: true,
-              data: { image_preview_target: "input", action: "change->image-preview#preview" },
+              data: { image_preview_target: "input", camera_capture_target: "input", action: "change->image-preview#preview" },
               class: "block w-full text-sm text-slate-500 file:mr-3 file:py-2 file:px-3 file:border-0 file:text-xs file:uppercase file:tracking-wider file:cursor-pointer file:bg-accent file:text-white hover:file:bg-accent-600 border border-slate-300 rounded-sm" %>
       </div>
       <div class="flex gap-1.5" data-image-preview-target="preview"></div>
+    </div>
+
+    <div data-camera-capture-target="summary"
+         class="hidden flex flex-wrap gap-2 p-2 bg-accent-50 border border-accent-200 rounded-sm">
+    </div>
+
+    <!-- Camera modal -->
+    <div data-camera-capture-target="modal"
+         class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center">
+      <div class="relative bg-white dark:bg-slate-800 rounded-xl p-4 w-full max-w-lg mx-4">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-lg font-semibold text-slate-800 dark:text-slate-100">Scatta foto</h3>
+          <button type="button"
+                  data-action="camera-capture#close"
+                  class="p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <div class="relative">
+          <video data-camera-capture-target="video"
+                 class="w-full aspect-square bg-black rounded-lg object-cover"
+                 autoplay playsinline></video>
+          <div data-camera-capture-target="flash"
+               class="hidden absolute inset-0 bg-white/80 rounded-lg pointer-events-none"></div>
+        </div>
+        <div data-camera-capture-target="preview"
+             class="flex flex-wrap gap-2 mt-2 min-h-0">
+        </div>
+        <div data-camera-capture-target="counter"
+             class="text-center text-xs text-slate-500 dark:text-slate-400 mt-2 min-h-[1.25rem]"></div>
+        <div class="flex gap-3 mt-3 justify-center">
+          <button type="button"
+                  data-action="camera-capture#shoot"
+                  class="flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-accent text-white text-sm font-bold hover:opacity-90 transition">
+            <span class="material-symbols-outlined text-lg">camera</span>
+            Scatta
+          </button>
+          <button type="button"
+                  data-camera-capture-target="confirmBtn"
+                  data-action="camera-capture#confirm"
+                  class="hidden px-6 py-3 rounded-full bg-emerald-600 text-white text-sm font-bold hover:bg-emerald-700 transition">
+            Conferma foto
+          </button>
+          <button type="button"
+                  data-action="camera-capture#close"
+                  class="px-6 py-3 rounded-full bg-slate-200 dark:bg-slate-600 text-slate-700 dark:text-slate-200 text-sm font-medium hover:bg-slate-300 dark:hover:bg-slate-500 transition">
+            Chiudi
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 

@@ -58,7 +58,7 @@ class EtilabsController < ApplicationController
       format.html
       format.pdf do
         render pdf: @products.count.to_s, orientation: 'portrait', page_size: 'A4',
-               margin: { top: '0mm', bottom: '0m', left: '0mm', right: '0mm' }, disable_smart_shrinking: true, show_as_html: params.key?('debug')
+               margin: { top: '0mm', bottom: '0mm', left: '0mm', right: '0mm' }, disable_smart_shrinking: true, show_as_html: params.key?('debug')
       end
     end
   end

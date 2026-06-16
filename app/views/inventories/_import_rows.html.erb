@@ -1,0 +1,36 @@
+<% desc_idx = @data[:headers].index { |h| h&.downcase&.strip == 'description' || h&.strip == 'Description:' || h&.downcase&.include?('descri') }
+   qty_idx  = @data[:headers].index { |h| %w[Qt. Quantity QTA qtyavailable].include?(h) }
+   display_headers = @data[:headers].dup
+   if desc_idx && qty_idx && qty_idx != desc_idx + 1
+     qt_col = display_headers.delete_at(qty_idx)
+     desc_actual = desc_idx < qty_idx ? desc_idx : desc_idx - 1
+     display_headers.insert(desc_actual + 1, qt_col)
+   else
+     display_headers = @data[:headers]
+   end %>
+<tbody id="import-rows">
+  <% @data[:rows].each do |row| %>
+    <tr class="hover:bg-slate-50">
+      <td class="<%= style_table_td %> text-center">
+        <%= button_to inventories_import_delete_row_path(row_index: row[:_index]), method: :delete,
+              class: "text-red-500 hover:text-red-700 cursor-pointer bg-transparent border-0",
+              data: { turbo_confirm: "Eliminare questa riga?" },
+              form: { style: "display: contents" } do %>
+          <span class="material-symbols-outlined text-sm">delete</span>
+        <% end %>
+      </td>
+      <td class="<%= style_table_td %> text-center text-xs text-slate-400"><%= row[:_index] %></td>
+      <% display_headers.each do |header| %>
+        <% is_zero_qty = %w[Qt. Quantity QTA qtyavailable].include?(header) && row[header].present? && row[header].to_i == 0 %>
+        <% is_itemcode = %w[Item Code: Item Code itemcode].include?(header) %>
+        <td class="<%= style_table_td %> text-xs <%= 'bg-red-100 text-red-700 font-bold' if is_zero_qty %>">
+          <% if is_itemcode && row[header].present? %>
+            <a href="<%= inventories_movements_path(q: row[header]) %>" target="_blank" class="text-blue-600 hover:text-blue-800 underline"><%= row[header] %></a>
+          <% else %>
+            <%= row[header] %>
+          <% end %>
+        </td>
+      <% end %>
+    </tr>
+  <% end %>
+</tbody>

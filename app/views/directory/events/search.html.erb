@@ -132,7 +132,7 @@
       </div>
 
       <% if @pagy.pages > 1 %>
-        <div class="mt-4 flex items-center gap-0.5 justify-end">
+        <div class="flex-none flex items-center gap-0.5 justify-end pt-3 pb-1">
           <% if @pagy.prev %>
             <a href="<%= pagy_url_for(@pagy, @pagy.prev) %>"
                data-turbo-frame="events-table"

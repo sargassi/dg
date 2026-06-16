@@ -1,0 +1,13 @@
+<div class="<%= style_main_header_container %>">
+  <%= render partial: 'atoms/header', locals: { link: app_dashboard_path, label: 'Produzione', menu: @app_menu } %>
+</div>
+
+<section class="<%= style_main_cnt %> pt-8 space-y-8">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <%= link_to app_sez_path, class: "bg-amber-50 p-4 card flex flex-col items-center justify-center text-center aspect-square shadow-md hover:bg-amber-100 transition" do %>
+      <span class="material-symbols-outlined text-4xl text-amber-600 mb-2">qr_code_scanner</span>
+      <span class="text-lg font-semibold text-slate-700">Avanzamento</span>
+      <p class="text-muted text-xs mt-1">Controllo passaggi produzione</p>
+    <% end %>
+  </div>
+</section>

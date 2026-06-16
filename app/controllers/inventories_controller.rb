@@ -12,6 +12,7 @@ class InventoriesController < ApplicationController
     end
 
     @warehouses = Warehouse.order(:code)
+    @collections = Collection.all
 
     base = Inventory.where.not(gencode: nil)
       .left_joins(:itemin, :itemout)
@@ -21,17 +22,22 @@ class InventoriesController < ApplicationController
       base = base.where(warehouse_id: params[:warehouse_id])
     end
 
+    if params[:collection_id].present?
+      base = base.joins("INNER JOIN items ON items.gencode = inventories.gencode")
+                 .where(items: { collection_id: params[:collection_id] })
+    end
+
     @inventories = base
       .group(:gencode)
       .select(
         :gencode,
-        Arel.sql("MAX(itemcode) AS itemcode"),
+        Arel.sql("MAX(inventories.itemcode) AS itemcode"),
         Arel.sql("SUM(CASE WHEN operationtype_id = 1 THEN COALESCE(qtyavailable, 0) ELSE 0 END) - SUM(CASE WHEN operationtype_id = 2 THEN COALESCE(qtyavailable, 0) ELSE 0 END) AS net_qty")
       ).order(:gencode)
 
     if params[:q].present?
       q = "%#{params[:q]}%"
-      @inventories = @inventories.having("gencode LIKE :q", q: q)
+      @inventories = @inventories.having("inventories.gencode LIKE :q", q: q)
     end
 
     count = base.distinct.count(:gencode)
@@ -40,20 +46,27 @@ class InventoriesController < ApplicationController
     gencodes = @inventories.map(&:gencode).compact
     @history_by_gencode = {}
     history_records = Inventory.where(gencode: gencodes)
-      .left_joins(:itemin, :itemout)
-      .where("COALESCE(itemins.indate, itemouts.indate) <= ?", @date)
+      .left_joins(:itemin, :itemout, :itemmovement)
+      .where("COALESCE(itemins.indate, itemouts.indate, itemmovements.indate) <= ?", @date)
       .includes(:warehouse, :location, :operationtype)
-      .order(Arel.sql("COALESCE(itemins.indate, itemouts.indate) ASC"))
+      .order(Arel.sql("COALESCE(itemins.indate, itemouts.indate, itemmovements.indate) ASC, inventories.created_at ASC"))
 
     if params[:warehouse_id].present?
       history_records = history_records.where(warehouse_id: params[:warehouse_id])
     end
     itemin_ids = history_records.map(&:itemins_id).compact.uniq
     itemout_ids = history_records.map(&:itemouts_id).compact.uniq
+    itemmovement_ids = history_records.map(&:itemmovement_id).compact.uniq
     @itemins_by_id = Itemin.includes(:operator).where(id: itemin_ids).index_by(&:id)
     @itemouts_by_id = Itemout.includes(:operator).where(id: itemout_ids).index_by(&:id)
+    @itemmovements_by_id = Itemmovement.includes(:operator, :source_warehouse, :dest_warehouse, :source_location, :dest_location).where(id: itemmovement_ids).index_by(&:id)
+
     history_records.group_by(&:gencode).each do |gencode, records|
-      @history_by_gencode[gencode] = records.group_by(&:warehouse_id)
+      @history_by_gencode[gencode] = records.group_by(&:warehouse_id).transform_values do |wh_records|
+        wh_records.group_by { |r| r.location_id || 0 }.transform_values do |loc_records|
+          loc_records.partition { |r| !r.itemmovement_id }.flatten
+        end
+      end
     end
 
     items = Item.where(gencode: gencodes).includes(:collection).with_attached_pictures.index_by(&:gencode)
@@ -69,7 +82,7 @@ class InventoriesController < ApplicationController
   def autocomplete
     q = "%#{params[:q]}%"
     inventories = Inventory.where(operationtype_id: 1)
-      .where("gencode LIKE :q", q: q)
+      .where("gencode LIKE :q OR itemcode LIKE :q", q: q)
       .select(:gencode, :warehouse_id, :location_id)
       .distinct
       .order(:warehouse_id, :location_id, :gencode)
@@ -105,6 +118,9 @@ class InventoriesController < ApplicationController
       item = items[inv.gencode]
       next unless item
 
+      qty_remaining = net_qty_by_key[[inv.gencode, inv.warehouse_id, inv.location_id]] || 0
+      next if qty_remaining <= 0
+
       result << {
         id: item.id,
         gencode: item.gencode,
@@ -115,7 +131,7 @@ class InventoriesController < ApplicationController
         location_id: inv.location_id,
         warehouse_code: @warehouses[inv.warehouse_id]&.code,
         location_code: @locations[inv.location_id]&.code,
-        qty_remaining: net_qty_by_key[[inv.gencode, inv.warehouse_id, inv.location_id]] || 0
+        qty_remaining: qty_remaining
       }
     end
 
@@ -125,6 +141,7 @@ class InventoriesController < ApplicationController
   def dashboard
     @latest_itemins = Itemin.includes(:operator, itemins_details: [:warehouse, :location, :item]).order(indate: :desc).limit(10)
     @latest_itemouts = Itemout.includes(:operator, itemouts_details: [:warehouse, :location, :item]).order(indate: :desc).limit(10)
+    @latest_itemmovements = Itemmovement.includes(:operator, :source_warehouse, :dest_warehouse, :source_location, :dest_location, itemmovements_details: :item).order(indate: :desc).limit(10)
   end
 
   def movements
@@ -133,12 +150,13 @@ class InventoriesController < ApplicationController
 
     itemins = Itemin.includes(:operator, itemins_details: [:warehouse, :location, :item]).order(indate: :desc)
     itemouts = Itemout.includes(:operator, itemouts_details: [:warehouse, :location, :item]).order(indate: :desc)
+    itemmovements = Itemmovement.includes(:operator, :source_warehouse, :dest_warehouse, :source_location, :dest_location, itemmovements_details: :item).order(indate: :desc)
 
     if params[:operationtype_id].present?
-      if params[:operationtype_id] == "1"
-        itemouts = itemouts.none
-      elsif params[:operationtype_id] == "2"
-        itemins = itemins.none
+      case params[:operationtype_id]
+      when "1" then itemouts = itemouts.none; itemmovements = itemmovements.none
+      when "2" then itemins = itemins.none; itemmovements = itemmovements.none
+      when "3" then itemins = itemins.none; itemouts = itemouts.none
       end
     end
 
@@ -146,35 +164,40 @@ class InventoriesController < ApplicationController
       date_from = Date.parse(params[:date_from]) rescue nil
       itemins = itemins.where("indate >= ?", date_from) if date_from
       itemouts = itemouts.where("indate >= ?", date_from) if date_from
+      itemmovements = itemmovements.where("indate >= ?", date_from) if date_from
     end
 
-    if params[:date_to].present?
-      date_to = Date.parse(params[:date_to]) rescue nil
-      itemins = itemins.where("indate <= ?", date_to) if date_to
-      itemouts = itemouts.where("indate <= ?", date_to) if date_to
+    date_to = params[:date_to].present? ? (Date.parse(params[:date_to]) rescue nil) : Date.current
+    if date_to
+      itemins = itemins.where("indate <= ?", date_to)
+      itemouts = itemouts.where("indate <= ?", date_to)
+      itemmovements = itemmovements.where("indate <= ?", date_to)
     end
 
     if params[:operator_id].present?
       itemins = itemins.where(operator_id: params[:operator_id])
       itemouts = itemouts.where(operator_id: params[:operator_id])
+      itemmovements = itemmovements.where(operator_id: params[:operator_id])
     end
 
     if params[:q].present?
       q = "%#{params[:q]}%"
       itemin_ids = IteminsDetail.left_joins(:item)
-        .where("items.gencode LIKE :q OR itemins_details.itemcode LIKE :q", q: q)
-        .select(:itemin_id)
+        .where("items.gencode LIKE :q OR itemins_details.itemcode LIKE :q", q: q).select(:itemin_id)
       itemout_ids = ItemoutsDetail.left_joins(:item)
-        .where("items.gencode LIKE :q OR itemouts_details.itemcode LIKE :q", q: q)
-        .select(:itemout_id)
+        .where("items.gencode LIKE :q OR itemouts_details.itemcode LIKE :q", q: q).select(:itemout_id)
+      itemmovement_ids = ItemmovementsDetail.left_joins(:item)
+        .where("items.gencode LIKE :q OR itemmovements_details.itemcode LIKE :q", q: q).select(:itemmovement_id)
       itemins = itemins.where(id: itemin_ids)
       itemouts = itemouts.where(id: itemout_ids)
+      itemmovements = itemmovements.where(id: itemmovement_ids)
     end
 
     itemins = itemins.load
     itemouts = itemouts.load
+    itemmovements = itemmovements.load
 
-    combined = (itemins.map { |m| [m, :itemin] } + itemouts.map { |m| [m, :itemout] })
+    combined = (itemins.map { |m| [m, :itemin] } + itemouts.map { |m| [m, :itemout] } + itemmovements.map { |m| [m, :itemmovement] })
       .sort_by { |m, _| m.indate }.reverse
 
     @pagy = Pagy.new(count: combined.size, items: 25, page: params[:page] || 1)
@@ -219,13 +242,13 @@ class InventoriesController < ApplicationController
   end
 
   def import_delete_row
-    data = Rails.cache.read(inventories_import_cache_key)
-    return head :not_found unless data
+    @data = Rails.cache.read(inventories_import_cache_key)
+    return head :not_found unless @data
 
     row_index = params[:row_index].to_i
-    data[:rows].reject! { |r| r[:_index] == row_index }
+    @data[:rows].reject! { |r| r[:_index] == row_index }
 
-    Rails.cache.write(inventories_import_cache_key, data, expires_in: 30.minutes)
+    Rails.cache.write(inventories_import_cache_key, @data, expires_in: 30.minutes)
     respond_to { |format| format.turbo_stream }
   end
 
@@ -233,7 +256,7 @@ class InventoriesController < ApplicationController
     data = Rails.cache.read(inventories_import_cache_key)
     return redirect_to inventories_import_path, alert: "Nessun dato da importare" unless data&.dig(:rows)&.any?
 
-    stats = ImportInventoryService.new.save(data)
+    stats = ImportInventoryService.new.save(data, current_user)
     Rails.cache.delete(inventories_import_cache_key)
     Rails.cache.write("import:inv:stats:#{session.id}", stats, expires_in: 5.minutes)
     redirect_to inventories_import_summary_path
@@ -247,6 +270,39 @@ class InventoriesController < ApplicationController
   def import_cancel
     Rails.cache.delete(inventories_import_cache_key)
     redirect_to inventories_import_path, notice: "Importazione annullata."
+  end
+
+  def movement_label
+    @items = case params[:type]
+    when "itemin"
+      Itemin.includes(itemins_details: :item).find(params[:id]).itemins_details
+    when "itemout"
+      Itemout.includes(itemouts_details: :item).find(params[:id]).itemouts_details
+    when "itemmovement"
+      Itemmovement.includes(itemmovements_details: :item).find(params[:id]).itemmovements_details
+    else
+      return redirect_to inventories_movements_path, alert: "Tipo movimento non valido"
+    end
+
+    render pdf: "etichette_#{params[:type]}_#{params[:id]}",
+           orientation: "portrait",
+           page_size: "A4",
+           margin: { top: "0mm", bottom: "0mm", left: "0mm", right: "0mm" },
+           disable_smart_shrinking: true,
+           show_as_html: params.key?("debug")
+  end
+
+  def movement_modal
+    @record = case params[:type]
+    when "itemin"
+      Itemin.includes(itemins_details: [:warehouse, :location, :operationtype, :item]).find(params[:id])
+    when "itemout"
+      Itemout.includes(itemouts_details: [:warehouse, :location, :operationtype, :item]).find(params[:id])
+    when "itemmovement"
+      Itemmovement.includes(itemmovements_details: [:item]).find(params[:id])
+    end
+    @type = params[:type].to_sym
+    render layout: false
   end
 
   # GET /inventories/new

@@ -1,0 +1,51 @@
+<% menu = [
+  { label: 'Dashboard', path: inventories_dashboard_path, active: false, icon: 'dashboard', can: 'manage_inventory' },
+  { label: 'Ricerca magazzino', path: inventories_path, active: false, icon: 'inventory_2', can: 'manage_inventory' },
+  { label: 'Movimenti', path: inventories_movements_path, active: false, icon: 'swap_vert', can: 'manage_itemins' },
+  { label: 'Magazzini e ubiche', path: warehouses_path, active: false, icon: 'warehouse', can: 'manage_warehouses' },
+] %>
+<div class="<%= style_main_header_container %>">
+  <%= render partial: 'atoms/header', locals: { link: inventories_dashboard_path, label: 'Scarico Creato', menu: menu } %>
+</div>
+
+<section class="<%= style_main_cnt %> space-y-6">
+<% first = @itemout.itemouts_details.first %>
+<% wh_code = first&.warehouse&.code %>
+<% loc_code = first&.location&.code %>
+
+  <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-6 text-center">
+    <span class="material-symbols-outlined text-5xl text-emerald-600">check_circle</span>
+    <h2 class="text-xl font-semibold text-emerald-800 mt-2">Scarico creato con successo</h2>
+    <p class="text-sm text-emerald-600 mt-1"><%= @itemout.indate.strftime("%d-%m-%Y") %> &mdash; <%= pluralize(@itemout.itemouts_details.size, "articolo") %></p>
+    <div class="flex items-center justify-center gap-4 mt-2 text-sm text-emerald-700">
+      <% if wh_code %><span class="font-semibold">Mag: <%= wh_code %></span><% end %>
+      <% if loc_code %><span class="font-semibold">Ubi: <%= loc_code %></span><% end %>
+    </div>
+  </div>
+
+  <div class="bg-white border border-slate-200 rounded-lg overflow-hidden">
+    <table class="min-w-full">
+      <thead>
+        <tr>
+          <th class="<%= style_table_th %>">Codice</th>
+          <th class="<%= style_table_th %> w-16">Q.tà</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @itemout.itemouts_details.each do |d| %>
+          <tr>
+            <td class="<%= style_table_td %> font-mono"><%= d.item&.gencode.presence || d.itemcode %></td>
+            <td class="<%= style_table_td %> text-center"><%= d.qty %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="flex justify-center gap-4">
+    <%= link_to inventories_dashboard_path, class: "rounded-lg py-3 px-6 border border-slate-300 text-slate-700 font-medium inline-block hover:bg-slate-50" do %>
+      <span class="material-symbols-outlined text-base align-middle">arrow_back</span> Indietro
+    <% end %>
+    <%= link_to "Nuovo scarico", app_out_warehouse_path, class: "rounded-lg py-3 px-6 bg-accent text-white font-medium cursor-pointer inline-block" %>
+  </div>
+</section>

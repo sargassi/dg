@@ -1,100 +1,122 @@
 import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
-  static targets = ["input", "row", "count", "form", "select"];
+  static targets = ["input", "row", "form", "count", "select"];
   static values = { debounce: { type: Number, default: 150 } };
 
   initialize() {
     this.timeout = null;
+    this.originalTexts = new Map();
   }
 
   connect() {
-    this.selectTargets.forEach(el => this.highlightSelect(el));
-  }
-
-  onFrameLoad() {
-    this.highlight();
-    this.updateCount();
-    this.selectTargets.forEach(el => this.highlightSelect(el));
-  }
-
-  updateCount() {
-    if (!this.hasCountTarget) return;
-    const hidden = this.element.querySelector("[data-filtered-count]");
-    if (hidden) this.countTarget.textContent = hidden.textContent;
-  }
-
-  highlight() {
-    this.element.querySelectorAll("mark.search-highlight").forEach((m) => {
-      m.replaceWith(m.textContent);
-    });
-
-    const query = this.inputTarget?.value?.trim();
-    if (!query) return;
-
-    const re = new RegExp(`(${this._escapeRegExp(query)})`, "gi");
-
-    this.element.querySelectorAll("td, [data-highlightable]").forEach((el) => {
-      if (el.closest("[data-search-filter-target]")) return;
-      if (el.querySelector("svg, img")) return;
-      this._highlightTextNode(el, re);
-    });
-  }
-
-  _highlightTextNode(el, re) {
-    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
-    const nodes = [];
-    while (walker.nextNode()) nodes.push(walker.currentNode);
-    nodes.forEach((node) => {
-      if (!node.parentNode) return;
-      const match = node.textContent.match(re);
-      if (!match) return;
-      const frag = document.createDocumentFragment();
-      let lastIdx = 0;
-      node.textContent.replace(re, (matched, _, idx) => {
-        frag.appendChild(document.createTextNode(node.textContent.slice(lastIdx, idx)));
-        const mark = document.createElement("mark");
-        mark.className = "search-highlight bg-yellow-200 rounded px-0.5";
-        mark.textContent = matched;
-        frag.appendChild(mark);
-        lastIdx = idx + matched.length;
+    this._highlightSelects();
+    if (!this.hasFormTarget) {
+      this.rowTargets.forEach((row) => {
+        row.querySelectorAll("td").forEach((cell, idx) => {
+          const key = `${row.rowIndex}-${idx}`;
+          this.originalTexts.set(key, cell.textContent);
+          cell.dataset.cellKey = key;
+        });
       });
-      frag.appendChild(document.createTextNode(node.textContent.slice(lastIdx)));
-      node.parentNode.replaceChild(frag, node);
-    });
-  }
-
-  _escapeRegExp(str) {
-    return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  }
-
-  highlightSelect(select) {
-    if (select.value) {
-      select.classList.add("bg-blue-400", "text-white");
-      select.classList.remove("bg-white");
-    } else {
-      select.classList.remove("bg-blue-400", "text-white");
-      select.classList.add("bg-white");
     }
   }
 
+  onFrameLoad() {
+    this._highlightSelects();
+    if (!this.hasInputTarget) return;
+    this.inputTarget.focus();
+    const query = this.inputTarget.value.trim();
+    if (query.length > 0) this._highlightFrame(query);
+  }
+
+  _highlightSelects() {
+    this.selectTargets.forEach((el) => {
+      const hasValue = el.value !== '' && el.value !== null;
+      const active = (el.dataset.searchFilterActiveClass || '').split(' ').filter(Boolean);
+      const inactive = (el.dataset.searchFilterInactiveClass || '').split(' ').filter(Boolean);
+      active.forEach((c) => el.classList.toggle(c, hasValue));
+      inactive.forEach((c) => el.classList.toggle(c, !hasValue));
+    });
+  }
+
+  _highlightFrame(query) {
+    const frame = this.element.querySelector("turbo-frame");
+    if (!frame) return;
+    const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const regex = new RegExp(`(${escaped})`, "gi");
+    const walker = document.createTreeWalker(frame, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach((node) => {
+      const text = node.textContent;
+      if (!text || !regex.test(text)) return;
+      const frag = document.createDocumentFragment();
+      let lastIdx = 0;
+      regex.lastIndex = 0;
+      text.replace(regex, (match, _, offset) => {
+        if (offset > lastIdx) frag.append(text.slice(lastIdx, offset));
+        const mark = document.createElement("mark");
+        mark.className = "bg-yellow-200 text-slate-800 rounded px-0.5";
+        mark.textContent = match;
+        frag.append(mark);
+        lastIdx = offset + match.length;
+      });
+      if (lastIdx < text.length) frag.append(text.slice(lastIdx));
+      node.replaceWith(frag);
+    });
+  }
+
   filter(event) {
-    if (event.target.matches("select")) this.highlightSelect(event.target);
     clearTimeout(this.timeout);
     this.timeout = setTimeout(() => {
       if (this.hasFormTarget) {
         this.formTarget.requestSubmit();
-      } else if (this.hasRowTarget) {
-        const query = event.target.value.toLowerCase().trim();
-        const visible = this.rowTargets.filter((row) => {
-          const text = row.textContent.toLowerCase();
-          row.hidden = query.length > 0 && !text.includes(query);
-          return !row.hidden;
-        });
-        if (this.hasCountTarget) {
-          this.countTarget.textContent = visible.length;
-        }
+      } else {
+        this._filterRows(event.target.value);
       }
     }, this.debounceValue);
+  }
+
+  _filterRows(rawQuery) {
+    const query = rawQuery.toLowerCase().trim();
+
+    this.rowTargets.forEach((row) => {
+      const text = row.textContent.toLowerCase();
+      const isMatch = query.length === 0 || text.includes(query);
+      row.hidden = !isMatch;
+
+      if (isMatch && query.length > 0) {
+        this.highlightCells(row, query);
+      } else {
+        this.resetCells(row);
+      }
+    });
+
+    if (this.hasCountTarget) {
+      const visible = this.rowTargets.filter((r) => !r.hidden).length;
+      const total = this.rowTargets.length;
+      this.countTarget.textContent = `${visible} / ${total}`;
+    }
+  }
+
+  highlightCells(row, query) {
+    row.querySelectorAll("td").forEach((cell) => {
+      const key = cell.dataset.cellKey;
+      const original = this.originalTexts.get(key) || "";
+      const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const regex = new RegExp(`(${escaped})`, "gi");
+      cell.innerHTML = original.replace(
+        regex,
+        '<mark class="bg-yellow-200 text-slate-800 rounded px-0.5">$1</mark>',
+      );
+    });
+  }
+
+  resetCells(row) {
+    row.querySelectorAll("td").forEach((cell) => {
+      const key = cell.dataset.cellKey;
+      cell.textContent = this.originalTexts.get(key) || "";
+    });
   }
 }

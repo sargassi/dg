@@ -1,9 +1,15 @@
 Rails.application.routes.draw do
-  resources :collections
+  resources :collections do
+    collection do
+      post :reorder
+    end
+  end
   get 'etichecks/etichette'
   resources :etichecks
   get 'inventories/dashboard'
   get 'inventories/movements'
+  get 'inventories/movements/:type/:id/label', to: 'inventories#movement_label', as: :inventories_movement_label, defaults: { format: :pdf }
+  get 'inventories/movements/:type/:id/modal', to: 'inventories#movement_modal', as: :inventories_movement_modal
   get 'inventories/import'
   post   'inventories/import/parse',      to: 'inventories#import_parse'
   put    'inventories/import/update_row', to: 'inventories#import_update_row'
@@ -38,6 +44,8 @@ Rails.application.routes.draw do
   resources :items do
     collection do
       get 'autocomplete'
+      get 'distinct_values'
+      get 'create_confirmation'
     end
     member do
       delete 'delete_picture'
@@ -57,6 +65,9 @@ Rails.application.routes.draw do
   delete 'mainware/import/delete_row', to: 'mainware#import_delete_row'
   post   'mainware/import/confirm',    to: 'mainware#import_confirm'
   delete 'mainware/import/cancel',     to: 'mainware#import_cancel'
+  delete 'mainware/import/rollback',   to: 'mainware#import_rollback'
+  get    'mainware/import/processing', to: 'mainware#import_processing'
+  get    'mainware/import/progress',   to: 'mainware#import_progress_json'
   get    'mainware/import/summary',    to: 'mainware#import_summary'
   get 'mainware/dashboard'
   get 'mainware/prices_compare', to: 'mainware#prices_compare'
@@ -80,7 +91,20 @@ Rails.application.routes.draw do
   resources :etigens
   resources :fabriclus
   get 'app/dashboard'
-  get 'app/check_qr'
+  get 'app/dashboard_articoli', to: 'app#dashboard_articoli', as: :app_dashboard_articoli
+  get 'app/dashboard_magazzino', to: 'app#dashboard_magazzino', as: :app_dashboard_magazzino
+  get 'app/dashboard_produzione', to: 'app#dashboard_produzione', as: :app_dashboard_produzione
+  match 'app/in_warehouse', to: 'app#in_warehouse', via: [:get, :post], as: :app_in_warehouse
+  get 'app/in_warehouse_confirmation', to: 'app#in_warehouse_confirmation', as: :app_in_warehouse_confirmation
+  get 'app/itemins_list', to: 'app#itemins_list', as: :app_itemins_list
+  get 'app/itemouts_list', to: 'app#itemouts_list', as: :app_itemouts_list
+  get 'app/itemmovements_list', to: 'app#itemmovements_list', as: :app_itemmovements_list
+  match 'app/out_warehouse', to: 'app#out_warehouse', via: [:get, :post], as: :app_out_warehouse
+  get 'app/out_warehouse_confirmation', to: 'app#out_warehouse_confirmation', as: :app_out_warehouse_confirmation
+  match 'app/move_products', to: 'app#move_products', via: [:get, :post], as: :app_move_products
+  get 'app/move_products_confirmation', to: 'app#move_products_confirmation', as: :app_move_products_confirmation
+  match 'app/inserimento', to: 'app#inserimento', via: [:get, :post], as: :app_inserimento
+  get 'app/confirm_ins', to: 'app#confirm_ins', as: :app_confirm_ins
   get 'app/check_single_qr'
   get 'app/sez'
   get 'etilabs/import'

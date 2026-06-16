@@ -1,0 +1,27 @@
+<div class="<%= style_main_header_container %>">
+  <%= render partial: 'atoms/header', locals: { link: app_dashboard_path, label: 'Articoli', menu: @app_menu } %>
+</div>
+
+<section class="<%= style_main_cnt %> pt-8 space-y-8">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+    <%= link_to app_inserimento_path, class: "bg-blue-50 p-4 card flex flex-col items-center justify-center text-center aspect-square shadow-md hover:bg-blue-100 transition" do %>
+      <span class="material-symbols-outlined text-4xl text-blue-600 mb-2">add_box</span>
+      <span class="text-lg font-semibold text-slate-700">Inserimento</span>
+      <p class="text-muted text-xs mt-1">Inserisci un nuovo articolo</p>
+    <% end %>
+
+    <%= link_to "#", class: "bg-blue-50 p-4 card flex flex-col items-center justify-center text-center aspect-square shadow-md hover:bg-blue-100 transition" do %>
+      <span class="material-symbols-outlined text-4xl text-blue-600 mb-2">upload_file</span>
+      <span class="text-lg font-semibold text-slate-700">Importa</span>
+      <p class="text-muted text-xs mt-1">Importa articoli da Excel</p>
+    <% end %>
+
+    <%= link_to "#", class: "bg-blue-50 p-4 card flex flex-col items-center justify-center text-center aspect-square shadow-md hover:bg-blue-100 transition" do %>
+      <span class="material-symbols-outlined text-4xl text-blue-600 mb-2">payments</span>
+      <span class="text-lg font-semibold text-slate-700">Prezzi</span>
+      <p class="text-muted text-xs mt-1">Confronto storico prezzi</p>
+    <% end %>
+
+  </div>
+</section>

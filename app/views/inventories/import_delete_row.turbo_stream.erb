@@ -1,0 +1,11 @@
+<%= turbo_stream.replace "import-rows" do %>
+  <%= render partial: "import_rows" %>
+<% end %>
+
+<%= turbo_stream.update "import-count" do %>
+  <%= @data[:rows].size %>
+<% end %>
+
+<%= turbo_stream.update "import-count-btn" do %>
+  <%= @data[:rows].size %>
+<% end %>

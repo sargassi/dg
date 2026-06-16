@@ -1,13 +1,9 @@
-<% menu = [
-  { label: 'Dashboard', path: mainware_dashboard_path, active: false, icon: 'dashboard', can: 'manage_mainware' },
-  { label: 'Articoli', path: mainware_index_path, active: true, icon: 'inventory_2', can: 'manage_mainware' },
-  { label: 'Storico Prezzi', path: mainware_prices_compare_path, active: false, icon: 'payments', can: 'manage_mainware' },
-] %>
+<% menu = mainware_menu(active: 'articoli') %>
 <div class="<%= style_main_header_container %>">
   <%= render partial: 'atoms/header', locals: {link: '/', label: 'Articoli', menu: menu} %>
 </div>
 
-<section class="<%= style_main_cnt %> flex flex-col" style="height: calc(100vh - 140px);" data-controller="search-filter">
+<section class="<%= style_main_cnt %> flex flex-col" style="height: calc(100vh - 110px);" data-controller="search-filter">
   <div class="flex gap-4 items-center mb-4 flex-none">
     <%= form_with url: mainware_index_path, method: :get,
                   data: { search_filter_target: "form", turbo_frame: "items-table" },
@@ -23,7 +19,7 @@
       <%= f.collection_select :collection_id, @collections, :id, :description,
             { include_blank: "-", selected: @collection_id },
             class: "border border-accent-100 outline-none p-2 text-xs bg-white dark:bg-slate-700 dark:text-slate-200 dark:border-slate-600 rounded-lg shadow-sm w-32",
-            data: { action: "change->search-filter#filter" } %>
+            data: { search_filter_target: "select", action: "change->search-filter#filter", search_filter_active_class: "bg-blue-400 dark:bg-blue-600 text-white dark:text-white", search_filter_inactive_class: "bg-white dark:bg-slate-700 dark:text-slate-200" } %>
     <% end %>
     <span class="text-sm font-bold text-slate-700 dark:text-slate-200 whitespace-nowrap border border-slate-300 dark:border-slate-600 dark:bg-slate-700 rounded-full px-3 py-1" data-search-filter-target="count"><%= @pagy.count %> articoli</span>
     <%= link_to "Importa da Excel", mainware_import_path, class: "#{style_import_btn} ml-auto" %>
@@ -46,107 +42,12 @@
               <% end %>
             </tr>
           </thead>
-          <% @itemz.each do |item| %>
-            <tbody data-controller="price-history" data-price-history-id-value="<%= item.id %>">
-              <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
-                <td class="<%= style_table_td %> text-xs font-mono text-blue-600 dark:text-blue-400">
-                  <div><%= item.itemcode %><%= item.fabricode %><%= item.varcode %></div>
-                </td>
-                <td class="<%= style_table_td %>"><%= item.itemcode %></td>
-                <td class="<%= style_table_td %>"><%= item.fabricode %></td>
-                <td class="<%= style_table_td %>"><%= item.varcode %></td>
-                <td class="<%= style_table_td %>"><%= item.description %></td>
-                <td class="<%= style_table_td %>"><%= item.tg %></td>
-                <td class="<%= style_table_td %>"><%= item.fabric %></td>
-                <td class="<%= style_table_td %>"><%= item.colour %></td>
-                <td class="<%= style_table_td %>"><%= item.materiale %></td>
-                <td class="<%= style_table_td %>"><%= item.note %></td>
-                <td class="<%= style_table_td %> font-bold" data-price-history-target="colprice">
-                  <div class="mb-4"><%= item.collection&.description&.upcase %></div>
-                  <% if item.siblings_count.to_i > 1 %>
-                    <button data-action="click->price-history#toggle"
-                            data-price-history-target="button"
-                            class="mt-1 px-2 py-0.5 rounded text-green-700 dark:text-green-400 hover:text-green-900 dark:hover:text-green-300 hover:bg-green-50 dark:hover:bg-green-900/30 transition border border-green-300 dark:border-green-600 text-[10px] leading-none inline-flex items-center gap-1"
-                            title="Cronologia prezzi">
-                      <span class="material-symbols-outlined text-sm">history</span>
-                      <span>Storico</span>
-                    </button>
-                  <% end %>
-                </td>
-                <td class="<%= style_table_td %> font-mono text-blue-600 dark:text-blue-400" data-price-history-target="colprice"><%= number_to_currency(item.unit_price, unit: "€") %></td>
-                <td class="<%= style_table_td %>" style="width:130px">
-                  <%= item.qrcode_svg.html_safe %>
-                </td>
-                <td class="<%= style_table_td %> align-top" style="width:120px">
-                    <% if item.pictures.attached? %>
-                    <%= link_to gallery_item_path(item, index: 0, q: params[:q], collection_id: params[:collection_id]), data: { turbo_frame: "item_modal" } do %>
-                      <div class="relative inline-block">
-                        <%= image_tag item.pictures.first, class: "w-[100px] h-[100px] object-cover border border-slate-200 dark:border-slate-600 block" %>
-                        <% if item.pictures.count > 1 %>
-                          <span class="absolute -top-1.5 -right-1.5 bg-accent text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center leading-none">+<%= item.pictures.count - 1 %></span>
-                        <% end %>
-                      </div>
-                    <% end %>
-                  <% end %>
-                </td>
-                <td class="<%= style_table_td %> whitespace-nowrap align-middle">
-                  <div class="flex flex-col items-center gap-0.5">
-                    <%= link_to edit_item_path(item, q: params[:q], collection_id: params[:collection_id]),
-                          class: "p-2 rounded text-accent dark:text-accent-300 hover:text-accent-700 dark:hover:text-accent-200 hover:bg-accent-50 dark:hover:bg-accent-900/30 transition border border-accent-200 dark:border-accent-600",
-                          data: { turbo_frame: "item_modal" } do %>
-                      <span class="material-symbols-outlined text-2xl">edit</span>
-                    <% end %>
-                    <%= button_to item_path(item, q: params[:q], collection_id: params[:collection_id]), method: :delete,
-                          class: "p-2 rounded text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/30 transition border border-red-200 dark:border-red-600",
-                          data: { turbo_confirm: "Eliminare questo articolo?", turbo_frame: "_top" } do %>
-                      <span class="material-symbols-outlined text-2xl">delete</span>
-                    <% end %>
-                  </div>
-                </td>
-              </tr>
-              <% key = [item.itemcode, item.fabricode, item.varcode] %>
-              <% (@siblings_by_parent[key] || []).each do |sibling| %>
-                <tr class="hidden hover:bg-slate-50 dark:hover:bg-slate-700/50" data-price-history-target="detail">
-                  <td colspan="10" class="p-0"></td>
-                  <td class="<%= style_table_td %> bg-green-50 dark:bg-green-900/20 font-bold"><div class="mb-4"><%= sibling.collection&.description&.upcase || "-" %></div></td>
-                  <td class="<%= style_table_td %> font-mono text-blue-600 dark:text-blue-400 bg-green-50 dark:bg-green-900/20"><%= number_to_currency(sibling.unit_price, unit: "€") %></td>
-                  <td class="<%= style_table_td %> bg-green-50 dark:bg-green-900/20" style="width:80px"><%= sibling.qrcode_svg&.html_safe %></td>
-                  <td class="<%= style_table_td %> bg-green-50 dark:bg-green-900/20 align-middle" style="width:120px">
-                    <% if sibling.pictures.attached? %>
-                      <%= link_to gallery_item_path(sibling, index: 0, q: params[:q], collection_id: params[:collection_id], return_to: mainware_index_path(q: params[:q], collection_id: params[:collection_id], expand_history: item.id)), data: { turbo_frame: "item_modal" } do %>
-                        <div class="relative inline-block">
-                          <%= image_tag sibling.pictures.first, class: "w-[100px] h-[100px] object-cover border border-slate-200 dark:border-slate-600 block" %>
-                          <% if sibling.pictures.count > 1 %>
-                            <span class="absolute -top-1.5 -right-1.5 bg-accent text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center leading-none">+<%= sibling.pictures.count - 1 %></span>
-                          <% end %>
-                        </div>
-                      <% end %>
-                    <% end %>
-                  </td>
-                  <td class="<%= style_table_td %> bg-green-50 dark:bg-green-900/20 whitespace-nowrap align-middle">
-                    <div class="flex flex-col items-center gap-0.5">
-                      <% ret = mainware_index_path(q: params[:q], collection_id: params[:collection_id], expand_history: item.id) %>
-                      <%= link_to edit_item_path(sibling, q: params[:q], collection_id: params[:collection_id], return_to: ret),
-                          class: "p-2 rounded text-accent dark:text-accent-300 hover:text-accent-700 dark:hover:text-accent-200 hover:bg-accent-50 dark:hover:bg-accent-900/30 transition border border-accent-200 dark:border-accent-600",
-                            data: { turbo_frame: "item_modal" } do %>
-                        <span class="material-symbols-outlined text-2xl">edit</span>
-                      <% end %>
-                      <%= button_to item_path(sibling, q: params[:q], collection_id: params[:collection_id], return_to: ret), method: :delete,
-                          class: "p-2 rounded text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/30 transition border border-red-200 dark:border-red-600",
-                            data: { turbo_confirm: "Eliminare questo articolo?", turbo_frame: "_top" } do %>
-                        <span class="material-symbols-outlined text-2xl">delete</span>
-                      <% end %>
-                    </div>
-                  </td>
-                </tr>
-              <% end %>
-            </tbody>
-          <% end %>
+          <%= render partial: 'item_row', collection: @itemz, as: :item, locals: { siblings_by_parent: @siblings_by_parent } %>
         </table>
       </div>
 
       <% if @pagy.pages > 1 %>
-        <div class="mt-4 flex items-center gap-0.5 justify-end">
+        <div class="flex-none flex items-center gap-0.5 justify-end pt-3 pb-1">
           <%# Previous %>
           <% if @pagy.prev %>
             <a href="<%= pagy_url_for(@pagy, @pagy.prev) %>"

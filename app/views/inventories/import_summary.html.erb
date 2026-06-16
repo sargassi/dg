@@ -9,18 +9,37 @@
 </div>
 
 <section class="<%= style_main_cnt %>">
-  <div class="max-w-md mx-auto bg-white border border-slate-200 rounded-lg p-8 text-center">
-    <h2 class="text-2xl font-bold text-slate-800 mb-6">Importazione completata</h2>
+  <div class="max-w-2xl mx-auto bg-white border border-slate-200 rounded-lg p-8 text-center">
+    <% if @stats[:total] == 0 && @stats[:created] == 0 && @stats[:errors].empty? %>
+      <div class="bg-amber-50 border border-amber-200 rounded-lg p-6 mb-6">
+        <span class="material-symbols-outlined text-4xl text-amber-400 mb-2">warning</span>
+        <h2 class="text-xl font-bold text-amber-800 mb-2">Nessun articolo importato</h2>
+        <p class="text-sm text-amber-700">Il file non conteneva righe da elaborare.</p>
+      </div>
+    <% elsif @stats[:created] == 0 %>
+      <div class="bg-red-50 border border-red-200 rounded-lg p-6 mb-6">
+        <span class="material-symbols-outlined text-4xl text-red-400 mb-2">error</span>
+        <h2 class="text-xl font-bold text-red-800 mb-2">Importazione fallita</h2>
+        <p class="text-sm text-red-700">Nessun articolo è stato importato.</p>
+      </div>
+    <% else %>
+      <h2 class="text-2xl font-bold text-slate-800 mb-6">Importazione completata</h2>
+    <% end %>
 
-    <div class="grid grid-cols-2 gap-4 mb-8">
+    <div class="grid grid-cols-4 gap-4 mb-6">
       <div class="bg-slate-50 p-4 rounded-lg">
         <p class="text-3xl font-bold text-slate-700"><%= @stats[:total] %></p>
         <p class="text-xs text-slate-500 uppercase">Righe processate</p>
       </div>
 
-      <div class="bg-green-50 p-4 rounded-lg">
-        <p class="text-3xl font-bold text-green-700"><%= @stats[:created] %></p>
-        <p class="text-xs text-green-600 uppercase">Nuovi</p>
+      <div class="<%= @stats[:created] == 0 ? 'bg-red-50' : 'bg-green-50' %> p-4 rounded-lg">
+        <p class="text-3xl font-bold <%= @stats[:created] == 0 ? 'text-red-700' : 'text-green-700' %>"><%= @stats[:created] %></p>
+        <p class="text-xs <%= @stats[:created] == 0 ? 'text-red-600' : 'text-green-600' %> uppercase">Nuovi</p>
+      </div>
+
+      <div class="<%= @stats[:skipped].any? ? 'bg-amber-50' : 'bg-slate-50' %> p-4 rounded-lg">
+        <p class="text-3xl font-bold <%= @stats[:skipped].any? ? 'text-amber-700' : 'text-slate-300' %>"><%= @stats[:skipped].size %></p>
+        <p class="text-xs <%= @stats[:skipped].any? ? 'text-amber-600' : 'text-slate-400' %> uppercase">Saltati (QTA 0)</p>
       </div>
 
       <div class="<%= @stats[:errors].any? ? 'bg-red-50' : 'bg-slate-50' %> p-4 rounded-lg">
@@ -28,6 +47,58 @@
         <p class="text-xs <%= @stats[:errors].any? ? 'text-red-600' : 'text-slate-400' %> uppercase">Errori</p>
       </div>
     </div>
+
+    <% if @stats[:items].any? %>
+      <div class="mb-6">
+        <h3 class="text-sm font-semibold text-slate-700 uppercase tracking-wide text-left mb-2">Articoli importati</h3>
+        <div class="overflow-x-auto border border-slate-200 rounded-lg">
+          <table class="min-w-full text-xs">
+            <thead>
+              <tr class="bg-slate-50">
+                <th class="px-3 py-2 text-left font-semibold text-slate-500 uppercase">Articolo</th>
+                <th class="px-3 py-2 text-right font-semibold text-slate-500 uppercase">QTA</th>
+                <th class="px-3 py-2 text-center font-semibold text-slate-500 uppercase">Etichetta</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @stats[:items].each do |item| %>
+                <tr class="border-t border-slate-100 hover:bg-slate-50">
+                  <td class="px-3 py-2 text-left font-mono text-slate-800"><%= item[:itemcode] %></td>
+                  <td class="px-3 py-2 text-right font-mono font-bold text-slate-700"><%= item[:qty] %></td>
+                  <td class="px-3 py-2 text-center">
+                    <a href="#" class="text-blue-400 hover:text-blue-600 underline opacity-50 pointer-events-none" title="Non ancora disponibile">Stampa</a>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    <% end %>
+
+    <% if @stats[:skipped].any? %>
+      <div class="mb-6">
+        <h3 class="text-sm font-semibold text-slate-700 uppercase tracking-wide text-left mb-2">Articoli saltati (QTA = 0)</h3>
+        <div class="overflow-x-auto border border-amber-200 rounded-lg">
+          <table class="min-w-full text-xs">
+            <thead>
+              <tr class="bg-amber-50">
+                <th class="px-3 py-2 text-left font-semibold text-amber-700 uppercase">Riga</th>
+                <th class="px-3 py-2 text-left font-semibold text-amber-700 uppercase">Articolo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @stats[:skipped].each do |item| %>
+                <tr class="border-t border-amber-100">
+                  <td class="px-3 py-2 text-left font-mono text-amber-600"><%= item[:row] %></td>
+                  <td class="px-3 py-2 text-left font-mono text-amber-800"><%= item[:itemcode] %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    <% end %>
 
     <% if @stats[:errors].any? %>
       <div class="text-left bg-red-50 border border-red-200 rounded-lg p-4 mb-6">

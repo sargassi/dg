@@ -1,0 +1,29 @@
+<% pdf_grid_overlay %>
+<div id="et">
+  <% counter = 0 %>
+  <% if counter == 0 || counter.modulo(24) == 0 %>
+    <div class="mm2">&nbsp;</div>
+  <% end %>
+  <% qr = CreateQrService.new %>
+  <% @items.each do |detail| %>
+    <% item = detail.item %>
+    <% code = item&.gencode.presence || detail.itemcode %>
+    <% qty = detail.qty.to_i %>
+    <%# qty = 1 if qty == 0 %>
+    <% qty.times do %>
+      <div class="cell hor" style="border: 1px solid #ccc">
+        <div class="sub hor" style="height:auto;overflow:visible;min-height:28mm;">
+          <%= image_tag(qr.call(code).to_data_url, style: "width:22mm;height:22mm;") %>
+          <p style="font-size:7pt;line-height:8pt;">
+            <%= item&.itemcode %> <%= item&.fabricode %> <%= item&.varcode %><br>
+            <%= item&.collection&.description %>
+          </p>
+        </div>
+        <% counter = counter + 1 %>
+      </div>
+      <% if counter.modulo(24) == 0 %>
+        <div style="clear:both; page-break-after: always;"></div>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

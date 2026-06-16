@@ -1,7 +1,7 @@
 <% menu = [
-  { label: 'Dashboard', path: mainware_dashboard_path, active: false, icon: 'dashboard', can: 'manage_mainware' },
-  { label: 'Articoli', path: mainware_index_path, active: true, icon: 'inventory_2', can: 'manage_mainware' },
-  { label: 'Storico Prezzi', path: mainware_prices_compare_path, active: false, icon: 'payments', can: 'manage_mainware' },
+  { label: 'Dashboard', path: mainware_dashboard_path, active: false, icon: 'dashboard' },
+  { label: 'Articoli', path: mainware_index_path, active: true, icon: 'inventory_2' },
+  { label: 'Magazzini', path: warehouses_path, active: false, icon: 'warehouse' },
 ] %>
 <div class="<%= style_main_header_container %>">
   <%= render partial: 'atoms/header', locals: {link: '/', label: 'Generale / Import', menu: menu} %>
@@ -84,7 +84,7 @@
 
   <% else %>
 
-    <section class="bg-accent-50 dark:bg-slate-800 p-6" data-controller="loader">
+    <section class="bg-accent-50 p-6" data-controller="loader">
       <div data-loader-target="form">
         <%= form_with url: mainware_import_parse_path, method: :post, multipart: true,
                      data: { action: "submit->loader#show" } do |f| %>
@@ -96,7 +96,7 @@
                   required: true %>
             </div>
             <div class="w-56 flex items-center gap-1">
-              <%= f.collection_select :collection_id, @collections, :id, :description,
+              <%= f.collection_select :collection_id, @collections  , :id, :description,
                   { include_blank: "Seleziona una collezione" },
                   required: true,
                   class: "#{style_select_class} py-1.5" %>

@@ -12,6 +12,7 @@ class ImportGeneralService
     'Note:'         => :note,
     'Colour:'       => :colour,
     'unit price'    => :unit_price,
+    'uniti price'   => :unit_price,
     'materiale'     => :materiale
   }
 
@@ -30,15 +31,17 @@ class ImportGeneralService
   end
 
   def save(data)
-    stats = { total: 0, created: 0, updated: 0, errors: [] }
+    stats = { total: 0, created: 0, updated: 0, errors: [], created_ids: [], updated_ids: [] }
+    total = data[:rows].size
 
-    data[:rows].each do |row|
+    data[:rows].each_with_index do |row, idx|
       stats[:total] += 1
+      yield(idx + 1, total) if block_given?
       gencode = [row['Item Code:'], row['Fabric code:'], row['var. code:']].map(&:to_s).join + "_#{data[:collection_id]}"
 
       begin
         item = Item.find_or_initialize_by(gencode: gencode)
-        stats[item.persisted? ? :updated : :created] += 1
+        new_record = item.new_record?
 
         FIELD_MAP.each do |header, field|
           val = row[header]
@@ -50,11 +53,23 @@ class ImportGeneralService
         item.collection_id = data[:collection_id]
         item.qrcode_svg = RQRCode::QRCode.new(gencode).as_svg(module_size: 6, use_path: true, viewbox: true).sub(/^<\?xml[^>]*>/, "")
         item.save!
+
+        if new_record
+          stats[:created] += 1
+          stats[:created_ids] << item.id
+        else
+          stats[:updated] += 1
+          stats[:updated_ids] << item.id
+        end
       rescue => e
         stats[:errors] << { row: row[:_index], error: e.message }
       end
     end
 
     stats
+  end
+
+  def rollback(stats)
+    Item.where(id: stats[:created_ids]).destroy_all
   end
 end

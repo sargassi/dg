@@ -2,8 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@import "actiontext.css";
-
 @layer base {
     body {
         font-size: 14px;
@@ -306,5 +304,18 @@
         width: 100%;
         margin: 0;
         transform: scale(-1, -1);
+    }
+
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+
+    .scroll-fade-right {
+        mask-image: linear-gradient(to right, black calc(100% - 2rem), transparent 100%);
+        -webkit-mask-image: linear-gradient(to right, black calc(100% - 2rem), transparent 100%);
     }
 }

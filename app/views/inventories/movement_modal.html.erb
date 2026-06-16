@@ -1,0 +1,91 @@
+<%= turbo_frame_tag "movement_modal" do %>
+  <div class="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+      <div class="flex items-center justify-between p-4 border-b border-slate-200">
+        <div class="flex items-center gap-2">
+          <% case @type
+             when :itemin %>
+            <span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-semibold">Entrata</span>
+          <% when :itemout %>
+            <span class="bg-red-100 text-red-700 px-2 py-0.5 rounded text-xs font-semibold">Uscita</span>
+          <% when :itemmovement %>
+            <span class="bg-orange-100 text-orange-700 px-2 py-0.5 rounded text-xs font-semibold">Spostamento</span>
+          <% end %>
+          <span class="text-sm font-bold text-slate-700">#<%= @record.id %></span>
+        </div>
+        <%= link_to "✕", inventories_movements_path, class: "text-slate-400 hover:text-slate-600 text-xl leading-none", data: { turbo_frame: "_top" } %>
+      </div>
+
+      <div class="p-4 text-sm space-y-4">
+        <div class="grid grid-cols-3 gap-4">
+          <div>
+            <span class="text-xs text-slate-400 uppercase block">Data</span>
+            <span class="font-medium"><%= @record.indate %></span>
+          </div>
+          <div>
+            <span class="text-xs text-slate-400 uppercase block">Operatore</span>
+            <span class="font-medium"><%= @record.operator&.name || "—" %></span>
+          </div>
+          <div>
+            <span class="text-xs text-slate-400 uppercase block">Note</span>
+            <span class="font-medium"><%= @record.notes.presence || "—" %></span>
+          </div>
+        </div>
+
+        <% if @type == :itemmovement %>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <span class="text-xs text-slate-400 uppercase block">Da magazzino</span>
+              <span class="font-medium"><%= @record.source_warehouse&.code || "—" %></span>
+            </div>
+            <div>
+              <span class="text-xs text-slate-400 uppercase block">A magazzino</span>
+              <span class="font-medium"><%= @record.dest_warehouse&.code || "—" %></span>
+            </div>
+            <div>
+              <span class="text-xs text-slate-400 uppercase block">Da ubicazione</span>
+              <span class="font-medium"><%= @record.source_location&.code || "—" %></span>
+            </div>
+            <div>
+              <span class="text-xs text-slate-400 uppercase block">A ubicazione</span>
+              <span class="font-medium"><%= @record.dest_location&.code || "—" %></span>
+            </div>
+          </div>
+        <% end %>
+
+        <div>
+          <h4 class="text-xs text-slate-400 uppercase mb-2">Dettaglio articoli</h4>
+          <table class="min-w-full text-xs border border-slate-200 rounded-lg">
+            <thead>
+              <tr class="bg-slate-50">
+                <th class="px-3 py-2 text-left font-semibold text-slate-500">Articolo</th>
+                <th class="px-3 py-2 text-right font-semibold text-slate-500">QTA</th>
+                <% if @type != :itemmovement %>
+                  <th class="px-3 py-2 text-left font-semibold text-slate-500">Magazzino</th>
+                  <th class="px-3 py-2 text-left font-semibold text-slate-500">Ubicazione</th>
+                <% end %>
+              </tr>
+            </thead>
+            <tbody>
+              <% details = case @type
+                 when :itemin then @record.itemins_details
+                 when :itemout then @record.itemouts_details
+                 when :itemmovement then @record.itemmovements_details
+                 end %>
+              <% details.each do |d| %>
+                <tr class="border-t border-slate-100">
+                  <td class="px-3 py-2 font-mono"><%= d.itemcode %></td>
+                  <td class="px-3 py-2 text-right font-mono font-bold"><%= d.qty %></td>
+                  <% if @type != :itemmovement %>
+                    <td class="px-3 py-2 font-mono"><%= d.warehouse&.code || "—" %></td>
+                    <td class="px-3 py-2 font-mono"><%= d.location&.code || "—" %></td>
+                  <% end %>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

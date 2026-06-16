@@ -1,0 +1,47 @@
+<% menu = mainware_menu(active: '') %>
+<div class="<%= style_main_header_container %>">
+  <%= render partial: 'atoms/header', locals: { link: '/', label: 'Articoli / Creato', menu: menu } %>
+</div>
+
+<section class="<%= style_main_cnt %>">
+  <div class="max-w-3xl mx-auto space-y-6">
+    <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-6 text-center">
+      <span class="material-symbols-outlined text-5xl text-emerald-600">check_circle</span>
+      <h2 class="text-xl font-semibold text-emerald-800 mt-2">Articolo creato con successo</h2>
+      <p class="text-sm font-mono text-emerald-700 mt-1"><%= @item.gencode %></p>
+    </div>
+
+    <%= render 'item_card', item: @item %>
+
+    <div class="<%= style_main_card %> space-y-1">
+      <h3 class="<%= style_main_card_header %>">
+        <span class="material-symbols-outlined">arrow_forward</span>
+        Cosa vuoi fare?
+      </h3>
+
+      <%= link_to new_item_path, class: style_main_card_link do %>
+        <span class="text-sm text-slate-700 dark:text-slate-200">Nuovo articolo</span>
+        <span class="material-symbols-outlined text-slate-400 dark:text-slate-300 text-base">add</span>
+      <% end %>
+
+      <%= link_to mainware_index_path, class: style_main_card_link do %>
+        <span class="text-sm text-slate-700 dark:text-slate-200">Consulta articoli</span>
+        <span class="material-symbols-outlined text-slate-400 dark:text-slate-300 text-base">search</span>
+      <% end %>
+
+      <%= link_to mainware_searchqr_path, class: style_main_card_link do %>
+        <span class="text-sm text-slate-700 dark:text-slate-200">Ricerca per QR</span>
+        <span class="material-symbols-outlined text-slate-400 dark:text-slate-300 text-base">qr_code_scanner</span>
+      <% end %>
+    </div>
+
+    <div class="text-center">
+      <%= link_to mainware_dashboard_path, class: "inline-flex items-center gap-1 text-xs text-slate-400 hover:text-slate-600 transition-colors" do %>
+        <span class="material-symbols-outlined text-base">arrow_back</span>
+        Torna alla dashboard
+      <% end %>
+    </div>
+
+    <%= turbo_frame_tag "item_modal" %>
+  </div>
+</section>

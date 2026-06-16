@@ -1,6 +1,6 @@
 <header>
  <% if current_user.present? %>
-   <% if action_name != 'dashboard' %>
+    <% if !%w[dashboard in_warehouse in_warehouse_confirmation out_warehouse move_products itemins_list].include?(action_name) %>
   <div class="flex gap-8 justify-center items-center w-full text-muted text-center text-sm py-2 mt-4">
    <p class="w-40 text-start p-4">
      <a href="/app/dashboard">

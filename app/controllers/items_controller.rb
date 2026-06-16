@@ -7,15 +7,35 @@ class ItemsController < ApplicationController
     @items = Item.all
   end
 
+  # GET /items/distinct_values?field=itemcode&q=xxx
+  def distinct_values
+    allowed = %w[itemcode fabricode varcode]
+    return head :bad_request unless allowed.include?(params[:field])
+
+    q = "%#{params[:q]}%"
+    values = Item.where(Item.arel_table[params[:field]].matches(q))
+                 .distinct
+                 .limit(20)
+                 .pluck(params[:field])
+                 .map { |v| v.presence }
+                 .compact
+
+    render json: values
+  end
+
   # GET /items/autocomplete
   def autocomplete
     q = "%#{params[:q]}%"
     @items = Item.includes(:collection).where(
       "gencode LIKE :q OR itemcode LIKE :q OR fabricode LIKE :q OR varcode LIKE :q",
       q: q
-    ).select(:id, :gencode, :itemcode, :fabricode, :varcode, :description, :collection_id).limit(20)
+    )
+    if params[:collection_id].present?
+      @items = @items.where(collection_id: params[:collection_id])
+    end
+    @items = @items.select(:id, :gencode, :itemcode, :fabricode, :varcode, :description, :collection_id, :tg, :fabric, :colour, :materiale).limit(20)
     render json: @items.map { |item|
-      { id: item.id, gencode: item.gencode, label: "#{item.gencode} — #{item.description}", collection: item.collection&.description, collection_id: item.collection_id }
+      { id: item.id, gencode: item.gencode, itemcode: item.itemcode, fabricode: item.fabricode, varcode: item.varcode, description: item.description, label: "#{item.gencode} — #{item.description}", collection: item.collection&.description, collection_id: item.collection_id, tg: item.tg, fabric: item.fabric, colour: item.colour, materiale: item.materiale }
     }
   end
 
@@ -40,9 +60,10 @@ class ItemsController < ApplicationController
 
     respond_to do |format|
       if @item.save
-        format.html { redirect_to item_url(@item), notice: "Item was successfully created." }
+        format.html { redirect_to create_confirmation_items_path(item_id: @item.id) }
         format.json { render :show, status: :created, location: @item }
       else
+        @collections = Collection.all
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @item.errors, status: :unprocessable_entity }
       end
@@ -66,6 +87,11 @@ class ItemsController < ApplicationController
         format.json { render json: @item.errors, status: :unprocessable_entity }
       end
     end
+  end
+
+  # GET /items/create_confirmation
+  def create_confirmation
+    @item = Item.find(params[:item_id])
   end
 
   # GET /items/1/gallery

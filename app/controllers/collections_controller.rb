@@ -4,7 +4,8 @@ class CollectionsController < ApplicationController
 
   # GET /collections or /collections.json
   def index
-    @collections = Collection.all
+    @collections = Collection.all.order(:description)
+    @collection = Collection.new
   end
 
   # GET /collections/1 or /collections/1.json
@@ -26,10 +27,11 @@ class CollectionsController < ApplicationController
 
     respond_to do |format|
       if @collection.save
-        format.html { redirect_to mainware_import_path, notice: "Collection was successfully created." }
+        format.html { redirect_to collections_url, notice: "Collection was successfully created." }
         format.json { render :show, status: :created, location: @collection }
       else
-        format.html { render :new, status: :unprocessable_entity }
+        @collections = Collection.all.order(:description)
+        format.html { render :index, status: :unprocessable_entity }
         format.json { render json: @collection.errors, status: :unprocessable_entity }
       end
     end
@@ -39,7 +41,7 @@ class CollectionsController < ApplicationController
   def update
     respond_to do |format|
       if @collection.update(collection_params)
-        format.html { redirect_to @collection, notice: "Collection was successfully updated.", status: :see_other }
+        format.html { redirect_to collections_url, notice: "Collection was successfully updated.", status: :see_other }
         format.json { render :show, status: :ok, location: @collection }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -50,12 +52,25 @@ class CollectionsController < ApplicationController
 
   # DELETE /collections/1 or /collections/1.json
   def destroy
+    if @collection.items.any?
+      redirect_to collections_path, alert: "Impossibile eliminare '#{@collection.description}': ci sono #{@collection.items.count} articoli associati."
+      return
+    end
+
     @collection.destroy!
 
     respond_to do |format|
-      format.html { redirect_to collections_path, notice: "Collection was successfully destroyed.", status: :see_other }
+      format.html { redirect_to collections_path, notice: "Collezione eliminata con successo.", status: :see_other }
+      format.turbo_stream { redirect_to collections_path, notice: "Collezione eliminata con successo." }
       format.json { head :no_content }
     end
+  end
+
+  def reorder
+    params.require(:ids).each_with_index do |id, index|
+      Collection.where(id: id).update_all(row_order: index)
+    end
+    head :ok
   end
 
   private
@@ -66,6 +81,6 @@ class CollectionsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def collection_params
-      params.require(:collection).permit(:description)
+      params.require(:collection).permit(:description, :row_order)
     end
 end

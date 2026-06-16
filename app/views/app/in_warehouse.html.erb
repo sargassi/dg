@@ -1,0 +1,213 @@
+<% menu = [
+  { label: 'Dashboard', path: inventories_dashboard_path, active: false, icon: 'dashboard', can: 'manage_inventory' },
+  { label: 'Ricerca magazzino', path: inventories_path, active: false, icon: 'inventory_2', can: 'manage_inventory' },
+  { label: 'Movimenti', path: inventories_movements_path, active: false, icon: 'swap_vert', can: 'manage_itemins' },
+  { label: 'Magazzini e ubiche', path: warehouses_path, active: false, icon: 'warehouse', can: 'manage_warehouses' },
+] %>
+<div class="<%= style_main_header_container %>">
+  <%= render partial: 'atoms/header', locals: { link: inventories_dashboard_path, label: 'IN', menu: menu } %>
+</div>
+
+<%= form_with(model: @itemin, url: app_in_warehouse_path, id: "itemin-form",   data: { controller: "qr-scanner", autocomplete_hide_qty: true }) do |form| %>
+  <%= form.hidden_field :operator_id, value: current_user.id %>
+
+  <%# Mobile %>
+  <section class="<%= style_main_cnt %> lg:hidden" data-controller="defaults">
+    <div class="max-w-lg mx-auto space-y-4">
+      <div class="bg-amber-50 rounded p-3 space-y-3">
+        <div>
+          <label class="text-xs text-slate-400 uppercase tracking-wide block mb-1">Collezione</label>
+            <select name="default_collection_id" class="w-full border border-slate-300 outline-none px-2 py-1.5 text-sm bg-white rounded">
+              <option value="">Seleziona collezione</option>
+              <% @collections.each do |c| %>
+                <option value="<%= c.id %>" <%= 'selected' if @default_collection_id.to_s == c.id.to_s %>><%= c.description %></option>
+              <% end %>
+            </select>
+        </div>
+
+        <div>
+          <%= form.label :indate, "Data", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+          <%= form.date_field :indate, class: "w-full border border-slate-300 outline-none px-2 py-1.5 text-sm bg-white rounded" %>
+        </div>
+
+        <div>
+          <%= form.label :notes, "Note", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+          <%= form.text_area :notes, rows: 1, class: "w-full border border-slate-300 outline-none px-2 py-1.5 text-sm bg-white rounded" %>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-xs text-slate-400 uppercase tracking-wide block mb-1">Magazzino</label>
+            <select name="default_warehouse_id" data-defaults-target="warehouse" class="w-full border border-slate-300 outline-none px-2 py-1.5 text-sm bg-white rounded">
+              <option value="">Seleziona magazzino</option>
+              <% @warehouses.each do |w| %>
+                <option value="<%= w.id %>" <%= 'selected' if @default_warehouse_id.to_s == w.id.to_s %>><%= w.code %></option>
+              <% end %>
+            </select>
+          </div>
+
+          <div>
+            <label class="text-xs text-slate-400 uppercase tracking-wide block mb-1">Ubica</label>
+            <select name="default_location_id" data-defaults-target="location" data-default-location="<%= @default_location_id %>" data-action="change->defaults#propagate" class="w-full border border-slate-300 outline-none px-2 py-1.5 text-sm bg-white rounded" disabled>
+              <option value="">Seleziona prima il magazzino</option>
+              <% @locations.each do |l| %>
+                <option value="<%= l.id %>" data-warehouse-id="<%= l.warehouse_id %>"><%= l.code %></option>
+              <% end %>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div data-controller="nested-form">
+        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 shadow-sm p-3">
+
+          <div class="overflow-x-auto">
+            <table class="min-w-max w-full">
+              <thead>
+              <tr>
+                <th class="<%= style_table_th %>">Codice Articolo</th>
+                <th class="<%= style_table_th %> w-16">Q.tà</th>
+                <th class="<%= style_table_th %> w-10"></th>
+              </tr>
+              </thead>
+              <tbody data-nested-form-target="rows">
+                <%= form.fields_for :itemins_details do |detail_form| %>
+                  <%= render 'in_warehouse_fields', f: detail_form %>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+
+          <template data-nested-form-target="template">
+            <%= form.fields_for :itemins_details, IteminsDetail.new, child_index: '__NEW__' do |detail_form| %>
+              <%= render 'in_warehouse_fields', f: detail_form %>
+            <% end %>
+          </template>
+
+          <button type="button"
+                  data-action="nested-form#add"
+                  class="mt-3 w-full py-3 text-sm text-accent hover:text-accent-700 hover:bg-accent-50 border border-accent-200 rounded transition-colors flex items-center justify-center gap-1">
+            <span class="material-symbols-outlined text-base">add</span>
+            Aggiungi riga
+          </button>
+        </div>
+      </div>
+
+      <div class="pt-2">
+        <%= form.submit "Salva Carico", class: "w-full rounded py-3 px-5 bg-accent text-white font-medium cursor-pointer text-center" %>
+      </div>
+    </div>
+  </section>
+
+  <%# Desktop %>
+  <section class="<%= style_main_cnt %> hidden lg:block" data-controller="defaults">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <div class="lg:col-span-3 space-y-6">
+        <div class="bg-amber-50 rounded-lg p-5">
+          <div class="grid grid-cols-3 gap-4">
+            <div>
+              <label class="text-xs text-slate-400 uppercase tracking-wide block mb-1">Collezione</label>
+              <select name="default_collection_id" class="w-full border border-slate-300 outline-none px-3 py-2 text-sm bg-white">
+                <option value="">Seleziona collezione</option>
+                <% @collections.each do |c| %>
+                  <option value="<%= c.id %>" <%= 'selected' if @default_collection_id.to_s == c.id.to_s %>><%= c.description %></option>
+                <% end %>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs text-slate-400 uppercase tracking-wide block mb-1">Magazzino</label>
+              <select name="default_warehouse_id" data-defaults-target="warehouse" class="w-full border border-slate-300 outline-none px-3 py-2 text-sm bg-white">
+                <option value="">Seleziona magazzino</option>
+                <% @warehouses.each do |w| %>
+                  <option value="<%= w.id %>" <%= 'selected' if @default_warehouse_id.to_s == w.id.to_s %>><%= w.code %></option>
+                <% end %>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs text-slate-400 uppercase tracking-wide block mb-1">Ubica</label>
+              <select name="default_location_id" data-defaults-target="location" data-default-location="<%= @default_location_id %>" data-action="change->defaults#propagate" class="w-full border border-slate-300 outline-none px-3 py-2 text-sm bg-white" disabled>
+                <option value="">Seleziona prima il magazzino</option>
+                <% @locations.each do |l| %>
+                  <option value="<%= l.id %>" data-warehouse-id="<%= l.warehouse_id %>"><%= l.code %></option>
+                <% end %>
+              </select>
+            </div>
+          </div>
+          </div>
+
+        <div class="bg-slate-50 rounded-lg p-4" data-controller="nested-form">
+          <div class="<%= style_main_card %>">
+            <h3 class="<%= style_main_card_header %>">
+              <span class="material-symbols-outlined text-slate-400">inventory_2</span>
+              Dettaglio Carico
+            </h3>
+
+            <table class="min-w-full">
+              <thead>
+                <tr>
+                  <th class="<%= style_table_th %>">Codice Articolo</th>
+                  <th class="<%= style_table_th %> w-20">Q.tà</th>
+                  <th class="<%= style_table_th %> w-10"></th>
+                </tr>
+              </thead>
+              <tbody data-nested-form-target="rows">
+                <%= form.fields_for :itemins_details do |detail_form| %>
+                  <%= render 'in_warehouse_fields', f: detail_form %>
+                <% end %>
+              </tbody>
+            </table>
+
+            <template data-nested-form-target="template">
+              <%= form.fields_for :itemins_details, IteminsDetail.new, child_index: '__NEW__' do |detail_form| %>
+                <%= render 'in_warehouse_fields', f: detail_form %>
+              <% end %>
+            </template>
+
+            <button type="button"
+                    data-action="nested-form#add"
+                    class="mt-3 px-4 py-2 text-xs text-accent hover:text-accent-700 hover:bg-accent-50 border border-accent-200 rounded-sm transition-colors flex items-center gap-1">
+              <span class="material-symbols-outlined text-base">add</span>
+              Aggiungi riga
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-amber-50 rounded-lg p-5 sticky top-0 self-start space-y-4">
+        <div>
+          <%= form.label :indate, "Data", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+          <%= form.date_field :indate, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+        </div>
+
+        <div>
+          <%= form.label :notes, "Note", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+          <%= form.text_area :notes, rows: 2, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+        </div>
+
+        <div class="pt-2">
+          <%= form.submit "Salva Carico", class: "rounded-lg py-3 px-5 bg-accent text-white inline-block font-medium cursor-pointer w-full" %>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div data-qr-scanner-target="overlay"
+     class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center">
+  <div class="relative bg-white dark:bg-slate-800 rounded-xl p-4 w-full max-w-lg mx-4">
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="text-lg font-semibold text-slate-800 dark:text-slate-100">Scansiona QR Code</h3>
+      <button type="button"
+              data-action="click->qr-scanner#stop"
+              class="p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <video id="qr-in-video"
+           data-qr-scanner-target="video"
+           class="w-full aspect-square bg-black rounded-lg"></video>
+    <p class="text-sm text-slate-500 dark:text-slate-400 text-center mt-3">Inquadra un QR code</p>
+  </div>
+</div>
+<% end %>
+
+<%= turbo_frame_tag "item_modal" %>

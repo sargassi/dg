@@ -1,0 +1,241 @@
+<div class="<%= style_main_header_container %>">
+  <%= render partial: 'atoms/header', locals: { link: mainware_dashboard_path, label: 'Inserimento articolo', menu: mainware_menu(active: 'dashboard') } %>
+</div>
+
+<section class="<%= style_main_cnt %>">
+  <div class="flex flex-col lg:flex-row gap-8 items-start" data-controller="item-clone qr-scanner" data-item-clone-url-value="<%= autocomplete_items_path %>">
+
+    <!-- Left panel – QR scanner + clone -->
+    <div class="w-full lg:w-1/3 flex-shrink-0 space-y-4 lg:sticky lg:top-4">
+
+      <!-- QR scanner -->
+      <div class="border-2 border-dashed border-slate-200 bg-slate-50 rounded-sm px-6 py-4">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="material-symbols-outlined text-base text-slate-400">qr_code_scanner</span>
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Scansiona QR articolo simile</span>
+        </div>
+        <button type="button"
+                data-action="click->qr-scanner#scanRow"
+                class="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-lg border border-accent-300 text-accent-700 bg-accent-50 hover:bg-accent-100 transition text-sm font-bold">
+          <span class="material-symbols-outlined text-lg">qr_code_scanner</span>
+          Scansiona QR Code
+        </button>
+      </div>
+
+      <!-- Helper clone – precompila da esistente -->
+      <div class="border-2 border-dashed border-slate-200 bg-slate-50 rounded-sm px-6 py-4">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="material-symbols-outlined text-base text-slate-400">content_copy</span>
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Precompila da esistente</span>
+          <span class="ml-auto text-[10px] text-slate-400 bg-slate-200 px-2 py-0.5 rounded-sm uppercase tracking-wide font-medium">Opzionale</span>
+        </div>
+
+        <label class="text-xs text-slate-400 uppercase tracking-wide block mb-1">Cerca articolo</label>
+        <div class="relative">
+          <input type="text"
+            data-item-clone-target="input"
+            data-qr-scanner-target="input"
+            data-action="input->item-clone#search focus->item-clone#search blur->item-clone#hideResults"
+            class="border border-slate-300 outline-none px-3 py-2 w-full text-sm"
+            placeholder="Cerca per codice o descrizione (min 2 caratteri)..."
+            autocomplete="off">
+          <ul data-item-clone-target="results"
+              class="hidden absolute left-0 right-0 top-full mt-0.5 bg-white border border-slate-200 rounded-b-lg shadow-lg max-h-60 overflow-y-auto z-50 divide-y divide-slate-100"></ul>
+        </div>
+        <p class="text-xs text-slate-400 mt-1.5">Seleziona un articolo per precompilare il modulo con i suoi dati.</p>
+      </div>
+    </div>
+
+    <!-- Main form – Nuovo articolo -->
+    <div class="w-full lg:w-2/3 min-w-0">
+      <div class="<%= style_main_card %>">
+        <h3 class="<%= style_main_card_header %>">
+          <span class="material-symbols-outlined">add_circle</span>
+          Nuovo articolo
+        </h3>
+
+        <%= form_with model: @item, url: app_inserimento_path, multipart: true, data: { turbo_frame: "_top", controller: "camera-capture", item_clone_target: "form" } do |f| %>
+          <% if @item.errors.any? %>
+            <div class="bg-red-50 text-red-500 px-3 py-2 font-medium mb-4 border border-red-200 text-sm rounded">
+              <ul class="list-disc list-inside">
+                <% @item.errors.each do |err| %>
+                  <li><%= err.full_message %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <div class="space-y-3">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div data-controller="list-autocomplete"
+                   data-list-autocomplete-url-value="<%= distinct_values_items_path %>"
+                   data-list-autocomplete-field-value="itemcode">
+                <%= f.label :itemcode, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+                <%= f.text_field :itemcode,
+                      data: { list_autocomplete_target: "input", action: "input->list-autocomplete#search blur->list-autocomplete#hideResults" },
+                      class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm",
+                      autocomplete: "off", inputmode: "text" %>
+                <ul data-list-autocomplete-target="results"
+                    class="hidden absolute left-0 right-0 top-full mt-0.5 bg-white border border-slate-200 rounded-b-lg shadow-lg z-50 max-h-48 overflow-y-auto text-sm"></ul>
+              </div>
+              <div data-controller="list-autocomplete"
+                   data-list-autocomplete-url-value="<%= distinct_values_items_path %>"
+                   data-list-autocomplete-field-value="fabricode">
+                <%= f.label :fabricode, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+                <%= f.text_field :fabricode,
+                      data: { list_autocomplete_target: "input", action: "input->list-autocomplete#search blur->list-autocomplete#hideResults" },
+                      class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm",
+                      autocomplete: "off" %>
+                <ul data-list-autocomplete-target="results"
+                    class="hidden absolute left-0 right-0 top-full mt-0.5 bg-white border border-slate-200 rounded-b-lg shadow-lg z-50 max-h-48 overflow-y-auto text-sm"></ul>
+              </div>
+              <div data-controller="list-autocomplete"
+                   data-list-autocomplete-url-value="<%= distinct_values_items_path %>"
+                   data-list-autocomplete-field-value="varcode">
+                <%= f.label :varcode, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+                <%= f.text_field :varcode,
+                      data: { list_autocomplete_target: "input", action: "input->list-autocomplete#search blur->list-autocomplete#hideResults" },
+                      class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm",
+                      autocomplete: "off" %>
+                <ul data-list-autocomplete-target="results"
+                    class="hidden absolute left-0 right-0 top-full mt-0.5 bg-white border border-slate-200 rounded-b-lg shadow-lg z-50 max-h-48 overflow-y-auto text-sm"></ul>
+              </div>
+            </div>
+
+            <div>
+              <%= f.label :description, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= f.text_field :description, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+              <div>
+                <%= f.label :tg, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+                <%= f.text_field :tg, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+              </div>
+              <div class="sm:col-span-2">
+                <%= f.label :fabric, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+                <%= f.text_field :fabric, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+              </div>
+              <div>
+                <%= f.label :colour, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+                <%= f.text_field :colour, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <%= f.label :materiale, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+                <%= f.text_field :materiale, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+              </div>
+              <div>
+                <%= f.label :collection_id, "Collezione", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+                <%= f.collection_select :collection_id, @collections, :id, :description,
+                      { include_blank: "-" },
+                      class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm bg-white" %>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <%= f.label :note, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+                <%= f.text_area :note, rows: 2, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm resize-none" %>
+              </div>
+              <div>
+                <%= f.label :pictures, "Immagini", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+
+                <div class="flex items-center gap-3 mb-2">
+                  <button type="button"
+                          data-action="camera-capture#open"
+                          class="flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-dashed border-accent-300 text-accent-700 bg-accent-50 hover:bg-accent-100 transition text-sm font-bold whitespace-nowrap">
+                    <span class="material-symbols-outlined text-lg">camera_alt</span>
+                    Scatta foto
+                  </button>
+                  <%= f.file_field :pictures, multiple: true, direct_upload: true,
+                        data: { camera_capture_target: "input" },
+                        class: "block w-full flex-1 text-sm text-slate-500 file:mr-3 file:py-2 file:px-3 file:border-0 file:text-xs file:uppercase file:tracking-wider file:cursor-pointer file:bg-accent file:text-white hover:file:bg-accent-600 border border-slate-300 rounded-sm" %>
+                </div>
+
+                <div data-camera-capture-target="summary"
+                     class="hidden flex flex-wrap gap-2 p-2 bg-accent-50 border border-accent-200 rounded-sm">
+                </div>
+
+                <!-- Camera modal -->
+                <div data-camera-capture-target="modal"
+                     class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center">
+                  <div class="relative bg-white dark:bg-slate-800 rounded-xl p-4 w-full max-w-lg mx-4">
+                    <div class="flex items-center justify-between mb-3">
+                      <h3 class="text-lg font-semibold text-slate-800 dark:text-slate-100">Scatta foto</h3>
+                      <button type="button"
+                              data-action="camera-capture#close"
+                              class="p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400">
+                        <span class="material-symbols-outlined">close</span>
+                      </button>
+                    </div>
+                    <div class="relative">
+                      <video data-camera-capture-target="video"
+                             class="w-full aspect-square bg-black rounded-lg object-cover"
+                             autoplay playsinline></video>
+                      <div data-camera-capture-target="flash"
+                           class="hidden absolute inset-0 bg-white/80 rounded-lg pointer-events-none"></div>
+                    </div>
+                    <div data-camera-capture-target="preview"
+                         class="flex flex-wrap gap-2 mt-2 min-h-0">
+                    </div>
+                    <div data-camera-capture-target="counter"
+                         class="text-center text-xs text-slate-500 dark:text-slate-400 mt-2 min-h-[1.25rem]"></div>
+                    <div class="flex gap-3 mt-3 justify-center">
+                      <button type="button"
+                              data-action="camera-capture#shoot"
+                              class="flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-accent text-white text-sm font-bold hover:opacity-90 transition">
+                        <span class="material-symbols-outlined text-lg">camera</span>
+                        Scatta
+                      </button>
+                      <button type="button"
+                              data-camera-capture-target="confirmBtn"
+                              data-action="camera-capture#confirm"
+                              class="hidden px-6 py-3 rounded-full bg-emerald-600 text-white text-sm font-bold hover:bg-emerald-700 transition">
+                        Conferma foto
+                      </button>
+                      <button type="button"
+                              data-action="camera-capture#close"
+                              class="px-6 py-3 rounded-full bg-slate-200 dark:bg-slate-600 text-slate-700 dark:text-slate-200 text-sm font-medium hover:bg-slate-300 dark:hover:bg-slate-500 transition">
+                        Chiudi
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row gap-2 mt-4 pt-4 border-t border-slate-200">
+            <%= f.submit "Salva", class: "p-3 bg-accent inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer text-white sm:w-auto w-full text-center" %>
+            <%= link_to app_dashboard_path, class: "p-3 bg-gray-300 inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer text-slate-700 sm:w-auto w-full text-center" do %>
+              Annulla
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- QR scanner overlay (inside controller scope) -->
+    <div data-qr-scanner-target="overlay"
+         class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center">
+      <div class="relative bg-white dark:bg-slate-800 rounded-xl p-4 w-full max-w-lg mx-4">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-lg font-semibold text-slate-800 dark:text-slate-100">Scansiona QR Code</h3>
+          <button type="button"
+                  data-action="click->qr-scanner#stop"
+                  class="p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <video id="qr-video-inserimento"
+               data-qr-scanner-target="video"
+               class="w-full aspect-square bg-black rounded-lg"></video>
+        <p class="text-sm text-slate-500 dark:text-slate-400 text-center mt-3">Inquadra un QR code per precompilare il modulo</p>
+      </div>
+    </div>
+
+  </div>
+</section>

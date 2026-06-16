@@ -3,8 +3,9 @@ class User < ApplicationRecord
   has_many :user_roles,    dependent: :destroy
   has_many :user_abilities, dependent: :destroy
   has_many :abilities,     through: :user_abilities
-  has_many :itemins
-  has_many :itemouts
+  has_many :itemins, foreign_key: :operator_id
+  has_many :itemouts, foreign_key: :operator_id
+  has_many :itemmovements, foreign_key: :operator_id
   has_many :tempestas
   has_many :events, dependent: :nullify
 

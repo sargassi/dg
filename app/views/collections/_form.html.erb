@@ -1,9 +1,8 @@
-<%= form_with(model: collection, data: { turbo_frame: "_top" }) do |form| %>
+<%= form_with(model: collection, class: "contents", data: { turbo_frame: "_top" }) do |form| %>
   <% if collection.errors.any? %>
-    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-sm mt-3">
-      <h2><%= t("errors.template.header", count: collection.errors.count, model: "collezione") %>:</h2>
-
-      <ul class="list-disc ml-6">
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium mb-4 border border-red-200 text-sm">
+      <h2><%= pluralize(collection.errors.count, "error") %> impediscono il salvataggio:</h2>
+      <ul class="mt-1 list-disc list-inside">
         <% collection.errors.each do |error| %>
           <li><%= error.full_message %></li>
         <% end %>
@@ -12,11 +11,11 @@
   <% end %>
 
   <div class="my-5">
-    <%= form.label 'Descrizione' %>
-    <%= form.text_field :description, class: ["block shadow rounded-sm border outline-none px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": collection.errors[:description].none?, "border-red-400 focus:outline-red-600": collection.errors[:description].any?}] %>
+    <%= form.label :description, "Descrizione collezione", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+    <%= form.text_field :description, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", placeholder: "Descrizione collezione", required: true %>
   </div>
 
-  <div class="inline">
-    <%= form.submit class: "rounded-sm px-3.5 py-2.5 bg-accent hover:bg-accent-600 text-white inline-block font-medium cursor-pointer" %>
+  <div>
+    <%= form.submit class: "p-3 bg-accent inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer text-white" %>
   </div>
 <% end %>

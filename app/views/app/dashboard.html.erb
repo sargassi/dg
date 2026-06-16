@@ -1,46 +1,63 @@
-<section class="home py-4">
+<div class="<%= style_main_header_container %>">
+  <%= render partial: 'atoms/header', locals: { link: '/', label: 'App', menu: @app_menu } %>
+</div>
 
-  <div class="utility py-4 flex flex-col gap-4">
+<section class="<%= style_main_cnt %> pt-8 space-y-8">
+  <%= link_to app_dashboard_articoli_path, class: "block text-xl font-semibold text-slate-800 hover:text-accent transition" do %>
+    Articoli
+  <% end %>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
-    <div class="bg-indigo-50 p-4 card w-full">
-      <h3 class="font-semibold border-b border-slate-200 mb-2">
-        <a href="/app/in-warehouse" class="text-xl my-2 block text-slate-700">
-          <span class="material-symbols-outlined align-middle mr-2">download</span>
-          Prodotti in Magazzino
-        </a>
-      </h3>
-      <div class="flex justify-between">
-        <p class="text-muted text-xs">Registra ingresso merce in magazzino</p>
-        <a href="/app/in-warehouse"><span class="material-symbols-outlined">arrow_forward_ios</span></a>
-      </div>
-    </div>
+    <%= link_to app_inserimento_path, class: "bg-blue-50 p-4 card flex flex-col items-center justify-center text-center aspect-square shadow-md hover:bg-blue-100 transition" do %>
+      <span class="material-symbols-outlined text-4xl text-blue-600 mb-2">add_box</span>
+      <span class="text-lg font-semibold text-slate-700">Inserimento</span>
+      <p class="text-muted text-xs mt-1">Inserisci un nuovo articolo</p>
+    <% end %>
 
-    <div class="bg-indigo-50 p-4 card w-full">
-      <h3 class="font-semibold border-b border-slate-200 mb-2">
-        <a href="/app/out-warehouse" class="text-xl my-2 block text-slate-700">
-          <span class="material-symbols-outlined align-middle mr-2">upload</span>
-          Prodotti fuori Magazzino
-        </a>
-      </h3>
-      <div class="flex justify-between">
-        <p class="text-muted text-xs">Registra uscita merce dal magazzino</p>
-        <a href="/app/out-warehouse"><span class="material-symbols-outlined">arrow_forward_ios</span></a>
-      </div>
-    </div>
+    <%= link_to "#", class: "bg-blue-50 p-4 card flex flex-col items-center justify-center text-center aspect-square shadow-md hover:bg-blue-100 transition" do %>
+      <span class="material-symbols-outlined text-4xl text-blue-600 mb-2">upload_file</span>
+      <span class="text-lg font-semibold text-slate-700">Importa</span>
+      <p class="text-muted text-xs mt-1">Importa articoli da Excel</p>
+    <% end %>
 
-    <div class="bg-indigo-50 p-4 card w-full">
-      <h3 class="font-semibold border-b border-slate-200 mb-2">
-        <a href="/app/move-products" class="text-xl my-2 block text-slate-700">
-          <span class="material-symbols-outlined align-middle mr-2">swap_horiz</span>
-          Sposta Prodotti
-        </a>
-      </h3>
-      <div class="flex justify-between">
-        <p class="text-muted text-xs">Spostamento tra location diverse</p>
-        <a href="/app/move-products"><span class="material-symbols-outlined">arrow_forward_ios</span></a>
-      </div>
-    </div>
+    <%= link_to "#", class: "bg-blue-50 p-4 card flex flex-col items-center justify-center text-center aspect-square shadow-md hover:bg-blue-100 transition" do %>
+      <span class="material-symbols-outlined text-4xl text-blue-600 mb-2">payments</span>
+      <span class="text-lg font-semibold text-slate-700">Prezzi</span>
+      <p class="text-muted text-xs mt-1">Confronto storico prezzi</p>
+    <% end %>
 
   </div>
 
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+    <%= link_to app_itemins_list_path, class: "bg-green-50 p-4 card flex flex-col items-center justify-center text-center aspect-square shadow-md hover:bg-green-100 transition" do %>
+      <span class="material-symbols-outlined text-4xl text-green-600 mb-2">list_alt</span>
+      <span class="text-lg font-semibold text-slate-700">Elenco Carichi</span>
+      <p class="text-muted text-xs mt-1">Visualizza e cerca carichi merce</p>
+    <% end %>
+
+    <%= link_to app_itemouts_list_path, class: "bg-red-50 p-4 card flex flex-col items-center justify-center text-center aspect-square shadow-md hover:bg-red-100 transition" do %>
+      <span class="material-symbols-outlined text-4xl text-red-600 mb-2">list_alt</span>
+      <span class="text-lg font-semibold text-slate-700">Elenco Scarichi</span>
+      <p class="text-muted text-xs mt-1">Visualizza e cerca scarichi merce</p>
+    <% end %>
+
+    <%= link_to app_itemmovements_list_path, class: "bg-orange-50 p-4 card flex flex-col items-center justify-center text-center aspect-square shadow-md hover:bg-orange-100 transition" do %>
+      <span class="material-symbols-outlined text-4xl text-orange-600 mb-2">swap_vert</span>
+      <span class="text-lg font-semibold text-slate-700">Elenco Variazioni</span>
+      <p class="text-muted text-xs mt-1">Visualizza e cerca spostamenti merce</p>
+    <% end %>
+
+  </div>
+
+  <%= link_to app_dashboard_produzione_path, class: "block text-xl font-semibold text-slate-800 hover:text-accent transition" do %>
+    Produzione
+  <% end %>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <%= link_to app_sez_path, class: "bg-amber-50 p-4 card flex flex-col items-center justify-center text-center aspect-square shadow-md hover:bg-amber-100 transition" do %>
+      <span class="material-symbols-outlined text-4xl text-amber-600 mb-2">qr_code_scanner</span>
+      <span class="text-lg font-semibold text-slate-700">Avanzamento</span>
+      <p class="text-muted text-xs mt-1">Controllo passaggi produzione</p>
+    <% end %>
+  </div>
 </section>

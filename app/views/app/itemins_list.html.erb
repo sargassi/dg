@@ -1,0 +1,153 @@
+<div class="<%= style_main_header_container %>">
+  <%= render partial: 'atoms/header', locals: {link: '/', label: 'Carichi', menu: @app_menu} %>
+</div>
+
+<section class="<%= style_main_cnt %> flex flex-col" style="height: calc(100vh - 140px);" data-controller="search-filter filter-cascade">
+  <div class="flex gap-4 items-center mb-4 flex-none">
+    <%= form_with url: app_itemins_list_path, method: :get,
+                  data: { search_filter_target: "form", turbo_frame: "itemins-table" },
+                  class: "flex items-center gap-3" do |f| %>
+      <div class="relative">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 text-base pointer-events-none">search</span>
+        <%= f.search_field :q,
+              value: params[:q],
+              placeholder: "Cerca articolo",
+              class: "#{style_search_input} rounded-lg pl-10 font-mono text-blue-600",
+              data: { action: "input->search-filter#filter", search_filter_target: "input" } %>
+      </div>
+      <%= f.date_field :date,
+            value: params[:date],
+            class: "border border-slate-300 outline-none px-2 py-1.5 text-xs rounded-lg dark:bg-slate-700 dark:text-slate-200 dark:border-slate-600 dark:[color-scheme:dark]",
+            data: { action: "change->search-filter#filter" } %>
+      <%= f.select :operator_id,
+            options_from_collection_for_select(@operators, :id, :name, params[:operator_id]),
+            { include_blank: "Tutti gli operatori" },
+            class: "border border-slate-300 outline-none px-3 py-1.5 text-xs rounded-lg min-w-[200px] uppercase dark:border-slate-600 #{params[:operator_id].present? ? 'bg-blue-400 dark:bg-blue-600 text-white dark:text-white' : 'bg-white dark:bg-slate-700 dark:text-slate-200'}",
+            data: { action: "change->search-filter#filter", search_filter_target: "select" } %>
+      <%= f.select :warehouse_id,
+            options_from_collection_for_select(@warehouses, :id, :code, params[:warehouse_id]),
+            { include_blank: "Tutti i magazzini" },
+            class: "border border-slate-300 outline-none px-3 py-1.5 text-xs rounded-lg min-w-[200px] uppercase dark:border-slate-600 #{params[:warehouse_id].present? ? 'bg-blue-400 dark:bg-blue-600 text-white dark:text-white' : 'bg-white dark:bg-slate-700 dark:text-slate-200'}",
+            data: { action: "change->search-filter#filter", search_filter_target: "select", filter_cascade_target: "warehouse" } %>
+      <%= f.select :location_id,
+            {},
+            {},
+            class: "border border-slate-300 outline-none px-3 py-1.5 text-xs rounded-lg min-w-[200px] uppercase dark:border-slate-600 #{params[:location_id].present? ? 'bg-blue-400 dark:bg-blue-600 text-white dark:text-white' : 'bg-white dark:bg-slate-700 dark:text-slate-200'}",
+            data: { action: "change->search-filter#filter", search_filter_target: "select", filter_cascade_target: "location" } do %>
+        <%= content_tag :option, "Tutte le ubiche", value: "" %>
+        <% @locations.each do |loc| %>
+          <%= content_tag :option, loc.code, value: loc.id,
+                data: { warehouse_id: loc.warehouse_id },
+                selected: (params[:location_id] == loc.id.to_s) %>
+        <% end %>
+      <% end %>
+    <% end %>
+    <span class="text-sm font-bold text-slate-700 whitespace-nowrap border border-slate-300 rounded-full px-3 py-1 dark:text-slate-200 dark:border-slate-600 dark:bg-slate-700" data-search-filter-target="count"><%= @pagy.count %> carichi</span>
+  </div>
+
+  <style>
+    turbo-frame#itemins-table[busy] .itemins-table-content { display: none; }
+    turbo-frame#itemins-table[busy] .itemins-table-loader { display: flex; }
+  </style>
+  <%= turbo_frame_tag "itemins-table", class: "flex flex-col flex-1 min-h-0", data: { action: "turbo:frame-load->search-filter#onFrameLoad" } do %>
+    <div class="itemins-table-content flex flex-col flex-1 min-h-0">
+      <span hidden data-filtered-count><%= @pagy.count %></span>
+      <div class="overflow-x-auto flex-1 min-h-0 overflow-y-auto">
+        <table class="min-w-full">
+          <thead>
+            <tr>
+              <% %w[Data Operatore Contenuto Etichette].each do |h| %>
+                <th class="<%= style_table_th %> sticky top-0 z-10"><%= h %></th>
+              <% end %>
+            </tr>
+          </thead>
+          <tbody>
+            <% @itemins.each do |itemin| %>
+              <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                <td class="<%= style_table_td %> font-mono whitespace-nowrap text-sm"><%= itemin.indate.strftime("%d-%m-%Y") %></td>
+                <td class="<%= style_table_td %> text-xs"><%= itemin.operator&.name %></td>
+                <td class="<%= style_table_td %> p-0">
+                  <table class="w-full text-xs border-collapse border border-slate-300 dark:border-slate-600 table-fixed">
+                    <colgroup>
+                      <col class="w-20">
+                      <col class="w-14">
+                      <col class="w-10">
+                      <col class="w-14">
+                    </colgroup>
+                    <tbody>
+                      <% itemin.itemins_details.each_with_index do |d, i| %>
+                        <tr class="<%= i == itemin.itemins_details.length - 1 ? '' : 'border-b border-slate-200 dark:border-slate-600' %> <%= i.even? ? 'bg-white dark:bg-slate-800' : 'bg-slate-50/50 dark:bg-slate-700/30' %>">
+                          <td class="px-2 py-1 font-mono whitespace-nowrap border border-slate-300 dark:border-slate-600"><%= d.item ? "#{d.item.itemcode}#{d.item.fabricode}#{d.item.varcode}" : d.itemcode %></td>
+                          <td class="px-2 py-1 text-right font-mono font-bold border border-slate-300 dark:border-slate-600 text-green-600 dark:text-green-400"><%= d.qty %></td>
+                          <td class="px-2 py-1 border border-slate-300 dark:border-slate-600"><%= d.warehouse&.code %></td>
+                          <td class="px-2 py-1 border border-slate-300 dark:border-slate-600"><%= d.location&.code || "-" %></td>
+                        </tr>
+                      <% end %>
+                    </tbody>
+                  </table>
+                </td>
+                <td class="<%= style_table_td %> text-center bg-red-50">
+                  <a href="#" class="text-red-600 hover:text-red-800 transition-colors" title="Stampa etichette">
+                    <span class="material-symbols-outlined text-lg font-bold">print</span>
+                  </a>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <% if @pagy.pages > 1 %>
+        <div class="flex-none flex items-center gap-0.5 justify-end pt-3 pb-1">
+          <% if @pagy.prev %>
+             <a href="<%= pagy_url_for(@pagy, @pagy.prev) %>"
+               data-turbo-frame="itemins-table"
+               class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm text-slate-700 hover:bg-slate-100 transition-colors dark:text-slate-200 dark:hover:bg-slate-700">
+               <span class="material-symbols-outlined text-base">chevron_left</span>
+             </a>
+          <% else %>
+             <span class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm text-slate-300 dark:text-slate-500 pointer-events-none">
+               <span class="material-symbols-outlined text-base">chevron_left</span>
+             </span>
+          <% end %>
+
+          <% @pagy.series.each do |item| %>
+            <% if item.is_a?(Integer) %>
+               <a href="<%= pagy_url_for(@pagy, item) %>"
+                  data-turbo-frame="itemins-table"
+                  class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm text-slate-700 hover:bg-slate-100 transition-colors dark:text-slate-200 dark:hover:bg-slate-700">
+                 <%= item %>
+               </a>
+            <% elsif item == :gap %>
+              <span class="px-1 text-slate-400 dark:text-slate-500 text-xs">…</span>
+            <% elsif item == @pagy.page %>
+              <span class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm bg-accent text-white font-medium">
+                <%= item %>
+              </span>
+            <% end %>
+          <% end %>
+
+          <% if @pagy.next %>
+             <a href="<%= pagy_url_for(@pagy, @pagy.next) %>"
+                data-turbo-frame="itemins-table"
+                class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm text-slate-700 hover:bg-slate-100 transition-colors dark:text-slate-200 dark:hover:bg-slate-700">
+               <span class="material-symbols-outlined text-base">chevron_right</span>
+             </a>
+          <% else %>
+             <span class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm text-slate-300 dark:text-slate-500 pointer-events-none">
+               <span class="material-symbols-outlined text-base">chevron_right</span>
+             </span>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="itemins-table-loader hidden justify-center items-center py-12">
+      <svg class="animate-spin h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      <span class="ml-3 text-slate-600 dark:text-slate-300">Ricerca in corso...</span>
+    </div>
+  <% end %>
+</section>

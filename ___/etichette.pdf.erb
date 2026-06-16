@@ -1,0 +1,39 @@
+<div id="et">
+        <% counter = 0 %>
+        <% i = 0 %>
+       <% @products.each do |iz, val| %>
+        <% if i == 0 %>
+          <% val.sort.each do |product| %>
+
+             <% qty = product.qty.to_i %>
+              <% qty.times do %>
+                <% if product.note == '' %>
+                  <div class="cell">
+                <% else %>
+                  <div class="cell notez">
+                <% end %>
+                  <div class="sub">
+                    <%= product.itemcode %> <%= product.fabricode %> <%= product.varcode %>
+                    <p>
+                      <%= raw(product.description.gsub(/\R+/, '<br/>')) %></p>
+
+                    <p>tg <%= product.tg %></p>
+                <%= raw(product.color.gsub(/\R+/, '<br/>')) if !product.color.nil? %><br>
+                <%= product.materiale %>
+                <% if product.note.present? %>
+                 <p> <%= product.note %> </p>
+                <% end %>
+                </div>
+                <% counter = counter + 1 %>
+                </div>
+              <% if counter.modulo(24) == 0 %>
+              <div style="clear:both; page-break-after: always;"></div>
+              <% end %>
+            <% end %>
+
+          <% end %>
+
+        <% i += 1 %>
+    <% end %>
+    <% end %>
+</div>

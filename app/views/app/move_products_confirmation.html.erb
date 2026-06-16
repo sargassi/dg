@@ -1,0 +1,59 @@
+<% menu = [
+  { label: 'Dashboard', path: inventories_dashboard_path, active: false, icon: 'dashboard', can: 'manage_inventory' },
+  { label: 'Ricerca magazzino', path: inventories_path, active: false, icon: 'inventory_2', can: 'manage_inventory' },
+  { label: 'Movimenti', path: inventories_movements_path, active: false, icon: 'swap_vert', can: 'manage_itemins' },
+  { label: 'Magazzini e ubiche', path: warehouses_path, active: false, icon: 'warehouse', can: 'manage_warehouses' },
+] %>
+<div class="<%= style_main_header_container %>">
+  <%= render partial: 'atoms/header', locals: { link: inventories_dashboard_path, label: 'Spostamento Creato', menu: menu } %>
+</div>
+
+<section class="<%= style_main_cnt %> space-y-6">
+  <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-6 text-center">
+    <span class="material-symbols-outlined text-5xl text-emerald-600">check_circle</span>
+    <h2 class="text-xl font-semibold text-emerald-800 mt-2">Spostamento creato con successo</h2>
+    <p class="text-sm text-emerald-600 mt-1">
+      <%= @movements.first.indate.strftime("%d-%m-%Y") %> &mdash;
+      <%= pluralize(@movements.sum { |m| m.itemmovements_details.size }, "articolo") %>
+      su <%= pluralize(@movements.size, "spostamento") %>
+    </p>
+  </div>
+
+  <% @movements.each do |movement| %>
+    <% src_wh = movement.source_warehouse&.code || "—" %>
+    <% src_loc = movement.source_location&.code || "—" %>
+    <% dst_wh = movement.dest_warehouse&.code || "—" %>
+    <% dst_loc = movement.dest_location&.code || "—" %>
+    <div class="bg-white border border-slate-200 rounded-lg overflow-hidden">
+      <div class="bg-slate-50 px-4 py-2 border-b border-slate-200 flex items-center gap-3 text-xs">
+        <span class="font-bold text-slate-500">#M<%= movement.id %></span>
+        <span class="text-red-500 font-semibold">Da: <%= src_wh %><%= src_loc != "—" ? " / #{src_loc}" : "" %></span>
+        <span class="material-symbols-outlined text-sm text-slate-400">arrow_forward</span>
+        <span class="text-green-600 font-semibold">A: <%= dst_wh %><%= dst_loc != "—" ? " / #{dst_loc}" : "" %></span>
+      </div>
+      <table class="min-w-full text-xs">
+        <thead>
+          <tr>
+            <th class="<%= style_table_th %>">Codice</th>
+            <th class="<%= style_table_th %> w-16">Q.tà</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% movement.itemmovements_details.each do |d| %>
+            <tr>
+              <td class="<%= style_table_td %> font-mono"><%= d.item&.gencode.presence || d.itemcode %></td>
+              <td class="<%= style_table_td %> text-center"><%= d.qty %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+
+  <div class="flex justify-center gap-4">
+    <%= link_to inventories_dashboard_path, class: "rounded-lg py-3 px-6 border border-slate-300 text-slate-700 font-medium inline-block hover:bg-slate-50" do %>
+      <span class="material-symbols-outlined text-base align-middle">arrow_back</span> Indietro
+    <% end %>
+    <%= link_to "Nuovo spostamento", app_move_products_path, class: "rounded-lg py-3 px-6 bg-accent text-white font-medium cursor-pointer inline-block" %>
+  </div>
+</section>

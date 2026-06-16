@@ -10,8 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
-  create_table "abilities", force: :cascade do |t|
+ActiveRecord::Schema[7.2].define(version: 2026_06_12_111113) do
+  create_table "abilities", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "description"
     t.string "category"
@@ -20,7 +20,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
     t.index ["name"], name: "index_abilities_on_name", unique: true
   end
 
-  create_table "action_text_rich_texts", force: :cascade do |t|
+  create_table "action_text_rich_texts", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "body"
     t.string "record_type", null: false
@@ -30,7 +30,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
     t.index ["record_type", "record_id", "name"], name: "index_action_text_rich_texts_uniqueness", unique: true
   end
 
-  create_table "active_storage_attachments", force: :cascade do |t|
+  create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
     t.bigint "record_id", null: false
@@ -40,7 +40,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
     t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
   end
 
-  create_table "active_storage_blobs", force: :cascade do |t|
+  create_table "active_storage_blobs", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "key", null: false
     t.string "filename", null: false
     t.string "content_type"
@@ -52,13 +52,13 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
     t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
   end
 
-  create_table "active_storage_variant_records", force: :cascade do |t|
+  create_table "active_storage_variant_records", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
-  create_table "api_tokens", force: :cascade do |t|
+  create_table "api_tokens", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.boolean "active"
     t.text "token"
@@ -67,19 +67,20 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
     t.index ["user_id"], name: "index_api_tokens_on_user_id"
   end
 
-  create_table "areas", force: :cascade do |t|
+  create_table "areas", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "collections", force: :cascade do |t|
+  create_table "collections", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "row_order", default: 0, null: false
   end
 
-  create_table "eticamps", force: :cascade do |t|
+  create_table "eticamps", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "itemcode"
     t.string "fabricode"
     t.string "varcode"
@@ -89,7 +90,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "etichecks", force: :cascade do |t|
+  create_table "etichecks", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "itemcode"
     t.string "fabricode"
     t.string "varcode"
@@ -106,7 +107,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "etigens", force: :cascade do |t|
+  create_table "etigens", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "riga1"
     t.string "riga2"
     t.string "riga3"
@@ -121,7 +122,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
     t.integer "pages", default: 1
   end
 
-  create_table "etilabs", force: :cascade do |t|
+  create_table "etilabs", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "itemcode"
     t.string "fabricode"
     t.string "varcode"
@@ -142,7 +143,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
     t.integer "ragg"
   end
 
-  create_table "events", force: :cascade do |t|
+  create_table "events", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "name"
     t.date "start_time"
     t.date "end_time"
@@ -151,12 +152,15 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
     t.datetime "updated_at", null: false
     t.string "recurrent"
     t.text "description"
+    t.bigint "user_id"
+    t.boolean "enabled", default: true, null: false
     t.index ["end_time"], name: "index_events_on_end_time"
     t.index ["eventype_id"], name: "index_events_on_eventype_id"
     t.index ["start_time"], name: "index_events_on_start_time"
+    t.index ["user_id"], name: "index_events_on_user_id"
   end
 
-  create_table "eventypes", force: :cascade do |t|
+  create_table "eventypes", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "name"
     t.boolean "enabled", default: true
     t.datetime "created_at", null: false
@@ -164,7 +168,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
     t.string "color", default: "#3B82F6"
   end
 
-  create_table "fabriclus", force: :cascade do |t|
+  create_table "fabriclus", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "fab"
     t.string "var"
     t.integer "year"
@@ -178,14 +182,14 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
     t.string "supplier"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.decimal "mtkg"
-    t.decimal "mtkg20"
-    t.decimal "mtkgprezzi"
-    t.decimal "mtkg20prezzi"
+    t.decimal "mtkg", precision: 10
+    t.decimal "mtkg20", precision: 10
+    t.decimal "mtkgprezzi", precision: 10
+    t.decimal "mtkg20prezzi", precision: 10
     t.string "perche"
   end
 
-  create_table "inventories", force: :cascade do |t|
+  create_table "inventories", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.integer "qtyavailable"
     t.integer "minstock"
     t.integer "maxstock"
@@ -200,15 +204,17 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
     t.datetime "updated_at", null: false
     t.string "gencode"
     t.bigint "item_id"
+    t.bigint "itemmovement_id"
     t.index ["item_id"], name: "index_inventories_on_item_id"
     t.index ["itemins_id"], name: "index_inventories_on_itemins_id"
+    t.index ["itemmovement_id"], name: "index_inventories_on_itemmovement_id"
     t.index ["itemouts_id"], name: "index_inventories_on_itemouts_id"
     t.index ["location_id"], name: "index_inventories_on_location_id"
     t.index ["operationtype_id"], name: "index_inventories_on_operationtype_id"
     t.index ["warehouse_id"], name: "index_inventories_on_warehouse_id"
   end
 
-  create_table "itemins", force: :cascade do |t|
+  create_table "itemins", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.date "indate"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -217,7 +223,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
     t.string "description"
   end
 
-  create_table "itemins_details", force: :cascade do |t|
+  create_table "itemins_details", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "itemin_id", null: false
     t.string "itemcode"
     t.integer "qty"
@@ -231,7 +237,33 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
     t.index ["itemin_id"], name: "index_itemins_details_on_itemin_id"
   end
 
-  create_table "itemouts", force: :cascade do |t|
+  create_table "itemmovements", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.date "indate"
+    t.text "notes"
+    t.integer "operator_id"
+    t.integer "source_warehouse_id"
+    t.integer "source_location_id"
+    t.integer "dest_warehouse_id"
+    t.integer "dest_location_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "itemmovements_details", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.bigint "itemmovement_id", null: false
+    t.string "itemcode"
+    t.integer "qty"
+    t.integer "item_id"
+    t.integer "collection_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "warehouse_id"
+    t.integer "location_id"
+    t.integer "operationtype_id"
+    t.index ["itemmovement_id"], name: "index_itemmovements_details_on_itemmovement_id"
+  end
+
+  create_table "itemouts", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.date "indate"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -239,7 +271,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
     t.integer "operator_id"
   end
 
-  create_table "itemouts_details", force: :cascade do |t|
+  create_table "itemouts_details", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "itemout_id", null: false
     t.string "itemcode"
     t.integer "qty"
@@ -253,7 +285,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
     t.index ["itemout_id"], name: "index_itemouts_details_on_itemout_id"
   end
 
-  create_table "items", force: :cascade do |t|
+  create_table "items", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "itemcode"
     t.string "fabricode"
     t.string "varcode"
@@ -262,7 +294,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
     t.text "note"
     t.string "fabric"
     t.string "colour"
-    t.decimal "unit_price"
+    t.decimal "unit_price", precision: 10
     t.string "materiale"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -272,7 +304,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
     t.index ["collection_id"], name: "index_items_on_collection_id"
   end
 
-  create_table "locations", force: :cascade do |t|
+  create_table "locations", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "code"
     t.bigint "warehouse_id", null: false
     t.boolean "enabled"
@@ -282,14 +314,14 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
     t.index ["warehouse_id"], name: "index_locations_on_warehouse_id"
   end
 
-  create_table "operationtypes", force: :cascade do |t|
+  create_table "operationtypes", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "code"
     t.string "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "prodrow", force: :cascade do |t|
+  create_table "prodrow", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "prodrow"
     t.bigint "prodcode_id", null: false
     t.bigint "area_id", null: false
@@ -301,7 +333,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
     t.index ["prodcode_id"], name: "index_prodrow_on_prodcode_id"
   end
 
-  create_table "products", force: :cascade do |t|
+  create_table "products", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "prodcode"
     t.string "itemcode"
     t.string "fabricode"
@@ -319,7 +351,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
     t.integer "group"
   end
 
-  create_table "products_imports", force: :cascade do |t|
+  create_table "products_imports", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "prodcode"
     t.string "itemcode"
     t.string "fabricode"
@@ -334,7 +366,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "proformas", force: :cascade do |t|
+  create_table "proformas", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.text "customer"
     t.date "data_in"
     t.time "data_out"
@@ -346,7 +378,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
     t.index ["closed"], name: "index_proformas_on_closed"
   end
 
-  create_table "prows", force: :cascade do |t|
+  create_table "prows", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.text "code"
     t.bigint "proforma_id", null: false
     t.text "description"
@@ -381,7 +413,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
     t.index ["proforma_id"], name: "index_prows_on_proforma_id"
   end
 
-  create_table "rassegnas", force: :cascade do |t|
+  create_table "rassegnas", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "titolo"
     t.string "tipologia"
     t.integer "anno"
@@ -400,7 +432,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
     t.string "fotografo"
   end
 
-  create_table "size_zone_qties", force: :cascade do |t|
+  create_table "size_zone_qties", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "size_id", null: false
     t.bigint "zone_id", null: false
     t.datetime "created_at", null: false
@@ -409,26 +441,26 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
     t.index ["zone_id"], name: "index_size_zone_qties_on_zone_id"
   end
 
-  create_table "sizes", force: :cascade do |t|
+  create_table "sizes", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "stations", force: :cascade do |t|
+  create_table "stations", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.text "description"
     t.text "note"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "taglia", force: :cascade do |t|
+  create_table "taglia", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "tempesta", force: :cascade do |t|
+  create_table "tempesta", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "prow_id", null: false
     t.boolean "f0", default: true
     t.boolean "f1"
@@ -453,13 +485,13 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
     t.index ["user_id"], name: "index_tempesta_on_user_id"
   end
 
-  create_table "uoms", force: :cascade do |t|
+  create_table "uoms", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "code"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "user_abilities", force: :cascade do |t|
+  create_table "user_abilities", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "ability_id", null: false
     t.bigint "granted_by_id", null: false
@@ -471,7 +503,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
     t.index ["user_id"], name: "index_user_abilities_on_user_id"
   end
 
-  create_table "user_roles", force: :cascade do |t|
+  create_table "user_roles", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "role", null: false
     t.datetime "created_at", null: false
@@ -480,7 +512,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
     t.index ["user_id"], name: "index_user_roles_on_user_id"
   end
 
-  create_table "users", force: :cascade do |t|
+  create_table "users", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.string "reset_password_token"
@@ -509,7 +541,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
-  create_table "warehouses", force: :cascade do |t|
+  create_table "warehouses", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "code"
     t.string "address"
     t.string "city"
@@ -523,7 +555,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
     t.text "qrcode_svg"
   end
 
-  create_table "zones", force: :cascade do |t|
+  create_table "zones", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -533,13 +565,16 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_26_115339) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "api_tokens", "users"
   add_foreign_key "events", "eventypes"
+  add_foreign_key "events", "users"
   add_foreign_key "inventories", "itemins", column: "itemins_id"
+  add_foreign_key "inventories", "itemmovements"
   add_foreign_key "inventories", "itemouts", column: "itemouts_id"
   add_foreign_key "inventories", "items"
   add_foreign_key "inventories", "locations"
   add_foreign_key "inventories", "operationtypes"
   add_foreign_key "inventories", "warehouses"
   add_foreign_key "itemins_details", "itemins"
+  add_foreign_key "itemmovements_details", "itemmovements"
   add_foreign_key "itemouts_details", "itemouts"
   add_foreign_key "items", "collections"
   add_foreign_key "locations", "warehouses"

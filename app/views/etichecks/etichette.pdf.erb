@@ -1,5 +1,9 @@
+<% pdf_grid_overlay %>
 <div id="lab">
         <% counter = 0 %>
+        <% if counter == 0 || counter.modulo(24) == 0 %>
+            <div class="mm2">&nbsp;</div>
+        <% end %>
         <% i = 0 %>
        <% @products.each do |iz, val| %>
         <% if i == 0 %>
@@ -29,7 +33,7 @@
                 </p>
 
                 <p class="sm" style="border-bottom: 1px dashed #ccc; padding-bottom:.35mm; padding-top:.5mm; font-size: 8pt!important">
-                <span style="font-weight:bold; margin-right: 1mm">tagliato da:</span>JS
+                <span style="font-weight:bold; margin-right: 1mm">tagliato da:</span>
                 </p>
                 <p class="sm" style="border-bottom: 1px dashed #ccc; padding-bottom:.35mm; padding-top:.5mm; font-size: 8pt!important">
                 <span style="font-weight:bold; margin-right: 1mm">cucito da:</span>

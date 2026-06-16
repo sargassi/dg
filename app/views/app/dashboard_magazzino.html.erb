@@ -1,0 +1,27 @@
+<div class="<%= style_main_header_container %>">
+  <%= render partial: 'atoms/header', locals: { link: app_dashboard_path, label: 'Magazzino', menu: @app_menu } %>
+</div>
+
+<section class="<%= style_main_cnt %> pt-8 space-y-8">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+    <%= link_to app_itemins_list_path, class: "bg-green-50 p-4 card flex flex-col items-center justify-center text-center aspect-square shadow-md hover:bg-green-100 transition" do %>
+      <span class="material-symbols-outlined text-4xl text-green-600 mb-2">list_alt</span>
+      <span class="text-lg font-semibold text-slate-700">Elenco Carichi</span>
+      <p class="text-muted text-xs mt-1">Visualizza e cerca carichi merce</p>
+    <% end %>
+
+    <%= link_to app_itemouts_list_path, class: "bg-red-50 p-4 card flex flex-col items-center justify-center text-center aspect-square shadow-md hover:bg-red-100 transition" do %>
+      <span class="material-symbols-outlined text-4xl text-red-600 mb-2">list_alt</span>
+      <span class="text-lg font-semibold text-slate-700">Elenco Scarichi</span>
+      <p class="text-muted text-xs mt-1">Visualizza e cerca scarichi merce</p>
+    <% end %>
+
+    <%= link_to app_itemmovements_list_path, class: "bg-orange-50 p-4 card flex flex-col items-center justify-center text-center aspect-square shadow-md hover:bg-orange-100 transition" do %>
+      <span class="material-symbols-outlined text-4xl text-orange-600 mb-2">swap_vert</span>
+      <span class="text-lg font-semibold text-slate-700">Elenco Variazioni</span>
+      <p class="text-muted text-xs mt-1">Visualizza e cerca spostamenti merce</p>
+    <% end %>
+
+  </div>
+</section>

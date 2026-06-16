@@ -1,6 +1,4 @@
     <% if section.present? %>
-
-
         <section class="bg-accent-50 dark:bg-accent-900/30 my-0">
         <div class="mx-auto section-qr">
             <div id="qr-reader">
@@ -11,7 +9,7 @@
 
     <% end %>
 <section class="<%= style_import_form %> rounded shadow-sm" >
-  <div class="flex items-center justify-center w-full mt-24">
+  <div class="<%= style_search_container %> mt-24">
   <%= search_form_for @q, url: app_check_single_qr_path(:place => params[:place]), data:{turbo_frame: 'success'} do |f| %>
   <% if section.present? %>
       <%= f.search_field :qr_eq, class: style_search_input, placeholder: 'QR Code' %>
@@ -32,13 +30,11 @@
 </section>
 
 <section class="<%= style_import_form %> rounded shadow-sm" >
-  <div class="flex items-center justify-center w-full mb-24 my-8">
+  <div class="<%= style_search_container %> mb-24 my-8">
     <ul class="flex gap-4 w-full justify-center">
     <% @sections.each do |sec| %>
       <li>
-          <% params[:place].present? && params[:place] != '' && params[:place] == sec ? active = 'active' : active = '' %>
-        <a href="<%= "/app/sez?place=#{sec}" %>" class="p-2 bg-slate-50 dark:bg-slate-800 rounded-sm uppercase <%= active %> ">
-
+        <a href="<%= "/app/sez?place=#{sec}" %>" class="<%= style_section_btn(active: (params[:place].present? && params[:place] != '' && params[:place] == sec)) %>">
           <%= sec %>
         </a>
       </li>

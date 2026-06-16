@@ -10,6 +10,7 @@ module.exports = {
   ],
   safelist: [
     'dark:bg-blue-600',
+    'dark:bg-accent',
     'dark:text-white',
   ],
   theme: {

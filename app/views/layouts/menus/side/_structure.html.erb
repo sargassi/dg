@@ -23,6 +23,14 @@
                 <% end %>
             </li>
         <% end %>
+        <% if current_user.godlike? || current_user.can?('manage_app_sectors') %>
+          <li class="<%= style_side_li %>">
+              <%= link_to app_dashboard_path, class: style_side_a(app_dashboard_path) + " " + active_class_for_controllers('app') do %>
+                  <span class="material-symbols-outlined">qr_code_scanner</span>
+                  <span>app</span>
+              <% end %>
+          </li>
+        <% end %>
         <%= render partial: "layouts/menus/side/logout" %>
 
     <% end %>

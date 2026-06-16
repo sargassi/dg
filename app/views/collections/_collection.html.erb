@@ -1,6 +1,22 @@
-<div id="<%= dom_id collection %>">
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Description:</strong>
-    <%= collection.description %>
-  </p>
+<div id="<%= dom_id collection %>" data-id="<%= collection.id %>" class="mb-0 last:border-b-0">
+  <div class="flex items-center justify-between py-2.5 px-3 hover:bg-slate-50 transition-colors border-b border-slate-200">
+    <div class="flex items-center gap-3 min-w-0">
+      <span data-sortable-handle class="material-symbols-outlined text-slate-300 text-xl flex-shrink-0 cursor-grab active:cursor-grabbing">drag_indicator</span>
+      <span class="material-symbols-outlined text-slate-300 text-xl flex-shrink-0">collections_bookmark</span>
+      <div class="min-w-0">
+        <span class="text-sm font-semibold text-slate-800"><%= collection.description %></span>
+      </div>
+      <% if collection.items.any? %>
+        <span class="text-xs text-slate-400 flex-shrink-0"><%= collection.items.count %> articoli</span>
+      <% end %>
+    </div>
+    <div class="flex gap-0.5 items-center flex-shrink-0">
+      <%= link_to edit_collection_path(collection), data: { turbo_frame: "collection_modal" }, class: "p-1.5 text-slate-300 hover:text-accent rounded-sm hover:bg-slate-100 transition-colors" do %>
+        <span class="material-symbols-outlined text-lg">edit</span>
+      <% end %>
+      <%= button_to collection_path(collection), method: :delete, data: { turbo_frame: "_top", turbo_confirm: "Eliminare '#{collection.description}'?" }, class: "p-1.5 text-slate-300 hover:text-red-500 rounded-sm hover:bg-slate-100 transition-colors" do %>
+        <span class="material-symbols-outlined text-lg">delete</span>
+      <% end %>
+    </div>
+  </div>
 </div>

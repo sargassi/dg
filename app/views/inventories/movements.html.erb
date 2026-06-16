@@ -5,7 +5,7 @@
   { label: 'Magazzini e ubiche', path: warehouses_path, active: false, icon: 'warehouse', can: 'manage_warehouses' },
 ] %>
 <div class="<%= style_main_header_container %>">
-  <%= render partial: 'atoms/header', locals: { link: '/', label: 'Storico Movimenti', menu: menu } %>
+  <%= render partial: 'atoms/header', locals: { link: '/', label: 'Movimenti', menu: menu } %>
 </div>
 
 <section class="<%= style_main_cnt %> flex flex-col" style="height: calc(100vh - 140px);" data-controller="search-filter">
@@ -14,7 +14,7 @@
                   data: { search_filter_target: "form", turbo_frame: "movements-table" },
                   class: "flex items-center gap-3" do |f| %>
       <div class="relative">
-        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none">search</span>
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 text-base pointer-events-none">search</span>
         <%= f.search_field :q,
               value: params[:q],
               placeholder: "Cerca articolo",
@@ -22,25 +22,25 @@
               data: { action: "input->search-filter#filter", search_filter_target: "input" } %>
       </div>
       <%= f.select :operationtype_id,
-            options_from_collection_for_select(@operationtypes, :id, :description, params[:operationtype_id]),
+            options_for_select([["IN", 1], ["OUT", 2], ["SPOSTAMENTO", 3]], params[:operationtype_id]),
             { include_blank: "Tutte le operazioni" },
-            class: "border border-accent-100 outline-none p-2 text-xs rounded-lg shadow-sm min-w-[170px] uppercase #{params[:operationtype_id].present? ? 'bg-blue-400 text-white' : 'bg-white'}",
+            class: "border border-slate-300 outline-none px-3 py-1.5 text-xs rounded-lg min-w-[200px] uppercase dark:border-slate-600 #{params[:operationtype_id].present? ? 'bg-blue-400 dark:bg-blue-600 text-white dark:text-white' : 'bg-white dark:bg-slate-700 dark:text-slate-200'}",
             data: { action: "change->search-filter#filter", search_filter_target: "select" } %>
       <%= f.date_field :date_from,
             value: params[:date_from],
-            class: "border border-accent-100 outline-none p-2 text-xs rounded-lg shadow-sm #{params[:date_from].present? ? 'bg-blue-200' : 'bg-white'}",
+            class: "border border-slate-300 outline-none px-2 py-1.5 text-xs rounded-lg dark:bg-slate-700 dark:text-slate-200 dark:border-slate-600 dark:[color-scheme:dark]",
             data: { action: "change->search-filter#filter" } %>
       <%= f.date_field :date_to,
             value: params[:date_to],
-            class: "border border-accent-100 outline-none p-2 text-xs rounded-lg shadow-sm #{params[:date_to].present? ? 'bg-blue-200' : 'bg-white'}",
+            class: "border border-slate-300 outline-none px-2 py-1.5 text-xs rounded-lg dark:bg-slate-700 dark:text-slate-200 dark:border-slate-600 dark:[color-scheme:dark]",
             data: { action: "change->search-filter#filter" } %>
       <%= f.select :operator_id,
             options_from_collection_for_select(@operators, :id, :name, params[:operator_id]),
             { include_blank: "Tutti gli operatori" },
-            class: "border border-accent-100 outline-none p-2 text-xs rounded-lg shadow-sm uppercase min-w-[160px] #{params[:operator_id].present? ? 'bg-blue-400 text-white' : 'bg-white'}",
+            class: "border border-slate-300 outline-none px-3 py-1.5 text-xs rounded-lg min-w-[200px] uppercase dark:border-slate-600 #{params[:operator_id].present? ? 'bg-blue-400 dark:bg-blue-600 text-white dark:text-white' : 'bg-white dark:bg-slate-700 dark:text-slate-200'}",
             data: { action: "change->search-filter#filter", search_filter_target: "select" } %>
     <% end %>
-    <span class="text-sm font-bold text-slate-700 whitespace-nowrap border border-slate-300 rounded-full px-3 py-1" data-search-filter-target="count"><%= @pagy.count %> movimenti</span>
+    <span class="text-sm font-bold text-slate-700 whitespace-nowrap border border-slate-300 rounded-full px-3 py-1 dark:text-slate-200 dark:border-slate-600 dark:bg-slate-700" data-search-filter-target="count"><%= @pagy.count %> movimenti</span>
   </div>
 
   <style>
@@ -51,56 +51,68 @@
     <div class="movements-table-content flex flex-col flex-1 min-h-0">
       <span hidden data-filtered-count><%= @pagy.count %></span>
       <div class="overflow-x-auto flex-1 min-h-0 overflow-y-auto">
-        <table class="min-w-full">
+        <table class="min-w-full text-xs">
           <thead>
-            <tr>
-              <% %w[Tipo Data Articolo Magazzino/Ublica QTA Operatore Documento].each do |h| %>
-                <th class="<%= style_table_th %> sticky top-0 z-10"><%= h %></th>
+            <tr class="sticky top-0 bg-white dark:bg-slate-800 z-10">
+              <% %w[Tipo Data Articolo QTA Magazzino Ubicazione Operatore Documento Azioni].each do |h| %>
+                <th class="<%= style_table_th %>"><%= h %></th>
               <% end %>
             </tr>
           </thead>
           <tbody>
-            <% @movements.each do |mov, type| %>
-              <% is_itemin = type == :itemin %>
-              <% details = is_itemin ? mov.itemins_details : mov.itemouts_details %>
-              <tr class="<%= is_itemin ? 'bg-green-50/30' : 'bg-red-50/30' %>">
+            <% @movements.each do |record, type| %>
+              <% case type
+                 when :itemin %>
+                <% details = record.itemins_details %>
+                <% op_label = "Entrata" %>
+                <% op_class = "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300" %>
+                <% qty_class = "text-green-600 dark:text-green-400" %>
+                <% doc_link = link_to("PDF", inventories_movement_label_path(type: "itemin", id: record.id), target: "_blank", class: "text-blue-600 hover:text-blue-800 underline text-[10px]") %>
+              <% when :itemout %>
+                <% details = record.itemouts_details %>
+                <% op_label = "Uscita" %>
+                <% op_class = "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300" %>
+                <% qty_class = "text-red-600 dark:text-red-400" %>
+                <% doc_link = link_to("PDF", inventories_movement_label_path(type: "itemout", id: record.id), target: "_blank", class: "text-blue-600 hover:text-blue-800 underline text-[10px]") %>
+              <% when :itemmovement %>
+                <% details = record.itemmovements_details %>
+                <% op_label = "Spostamento" %>
+                <% op_class = "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300" %>
+                <% qty_class = "text-orange-600 dark:text-orange-400" %>
+                <% doc_link = link_to("PDF", inventories_movement_label_path(type: "itemmovement", id: record.id), target: "_blank", class: "text-blue-600 hover:text-blue-800 underline text-[10px]") %>
+              <% end %>
+              <% total_qty = details.sum(&:qty) %>
+              <% items_text = details.map { |d| d.item&.gencode.presence || d.itemcode }.join(", ") %>
+              <tr class="<%= 'bg-red-200 dark:bg-red-900/40' if total_qty == 0 %> <%= 'hover:bg-slate-50 dark:hover:bg-slate-700/50' unless total_qty == 0 %>">
                 <td class="<%= style_table_td %>">
-                  <% if is_itemin %>
-                    <span class="inline-block bg-green-100 text-green-700 px-1.5 py-0.5 rounded text-[10px] font-semibold leading-tight">Entrata</span>
+                  <span class="inline-block <%= op_class %> px-1.5 py-0.5 rounded text-[10px] font-semibold leading-tight"><%= op_label %></span>
+                </td>
+                <td class="<%= style_table_td %> font-mono whitespace-nowrap"><%= record.indate.strftime("%d-%m-%Y") %></td>
+                <td class="<%= style_table_td %> font-mono max-w-[200px] truncate" title="<%= items_text %>"><%= items_text %></td>
+                <td class="<%= style_table_td %> text-right font-mono font-bold <%= qty_class %>"><%= total_qty %></td>
+                <td class="<%= style_table_td %> font-mono">
+                  <% if type == :itemmovement %>
+                    <span class="text-red-500 text-[10px] font-semibold">Da:</span> <%= record.source_warehouse&.code || "—" %>
+                    <span class="text-green-600 text-[10px] font-semibold ml-1">A:</span> <%= record.dest_warehouse&.code || "—" %>
                   <% else %>
-                    <span class="inline-block bg-red-100 text-red-700 px-1.5 py-0.5 rounded text-[10px] font-semibold leading-tight">Uscita</span>
+                    <%= details.first&.warehouse&.code || "—" %>
                   <% end %>
                 </td>
-                <td class="<%= style_table_td %> font-mono text-xs"><%= mov.indate.strftime("%d-%m-%Y") %></td>
-                <td class="<%= style_table_td %> p-0">
-                  <table class="w-full text-[11px]">
-                    <% details.each do |d| %>
-                      <tr>
-                        <td class="px-2 py-0.5 font-mono"><%= d.item&.gencode.presence || d.itemcode || "—" %></td>
-                      </tr>
-                    <% end %>
-                  </table>
+                <td class="<%= style_table_td %> font-mono">
+                  <% if type == :itemmovement %>
+                    <span class="text-red-500 text-[10px] font-semibold">Da:</span> <%= record.source_location&.code || "—" %>
+                    <span class="text-green-600 text-[10px] font-semibold ml-1">A:</span> <%= record.dest_location&.code || "—" %>
+                  <% else %>
+                    <%= details.first&.location&.code || "—" %>
+                  <% end %>
                 </td>
-                <td class="<%= style_table_td %> p-0">
-                  <table class="w-full text-[11px]">
-                    <% details.each do |d| %>
-                      <tr>
-                        <td class="px-2 py-0.5 text-xs"><%= d.warehouse&.code %> / <%= d.location&.code %></td>
-                      </tr>
-                    <% end %>
-                  </table>
+                <td class="<%= style_table_td %> text-blue-400 dark:text-blue-300 uppercase font-bold"><%= record.operator&.name %></td>
+                <td class="<%= style_table_td %> font-mono text-blue-600 dark:text-blue-400 whitespace-nowrap"><%= doc_link if type == :itemin && total_qty > 0 %></td>
+                <td class="<%= style_table_td %> whitespace-nowrap">
+                  <%= link_to "Apri", inventories_movement_modal_path(type:, id: record.id),
+                      data: { turbo_frame: "movement_modal" },
+                      class: "text-xs text-blue-600 hover:text-blue-800 underline" %>
                 </td>
-                <td class="<%= style_table_td %> p-0">
-                  <table class="w-full text-[11px]">
-                    <% details.each do |d| %>
-                      <tr>
-                        <td class="px-2 py-0.5 text-right font-mono font-bold"><%= d.qty %></td>
-                      </tr>
-                    <% end %>
-                  </table>
-                </td>
-                <td class="<%= style_table_td %> text-xs text-blue-400 uppercase font-bold"><%= mov.operator&.name %></td>
-                <td class="<%= style_table_td %> font-mono text-xs text-blue-600 whitespace-nowrap"><%= link_to "##{mov.id}", is_itemin ? itemin_path(mov) : itemout_path(mov), class: "hover:underline" %></td>
               </tr>
             <% end %>
           </tbody>
@@ -108,15 +120,15 @@
       </div>
 
       <% if @pagy.pages > 1 %>
-        <div class="mt-4 flex items-center gap-0.5 justify-end">
+        <div class="flex-none flex items-center gap-0.5 justify-end pt-3 pb-1">
           <% if @pagy.prev %>
             <a href="<%= pagy_url_for(@pagy, @pagy.prev) %>"
                data-turbo-frame="movements-table"
-               class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm text-slate-700 hover:bg-slate-100 transition-colors">
+               class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm text-slate-700 hover:bg-slate-100 transition-colors dark:text-slate-200 dark:hover:bg-slate-700">
               <span class="material-symbols-outlined text-base">chevron_left</span>
             </a>
           <% else %>
-            <span class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm text-slate-300 pointer-events-none">
+            <span class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm text-slate-300 dark:text-slate-500 pointer-events-none">
               <span class="material-symbols-outlined text-base">chevron_left</span>
             </span>
           <% end %>
@@ -125,11 +137,11 @@
             <% if item.is_a?(Integer) %>
               <a href="<%= pagy_url_for(@pagy, item) %>"
                  data-turbo-frame="movements-table"
-                 class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm text-slate-700 hover:bg-slate-100 transition-colors">
+                 class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm text-slate-700 hover:bg-slate-100 transition-colors dark:text-slate-200 dark:hover:bg-slate-700">
                 <%= item %>
               </a>
             <% elsif item == :gap %>
-              <span class="px-1 text-slate-400 text-xs">…</span>
+              <span class="px-1 text-slate-400 dark:text-slate-500 text-xs">…</span>
             <% elsif item == @pagy.page %>
               <span class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm bg-accent text-white font-medium">
                 <%= item %>
@@ -140,11 +152,11 @@
           <% if @pagy.next %>
             <a href="<%= pagy_url_for(@pagy, @pagy.next) %>"
                data-turbo-frame="movements-table"
-               class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm text-slate-700 hover:bg-slate-100 transition-colors">
+               class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm text-slate-700 hover:bg-slate-100 transition-colors dark:text-slate-200 dark:hover:bg-slate-700">
               <span class="material-symbols-outlined text-base">chevron_right</span>
             </a>
           <% else %>
-            <span class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm text-slate-300 pointer-events-none">
+            <span class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm text-slate-300 dark:text-slate-500 pointer-events-none">
               <span class="material-symbols-outlined text-base">chevron_right</span>
             </span>
           <% end %>
@@ -157,7 +169,9 @@
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
       </svg>
-      <span class="ml-3 text-slate-600">Ricerca in corso...</span>
+      <span class="ml-3 text-slate-600 dark:text-slate-300">Ricerca in corso...</span>
     </div>
   <% end %>
 </section>
+
+<%= turbo_frame_tag "movement_modal" %>

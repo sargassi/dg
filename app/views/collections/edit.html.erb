@@ -1,10 +1,17 @@
-<% content_for :title, "Editing collection" %>
-
-<div class="md:w-2/3 w-full">
-  <h1 class="font-bold text-4xl">Editing collection</h1>
-
-  <%= render "form", collection: @collection %>
-
-  <%= link_to "Show this collection", @collection, class: "ml-2 rounded-sm px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-  <%= link_to "Back to collections", collections_path, class: "ml-2 rounded-sm px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-</div>
+<%= turbo_frame_tag "collection_modal" do %>
+  <div class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center" data-controller="modal" data-action="keydown.esc->modal#close click->modal#backdropClose">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between p-4 border-b border-slate-200">
+        <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-600">Modifica Collezione</h2>
+        <%= link_to collections_path, class: "text-slate-400 hover:text-slate-600", data: { turbo_frame: "_top" } do %>
+          <span class="material-symbols-outlined text-base">close</span>
+        <% end %>
+      </div>
+      <div class="p-4">
+        <div class="bg-white border border-slate-200 shadow-sm p-6">
+          <%= render 'form', collection: @collection %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

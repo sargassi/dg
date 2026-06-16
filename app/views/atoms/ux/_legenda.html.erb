@@ -6,10 +6,10 @@
     <div class="table  w-full content hidden" id="legend">
         <div class="table-row">
         <% show_leg(['Consegna', 'Controllo', 'Messo da Lavare', 'Lavato', 'Inscatolato']).each do |x| %>
-            <div class="table-cell border p-2 w-8 bg-slate-50 dark:bg-slate-800">
+            <div class="<%= style_legenda_cell(header: true) %>">
             <%= x[0] %>
             </div>
-            <div class="table-cell border p-2 text-start">
+            <div class="<%= style_legenda_cell %>">
             <%= x[1] %>
             </div>
         <% end %>

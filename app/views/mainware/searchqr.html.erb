@@ -1,4 +1,100 @@
-<div>
-  <h1 class="font-bold text-4xl">Mainware#searchqr</h1>
-  <p>Find me in app/views/mainware/searchqr.html.erb</p>
+<% menu = mainware_menu(active: 'ricerca_qr') %>
+<div class="<%= style_main_header_container %>">
+  <%= render partial: 'atoms/header', locals: {link: '/', label: 'Ricerca QR', menu: menu} %>
 </div>
+
+<section class="<%= style_main_cnt %> flex flex-col" style="height: calc(100vh - 140px);"
+         data-controller="search-filter qr-scanner">
+  <div class="flex-none mb-4">
+    <div class="flex flex-col gap-4">
+      <%= form_with url: mainware_searchqr_path, method: :get,
+                    data: { search_filter_target: "form", turbo_frame: "qr-results" },
+                    class: "flex items-center gap-3" do |f| %>
+        <button type="button"
+                data-action="click->qr-scanner#start"
+                data-qr-scanner-target="button"
+                class="flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-accent-300 dark:border-accent-500 text-accent-700 dark:text-accent-200 bg-accent-50 dark:bg-accent-900/20 hover:bg-accent-100 dark:hover:bg-accent-900/40 transition text-sm font-bold whitespace-nowrap">
+          <span class="material-symbols-outlined text-lg">qr_code_scanner</span>
+          Scansiona QR
+        </button>
+        <div class="relative flex-1">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 text-base pointer-events-none">search</span>
+          <%= f.search_field :q,
+                value: params[:q],
+                placeholder: "Cerca per gencode, item, fabric, var...",
+                class: "#{style_search_input} rounded-lg pl-10 font-mono text-blue-600 dark:text-blue-400 w-full",
+                data: { action: "input->search-filter#filter", search_filter_target: "input", qr_scanner_target: "input" } %>
+        </div>
+      <% end %>
+      <% if params[:q].present? %>
+        <span class="text-sm font-bold text-slate-700 dark:text-slate-200 whitespace-nowrap border border-slate-300 dark:border-slate-600 dark:bg-slate-700 rounded-full px-3 py-1 self-start"><%= @itemz.size %> risultati</span>
+      <% end %>
+    </div>
+  </div>
+
+  <style>
+    turbo-frame#qr-results[busy] .qr-results-content { display: none; }
+    turbo-frame#qr-results[busy] .qr-results-loader { display: flex; }
+    turbo-frame#qr-results td svg { width: 100%; height: auto; display: block; }
+  </style>
+
+  <%= turbo_frame_tag "qr-results", class: "flex flex-col flex-1 min-h-0", data: { action: "turbo:frame-load->search-filter#onFrameLoad" } do %>
+    <div class="qr-results-content flex flex-col flex-1 min-h-0 overflow-x-auto">
+      <% if @itemz.any? %>
+        <span hidden data-filtered-count><%= @itemz.size %></span>
+        <div class="overflow-x-auto flex-1 min-h-0 overflow-y-auto">
+          <table class="min-w-full">
+            <thead>
+              <tr>
+                <% %w[Gencode Item Fabric Var. Descrizione Tg Fabric Color Materiale Note Collezione Prezzo QR Immagini Azioni].each do |h| %>
+                  <th class="<%= style_table_th %> sticky top-0 z-10"><%= h %></th>
+                <% end %>
+              </tr>
+            </thead>
+            <%= render partial: 'item_row', collection: @itemz, as: :item, locals: { siblings_by_parent: @siblings_by_parent, return_path: ->(opts = {}) { mainware_searchqr_path(opts) } } %>
+          </table>
+        </div>
+      <% elsif params[:q].present? %>
+        <div class="flex flex-col items-center justify-center py-16 text-slate-400 dark:text-slate-500">
+          <span class="material-symbols-outlined text-6xl mb-4">qr_code_scanner</span>
+          <p class="text-lg font-medium">Nessun risultato per "<%= params[:q] %>"</p>
+          <p class="text-sm mt-1">Prova con un gencode, item code, o codice tessuto diverso</p>
+        </div>
+      <% else %>
+        <div class="flex flex-col items-center justify-center py-16 text-slate-400 dark:text-slate-500">
+          <span class="material-symbols-outlined text-6xl mb-4">qr_code_scanner</span>
+          <p class="text-lg font-medium">Cerca un articolo</p>
+          <p class="text-sm mt-1">Digita un gencode o usa lo scanner QR per trovare un articolo</p>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="qr-results-loader hidden justify-center items-center py-12">
+      <svg class="animate-spin h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.393 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      <span class="ml-3 text-slate-600 dark:text-slate-300">Ricerca in corso...</span>
+    </div>
+  <% end %>
+
+  <%= turbo_frame_tag "item_modal" %>
+
+  <div data-qr-scanner-target="overlay"
+       class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center">
+    <div class="relative bg-white dark:bg-slate-800 rounded-xl p-4 w-full max-w-lg mx-4">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-lg font-semibold text-slate-800 dark:text-slate-100">Scansiona QR Code</h3>
+        <button type="button"
+                data-action="click->qr-scanner#stop"
+                class="p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <video id="qr-video"
+             data-qr-scanner-target="video"
+             class="w-full aspect-square bg-black rounded-lg"></video>
+      <p class="text-sm text-slate-500 dark:text-slate-400 text-center mt-3">Inquadra un QR code per cercare l'articolo</p>
+    </div>
+  </div>
+</section>

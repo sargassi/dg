@@ -15,4 +15,9 @@ class MainwareControllerTest < ActionDispatch::IntegrationTest
     get mainware_searchqr_url
     assert_response :success
   end
+
+  test "should search by q in searchqr" do
+    get mainware_searchqr_url, params: { q: "MyString" }
+    assert_response :success
+  end
 end

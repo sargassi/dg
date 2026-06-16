@@ -1,0 +1,26 @@
+<div class="<%= style_main_header_container %>">
+  <%= render partial: 'atoms/header', locals: { link: app_dashboard_path, label: 'Articolo creato', menu: @app_menu } %>
+</div>
+
+<section class="<%= style_main_cnt %>">
+  <div class="max-w-3xl mx-auto space-y-6">
+    <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-6 text-center">
+      <span class="material-symbols-outlined text-5xl text-emerald-600">check_circle</span>
+      <h2 class="text-xl font-semibold text-emerald-800 mt-2">Articolo creato con successo</h2>
+      <p class="text-sm font-mono text-emerald-700 mt-1"><%= @item.gencode %></p>
+    </div>
+
+    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+      <%= link_to app_inserimento_path, class: "inline-flex items-center gap-1.5 px-5 py-3 bg-accent text-white text-xs uppercase tracking-wider rounded-sm hover:opacity-90 transition-opacity" do %>
+        <span class="material-symbols-outlined text-base">add</span>
+        Nuovo articolo
+      <% end %>
+      <%= link_to app_dashboard_path, class: "inline-flex items-center gap-1.5 px-5 py-3 bg-gray-300 text-slate-700 text-xs uppercase tracking-wider rounded-sm hover:bg-gray-400 transition-colors" do %>
+        <span class="material-symbols-outlined text-base">home</span>
+        Dashboard
+      <% end %>
+    </div>
+
+    <%= render 'items/item_card', item: @item %>
+  </div>
+</section>

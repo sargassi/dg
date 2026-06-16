@@ -14,7 +14,6 @@
   <body class="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 transition-colors">
 
     <% if controller_name == 'app' %>
-      <%= render partial: 'layouts/headers/app' %>
       <%= yield %>
 
     <% elsif controller_name == 'sessions' %>
@@ -24,7 +23,7 @@
 
     <% else %>
         <main class="flex gap-4">
-            <section class="w-16 fixed top-0 left-0 h-screen">
+            <section class="w-16 fixed top-0 left-0 h-screen z-50">
             <%= render partial: '/layouts/menus/side/structure' %>
             </section>
 

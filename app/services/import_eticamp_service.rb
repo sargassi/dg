@@ -6,7 +6,7 @@ class ImportEticampService
     spreadsheet = Roo::Excelx.new(file)
     header = spreadsheet.row(1)
 
-    lastNum = Eticamp.last.present? ? Eticamp.last.group.to_i + 1 : 1
+    Eticamp.last.present? ? lastNum = Etilab.last.group.to_i + 1 : lastnum = 1
     (2..spreadsheet.last_row).each do |i|
       row = Hash[[header, spreadsheet.row(i)].transpose]
       item = Eticamp.new

@@ -40,20 +40,20 @@ class TempestaController < ApplicationController
     td = Tempesta.find(params[:tid])
     desc = td.prow.description
     today = Date.today
-    case sez
-    when 'F1'
+    case sez&.downcase
+    when 'f1'
       td.f1 = true
       td.f1date = today
-    when 'F2'
+    when 'f2'
       td.f2 = true
       td.f2date = today
-    when 'F3'
+    when 'f3'
       td.f3 = true
       td.f3date = today
-    when 'F4'
+    when 'f4'
       td.f4 = true
       td.f4date = today
-    when 'F5'
+    when 'f5'
       td.f5 = true
       td.f5date = today
     else

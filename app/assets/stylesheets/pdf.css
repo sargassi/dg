@@ -2,6 +2,8 @@ body {
     font-family: Arial, sans-serif !important;
     margin: 0;
     padding: 0;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
 }
 
 * {
@@ -15,13 +17,24 @@ body {
     width: 210mm;
 }
 
+.mm2 {
+    height: 4mm;
+    min-height: 4mm;
+}
+
+.mm1 {
+    height: 3mm;
+    min-height: 3mm;
+}
+
 #et .cell,
 #et .notez {
     margin: 0;
     padding: 8mm 6mm 8mm;
     float: left;
     width: 70mm;
-    height: 37mm;
+    height: 36mm;
+    min-height: 36mm;
     position: relative;
     font-size: 8.65pt !important;
     line-height: 10.4pt !important;
@@ -34,7 +47,7 @@ body {
     padding: 8mm 6mm 14mm;
     float: left;
     width: 70mm;
-    height: 37mm;
+    height: 36mm;
     position: relative;
     font-size: 7pt !important;
     line-height: 8pt !important;
@@ -58,7 +71,7 @@ body {
 
 #et .cell.hor,
 #lab .cell.hor {
-    border: 1px solid #ccc;
+  //  border: 1px solid #ccc;
 }
 
 #et .cell .sub p {

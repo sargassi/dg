@@ -1,0 +1,120 @@
+<% menu = [
+  { label: 'Dashboard', path: inventories_dashboard_path, active: false, icon: 'dashboard', can: 'manage_inventory' },
+  { label: 'Ricerca magazzino', path: inventories_path, active: false, icon: 'inventory_2', can: 'manage_inventory' },
+  { label: 'Movimenti', path: inventories_movements_path, active: false, icon: 'swap_vert', can: 'manage_itemins' },
+  { label: 'Magazzini e ubiche', path: warehouses_path, active: false, icon: 'warehouse', can: 'manage_warehouses' },
+] %>
+<div class="<%= style_main_header_container %>">
+  <%= render partial: 'atoms/header', locals: { link: inventories_dashboard_path, label: 'VAR', menu: menu } %>
+</div>
+
+<%= form_with(model: @movement, url: app_move_products_path, id: "movement-form", data: { controller: "qr-scanner" }) do |form| %>
+  <%= form.hidden_field :operator_id, value: current_user.id %>
+
+  <section class="<%= style_main_cnt %>">
+    <div class="max-w-lg mx-auto lg:max-w-none lg:mx-0 lg:grid lg:grid-cols-4 lg:gap-8">
+
+      <%# Destination — mobile first (stacked) / desktop sidebar %>
+      <div class="space-y-3 bg-amber-50 rounded p-3 lg:bg-amber-50 lg:rounded-lg lg:p-5 lg:sticky lg:top-0 lg:self-start lg:col-span-1 lg:order-last">
+        <div data-controller="filter-cascade" class="border-l-4 border-l-orange-700 bg-orange-50 -ml-3 pl-3 py-2 rounded-r lg:-ml-5 lg:pl-5">
+          <label class="text-sm font-bold text-orange-700 uppercase tracking-wide mb-2 inline-flex items-center gap-1">
+            <span class="material-symbols-outlined text-base">arrow_forward</span> Destinazione
+          </label>
+          <select name="dest_warehouse_id" data-filter-cascade-target="warehouse" class="w-full border border-slate-300 outline-none px-2 py-1.5 text-sm bg-white rounded lg:px-3 lg:py-2">
+            <option value="">Seleziona magazzino</option>
+            <% @warehouses.each do |w| %>
+              <option value="<%= w.id %>" <%= 'selected' if @default_dest_warehouse_id.to_s == w.id.to_s %>><%= w.code %></option>
+            <% end %>
+          </select>
+          <select name="dest_location_id" data-filter-cascade-target="location" class="w-full border border-slate-300 outline-none px-2 py-1.5 text-sm bg-white rounded mt-2 lg:px-3 lg:py-2" disabled>
+            <option value="">-</option>
+            <% @locations.each do |l| %>
+              <option value="<%= l.id %>" data-warehouse-id="<%= l.warehouse_id %>" <%= 'selected' if @default_dest_location_id.to_s == l.id.to_s %>><%= l.code %></option>
+            <% end %>
+          </select>
+        </div>
+
+        <div>
+          <%= form.label :indate, "Data", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+          <%= form.date_field :indate, class: "w-full border border-slate-300 outline-none px-2 py-1.5 text-sm bg-white rounded lg:px-3 lg:py-2" %>
+        </div>
+
+        <div>
+          <%= form.label :notes, "Note", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+          <%= form.text_area :notes, rows: 1, class: "w-full border border-slate-300 outline-none px-2 py-1.5 text-sm bg-white rounded lg:px-3 lg:py-2 lg:rows-2" %>
+        </div>
+
+        <div class="pt-2 hidden lg:block">
+          <%= form.submit "Salva Spostamento", class: "w-full rounded py-3 px-5 bg-accent text-white font-medium cursor-pointer text-center lg:rounded-lg" %>
+        </div>
+      </div>
+
+      <%# Details table — shared between mobile/desktop, once %>
+      <div class="mt-4 lg:mt-0 lg:col-span-3 lg:space-y-6">
+        <div class="bg-slate-50 rounded-lg lg:p-4" data-controller="nested-form">
+          <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 shadow-sm p-3 lg:rounded-lg lg:border-0 lg:shadow-none lg:p-0 lg:bg-transparent lg:dark:bg-transparent">
+            <h3 class="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wide mb-3 flex items-center gap-1.5 lg:text-base">
+              <span class="material-symbols-outlined text-slate-400">swap_horiz</span>
+              Dettaglio Spostamento
+            </h3>
+
+            <div class="overflow-x-auto">
+              <table class="min-w-full">
+                <thead>
+                  <tr>
+                    <th class="<%= style_table_th %>">Codice Articolo</th>
+                    <th class="<%= style_table_th %> w-16 lg:w-20">Q.tà</th>
+                    <th class="<%= style_table_th %> w-10"></th>
+                  </tr>
+                </thead>
+                <tbody data-nested-form-target="rows">
+                  <%= form.fields_for :itemmovements_details do |detail_form| %>
+                    <%= render 'move_products_fields', f: detail_form %>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+
+            <template data-nested-form-target="template">
+              <%= form.fields_for :itemmovements_details, ItemmovementsDetail.new, child_index: '__NEW__' do |detail_form| %>
+                <%= render 'move_products_fields', f: detail_form %>
+              <% end %>
+            </template>
+
+            <button type="button"
+                    data-action="nested-form#add"
+                    class="mt-3 w-full py-3 text-sm text-accent hover:text-accent-700 hover:bg-accent-50 border border-accent-200 rounded transition-colors flex items-center justify-center gap-1 lg:px-4 lg:py-2 lg:rounded-sm lg:w-auto">
+              <span class="material-symbols-outlined text-base">add</span>
+              Aggiungi riga
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <%# Mobile submit button (after details) %>
+      <div class="lg:hidden pt-2">
+        <%= form.submit "Salva Spostamento", class: "w-full rounded py-3 px-5 bg-accent text-white font-medium cursor-pointer text-center" %>
+      </div>
+    </div>
+  </section>
+
+  <div data-qr-scanner-target="overlay"
+     class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center">
+  <div class="relative bg-white dark:bg-slate-800 rounded-xl p-4 w-full max-w-lg mx-4">
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="text-lg font-semibold text-slate-800 dark:text-slate-100">Scansiona QR Code</h3>
+      <button type="button"
+              data-action="click->qr-scanner#stop"
+              class="p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <video id="qr-move-video"
+           data-qr-scanner-target="video"
+           class="w-full aspect-square bg-black rounded-lg"></video>
+    <p class="text-sm text-slate-500 dark:text-slate-400 text-center mt-3">Inquadra un QR code</p>
+  </div>
+</div>
+<% end %>
+
+<%= turbo_frame_tag "item_modal" %>

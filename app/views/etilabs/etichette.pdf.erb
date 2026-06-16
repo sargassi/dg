@@ -1,5 +1,9 @@
+<% pdf_grid_overlay %>
 <div id="lab">
         <% counter = 0 %>
+        <% if counter == 0 || counter.modulo(24) == 0 %>
+            <div class="mm1">&nbsp;</div>
+        <% end %>
         <% i = 0 %>
        <% @products.each do |iz, val| %>
         <% if i == 0 %>

@@ -222,8 +222,6 @@ GEM
     mustermann (3.1.1)
     mustermann-grape (1.1.0)
       mustermann (>= 1.0.0)
-    mysql2 (0.5.7)
-      bigdecimal
     net-imap (0.6.4)
       date
       net-protocol
@@ -426,7 +424,6 @@ DEPENDENCIES
   importmap-rails
   jbuilder
   loofah (~> 2.25)
-  mysql2 (~> 0.5)
   pagy (~> 7.0)
   puma (~> 5.6.8)
   rabl

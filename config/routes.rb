@@ -10,6 +10,8 @@ Rails.application.routes.draw do
   get 'inventories/movements'
   get 'inventories/movements/:type/:id/label', to: 'inventories#movement_label', as: :inventories_movement_label, defaults: { format: :pdf }
   get 'inventories/movements/:type/:id/modal', to: 'inventories#movement_modal', as: :inventories_movement_modal
+  get 'inventories/seleziona'
+  post 'inventories/seleziona/prepare_carico', to: 'inventories#prepare_carico', as: :inventories_prepare_carico
   get 'inventories/import'
   post   'inventories/import/parse',      to: 'inventories#import_parse'
   put    'inventories/import/update_row', to: 'inventories#import_update_row'
@@ -141,6 +143,7 @@ Rails.application.routes.draw do
   get 'directory/:id' => 'directory#show', as: :directory_user
   get 'directory/:id/edit' => 'directory#edit', as: :edit_directory_user
   patch 'directory/:id' => 'directory#update'
+  resource :profile, only: [:edit, :update], controller: 'profiles'
   get 'dashboard/home'
   get 'utilities/dashboard'
   get 'utilities/etichette'

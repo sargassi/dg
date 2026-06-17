@@ -1,0 +1,63 @@
+<%= turbo_frame_tag "profile_modal" do %>
+  <div class="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-start justify-center pt-10 overflow-y-auto">
+    <div class="bg-white border border-slate-200 shadow-lg w-full max-w-lg mx-4 my-4">
+      <div class="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+        <h2 class="text-base font-semibold text-slate-700 flex items-center gap-2">
+          <span class="material-symbols-outlined text-slate-400">person</span>
+          Il mio profilo
+        </h2>
+        <%= link_to "#", data: { controller: "closemod", action: "closemod#close", closemod_target: "profile_modal" }, class: "text-slate-400 hover:text-slate-600 transition" do %>
+          <span class="material-symbols-outlined text-lg">close</span>
+        <% end %>
+      </div>
+      <div class="p-5 max-h-[80vh] overflow-y-auto">
+        <%= form_with model: @user, url: profile_path do |f| %>
+          <% if @user.errors.any? %>
+            <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium mb-4 border border-red-200 text-sm">
+              <h2><%= pluralize(@user.errors.count, "error") %> impediscono il salvataggio:</h2>
+              <ul class="mt-1 list-disc list-inside">
+                <% @user.errors.each do |error| %>
+                  <li><%= error.full_message %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <div class="mb-6">
+            <div class="mb-4">
+              <%= f.label :name, "Nome", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= f.text_field :name, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+            </div>
+            <div class="mb-4">
+              <%= f.label :lastname, "Cognome", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= f.text_field :lastname, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+            </div>
+            <div class="mb-4">
+              <%= f.label :email, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= f.email_field :email, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+            </div>
+          </div>
+
+          <hr class="border-slate-200 mb-6">
+
+          <div class="mb-6">
+            <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Cambia password</h3>
+            <p class="text-xs text-slate-400 mb-3">Lascia vuoto per mantenere la password attuale.</p>
+            <div class="mb-4">
+              <%= f.label :password, "Nuova password", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= f.password_field :password, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+            </div>
+            <div>
+              <%= f.label :password_confirmation, "Conferma nuova password", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= f.password_field :password_confirmation, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-4 pt-5 border-t border-slate-200">
+            <%= f.submit "Salva", class: "py-2 px-4 text-sm tracking-wide text-white rounded-sm inline-block cursor-pointer bg-accent hover:bg-accent/90" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

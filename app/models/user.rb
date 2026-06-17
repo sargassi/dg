@@ -31,7 +31,9 @@ class User < ApplicationRecord
   end
 
   def can?(ability_name)
-    godlike? || abilities.exists?(name: ability_name)
+    return true if godlike?
+    return true if ability_name == "manage_app_sectors" && has_role?(:pedone)
+    abilities.exists?(name: ability_name)
   end
 
   def grant_ability(ability, granted_by:)

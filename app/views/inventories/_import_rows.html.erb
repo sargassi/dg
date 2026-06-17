@@ -10,7 +10,14 @@
    end %>
 <tbody id="import-rows">
   <% @data[:rows].each do |row| %>
-    <tr class="hover:bg-slate-50">
+    <tr class="<%= 'bg-red-100' unless row[:_valid] %> hover:bg-slate-50">
+      <td class="<%= style_table_td %> text-center">
+        <% if row[:_valid] %>
+          <span class="text-green-600 text-sm" title="Articolo trovato">✓</span>
+        <% else %>
+          <span class="text-red-600 text-sm font-bold" title="<%= row[:_error] %>">✗</span>
+        <% end %>
+      </td>
       <td class="<%= style_table_td %> text-center">
         <%= button_to inventories_import_delete_row_path(row_index: row[:_index]), method: :delete,
               class: "text-red-500 hover:text-red-700 cursor-pointer bg-transparent border-0",

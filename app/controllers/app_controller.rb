@@ -63,26 +63,26 @@ class AppController < ApplicationController
   def in_warehouse
     if request.post?
       p = in_warehouse_params
-      @itemin = Itemin.new(indate: p[:indate], notes: p[:notes], operator_id: p[:operator_id])
       default_collection_id = params[:default_collection_id]
       default_warehouse_id = params[:default_warehouse_id]
       default_location_id = params[:default_location_id]
-      details = (p[:itemins_details_attributes]&.values || [])
-        .reject { |d| d[:_destroy] == "1" }
-        .reject { |d| d[:itemcode].blank? && d[:item_id].blank? }
-        .map { |d|
-          d = d.except(:_destroy)
-          d[:collection_id] = default_collection_id if d[:collection_id].blank? && default_collection_id.present?
-          d[:warehouse_id] = default_warehouse_id if d[:warehouse_id].blank? && default_warehouse_id.present?
-          d[:location_id] = default_location_id if d[:location_id].blank? && default_location_id.present?
-          d
-        }
-      @itemin.itemins_details.build(details)
+
+      attrs = p.to_h
+      (attrs[:itemins_details_attributes] || {}).each do |key, detail|
+        detail["collection_id"] = default_collection_id if detail["collection_id"].blank? && default_collection_id.present?
+        detail["warehouse_id"] = default_warehouse_id if detail["warehouse_id"].blank? && default_warehouse_id.present?
+        detail["location_id"] = default_location_id if detail["location_id"].blank? && default_location_id.present?
+      end
+      attrs[:itemins_details_attributes]&.reject! { |_, d|
+        d["_destroy"] == "1" || (d["itemcode"].blank? && d["item_id"].blank?)
+      }
+      @itemin = Itemin.new(attrs)
 
       if @itemin.save
         CreateInventoriesFromItemin.new.call(@itemin)
-        redirect_to app_in_warehouse_confirmation_path(itemin_id: @itemin.id)
+        redirect_to app_in_warehouse_confirmation_path(itemin_id: @itemin.id, from_seleziona: params[:from_seleziona])
       else
+        @from_seleziona = params[:from_seleziona] == "1"
         @default_collection_id = params[:default_collection_id]
         @default_warehouse_id = params[:default_warehouse_id]
         @default_location_id = params[:default_location_id]
@@ -93,12 +93,31 @@ class AppController < ApplicationController
     else
       @itemin = Itemin.new(indate: Date.current)
       @default_collection_id = @default_warehouse_id = @default_location_id = nil
+
+      if session[:carico_prefill].present?
+        @from_seleziona = true
+        prefill = session.delete(:carico_prefill)
+        details = prefill.map { |s|
+          item = Item.find_by(id: s["item_id"])
+          {
+            itemcode: item&.gencode || s["gencode"],
+            item_id: s["item_id"],
+            collection_id: s["collection_id"],
+            qty: (s["qty"] || 1).to_i,
+            operationtype_id: 1
+          }
+        }
+        @itemin.itemins_details.build(details)
+        @default_collection_id = details.first["collection_id"]
+      end
+
       load_form_data
     end
   end
 
   def in_warehouse_confirmation
     @itemin = Itemin.includes(itemins_details: [:warehouse, :location, :item]).find(params[:itemin_id])
+    @from_seleziona = params[:from_seleziona] == "1"
   end
 
   def out_warehouse

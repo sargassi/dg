@@ -8,6 +8,7 @@ class ImportInventoryService
     rows = (2..spreadsheet.last_row).map do |i|
       row = Hash[[headers, spreadsheet.row(i)].transpose]
       row[:_index] = i
+      validate_row(row)
       row
     end
 
@@ -20,8 +21,34 @@ class ImportInventoryService
     }
   end
 
+  def validate_row(row)
+    itemcode = row['Item Code:'] || row['itemcode'] || row['Item Code']
+    fabricode = row['fabricode'] || row['Fabric Code'] || row['Fabricode']
+    varcode = row['varcode'] || row['Var Code'] || row['Var']
+
+    if itemcode.blank?
+      row[:_valid] = false
+      row[:_error] = "Item code mancante"
+      return
+    end
+
+    existing = if fabricode.present? && varcode.present?
+      Item.find_by(itemcode: itemcode, fabricode: fabricode, varcode: varcode)
+    else
+      Item.find_by(itemcode: itemcode)
+    end
+
+    if existing
+      row[:_valid] = true
+      row[:_error] = nil
+    else
+      row[:_valid] = false
+      row[:_error] = "Articolo #{itemcode}#{" / #{fabricode}" if fabricode}#{" / #{varcode}" if varcode} non trovato"
+    end
+  end
+
   def save(data, user = nil)
-    stats = { total: data[:rows].size, created: 0, errors: [], items: [], skipped: [] }
+    stats = { total: data[:rows].size, created: 0, errors: [], items: [], skipped: [], invalid: [] }
     op_type_id = data[:operationtype_id].to_i
 
     return stats unless [1, 2].include?(op_type_id)
@@ -36,6 +63,12 @@ class ImportInventoryService
       end
 
       data[:rows].each do |row|
+        unless row[:_valid]
+          itemcode = row['Item Code:'] || row['itemcode'] || row['Item Code']
+          stats[:invalid] << { itemcode: itemcode, row: row[:_index], error: row[:_error] }
+          next
+        end
+
         itemcode = row['Item Code:'] || row['itemcode'] || row['Item Code']
         qty = (row['Qt.'] || row['Quantity'] || row['qtyavailable'] || row['QTA'] || 0).to_i
 
@@ -83,7 +116,14 @@ class ImportInventoryService
 
     stats
   rescue => e
-    stats[:errors] << { row: 0, error: e.message }
+    error_msg = if e.respond_to?(:record) && e.record
+      e.record.errors.full_messages.join(", ")
+    elsif e.message.include?("record_invalid")
+      "Validazione fallita"
+    else
+      e.message
+    end
+    stats[:errors] << { row: 0, error: error_msg }
     stats
   end
 end

@@ -5,7 +5,7 @@
   { label: 'Magazzini e ubiche', path: warehouses_path, active: false, icon: 'warehouse', can: 'manage_warehouses' },
 ] %>
 <div class="<%= style_main_header_container %>">
-  <%= render partial: 'atoms/header', locals: {link: '/', label: 'Inventario / Import', menu: menu} %>
+  <%= render partial: 'atoms/header', locals: {link: '/', label: 'mag Import', menu: menu} %>
 </div>
 
 <section class="<%= style_main_cnt %> flex flex-col overflow-hidden min-w-0" style="height: calc(100vh - 140px);">
@@ -34,7 +34,8 @@
       <table class="min-w-full">
         <thead>
           <tr>
-            <th class="<%= style_table_th %> sticky top-0 z-10 w-12 text-center"></th>
+            <th class="<%= style_table_th %> sticky top-0 z-10 w-10 text-center"></th>
+            <th class="<%= style_table_th %> sticky top-0 z-10 w-10 text-center"></th>
             <th class="<%= style_table_th %> sticky top-0 z-10 w-16 text-center">Riga</th>
             <% display_headers.each do |h| %>
               <th class="<%= style_table_th %> sticky top-0 z-10"><%= h %></th>

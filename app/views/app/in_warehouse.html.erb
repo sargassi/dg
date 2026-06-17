@@ -5,17 +5,18 @@
   { label: 'Magazzini e ubiche', path: warehouses_path, active: false, icon: 'warehouse', can: 'manage_warehouses' },
 ] %>
 <div class="<%= style_main_header_container %>">
-  <%= render partial: 'atoms/header', locals: { link: inventories_dashboard_path, label: 'IN', menu: menu } %>
+  <%= render partial: 'atoms/header', locals: { link: @from_seleziona ? inventories_seleziona_path : inventories_dashboard_path, label: 'IN', menu: menu } %>
 </div>
 
-<%= form_with(model: @itemin, url: app_in_warehouse_path, id: "itemin-form",   data: { controller: "qr-scanner", autocomplete_hide_qty: true }) do |form| %>
+<%= form_with(model: @itemin, url: app_in_warehouse_path, id: "itemin-form",   data: { controller: "qr-scanner", autocomplete_hide_qty: true }, html: { onsubmit: "document.querySelectorAll('#itemin-form section').forEach(function(s){if(getComputedStyle(s).display==='none')s.querySelectorAll('input,select,textarea').forEach(function(e){e.disabled=true})})" }) do |form| %>
   <%= form.hidden_field :operator_id, value: current_user.id %>
+  <% if @from_seleziona %><input type="hidden" name="from_seleziona" value="1"><% end %>
 
   <%# Mobile %>
   <section class="<%= style_main_cnt %> lg:hidden" data-controller="defaults">
     <div class="max-w-lg mx-auto space-y-4">
       <div class="bg-amber-50 rounded p-3 space-y-3">
-        <div>
+        <div class="<%= 'hidden' if @from_seleziona %>">
           <label class="text-xs text-slate-400 uppercase tracking-wide block mb-1">Collezione</label>
             <select name="default_collection_id" class="w-full border border-slate-300 outline-none px-2 py-1.5 text-sm bg-white rounded">
               <option value="">Seleziona collezione</option>
@@ -104,8 +105,8 @@
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
       <div class="lg:col-span-3 space-y-6">
         <div class="bg-amber-50 rounded-lg p-5">
-          <div class="grid grid-cols-3 gap-4">
-            <div>
+          <div class="grid grid-cols-<%= @from_seleziona ? 2 : 3 %> gap-4">
+            <div class="<%= 'hidden' if @from_seleziona %>">
               <label class="text-xs text-slate-400 uppercase tracking-wide block mb-1">Collezione</label>
               <select name="default_collection_id" class="w-full border border-slate-300 outline-none px-3 py-2 text-sm bg-white">
                 <option value="">Seleziona collezione</option>

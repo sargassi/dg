@@ -1,8 +1,11 @@
 <div class="<%= style_main_header_container %>">
   <h1 class="<%= style_main_header %>">
-
     Amministrazione Operatori
   </h1>
+  <%= link_to new_admin_user_path, data: { turbo_frame: "user_modal" }, class: "ml-auto text-xs bg-accent text-white px-3 py-1.5 rounded-sm font-medium hover:opacity-90 transition" do %>
+    <span class="material-symbols-outlined text-base align-middle">add</span>
+    Nuovo utente
+  <% end %>
 </div>
 
 <section class="<%= style_main_cnt %>">
@@ -69,7 +72,7 @@
     </div>
 
     <!-- RIGHT: create forms -->
-    <div>
+    <div id="nuovo-utente">
       <%# ── New Operator ──────────────────────────────────────────────────────── %>
       <div class="<%= style_main_card %> mb-8">
         <h3 class="<%= style_main_card_header %>">
@@ -242,3 +245,5 @@
 
   </div>
 </section>
+
+<%= turbo_frame_tag "user_modal" %>

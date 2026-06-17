@@ -10,20 +10,22 @@ module Admin
     end
 
     def new
-      redirect_to admin_users_path
+      @user = User.new
+      render layout: false if turbo_frame_request?
     end
 
     def create
       @user = User.new(user_params)
       if @user.save
+        if params[:roles].present?
+          params[:roles].each do |role|
+            @user.user_roles.find_or_create_by!(role: role)
+          end
+        end
         sync_birthday_event(@user)
         redirect_to admin_users_path, notice: "Utente creato."
       else
-        @users = User.includes(:user_roles, :abilities).order(:user_type, :email)
-        @operator  = @user.user_type == 'company_operator' ? @user : User.new(user_type: 'company_operator')
-        @customer  = @user.user_type == 'customer' ? @user : User.new(user_type: 'customer')
-        @supplier  = @user.user_type == 'supplier' ? @user : User.new(user_type: 'supplier')
-        render :index, status: :unprocessable_entity
+        render :new, status: :unprocessable_entity
       end
     end
 

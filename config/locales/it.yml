@@ -26,6 +26,8 @@ it:
       even: "deve essere pari"
   activerecord:
     errors:
+      messages:
+        record_invalid: "Validazione fallita: %{errors}"
       models:
         collection:
           attributes:

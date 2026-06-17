@@ -144,6 +144,31 @@ class InventoriesController < ApplicationController
     @latest_itemmovements = Itemmovement.includes(:operator, :source_warehouse, :dest_warehouse, :source_location, :dest_location, itemmovements_details: :item).order(indate: :desc).limit(10)
   end
 
+  def seleziona
+    @collections = Collection.joins(:items).distinct.order(row_order: :desc)
+    @itemz = Item.includes(:collection)
+
+    if params[:collection_id].present?
+      @itemz = @itemz.where(collection_id: params[:collection_id])
+    end
+
+    if params[:q].present?
+      q = "%#{params[:q]}%"
+      @itemz = @itemz.where(
+        "gencode LIKE :q OR itemcode LIKE :q OR fabricode LIKE :q OR varcode LIKE :q OR description LIKE :q OR fabric LIKE :q OR colour LIKE :q",
+        q: q
+      )
+    end
+
+    @pagy, @itemz = pagy(@itemz)
+  end
+
+  def prepare_carico
+    selected = params[:selected] || []
+    session[:carico_prefill] = selected.map { |s| s.permit(:item_id, :gencode, :collection_id, :qty).to_h }
+    redirect_to app_in_warehouse_path, notice: "#{selected.size} articoli pronti per il carico."
+  end
+
   def movements
     @operationtypes = Operationtype.all
     @operators = User.where(user_type: "company_operator").order(:name)
@@ -222,6 +247,7 @@ class InventoriesController < ApplicationController
       location_id: params[:location_id],
       operationtype_id: params[:operationtype_id])
     Rails.cache.write(inventories_import_cache_key, data, expires_in: 30.minutes)
+    Rails.cache.delete("import:inv:stats:#{session.id}")
     redirect_to inventories_import_path, notice: "#{data[:rows].size} righe caricate. Verifica e modifica."
   end
 

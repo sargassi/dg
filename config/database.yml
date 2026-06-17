@@ -3,13 +3,10 @@ default: &default
   timeout: 5000
 
 development:
-  adapter: mysql2
-  encoding: utf8mb4
-  database: dg_development
-  host: <%= ENV.fetch("DB_HOST") { "127.0.0.1" } %>
-  port: <%= ENV.fetch("DB_PORT") { 3306 } %>
-  username: <%= ENV.fetch("DB_USERNAME") { "dg_dev" } %>
-  password: <%= ENV.fetch("DB_PASSWORD") { "dg_dev_pass" } %>
+  adapter: sqlite3
+  database: db/development.sqlite3
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  timeout: 5000
 
 test:
   adapter: sqlite3

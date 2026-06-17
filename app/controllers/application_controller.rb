@@ -1,6 +1,14 @@
 class ApplicationController < ActionController::Base
   before_action :authenticate_user!
 
+  def after_sign_in_path_for(resource)
+    if resource.respond_to?(:has_role?) && resource.has_role?(:pedone)
+      app_dashboard_path
+    else
+      super
+    end
+  end
+
   private
 
   def require_ability!(ability_name)

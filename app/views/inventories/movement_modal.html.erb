@@ -13,7 +13,7 @@
           <% end %>
           <span class="text-sm font-bold text-slate-700">#<%= @record.id %></span>
         </div>
-        <%= link_to "✕", inventories_movements_path, class: "text-slate-400 hover:text-slate-600 text-xl leading-none", data: { turbo_frame: "_top" } %>
+        <%= link_to "✕", inventories_movements_path, class: "text-slate-400 hover:text-slate-600 text-xl leading-none", data: { turbo_frame: "movement_modal" } %>
       </div>
 
       <div class="p-4 text-sm space-y-4">

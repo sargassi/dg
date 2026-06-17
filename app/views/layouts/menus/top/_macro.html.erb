@@ -3,7 +3,9 @@
       <%= role %>
     </p>
 
-
+    <%= link_to edit_profile_path, data: { turbo_frame: "profile_modal" }, class: "h-12 w-12 flex items-center justify-center text-slate-500 hover:text-accent transition" do %>
+      <span class="material-symbols-outlined">person</span>
+    <% end %>
 
    <a href="#" class="linx <%= style_subcontainer_linx('') %>" data-action="click->theme#toggle">
       <span class="material-symbols-outlined" data-theme-target="icon">light_mode</span>

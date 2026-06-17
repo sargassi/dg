@@ -28,7 +28,7 @@
     </div>
   </td>
   <td class="<%= style_table_td %> p-0.5 w-16">
-    <%= f.number_field :qty, value: 1, min: 1, class: "w-full px-2 py-2 text-sm border border-slate-300 outline-none focus:border-accent rounded-sm text-center" %>
+    <%= f.number_field :qty, value: f.object.qty || 1, min: 1, class: "w-full px-2 py-2 text-sm border border-slate-300 outline-none focus:border-accent rounded-sm text-center" %>
   </td>
   <td class="<%= style_table_td %> p-0.5 text-center w-10">
     <button type="button"

@@ -12,7 +12,6 @@ class ImportGeneralService
     'Note:'         => :note,
     'Colour:'       => :colour,
     'unit price'    => :unit_price,
-    'uniti price'   => :unit_price,
     'materiale'     => :materiale
   }
 

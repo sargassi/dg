@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_06_12_111113) do
+ActiveRecord::Schema[7.2].define(version: 2026_06_19_140000) do
   create_table "abilities", force: :cascade do |t|
     t.string "name", null: false
     t.string "description"
@@ -205,6 +205,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_06_12_111113) do
     t.string "gencode"
     t.integer "item_id"
     t.integer "itemmovement_id"
+    t.text "qrcode_svg"
     t.index ["item_id"], name: "index_inventories_on_item_id"
     t.index ["itemins_id"], name: "index_inventories_on_itemins_id"
     t.index ["itemmovement_id"], name: "index_inventories_on_itemmovement_id"
@@ -311,6 +312,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_06_12_111113) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text "qrcode_svg"
+    t.string "gencode"
+    t.index ["gencode"], name: "index_locations_on_gencode"
     t.index ["warehouse_id"], name: "index_locations_on_warehouse_id"
   end
 
@@ -454,6 +457,18 @@ ActiveRecord::Schema[7.2].define(version: 2026_06_12_111113) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "stock_levels", force: :cascade do |t|
+    t.string "gencode", null: false
+    t.integer "warehouse_id", null: false
+    t.integer "location_id", default: 0, null: false
+    t.integer "current_qty", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["gencode", "warehouse_id", "location_id"], name: "idx_stock_levels_unique", unique: true
+    t.index ["gencode"], name: "index_stock_levels_on_gencode"
+    t.index ["warehouse_id"], name: "index_stock_levels_on_warehouse_id"
+  end
+
   create_table "taglia", force: :cascade do |t|
     t.string "description"
     t.datetime "created_at", null: false
@@ -553,6 +568,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_06_12_111113) do
     t.datetime "updated_at", null: false
     t.boolean "enabled", default: true
     t.text "qrcode_svg"
+    t.string "gencode"
+    t.index ["gencode"], name: "index_warehouses_on_gencode"
   end
 
   create_table "zones", force: :cascade do |t|

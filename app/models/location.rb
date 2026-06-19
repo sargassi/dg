@@ -9,7 +9,8 @@ class Location < ApplicationRecord
 
   def generate_qr_code
     require 'rqrcode'
-    update_columns(qrcode_svg: RQRCode::QRCode.new(gencode).as_svg(module_size: 6, use_path: true, viewbox: true).sub(/^<\?xml[^>]*>/, ""))
+    self.gencode = "#{warehouse_id}_#{id}_#{code.gsub(/\s+/, '')}"
+    update_columns(gencode: self.gencode, qrcode_svg: RQRCode::QRCode.new(gencode).as_svg(module_size: 6, use_path: true, viewbox: true).sub(/^<\?xml[^>]*>/, ""))
   end
 
   def regenerate_qr

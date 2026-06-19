@@ -9,6 +9,7 @@ export default class extends Controller {
       this.warehouseTarget.addEventListener("change", () => this._onWarehouseChange());
       this._onWarehouseChange();
     }
+
   }
 
   _cacheLocations() {
@@ -55,18 +56,21 @@ export default class extends Controller {
     const locVal = this.hasLocationTarget ? this.locationTarget.value : "";
     const whTxt = this.whText();
     const locTxt = this.locText();
+    const skipHidden = this.data.get("skip-propagate") !== undefined;
     const form = this.element.closest("form") || this.element;
     const rows = form.querySelectorAll("[data-nested-form-target='row']");
 
     rows.forEach(row => {
-      const whHidden = row.querySelector("input[type='hidden'][name*='warehouse_id']");
-      const locHidden = row.querySelector("input[type='hidden'][name*='location_id']");
-      if (whHidden) whHidden.value = whVal;
-      if (locHidden) locHidden.value = locVal;
-      const whSpan = row.querySelector(".wh-display");
-      const locSpan = row.querySelector(".loc-display");
-      if (whSpan) whSpan.textContent = whTxt ? `Mag: ${whTxt}` : "—";
-      if (locSpan) locSpan.textContent = locTxt ? `Ubi: ${locTxt}` : "—";
+      if (!skipHidden) {
+        const whHidden = row.querySelector("input[type='hidden'][name*='warehouse_id']");
+        const locHidden = row.querySelector("input[type='hidden'][name*='location_id']");
+        if (whHidden) whHidden.value = whVal;
+        if (locHidden) locHidden.value = locVal;
+        const whSpan = row.querySelector(".wh-display");
+        const locSpan = row.querySelector(".loc-display");
+        if (whSpan) whSpan.textContent = whTxt ? `Mag: ${whTxt}` : "—";
+        if (locSpan) locSpan.textContent = locTxt ? `Ubi: ${locTxt}` : "—";
+      }
     });
   }
 }

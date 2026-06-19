@@ -9,6 +9,38 @@ class WarehousesController < ApplicationController
     @location = Location.new(enabled: true)
   end
 
+  def qrcodes
+    @warehouses = Warehouse.all.order(:code).includes(:locations)
+    render pdf: "qrcodes_magazzini", orientation: 'portrait', page_size: 'A4',
+           margin: { top: '10mm', bottom: '10mm', left: '10mm', right: '10mm' },
+           disable_smart_shrinking: true, show_as_html: params.key?('debug')
+  end
+
+  def lookup_by_qr
+    q = params[:q].to_s.strip
+    result = { warehouse_id: nil, warehouse_code: nil, location_id: nil, location_code: nil }
+
+    Warehouse.all.each do |wh|
+      if wh.gencode == q
+        result[:warehouse_id] = wh.id
+        result[:warehouse_code] = wh.code
+        break
+      end
+    end
+
+    Location.all.each do |loc|
+      if loc.gencode == q
+        result[:location_id] = loc.id
+        result[:location_code] = loc.code
+        result[:warehouse_id] ||= loc.warehouse_id
+        result[:warehouse_code] ||= loc.warehouse&.code
+        break
+      end
+    end
+
+    render json: result
+  end
+
   # GET /warehouses/1 or /warehouses/1.json
   def show
   end
@@ -32,6 +64,7 @@ class WarehousesController < ApplicationController
         format.json { render :show, status: :created, location: @warehouse }
       else
         @warehouses = Warehouse.all
+        @location = Location.new(enabled: true)
         format.html { render :index, status: :unprocessable_entity }
         format.json { render json: @warehouse.errors, status: :unprocessable_entity }
       end

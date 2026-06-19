@@ -11,6 +11,11 @@
              data-itemcode="<%= item.itemcode %>"
              class="rounded border-slate-300 text-accent focus:ring-accent cursor-pointer">
     </td>
+    <td class="<%= style_table_td %> p-1">
+      <% if item.pictures.attached? %>
+        <%= image_tag item.pictures.first, class: "w-10 h-10 object-cover border border-slate-200 rounded block" %>
+      <% end %>
+    </td>
     <td class="<%= style_table_td %> text-xs font-mono text-blue-600">
       <div><%= item.itemcode %><%= item.fabricode %><%= item.varcode %></div>
     </td>

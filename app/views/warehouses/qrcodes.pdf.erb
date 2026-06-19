@@ -1,0 +1,54 @@
+<style>
+  body { font-family: Arial, sans-serif; }
+  .page { width: 100%; }
+  h1 { font-size: 18pt; color: #333; margin-bottom: 10mm; text-align: center; }
+  .warehouse-group { page-break-inside: avoid; margin-bottom: 12mm; }
+  table.entry { width: 100%; border-collapse: collapse; margin-bottom: 5mm; }
+  table.entry td.qr { width: 20mm; vertical-align: middle; padding: 1mm 6mm 1mm 0; }
+  table.entry td.qr svg { width: 20mm; height: 20mm; display: block; }
+  table.entry td.info { vertical-align: middle; }
+  table.entry td.info .code { font-weight: bold; font-size: 13pt; color: #222; }
+  .loc-grid { width: 100%; border-collapse: collapse; }
+  .loc-grid td { width: 14.28%; text-align: center; vertical-align: top; padding: 2mm 1mm; }
+  .loc-grid td .loc-qr svg { width: 14mm; height: 14mm; display: block; margin: 0 auto; }
+  .loc-grid td .loc-code { font-size: 8pt; font-weight: bold; color: #444; margin-top: 1mm; }
+</style>
+
+<div class="page">
+  <h1>QR Code Magazzini e Ubiche</h1>
+
+  <% @warehouses.each do |wh| %>
+    <div class="warehouse-group">
+      <table class="entry">
+        <tr>
+          <td class="qr"><%= wh.qrcode_svg.html_safe %></td>
+          <td class="info">
+            <div class="code"><%= wh.code %></div>
+          </td>
+        </tr>
+      </table>
+
+      <% if wh.locations.any? %>
+        <table class="loc-grid">
+          <tr>
+            <% wh.locations.each_with_index do |loc, idx| %>
+              <td>
+                <div class="loc-qr"><%= loc.qrcode_svg.html_safe %></div>
+                <div class="loc-code"><%= loc.code %></div>
+              </td>
+              <% if (idx + 1) % 7 == 0 && (idx + 1) < wh.locations.length %>
+                </tr><tr>
+              <% end %>
+            <% end %>
+            <% remainder = wh.locations.length % 7 %>
+            <% if remainder > 0 %>
+              <% (7 - remainder).times do %>
+                <td></td>
+              <% end %>
+            <% end %>
+          </tr>
+        </table>
+      <% end %>
+    </div>
+  <% end %>
+</div>

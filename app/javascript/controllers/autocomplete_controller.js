@@ -36,6 +36,13 @@ export default class extends Controller {
       const collectionSelect = section?.querySelector('select[name="default_collection_id"]')
         || this.element.closest("form")?.querySelector('select[name="default_collection_id"]');
       if (collectionSelect?.value) url += `&collection_id=${collectionSelect.value}`;
+      const daSection = this.element.closest("form")?.querySelector("[data-defaults-target-prefix='da']");
+      if (daSection) {
+        const whVal = daSection.querySelector("[data-defaults-target='warehouse']")?.value;
+        const locVal = daSection.querySelector("[data-defaults-target='location']")?.value;
+        if (whVal) url += `&warehouse_id=${whVal}`;
+        if (locVal) url += `&location_id=${locVal}`;
+      }
       fetch(url, {
         headers: { Accept: "application/json" }
       })
@@ -46,8 +53,16 @@ export default class extends Controller {
 
   showResults(data) {
     if (data.length === 0) {
-      this.resultsTarget.classList.add("hidden");
-      this.resultsTarget.innerHTML = "";
+      this.resultsTarget.innerHTML = '<li class="px-3 py-2 text-xs text-slate-400 italic">nessuna voce in questa posizione</li>';
+      this.resultsTarget.classList.remove("hidden");
+      document.removeEventListener("scroll", this._boundReposition, true);
+      window.removeEventListener("resize", this._boundReposition);
+      this.resultsTarget.style.position = "fixed";
+      this.resultsTarget.style.zIndex = "9999";
+      this.resultsTarget.classList.remove("absolute", "left-0", "right-0", "top-full", "mt-0.5");
+      this._position();
+      document.addEventListener("scroll", this._boundReposition, true);
+      window.addEventListener("resize", this._boundReposition);
       return;
     }
 
@@ -63,7 +78,7 @@ export default class extends Controller {
       const label = re ? item.label.replace(re, '<mark class="bg-yellow-200 rounded px-0.5">$1</mark>') : this._escape(item.label);
       const noStock = item.qty_remaining <= 0;
       const qtyClass = noStock ? 'text-red-500' : 'text-green-700';
-      return `<li role="option" data-autocomplete-id="${item.id}" data-autocomplete-label="${item.gencode}" data-warehouse-id="${item.warehouse_id || ''}" data-location-id="${item.location_id || ''}" data-warehouse-code="${item.warehouse_code || ''}" data-location-code="${item.location_code || ''}" data-collection-id="${item.collection_id || ''}" data-collection-name="${this._escape(item.collection || '')}" data-qty-remaining="${item.qty_remaining}" class="px-3 py-2 text-xs ${noStock ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer hover:bg-accent-50'} border-b border-slate-100 last:border-0 flex justify-between items-center gap-4">
+      return `<li role="option" data-autocomplete-id="${item.id}" data-autocomplete-label="${item.itemcode}${item.fabricode}${item.varcode}" data-warehouse-id="${item.warehouse_id || ''}" data-location-id="${item.location_id || ''}" data-warehouse-code="${item.warehouse_code || ''}" data-location-code="${item.location_code || ''}" data-collection-id="${item.collection_id || ''}" data-collection-name="${this._escape(item.collection || '')}" data-qty-remaining="${item.qty_remaining}" class="px-3 py-2 text-xs ${noStock ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer hover:bg-accent-50'} border-b border-slate-100 last:border-0 flex justify-between items-center gap-4">
         <div class="flex flex-col gap-0.5 min-w-0">
           <span class="flex items-center gap-2">${label}${hideQty ? '' : `<span class="text-[10px] font-mono ${qtyClass}">${item.qty_remaining} pz</span>`}</span>
           <span class="text-[10px] text-slate-400 font-mono">${this._escape(item.warehouse_code || '')}${item.location_code ? ' / ' + this._escape(item.location_code) : ''}</span>
@@ -121,6 +136,10 @@ export default class extends Controller {
       if (locHidden && li.dataset.locationId) locHidden.value = li.dataset.locationId;
       if (whDisplay && li.dataset.warehouseCode) whDisplay.textContent = li.dataset.warehouseCode;
       if (locDisplay && li.dataset.locationCode) locDisplay.textContent = li.dataset.locationCode;
+      const selWh = row.querySelector(".selected-wh-display");
+      const selLoc = row.querySelector(".selected-loc-display");
+      if (selWh) selWh.textContent = li.dataset.warehouseCode || "—";
+      if (selLoc) selLoc.textContent = li.dataset.locationCode || "—";
     }
 
     const qtyInput = row && row.querySelector("[name*='[qty]']");

@@ -21,7 +21,7 @@
             class: "border border-accent-100 outline-none p-2 text-xs bg-white dark:bg-slate-700 dark:text-slate-200 dark:border-slate-600 rounded-lg shadow-sm w-32",
             data: { search_filter_target: "select", action: "change->search-filter#filter", search_filter_active_class: "bg-blue-400 dark:bg-blue-600 text-white dark:text-white", search_filter_inactive_class: "bg-white dark:bg-slate-700 dark:text-slate-200" } %>
     <% end %>
-    <span class="text-sm font-bold text-slate-700 dark:text-slate-200 whitespace-nowrap border border-slate-300 dark:border-slate-600 dark:bg-slate-700 rounded-full px-3 py-1" data-search-filter-target="count"><%= @pagy.count %> articoli</span>
+    <span id="count-display" data-search-filter-target="count" class="text-sm font-bold text-slate-700 dark:text-slate-200 whitespace-nowrap border border-slate-300 dark:border-slate-600 dark:bg-slate-700 rounded-full px-3 py-1"><%= @pagy.count %> articoli</span>
     <%= link_to "Importa da Excel", mainware_import_path, class: "#{style_import_btn} ml-auto" %>
   </div>
 

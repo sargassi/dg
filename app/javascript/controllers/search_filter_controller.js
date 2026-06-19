@@ -24,6 +24,10 @@ export default class extends Controller {
 
   onFrameLoad() {
     this._highlightSelects();
+    const hiddenCount = this.element.querySelector("[data-filtered-count]");
+    if (hiddenCount && this.hasCountTarget) {
+      this.countTarget.textContent = `${hiddenCount.textContent} articoli`;
+    }
     if (!this.hasInputTarget) return;
     this.inputTarget.focus();
     const query = this.inputTarget.value.trim();

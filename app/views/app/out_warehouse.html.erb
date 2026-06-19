@@ -12,7 +12,7 @@
   <%= form.hidden_field :operator_id, value: current_user.id %>
 
   <%# Mobile %>
-  <section class="<%= style_main_cnt %> lg:hidden">
+  <section class="<%= style_main_cnt %> lg:hidden" data-controller="defaults">
     <div class="max-w-lg mx-auto space-y-4">
       <div class="bg-amber-50 rounded p-3 space-y-3">
         <div>
@@ -23,6 +23,36 @@
         <div>
           <%= form.label :notes, "Note", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
           <%= form.text_area :notes, rows: 1, class: "w-full border border-slate-300 outline-none px-2 py-1.5 text-sm bg-white rounded" %>
+        </div>
+
+        <div class="flex items-start gap-2">
+          <div class="flex flex-col items-center">
+            <label class="text-xs text-slate-400 uppercase tracking-wide block mb-1">Dove</label>
+            <button type="button" data-action="click->qr-scanner#scanWarehouseLoc"
+                    class="flex-shrink-0 w-10 h-10 flex items-center justify-center border border-transparent rounded-md bg-indigo-500 text-white hover:bg-indigo-600"
+                      title="Scansiona QR">
+              <span class="material-symbols-outlined text-base">qr_code_scanner</span>
+            </button>
+          </div>
+          <div class="flex-1 min-w-0">
+            <label class="text-xs text-slate-400 uppercase tracking-wide block mb-1">Magazzino</label>
+            <select name="default_warehouse_id" data-defaults-target="warehouse" class="w-full border border-slate-300 outline-none px-2 py-1.5 text-sm bg-white rounded">
+              <option value="">Seleziona magazzino</option>
+              <% @warehouses.each do |w| %>
+                <option value="<%= w.id %>" <%= 'selected' if @default_warehouse_id.to_s == w.id.to_s %>><%= w.code %></option>
+              <% end %>
+            </select>
+          </div>
+
+          <div class="flex-1 min-w-0">
+            <label class="text-xs text-slate-400 uppercase tracking-wide block mb-1">Ubica</label>
+            <select name="default_location_id" data-defaults-target="location" data-default-location="<%= @default_location_id %>" data-action="change->defaults#propagate" class="w-full border border-slate-300 outline-none px-2 py-1.5 text-sm bg-white rounded" disabled>
+              <option value="">Seleziona prima il magazzino</option>
+              <% @locations.each do |l| %>
+                <option value="<%= l.id %>" data-warehouse-id="<%= l.warehouse_id %>"><%= l.code %></option>
+              <% end %>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -68,9 +98,39 @@
   </section>
 
   <%# Desktop %>
-  <section class="<%= style_main_cnt %> hidden lg:block">
+  <section class="<%= style_main_cnt %> hidden lg:block" data-controller="defaults">
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
       <div class="lg:col-span-3 space-y-6">
+        <div class="bg-amber-50 rounded-lg p-5">
+          <div class="flex items-start gap-3">
+            <div class="flex flex-col items-center">
+              <label class="text-xs text-slate-400 uppercase tracking-wide block mb-1">Dove</label>
+              <button type="button" data-action="click->qr-scanner#scanWarehouseLoc"
+                      class="flex-shrink-0 w-10 h-10 flex items-center justify-center border border-transparent rounded-md bg-indigo-500 text-white hover:bg-indigo-600"
+                      title="Scansiona QR">
+                <span class="material-symbols-outlined text-base">qr_code_scanner</span>
+              </button>
+            </div>
+            <div class="flex-1 min-w-0">
+              <label class="text-xs text-slate-400 uppercase tracking-wide block mb-1">Magazzino</label>
+              <select name="default_warehouse_id" data-defaults-target="warehouse" class="w-full border border-slate-300 outline-none px-3 py-2 text-sm bg-white">
+                <option value="">Seleziona magazzino</option>
+                <% @warehouses.each do |w| %>
+                  <option value="<%= w.id %>" <%= 'selected' if @default_warehouse_id.to_s == w.id.to_s %>><%= w.code %></option>
+                <% end %>
+              </select>
+            </div>
+            <div class="flex-1 min-w-0">
+              <label class="text-xs text-slate-400 uppercase tracking-wide block mb-1">Ubica</label>
+              <select name="default_location_id" data-defaults-target="location" data-default-location="<%= @default_location_id %>" data-action="change->defaults#propagate" class="w-full border border-slate-300 outline-none px-3 py-2 text-sm bg-white" disabled>
+                <option value="">Seleziona prima il magazzino</option>
+                <% @locations.each do |l| %>
+                  <option value="<%= l.id %>" data-warehouse-id="<%= l.warehouse_id %>"><%= l.code %></option>
+                <% end %>
+              </select>
+            </div>
+          </div>
+        </div>
 
         <div class="bg-slate-50 rounded-lg p-4" data-controller="nested-form">
           <div class="<%= style_main_card %>">

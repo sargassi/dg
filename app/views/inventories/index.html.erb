@@ -56,7 +56,7 @@
               <th class="<%= style_table_th %> sticky top-0 z-10 whitespace-nowrap">
                 QTA <span class="text-[9px] text-slate-500 ml-1 font-normal dark:text-slate-300">al <span class="font-bold"><%= @date.strftime("%d-%m-%Y") %></span></span>
               </th>
-              <% %w[Movimenti QR Immagine].each do |h| %>
+              <% %w[Movimenti QR Immagine Azioni].each do |h| %>
                 <th class="<%= style_table_th %> sticky top-0 z-10"><%= h %></th>
               <% end %>
             </tr>
@@ -166,7 +166,7 @@
                 <td class="<%= style_table_td %>" style="width:130px">
                   <%= item&.qrcode_svg&.html_safe %>
                 </td>
-                <td class="<%= style_table_td %> align-middle" style="width:120px">
+                <td class="<%= style_table_td %>" style="width:120px">
                   <% if item&.pictures&.attached? %>
                     <%= link_to gallery_item_path(item, index: 0, q: params[:q], return_to: inventories_path(q: params[:q], date: params[:date], warehouse_id: params[:warehouse_id])), data: { turbo_frame: "item_modal" } do %>
                       <div class="relative inline-block">
@@ -175,6 +175,15 @@
                           <span class="absolute -top-1.5 -right-1.5 bg-accent text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center leading-none">+<%= item.pictures.count - 1 %></span>
                         <% end %>
                       </div>
+                    <% end %>
+                  <% end %>
+                </td>
+                <td class="<%= style_table_td %> whitespace-nowrap">
+                  <% if item %>
+                    <%= link_to edit_item_path(item, q: params[:q], collection_id: params[:collection_id], return_to: inventories_path(q: params[:q], date: params[:date], warehouse_id: params[:warehouse_id])),
+                                class: "inline-flex items-center text-accent hover:text-accent-700",
+                                data: { turbo_frame: "item_modal" } do %>
+                      <span class="material-symbols-outlined text-lg">edit</span>
                     <% end %>
                   <% end %>
                 </td>

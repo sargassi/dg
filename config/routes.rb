@@ -20,7 +20,12 @@ Rails.application.routes.draw do
   delete 'inventories/import/cancel',     to: 'inventories#import_cancel'
   get    'inventories/import/summary',    to: 'inventories#import_summary'
   scope '/inventories' do
-    resources :warehouses
+    resources :warehouses do
+      collection do
+        get 'qrcodes', defaults: { format: :pdf }
+        get 'lookup_by_qr'
+      end
+    end
     resources :locations
     resources :itemins do
       collection do

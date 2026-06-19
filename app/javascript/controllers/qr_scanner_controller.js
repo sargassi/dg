@@ -16,13 +16,41 @@ export default class extends Controller {
     this._scan();
   }
 
+  scanWarehouseLoc(event) {
+    const section = event.currentTarget.closest("[data-controller='defaults']") || this.element.closest("[data-controller='defaults']");
+    this._callback = async (text) => {
+      const resp = await fetch(`/inventories/warehouses/lookup_by_qr?q=${encodeURIComponent(text)}`);
+      const data = await resp.json();
+      if (!section) return;
+      const whSelect = section.querySelector("[data-defaults-target='warehouse']");
+      const locSelect = section.querySelector("[data-defaults-target='location']");
+      if (data.warehouse_id && whSelect) {
+        whSelect.value = data.warehouse_id;
+        whSelect.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+      if (data.location_id && locSelect) {
+        setTimeout(() => {
+          locSelect.value = data.location_id;
+          locSelect.dispatchEvent(new Event("change", { bubbles: true }));
+        }, 50);
+      }
+    };
+    this.overlayTarget.classList.remove("hidden");
+    this._scan();
+  }
+
   async _scan() {
     try {
       const result = await this.codeReader.decodeFromInputVideoDevice(undefined, this.videoTarget.id);
-      const target = this.pendingInput || this.inputTarget;
-      if (target) {
-        target.value = result.text;
-        target.dispatchEvent(new Event("input", { bubbles: true }));
+      if (this._callback) {
+        await this._callback(result.text);
+        this._callback = null;
+      } else {
+        const target = this.pendingInput || this.inputTarget;
+        if (target) {
+          target.value = result.text;
+          target.dispatchEvent(new Event("input", { bubbles: true }));
+        }
       }
     } catch (err) {
       console.error(err);

@@ -29,10 +29,12 @@ export default class extends Controller {
   }
 
   _applyDefaults(row) {
-    const defaultsEl = this.element.closest("[data-controller='defaults']") || document.querySelector("[data-controller='defaults']");
-    if (!defaultsEl) return;
-    const whSel = defaultsEl.querySelector("[data-defaults-target='warehouse']");
-    const locSel = defaultsEl.querySelector("[data-defaults-target='location']");
+    const form = this.element.closest("form");
+    if (!form) return;
+    const daSection = form.querySelector("[data-defaults-target-prefix='da']");
+    if (!daSection) return;
+    const whSel = daSection.querySelector("[data-defaults-target='warehouse']");
+    const locSel = daSection.querySelector("[data-defaults-target='location']");
     const whVal = whSel?.value;
     const locVal = locSel?.value;
     const whTxt = whVal && whSel.selectedOptions[0] ? whSel.selectedOptions[0].text : "";

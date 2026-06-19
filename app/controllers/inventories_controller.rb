@@ -83,6 +83,13 @@ class InventoriesController < ApplicationController
     q = "%#{params[:q]}%"
     inventories = Inventory.where(operationtype_id: 1)
       .where("gencode LIKE :q OR itemcode LIKE :q", q: q)
+    if params[:warehouse_id].present?
+      inventories = inventories.where(warehouse_id: params[:warehouse_id])
+    end
+    if params[:location_id].present?
+      inventories = inventories.where(location_id: params[:location_id])
+    end
+    inventories = inventories
       .select(:gencode, :warehouse_id, :location_id)
       .distinct
       .order(:warehouse_id, :location_id, :gencode)
@@ -124,7 +131,10 @@ class InventoriesController < ApplicationController
       result << {
         id: item.id,
         gencode: item.gencode,
-        label: "#{item.gencode} — #{item.description}",
+        itemcode: item.itemcode,
+        fabricode: item.fabricode,
+        varcode: item.varcode,
+        label: "#{item.itemcode}#{item.fabricode}#{item.varcode}",
         collection: item.collection&.description,
         collection_id: item.collection_id,
         warehouse_id: inv.warehouse_id,
@@ -146,7 +156,7 @@ class InventoriesController < ApplicationController
 
   def seleziona
     @collections = Collection.joins(:items).distinct.order(row_order: :desc)
-    @itemz = Item.includes(:collection)
+    @itemz = Item.includes(:collection).with_attached_pictures
 
     if params[:collection_id].present?
       @itemz = @itemz.where(collection_id: params[:collection_id])

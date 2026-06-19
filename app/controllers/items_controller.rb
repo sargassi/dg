@@ -35,7 +35,7 @@ class ItemsController < ApplicationController
     end
     @items = @items.select(:id, :gencode, :itemcode, :fabricode, :varcode, :description, :collection_id, :tg, :fabric, :colour, :materiale).limit(20)
     render json: @items.map { |item|
-      { id: item.id, gencode: item.gencode, itemcode: item.itemcode, fabricode: item.fabricode, varcode: item.varcode, description: item.description, label: "#{item.gencode} — #{item.description}", collection: item.collection&.description, collection_id: item.collection_id, tg: item.tg, fabric: item.fabric, colour: item.colour, materiale: item.materiale }
+      { id: item.id, gencode: item.gencode, itemcode: item.itemcode, fabricode: item.fabricode, varcode: item.varcode, description: item.description, label: "#{item.itemcode}#{item.fabricode}#{item.varcode}", collection: item.collection&.description, collection_id: item.collection_id, tg: item.tg, fabric: item.fabric, colour: item.colour, materiale: item.materiale }
     }
   end
 

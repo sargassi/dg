@@ -93,7 +93,7 @@ export default class extends Controller {
 
   syncFrame() {
     this.selected.forEach(item => {
-      const cb = this.checkboxTargets.find(c => c.dataset.id === item.id)
+      const cb = this.element.querySelector(`[data-seleziona-target="checkbox"][data-id="${item.id}"]`)
       if (cb) {
         cb.checked = true
         const row = cb.closest("tr")

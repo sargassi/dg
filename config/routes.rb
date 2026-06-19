@@ -46,6 +46,7 @@ Rails.application.routes.draw do
   resources :inventories do
     collection do
       get 'autocomplete'
+      get 'lookup_by_qr'
     end
   end
   resources :items do
@@ -174,9 +175,6 @@ Rails.application.routes.draw do
       end
     end
   end
-
-  get 'basic-qr-code-reader', to: 'basic_qr_codes#index'
-  get 'basic_qr_codes/qrcheck'
 
   root to: "dashboard#index"
 end

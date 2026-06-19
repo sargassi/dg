@@ -20,21 +20,17 @@ class WarehousesController < ApplicationController
     q = params[:q].to_s.strip
     result = { warehouse_id: nil, warehouse_code: nil, location_id: nil, location_code: nil }
 
-    Warehouse.all.each do |wh|
-      if wh.gencode == q
-        result[:warehouse_id] = wh.id
-        result[:warehouse_code] = wh.code
-        break
-      end
-    end
-
-    Location.all.each do |loc|
-      if loc.gencode == q
-        result[:location_id] = loc.id
-        result[:location_code] = loc.code
-        result[:warehouse_id] ||= loc.warehouse_id
-        result[:warehouse_code] ||= loc.warehouse&.code
-        break
+    warehouse = Warehouse.find_by(gencode: q)
+    if warehouse
+      result[:warehouse_id] = warehouse.id
+      result[:warehouse_code] = warehouse.code
+    else
+      location = Location.find_by(gencode: q)
+      if location
+        result[:location_id] = location.id
+        result[:location_code] = location.code
+        result[:warehouse_id] = location.warehouse_id
+        result[:warehouse_code] = location.warehouse&.code
       end
     end
 

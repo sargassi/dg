@@ -22,7 +22,6 @@ ABILITIES = [
   { name: 'print_labels_gen',     description: 'Stampa etichette generiche',                        category: 'Utilities' },
   { name: 'print_labels_check',   description: 'Stampa etichette controllo/lavaggio',               category: 'Utilities' },
   { name: 'manage_utilities_labels', description: 'Dashboard utility etichette',                    category: 'Utilities' },
-  { name: 'manage_basic_qr_codes', description: 'Lettore QR code base',                            category: 'Utilities' },
   { name: 'manage_app_sectors',   description: 'Scansione QR per settori (app)',                   category: 'Utilities' },
 
   # ── Etichecks ─────────────────────────────────────────────────────────

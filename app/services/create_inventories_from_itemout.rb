@@ -17,6 +17,13 @@ class CreateInventoriesFromItemout
         itemouts_id: itemout.id,
         enabled: true
       )
+
+      StockLevel.upsert({
+        gencode: gencode,
+        warehouse_id: detail.warehouse_id,
+        location_id: detail.location_id || 0,
+        current_qty: Arel.sql("COALESCE(current_qty, 0) - #{detail.qty.to_i}")
+      }, unique_by: [:gencode, :warehouse_id, :location_id])
     end
     records
   end

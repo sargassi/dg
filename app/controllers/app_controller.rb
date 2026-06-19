@@ -118,25 +118,20 @@ class AppController < ApplicationController
 
   def out_warehouse
     if request.post?
-      p = out_warehouse_params
-      @itemout = Itemout.new(indate: p[:indate], notes: p[:notes], operator_id: p[:operator_id])
-      default_collection_id = params[:default_collection_id]
-      default_warehouse_id = params[:default_warehouse_id]
-      default_location_id = params[:default_location_id]
-      details = (p[:itemouts_details_attributes]&.values || [])
-        .reject { |d| d[:_destroy] == "1" }
-        .reject { |d| d[:itemcode].blank? && d[:item_id].blank? }
-        .map { |d|
-          d = d.except(:_destroy)
-          d[:collection_id] = default_collection_id if d[:collection_id].blank? && default_collection_id.present?
-          d[:warehouse_id] = default_warehouse_id if d[:warehouse_id].blank? && default_warehouse_id.present?
-          d[:location_id] = default_location_id if d[:location_id].blank? && default_location_id.present?
-          d
+      @itemout = MovementBuilder.new(
+        Itemout, params[:itemout],
+        defaults: {
+          collection_id: params[:default_collection_id],
+          warehouse_id: params[:default_warehouse_id],
+          location_id: params[:default_location_id]
         }
-      @itemout.itemouts_details.build(details)
+      ).build
 
-      if @itemout.save
-        CreateInventoriesFromItemout.new.call(@itemout)
+      if @itemout.valid?
+        ActiveRecord::Base.transaction do
+          @itemout.save!
+          CreateInventoriesFromItemout.new.call(@itemout)
+        end
         redirect_to app_out_warehouse_confirmation_path(itemout_id: @itemout.id)
       else
         @default_collection_id = params[:default_collection_id]
@@ -161,13 +156,9 @@ class AppController < ApplicationController
     if request.post?
       p = move_products_params
       @created_ids = []
-      errors = []
 
-      details = (p[:itemmovements_details_attributes]&.values || [])
-        .reject { |d| d[:_destroy] == "1" }
-        .reject { |d| d[:itemcode].blank? && d[:item_id].blank? }
+      details = MovementBuilder.filter_details(Itemmovement, p)
         .reject { |d| d[:warehouse_id].blank? }
-        .map { |d| d.except(:_destroy) }
 
       if params[:dest_warehouse_id].blank?
         @movement = Itemmovement.new(indate: p[:indate])

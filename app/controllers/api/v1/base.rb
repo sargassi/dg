@@ -3,6 +3,7 @@ module API
     class Base < Grape::API
       mount API::V1::Prows
       mount API::V1::Tempestas
+      mount API::V1::Inventories
     end
   end
 end

@@ -11,6 +11,10 @@ class MovementBuilder
     Itemmovement  => nil
   }.freeze
 
+  def self.filter_details(movement_class, raw_params, defaults: {})
+    new(movement_class, raw_params, defaults: defaults).send(:build_details)
+  end
+
   def initialize(movement_class, params, defaults: {})
     @movement_class = movement_class
     @details_assoc   = DETAIL_ASSOCIATIONS.fetch(movement_class)

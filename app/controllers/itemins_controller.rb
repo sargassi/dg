@@ -67,12 +67,7 @@ class IteminsController < ApplicationController
     @params = session[:itemin_preview]&.with_indifferent_access
     return redirect_to new_itemin_path, alert: "Nessun dato, riprova" unless @params
 
-    @itemin = Itemin.new(@params.except(:itemins_details_attributes))
-
-    details = (@params[:itemins_details_attributes] || {}).values
-      .reject { |d| d["_destroy"] == "1" }
-      .map { |d| d.slice("itemcode", "qty", "item_id", "collection_id", "warehouse_id", "location_id", "operationtype_id") }
-    @itemin.itemins_details.build(details)
+    @itemin = MovementBuilder.new(Itemin, @params).build
 
     begin
       ActiveRecord::Base.transaction do

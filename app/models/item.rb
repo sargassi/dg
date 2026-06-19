@@ -21,7 +21,6 @@ class Item < ApplicationRecord
   end
 
   def regenerate_qr
-    require 'rqrcode'
     self.qrcode_svg = RQRCode::QRCode.new(gencode).as_svg(module_size: 6, use_path: true, viewbox: true).sub(/^<\?xml[^>]*>/, "")
   end
 end

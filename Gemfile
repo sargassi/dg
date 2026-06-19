@@ -120,3 +120,5 @@ gem "simple_calendar"
 gem 'grape'
 
 gem "grape-active_model_serializers"
+
+gem 'rack-cors'

@@ -170,10 +170,13 @@ class MainwareController < ApplicationController
 
   def searchqr
     if params[:q].present?
+      raw_q = params[:q].to_s.strip
+      gencode = parse_qr_gencode(raw_q)
+      q = "%#{gencode}%"
+
       siblings_count_sql = "(SELECT COUNT(*) FROM items AS s WHERE s.itemcode = items.itemcode AND s.fabricode = items.fabricode AND s.varcode = items.varcode)"
       @itemz = Item.select("items.*, #{siblings_count_sql} AS siblings_count").includes(:collection)
 
-      q = "%#{params[:q]}%"
       @itemz = @itemz.where(
         "items.gencode LIKE :q OR items.itemcode LIKE :q OR items.fabricode LIKE :q OR items.varcode LIKE :q OR items.description LIKE :q OR items.fabric LIKE :q OR items.colour LIKE :q",
         q: q
@@ -205,6 +208,10 @@ class MainwareController < ApplicationController
   end
 
   private
+
+  def parse_qr_gencode(text)
+    QrParser.parse(text)[:gencode]
+  end
 
   def import_cache_key
     "import:#{session.id.to_s}"

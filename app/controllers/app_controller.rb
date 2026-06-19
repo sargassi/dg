@@ -62,24 +62,20 @@ class AppController < ApplicationController
 
   def in_warehouse
     if request.post?
-      p = in_warehouse_params
-      default_collection_id = params[:default_collection_id]
-      default_warehouse_id = params[:default_warehouse_id]
-      default_location_id = params[:default_location_id]
+      @itemin = MovementBuilder.new(
+        Itemin, params[:itemin],
+        defaults: {
+          collection_id: params[:default_collection_id],
+          warehouse_id: params[:default_warehouse_id],
+          location_id: params[:default_location_id]
+        }
+      ).build
 
-      attrs = p.to_h
-      (attrs[:itemins_details_attributes] || {}).each do |key, detail|
-        detail["collection_id"] = default_collection_id if detail["collection_id"].blank? && default_collection_id.present?
-        detail["warehouse_id"] = default_warehouse_id if detail["warehouse_id"].blank? && default_warehouse_id.present?
-        detail["location_id"] = default_location_id if detail["location_id"].blank? && default_location_id.present?
-      end
-      attrs[:itemins_details_attributes]&.reject! { |_, d|
-        d["_destroy"] == "1" || (d["itemcode"].blank? && d["item_id"].blank?)
-      }
-      @itemin = Itemin.new(attrs)
-
-      if @itemin.save
-        CreateInventoriesFromItemin.new.call(@itemin)
+      if @itemin.valid?
+        ActiveRecord::Base.transaction do
+          @itemin.save!
+          CreateInventoriesFromItemin.new.call(@itemin)
+        end
         redirect_to app_in_warehouse_confirmation_path(itemin_id: @itemin.id, from_seleziona: params[:from_seleziona])
       else
         @from_seleziona = params[:from_seleziona] == "1"
@@ -122,25 +118,20 @@ class AppController < ApplicationController
 
   def out_warehouse
     if request.post?
-      p = out_warehouse_params
-      @itemout = Itemout.new(indate: p[:indate], notes: p[:notes], operator_id: p[:operator_id])
-      default_collection_id = params[:default_collection_id]
-      default_warehouse_id = params[:default_warehouse_id]
-      default_location_id = params[:default_location_id]
-      details = (p[:itemouts_details_attributes]&.values || [])
-        .reject { |d| d[:_destroy] == "1" }
-        .reject { |d| d[:itemcode].blank? && d[:item_id].blank? }
-        .map { |d|
-          d = d.except(:_destroy)
-          d[:collection_id] = default_collection_id if d[:collection_id].blank? && default_collection_id.present?
-          d[:warehouse_id] = default_warehouse_id if d[:warehouse_id].blank? && default_warehouse_id.present?
-          d[:location_id] = default_location_id if d[:location_id].blank? && default_location_id.present?
-          d
+      @itemout = MovementBuilder.new(
+        Itemout, params[:itemout],
+        defaults: {
+          collection_id: params[:default_collection_id],
+          warehouse_id: params[:default_warehouse_id],
+          location_id: params[:default_location_id]
         }
-      @itemout.itemouts_details.build(details)
+      ).build
 
-      if @itemout.save
-        CreateInventoriesFromItemout.new.call(@itemout)
+      if @itemout.valid?
+        ActiveRecord::Base.transaction do
+          @itemout.save!
+          CreateInventoriesFromItemout.new.call(@itemout)
+        end
         redirect_to app_out_warehouse_confirmation_path(itemout_id: @itemout.id)
       else
         @default_collection_id = params[:default_collection_id]
@@ -165,13 +156,9 @@ class AppController < ApplicationController
     if request.post?
       p = move_products_params
       @created_ids = []
-      errors = []
 
-      details = (p[:itemmovements_details_attributes]&.values || [])
-        .reject { |d| d[:_destroy] == "1" }
-        .reject { |d| d[:itemcode].blank? && d[:item_id].blank? }
+      details = MovementBuilder.filter_details(Itemmovement, p)
         .reject { |d| d[:warehouse_id].blank? }
-        .map { |d| d.except(:_destroy) }
 
       if params[:dest_warehouse_id].blank?
         @movement = Itemmovement.new(indate: p[:indate])
@@ -225,112 +212,15 @@ class AppController < ApplicationController
   end
 
   def itemins_list
-    @itemins = Itemin.includes(:operator, itemins_details: [:warehouse, :location, :item])
-      .order(indate: :desc)
-    @operators = User.joins(:itemins).distinct.order(:name)
-    @warehouses = Warehouse.order(:code)
-    @locations = Location.order(:code)
-
-    if params[:q].present?
-      q = "%#{params[:q]}%"
-      @itemins = @itemins.left_joins(itemins_details: :item)
-        .where("items.itemcode LIKE :q OR itemins_details.itemcode LIKE :q", q: q)
-        .distinct
-    end
-
-    if params[:date].present?
-      @itemins = @itemins.where(indate: Date.parse(params[:date])) rescue nil
-    end
-
-    if params[:operator_id].present?
-      @itemins = @itemins.where(operator_id: params[:operator_id])
-    end
-
-    if params[:warehouse_id].present?
-      @itemins = @itemins.joins(:itemins_details)
-        .where(itemins_details: { warehouse_id: params[:warehouse_id] })
-        .distinct
-    end
-
-    if params[:location_id].present?
-      @itemins = @itemins.joins(:itemins_details)
-        .where(itemins_details: { location_id: params[:location_id] })
-        .distinct
-    end
-
-    @pagy, @itemins = pagy(@itemins)
+    redirect_to inventories_movements_path(operationtype_id: 1)
   end
 
   def itemouts_list
-    @itemouts = Itemout.includes(:operator, itemouts_details: [:warehouse, :location, :item])
-      .order(indate: :desc)
-    @operators = User.joins(:itemouts).distinct.order(:name)
-    @warehouses = Warehouse.order(:code)
-    @locations = Location.order(:code)
-
-    if params[:q].present?
-      q = "%#{params[:q]}%"
-      @itemouts = @itemouts.left_joins(itemouts_details: :item)
-        .where("items.itemcode LIKE :q OR itemouts_details.itemcode LIKE :q", q: q)
-        .distinct
-    end
-
-    if params[:date].present?
-      @itemouts = @itemouts.where(indate: Date.parse(params[:date])) rescue nil
-    end
-
-    if params[:operator_id].present?
-      @itemouts = @itemouts.where(operator_id: params[:operator_id])
-    end
-
-    if params[:warehouse_id].present?
-      @itemouts = @itemouts.joins(:itemouts_details)
-        .where(itemouts_details: { warehouse_id: params[:warehouse_id] })
-        .distinct
-    end
-
-    if params[:location_id].present?
-      @itemouts = @itemouts.joins(:itemouts_details)
-        .where(itemouts_details: { location_id: params[:location_id] })
-        .distinct
-    end
-
-    @pagy, @itemouts = pagy(@itemouts)
+    redirect_to inventories_movements_path(operationtype_id: 2)
   end
 
   def itemmovements_list
-    @itemmovements = Itemmovement.includes(:operator, :source_warehouse, :dest_warehouse, :source_location, :dest_location, itemmovements_details: :item)
-      .order(indate: :desc)
-    @operators = User.joins(:itemmovements).distinct.order(:name)
-    @warehouses = Warehouse.order(:code)
-    @locations = Location.order(:code)
-
-    if params[:q].present?
-      q = "%#{params[:q]}%"
-      @itemmovements = @itemmovements.left_joins(itemmovements_details: :item)
-        .where("items.itemcode LIKE :q OR itemmovements_details.itemcode LIKE :q", q: q)
-        .distinct
-    end
-
-    if params[:date].present?
-      @itemmovements = @itemmovements.where(indate: Date.parse(params[:date])) rescue nil
-    end
-
-    if params[:operator_id].present?
-      @itemmovements = @itemmovements.where(operator_id: params[:operator_id])
-    end
-
-    if params[:warehouse_id].present?
-      wh_id = params[:warehouse_id]
-      @itemmovements = @itemmovements.where("source_warehouse_id = ? OR dest_warehouse_id = ?", wh_id, wh_id)
-    end
-
-    if params[:location_id].present?
-      loc_id = params[:location_id]
-      @itemmovements = @itemmovements.where("source_location_id = ? OR dest_location_id = ?", loc_id, loc_id)
-    end
-
-    @pagy, @itemmovements = pagy(@itemmovements)
+    redirect_to inventories_movements_path(operationtype_id: 3)
   end
 
   private
@@ -346,9 +236,9 @@ class AppController < ApplicationController
       { label: 'IN', path: app_in_warehouse_path, icon: 'download', active: %w[in_warehouse in_warehouse_confirmation].include?(active), can: 'manage_app_sectors' },
       { label: 'OUT', path: app_out_warehouse_path, icon: 'upload', active: %w[out_warehouse out_warehouse_confirmation].include?(active), can: 'manage_app_sectors' },
       { label: 'VAR', path: app_move_products_path, icon: 'swap_horiz', active: %w[move_products move_products_confirmation].include?(active), can: 'manage_app_sectors' },
-      { label: 'Carichi', path: app_itemins_list_path, icon: 'list_alt', active: active == 'itemins_list', can: 'manage_app_sectors' },
-      { label: 'Scarichi', path: app_itemouts_list_path, icon: 'list_alt', active: active == 'itemouts_list', can: 'manage_app_sectors' },
-      { label: 'Variazioni', path: app_itemmovements_list_path, icon: 'swap_vert', active: active == 'itemmovements_list', can: 'manage_app_sectors' },
+      { label: 'Carichi', path: inventories_movements_path(operationtype_id: 1), icon: 'list_alt', active: false, can: 'manage_app_sectors' },
+      { label: 'Scarichi', path: inventories_movements_path(operationtype_id: 2), icon: 'list_alt', active: false, can: 'manage_app_sectors' },
+      { label: 'Variazioni', path: inventories_movements_path(operationtype_id: 3), icon: 'swap_vert', active: false, can: 'manage_app_sectors' },
     ]
   end
 

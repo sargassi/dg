@@ -60,17 +60,17 @@ export default class extends Controller {
     const form = this.element.closest("form") || this.element;
     const rows = form.querySelectorAll("[data-nested-form-target='row']");
 
+    const whTxtVal = whTxt ? `Mag: ${whTxt}` : "—";
+    const locTxtVal = locTxt ? `Ubi: ${locTxt}` : "—";
     rows.forEach(row => {
       if (!skipHidden) {
         const whHidden = row.querySelector("input[type='hidden'][name*='warehouse_id']");
         const locHidden = row.querySelector("input[type='hidden'][name*='location_id']");
         if (whHidden) whHidden.value = whVal;
         if (locHidden) locHidden.value = locVal;
-        const whSpan = row.querySelector(".wh-display");
-        const locSpan = row.querySelector(".loc-display");
-        if (whSpan) whSpan.textContent = whTxt ? `Mag: ${whTxt}` : "—";
-        if (locSpan) locSpan.textContent = locTxt ? `Ubi: ${locTxt}` : "—";
       }
     });
+    form.querySelectorAll(".wh-display").forEach(el => el.textContent = whTxtVal);
+    form.querySelectorAll(".loc-display").forEach(el => el.textContent = locTxtVal);
   }
 }

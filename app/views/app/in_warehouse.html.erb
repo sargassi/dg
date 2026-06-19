@@ -53,6 +53,7 @@
                 <option value="<%= w.id %>" <%= 'selected' if @default_warehouse_id.to_s == w.id.to_s %>><%= w.code %></option>
               <% end %>
             </select>
+            <span class="wh-display text-xs text-slate-500 mt-1 block"></span>
           </div>
 
           <div class="flex-1 min-w-0">
@@ -63,6 +64,7 @@
                 <option value="<%= l.id %>" data-warehouse-id="<%= l.warehouse_id %>"><%= l.code %></option>
               <% end %>
             </select>
+            <span class="loc-display text-xs text-slate-500 mt-1 block"></span>
           </div>
         </div>
       </div>
@@ -141,6 +143,7 @@
                   <option value="<%= w.id %>" <%= 'selected' if @default_warehouse_id.to_s == w.id.to_s %>><%= w.code %></option>
                 <% end %>
               </select>
+              <span class="wh-display text-xs text-slate-500 mt-1 block"></span>
             </div>
             <div class="flex-1 min-w-0">
               <label class="text-xs text-slate-400 uppercase tracking-wide block mb-1">Ubica</label>
@@ -150,6 +153,7 @@
                   <option value="<%= l.id %>" data-warehouse-id="<%= l.warehouse_id %>"><%= l.code %></option>
                 <% end %>
               </select>
+              <span class="loc-display text-xs text-slate-500 mt-1 block"></span>
             </div>
           </div>
           </div>

@@ -429,49 +429,36 @@ class InventoriesController < ApplicationController
     end
 
     def parse_qr_code(scanned_text)
-      gencode, detail_id = extract_gencode_and_detail_id(scanned_text)
+      parsed = QrParser.parse(scanned_text)
 
-      if gencode.nil?
-        item = Item.find_by(gencode: scanned_text)
-        return { error: "Item not found" } unless item
-        return legacy_qr_result(item)
-      end
-
-      item = Item.find_by(gencode: gencode)
+      item = Item.find_by(gencode: parsed[:gencode])
       return { error: "Item not found" } unless item
 
-      detail = IteminsDetail.find_by(id: detail_id)
-      return legacy_qr_result(item) unless detail
-
-      last_inventory = find_last_ingress(item, detail.created_at)
-
-      {
-        format: "itemins",
-        item: item_summary(item),
-        inbound: {
-          warehouse_id: detail.warehouse_id,
-          location_id: detail.location_id,
-          warehouse: detail.warehouse&.code,
-          location: detail.location&.code
-        },
-        last_position: last_inventory ? {
-          warehouse_id: last_inventory.warehouse_id,
-          location_id: last_inventory.location_id,
-          warehouse: last_inventory.warehouse&.code,
-          location: last_inventory.location&.code,
-          since: last_inventory.created_at
-        } : nil
-      }
-    end
-
-    def extract_gencode_and_detail_id(text)
-      if text =~ /\A(.+)_(\d+)\z/
-        candidate_gencode = $1
-        candidate_detail_id = $2.to_i
-        if candidate_gencode =~ /_(\d+)\z/
-          [candidate_gencode, candidate_detail_id]
+      if parsed[:detail_id]
+        detail = IteminsDetail.find_by(id: parsed[:detail_id])
+        if detail
+          last_inventory = find_last_ingress(item, detail.created_at)
+          return {
+            format: "itemins",
+            item: item_summary(item),
+            inbound: {
+              warehouse_id: detail.warehouse_id,
+              location_id: detail.location_id,
+              warehouse: detail.warehouse&.code,
+              location: detail.location&.code
+            },
+            last_position: last_inventory ? {
+              warehouse_id: last_inventory.warehouse_id,
+              location_id: last_inventory.location_id,
+              warehouse: last_inventory.warehouse&.code,
+              location: last_inventory.location&.code,
+              since: last_inventory.created_at
+            } : nil
+          }
         end
       end
+
+      legacy_qr_result(item)
     end
 
     def legacy_qr_result(item)

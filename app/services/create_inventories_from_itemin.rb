@@ -1,6 +1,4 @@
 class CreateInventoriesFromItemin
-  require 'rqrcode'
-
   def call(itemin)
     records = []
     item_ids = itemin.itemins_details.map(&:item_id).compact.uniq

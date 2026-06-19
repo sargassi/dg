@@ -14,34 +14,55 @@ class InventoriesController < ApplicationController
     @warehouses = Warehouse.order(:code)
     @collections = Collection.all
 
-    base = Inventory.where.not(gencode: nil)
-      .left_joins(:itemin, :itemout)
-      .where("COALESCE(itemins.indate, itemouts.indate) <= ?", @date)
+    if params[:date].present? && params[:date].to_date != Date.current
+      # Historical date — use event log (slower but accurate)
+      base = Inventory.where.not(gencode: nil)
+        .left_joins(:itemin, :itemout)
+        .where("COALESCE(itemins.indate, itemouts.indate) <= ?", @date)
 
-    if params[:warehouse_id].present?
-      base = base.where(warehouse_id: params[:warehouse_id])
-    end
+      if params[:warehouse_id].present?
+        base = base.where(warehouse_id: params[:warehouse_id])
+      end
+      if params[:collection_id].present?
+        base = base.joins("INNER JOIN items ON items.gencode = inventories.gencode")
+                   .where(items: { collection_id: params[:collection_id] })
+      end
 
-    if params[:collection_id].present?
-      base = base.joins("INNER JOIN items ON items.gencode = inventories.gencode")
-                 .where(items: { collection_id: params[:collection_id] })
-    end
-
-    @inventories = base
-      .group(:gencode)
-      .select(
+      @inventories = base.group(:gencode).select(
         :gencode,
         Arel.sql("MAX(inventories.itemcode) AS itemcode"),
-        Arel.sql("SUM(CASE WHEN operationtype_id = 1 THEN COALESCE(qtyavailable, 0) ELSE 0 END) - SUM(CASE WHEN operationtype_id = 2 THEN COALESCE(qtyavailable, 0) ELSE 0 END) AS net_qty")
+        Arel.sql("SUM(CASE WHEN operationtype_id = 1 THEN COALESCE(qtyavailable, 0) ELSE 0 END - CASE WHEN operationtype_id = 2 THEN COALESCE(qtyavailable, 0) ELSE 0 END) AS net_qty")
       ).order(:gencode)
 
-    if params[:q].present?
-      q = "%#{params[:q]}%"
-      @inventories = @inventories.having("inventories.gencode LIKE :q", q: q)
-    end
+      if params[:q].present?
+        q = "%#{params[:q]}%"
+        @inventories = @inventories.having("inventories.gencode LIKE :q", q: q)
+      end
 
-    count = base.distinct.count(:gencode)
-    @pagy, @inventories = pagy(@inventories, count: count)
+      count = base.distinct.count(:gencode)
+      @pagy, @inventories = pagy(@inventories, count: count)
+    else
+      # Current stock — use StockLevel (fast)
+      @inventories = StockLevel.positive.order(:gencode)
+
+      if params[:q].present?
+        q = "%#{params[:q]}%"
+        @inventories = @inventories.joins("INNER JOIN items ON items.gencode = stock_levels.gencode")
+          .where("items.gencode LIKE :q OR items.itemcode LIKE :q", q: q)
+      end
+
+      if params[:warehouse_id].present?
+        @inventories = @inventories.where(warehouse_id: params[:warehouse_id])
+      end
+
+      if params[:collection_id].present?
+        @inventories = @inventories.joins("INNER JOIN items ON items.gencode = stock_levels.gencode")
+          .where(items: { collection_id: params[:collection_id] })
+      end
+
+      count = @inventories.distinct.count(:gencode)
+      @pagy, @inventories = pagy(@inventories, count: count)
+    end
 
     gencodes = @inventories.map(&:gencode).compact
     @history_by_gencode = {}
@@ -101,13 +122,10 @@ class InventoriesController < ApplicationController
     @locations = Location.where(id: loc_ids).index_by(&:id)
     items = Item.where(gencode: inventories.map(&:gencode).uniq).includes(:collection).index_by(&:gencode)
 
-    net_qty_by_key = Inventory.where(gencode: inventories.map(&:gencode).uniq)
-      .group(:gencode, :warehouse_id, :location_id)
-      .select(
-        :gencode, :warehouse_id, :location_id,
-        Arel.sql("SUM(CASE WHEN operationtype_id = 1 THEN COALESCE(qtyavailable, 0) ELSE 0 END) - SUM(CASE WHEN operationtype_id = 2 THEN COALESCE(qtyavailable, 0) ELSE 0 END) AS net_qty")
-      )
-      .each_with_object({}) { |row, h| h[[row.gencode, row.warehouse_id, row.location_id]] = row.net_qty }
+    stock_levels = StockLevel.where(gencode: inventories.map(&:gencode).uniq)
+    net_qty_by_key = stock_levels.each_with_object({}) { |sl, h|
+      h[[sl.gencode, sl.warehouse_id, sl.location_id]] = sl.current_qty
+    }
 
     result = []
     last_wh = nil
@@ -341,6 +359,13 @@ class InventoriesController < ApplicationController
     render layout: false
   end
 
+  # GET /inventories/lookup_by_qr
+  def lookup_by_qr
+    text = params[:q].to_s.strip
+    result = parse_qr_code(text)
+    render json: result
+  end
+
   # GET /inventories/new
   def new
     @inventory = Inventory.new
@@ -401,5 +426,88 @@ class InventoriesController < ApplicationController
     # Only allow a list of trusted parameters through.
     def inventory_params
       params.require(:inventory).permit(:qtyavailable, :minstock, :maxstock, :warehouse_id, :location_id, :itemcode, :gencode, :item_id, :operationtype_id, :itemins_id, :itemouts_id, :enabled)
+    end
+
+    def parse_qr_code(scanned_text)
+      gencode, detail_id = extract_gencode_and_detail_id(scanned_text)
+
+      if gencode.nil?
+        item = Item.find_by(gencode: scanned_text)
+        return { error: "Item not found" } unless item
+        return legacy_qr_result(item)
+      end
+
+      item = Item.find_by(gencode: gencode)
+      return { error: "Item not found" } unless item
+
+      detail = IteminsDetail.find_by(id: detail_id)
+      return legacy_qr_result(item) unless detail
+
+      last_inventory = find_last_ingress(item, detail.created_at)
+
+      {
+        format: "itemins",
+        item: item_summary(item),
+        inbound: {
+          warehouse_id: detail.warehouse_id,
+          location_id: detail.location_id,
+          warehouse: detail.warehouse&.code,
+          location: detail.location&.code
+        },
+        last_position: last_inventory ? {
+          warehouse_id: last_inventory.warehouse_id,
+          location_id: last_inventory.location_id,
+          warehouse: last_inventory.warehouse&.code,
+          location: last_inventory.location&.code,
+          since: last_inventory.created_at
+        } : nil
+      }
+    end
+
+    def extract_gencode_and_detail_id(text)
+      if text =~ /\A(.+)_(\d+)\z/
+        candidate_gencode = $1
+        candidate_detail_id = $2.to_i
+        if candidate_gencode =~ /_(\d+)\z/
+          [candidate_gencode, candidate_detail_id]
+        end
+      end
+    end
+
+    def legacy_qr_result(item)
+      positions = StockLevel.where(gencode: item.gencode).positive.includes(:warehouse, :location)
+
+      {
+        format: "legacy",
+        item: item_summary(item),
+        positions: positions.map { |sl|
+          {
+            warehouse_id: sl.warehouse_id,
+            location_id: sl.location_id,
+            warehouse: sl.warehouse&.code,
+            location: sl.location&.code,
+            net_qty: sl.current_qty
+          }
+        }
+      }
+    end
+
+    def item_summary(item)
+      {
+        id: item.id,
+        gencode: item.gencode,
+        itemcode: item.itemcode,
+        fabricode: item.fabricode,
+        varcode: item.varcode,
+        description: item.description,
+        collection: item.collection&.description
+      }
+    end
+
+    def find_last_ingress(item, after_date)
+      Inventory.where(item_id: item.id, operationtype_id: 1)
+        .where("created_at > ?", after_date)
+        .order(created_at: :desc)
+        .first
     end
 end

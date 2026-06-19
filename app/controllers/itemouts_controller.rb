@@ -111,20 +111,15 @@ class ItemoutsController < ApplicationController
       items = Item.where(id: item_ids).index_by(&:id)
       gencodes = items.values.map(&:gencode).compact.uniq
 
-      net_qty_by_key = Inventory.where(gencode: gencodes)
-        .group(:gencode, :warehouse_id, :location_id)
-        .select(
-          :gencode, :warehouse_id, :location_id,
-          Arel.sql("SUM(CASE WHEN operationtype_id = 1 THEN COALESCE(qtyavailable, 0) ELSE 0 END) - SUM(CASE WHEN operationtype_id = 2 THEN COALESCE(qtyavailable, 0) ELSE 0 END) AS net_qty")
-        )
-        .each_with_object({}) { |row, h| h[[row.gencode, row.warehouse_id, row.location_id]] = row.net_qty }
+      stock = StockLevel.where(gencode: gencodes)
+        .each_with_object({}) { |sl, h| h[[sl.gencode, sl.warehouse_id, sl.location_id]] = sl.current_qty }
 
       details.each do |d|
         next unless d[:item_id]
         item = items[d[:item_id].to_i]
         next unless item
 
-        available = net_qty_by_key[[item.gencode, d[:warehouse_id].to_i, d[:location_id].to_i]] || 0
+        available = stock[[item.gencode, d[:warehouse_id].to_i, d[:location_id].to_i]] || 0
         if d[:qty].to_i > available
           @itemout.errors.add(:base, "#{item.gencode}: quantità #{d[:qty]} supera la disponibilità (#{available} pz)")
         end

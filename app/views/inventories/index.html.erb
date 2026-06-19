@@ -69,7 +69,7 @@
                   <%= item.itemcode %><%= item.fabricode %><%= item.varcode %>
                 </td>
                 <td class="<%= style_table_td %> text-xs font-bold uppercase"><%= @collection_by_gencode[inv.gencode] %></td>
-                <td class="<%= style_table_td %> font-mono font-bold text-lg <%= inv.net_qty.to_i >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' %>"><%= inv.net_qty %></td>
+                <td class="<%= style_table_td %> font-mono font-bold text-lg <%= inv.respond_to?(:current_qty) ? (inv.current_qty >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400') : (inv.net_qty.to_i >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400') %>"><%= inv.respond_to?(:current_qty) ? inv.current_qty : inv.net_qty.to_i %></td>
                 <td class="<%= style_table_td %> p-0">
                   <table class="w-full text-xs border-collapse table-fixed">
                     <colgroup>

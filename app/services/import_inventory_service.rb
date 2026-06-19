@@ -94,22 +94,15 @@ class ImportInventoryService
 
       movement.save!
 
+      if op_type_id == 1
+        CreateInventoriesFromItemin.new.call(movement)
+      else
+        CreateInventoriesFromItemout.new.call(movement)
+      end
+
       details = op_type_id == 1 ? movement.itemins_details : movement.itemouts_details
       details.each_with_index do |detail, i|
-        row = data[:rows][i]
-        inventory = Inventory.create!(
-          itemcode: detail.itemcode,
-          qtyavailable: detail.qty,
-          minstock: row['Min Stock'] || row['minstock'] || row['Min'] || 0,
-          maxstock: row['Max Stock'] || row['maxstock'] || row['Max'] || 0,
-          warehouse_id: data[:warehouse_id],
-          location_id: data[:location_id].presence,
-          operationtype_id: op_type_id,
-          itemins_id: (op_type_id == 1 ? movement.id : nil),
-          itemouts_id: (op_type_id == 2 ? movement.id : nil),
-          enabled: true
-        )
-        stats[:items] << { itemcode: detail.itemcode, qty: detail.qty, inventory_id: inventory.id }
+        stats[:items] << { itemcode: detail.itemcode, qty: detail.qty, inventory_id: i }
         stats[:created] += 1
       end
     end

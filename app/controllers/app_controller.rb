@@ -157,8 +157,10 @@ class AppController < ApplicationController
       p = move_products_params
       @created_ids = []
 
-      details = MovementBuilder.filter_details(Itemmovement, p)
-        .reject { |d| d[:warehouse_id].blank? }
+      details = MovementBuilder.filter_details(Itemmovement, p, defaults: {
+          warehouse_id: params[:source_warehouse_id],
+          location_id: params[:source_location_id]
+        }).reject { |d| d[:warehouse_id].blank? }
 
       if params[:dest_warehouse_id].blank?
         @movement = Itemmovement.new(indate: p[:indate])

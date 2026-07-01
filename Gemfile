@@ -122,3 +122,5 @@ gem 'grape'
 gem "grape-active_model_serializers"
 
 gem 'rack-cors'
+
+gem 'caxlsx'

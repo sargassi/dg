@@ -7,7 +7,7 @@ class CreateInventoriesFromItemin
 
     itemin.itemins_details.each do |detail|
       gencode = items[detail.item_id]&.gencode
-      qr_code = "#{gencode}_#{detail.id}"
+      qr_code = "#{gencode}_#{format('%04d', (detail.collection_id || 0).to_i)}_#{detail.id}"
       qr_svg = qr_service.svg(qr_code)
 
       records << Inventory.create!(
@@ -23,12 +23,7 @@ class CreateInventoriesFromItemin
         enabled: true
       )
 
-      StockLevel.upsert({
-        gencode: gencode,
-        warehouse_id: detail.warehouse_id,
-        location_id: detail.location_id || 0,
-        current_qty: Arel.sql("COALESCE(current_qty, 0) + #{detail.qty.to_i}")
-      }, unique_by: [:gencode, :warehouse_id, :location_id])
+      StockLevel.adjust_qty!(gencode, detail.warehouse_id, detail.location_id, detail.qty.to_i)
     end
     records
   end

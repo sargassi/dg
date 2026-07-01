@@ -46,14 +46,26 @@
       </table>
     </div>
 
-    <div class="flex gap-4 mt-6 flex-none">
-      <%= form_with url: inventories_import_confirm_path, method: :post do %>
-        <button type="submit" class="<%= style_import_btn %> bg-green-600">
+    <div class="flex gap-4 mt-6 flex-none" data-controller="loader">
+      <%= form_with url: inventories_import_confirm_path, method: :post,
+                    data: { action: "submit->loader#show" } do %>
+        <button type="submit" class="<%= style_import_btn %> bg-green-600" data-loader-target="form">
           Conferma importazione (<span id="import-count-btn"><%= @data[:rows].size %></span>)
         </button>
       <% end %>
 
       <%= button_to "Annulla", inventories_import_cancel_path, method: :delete, class: "#{style_import_btn} bg-gray-400" %>
+
+      <div data-loader-target="overlay" class="hidden fixed inset-0 z-50 bg-black/50 items-center justify-center">
+        <div class="bg-white dark:bg-slate-800 rounded-xl p-8 flex flex-col items-center gap-4 shadow-2xl">
+          <svg class="animate-spin h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span class="text-slate-700 dark:text-slate-200 font-semibold text-lg">Importazione in corso...</span>
+          <span class="text-slate-400 dark:text-slate-400 text-sm">Attendi il completamento</span>
+        </div>
+      </div>
     </div>
 
   <% else %>

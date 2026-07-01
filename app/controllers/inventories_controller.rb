@@ -23,9 +23,15 @@ class InventoriesController < ApplicationController
       if params[:warehouse_id].present?
         base = base.where(warehouse_id: params[:warehouse_id])
       end
-      if params[:collection_id].present?
+      if params[:collection_id].present? || params[:q].present?
         base = base.joins("INNER JOIN items ON items.gencode = inventories.gencode")
-                   .where(items: { collection_id: params[:collection_id] })
+        if params[:collection_id].present?
+          base = base.where(items: { collection_id: params[:collection_id] })
+        end
+        if params[:q].present?
+          q = "%#{params[:q]}%"
+          base = base.where("items.gencode LIKE :q OR items.itemcode LIKE :q OR items.description LIKE :q", q: q)
+        end
       end
 
       @inventories = base.group(:gencode).select(
@@ -34,33 +40,31 @@ class InventoriesController < ApplicationController
         Arel.sql("SUM(CASE WHEN operationtype_id = 1 THEN COALESCE(qtyavailable, 0) ELSE 0 END - CASE WHEN operationtype_id = 2 THEN COALESCE(qtyavailable, 0) ELSE 0 END) AS net_qty")
       ).order(:gencode)
 
-      if params[:q].present?
-        q = "%#{params[:q]}%"
-        @inventories = @inventories.having("inventories.gencode LIKE :q", q: q)
-      end
-
       count = base.distinct.count(:gencode)
       @pagy, @inventories = pagy(@inventories, count: count)
     else
       # Current stock — use StockLevel (fast)
-      @inventories = StockLevel.positive.order(:gencode)
+      base = StockLevel.positive
 
       if params[:q].present?
         q = "%#{params[:q]}%"
-        @inventories = @inventories.joins("INNER JOIN items ON items.gencode = stock_levels.gencode")
-          .where("items.gencode LIKE :q OR items.itemcode LIKE :q", q: q)
+        base = base.joins("INNER JOIN items ON items.gencode = stock_levels.gencode")
+          .where("items.gencode LIKE :q OR items.itemcode LIKE :q OR items.description LIKE :q", q: q)
       end
 
       if params[:warehouse_id].present?
-        @inventories = @inventories.where(warehouse_id: params[:warehouse_id])
+        base = base.where(warehouse_id: params[:warehouse_id])
       end
 
       if params[:collection_id].present?
-        @inventories = @inventories.joins("INNER JOIN items ON items.gencode = stock_levels.gencode")
+        base = base.joins("INNER JOIN items ON items.gencode = stock_levels.gencode")
           .where(items: { collection_id: params[:collection_id] })
       end
 
-      count = @inventories.distinct.count(:gencode)
+      count = base.distinct.count(:gencode)
+      @inventories = base.group(:gencode)
+        .select(:gencode, Arel.sql("SUM(current_qty) AS current_qty"))
+        .order(:gencode)
       @pagy, @inventories = pagy(@inventories, count: count)
     end
 
@@ -93,6 +97,93 @@ class InventoriesController < ApplicationController
     items = Item.where(gencode: gencodes).includes(:collection).with_attached_pictures.index_by(&:gencode)
     @collection_by_gencode = items.transform_values { |item| item.collection&.description }
     @items_by_gencode = items
+  end
+
+  # GET /inventories/export_xlsx
+  def export_xlsx
+    @date = if params[:date].present?
+      Date.parse(params[:date]) rescue Date.current
+    else
+      Date.current
+    end
+
+    if params[:date].present? && params[:date].to_date != Date.current
+      base = Inventory.where.not(gencode: nil)
+        .left_joins(:itemin, :itemout)
+        .where("COALESCE(itemins.indate, itemouts.indate) <= ?", @date)
+
+      if params[:warehouse_id].present?
+        base = base.where(warehouse_id: params[:warehouse_id])
+      end
+      if params[:collection_id].present? || params[:q].present?
+        base = base.joins("INNER JOIN items ON items.gencode = inventories.gencode")
+        if params[:collection_id].present?
+          base = base.where(items: { collection_id: params[:collection_id] })
+        end
+        if params[:q].present?
+          q = "%#{params[:q]}%"
+          base = base.where("items.gencode LIKE :q OR items.itemcode LIKE :q OR items.description LIKE :q", q: q)
+        end
+      end
+
+      @inventories = base.group(:gencode).select(
+        :gencode,
+        Arel.sql("MAX(inventories.itemcode) AS itemcode"),
+        Arel.sql("SUM(CASE WHEN operationtype_id = 1 THEN COALESCE(qtyavailable, 0) ELSE 0 END - CASE WHEN operationtype_id = 2 THEN COALESCE(qtyavailable, 0) ELSE 0 END) AS net_qty")
+      ).order(:gencode)
+    else
+      base = StockLevel.positive
+
+      if params[:q].present?
+        q = "%#{params[:q]}%"
+        base = base.joins("INNER JOIN items ON items.gencode = stock_levels.gencode")
+          .where("items.gencode LIKE :q OR items.itemcode LIKE :q OR items.description LIKE :q", q: q)
+      end
+
+      if params[:warehouse_id].present?
+        base = base.where(warehouse_id: params[:warehouse_id])
+      end
+
+      if params[:collection_id].present?
+        base = base.joins("INNER JOIN items ON items.gencode = stock_levels.gencode")
+          .where(items: { collection_id: params[:collection_id] })
+      end
+
+      @inventories = base.group(:gencode)
+        .select(:gencode, Arel.sql("SUM(current_qty) AS current_qty"))
+        .order(:gencode)
+    end
+
+    gencodes = @inventories.map(&:gencode).compact
+    items = Item.where(gencode: gencodes).includes(:collection).index_by(&:gencode)
+    @collection_by_gencode = items.transform_values { |item| item.collection&.description }
+    @items_by_gencode = items
+
+    warehouse_label = params[:warehouse_id].present? ? Warehouse.find_by(id: params[:warehouse_id])&.code || params[:warehouse_id] : "Tutti"
+    collection_label = params[:collection_id].present? ? Collection.find_by(id: params[:collection_id])&.description || params[:collection_id] : "Tutte"
+
+    package = Axlsx::Package.new
+    wb = package.workbook
+    wb.add_worksheet(name: "Inventario") do |sheet|
+      sheet.add_row ["Data", @date.strftime("%d-%m-%Y"), "Magazzino", warehouse_label, "Collezione", collection_label]
+      sheet.add_row
+      sheet.add_row ["Codice", "Collezione", "Descrizione", "Quantità"]
+      @inventories.each do |inv|
+        item = @items_by_gencode[inv.gencode]
+        next unless item
+        qty = inv.respond_to?(:current_qty) ? inv.current_qty : inv.net_qty.to_i
+        sheet.add_row [
+          "#{item.itemcode}#{item.fabricode}#{item.varcode}",
+          @collection_by_gencode[inv.gencode],
+          item.description,
+          qty
+        ]
+      end
+    end
+
+    send_data package.to_stream.read,
+      filename: "inventario_#{@date.strftime("%Y-%m-%d")}.xlsx",
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
   end
 
   # GET /inventories/1 or /inventories/1.json
@@ -327,7 +418,8 @@ class InventoriesController < ApplicationController
   end
 
   def movement_label
-    @items = case params[:type]
+    @movement_type = params[:type]
+    @items = case @movement_type
     when "itemin"
       Itemin.includes(itemins_details: :item).find(params[:id]).itemins_details
     when "itemout"
@@ -441,6 +533,7 @@ class InventoriesController < ApplicationController
           return {
             format: "itemins",
             item: item_summary(item),
+            collection_id: parsed[:collection_id] || detail.collection_id,
             inbound: {
               warehouse_id: detail.warehouse_id,
               location_id: detail.location_id,
@@ -467,6 +560,7 @@ class InventoriesController < ApplicationController
       {
         format: "legacy",
         item: item_summary(item),
+        collection_id: item.collection_id,
         positions: positions.map { |sl|
           {
             warehouse_id: sl.warehouse_id,

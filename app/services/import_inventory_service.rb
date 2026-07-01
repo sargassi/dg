@@ -23,8 +23,8 @@ class ImportInventoryService
 
   def validate_row(row)
     itemcode = row['Item Code:'] || row['itemcode'] || row['Item Code']
-    fabricode = row['fabricode'] || row['Fabric Code'] || row['Fabricode']
-    varcode = row['varcode'] || row['Var Code'] || row['Var']
+    fabricode = row['fabricode'] || row['Fabric Code'] || row['Fabricode'] || row['Fabric code'] || row['Fabric code:']
+    varcode = row['varcode'] || row['Var Code'] || row['Var'] || row['var. code:']
 
     if itemcode.blank?
       row[:_valid] = false
@@ -34,13 +34,17 @@ class ImportInventoryService
 
     existing = if fabricode.present? && varcode.present?
       Item.find_by(itemcode: itemcode, fabricode: fabricode, varcode: varcode)
+    elsif varcode.present?
+      Item.find_by(itemcode: itemcode, varcode: varcode) || Item.find_by(itemcode: itemcode) || Item.find_by(gencode: itemcode)
     else
-      Item.find_by(itemcode: itemcode)
+      Item.find_by(itemcode: itemcode) || Item.find_by(gencode: itemcode)
     end
 
     if existing
       row[:_valid] = true
       row[:_error] = nil
+      row[:_item_id] = existing.id
+      row[:_itemcode] = existing.itemcode if existing.gencode == itemcode
     else
       row[:_valid] = false
       row[:_error] = "Articolo #{itemcode}#{" / #{fabricode}" if fabricode}#{" / #{varcode}" if varcode} non trovato"
@@ -69,16 +73,23 @@ class ImportInventoryService
           next
         end
 
-        itemcode = row['Item Code:'] || row['itemcode'] || row['Item Code']
+        raw_itemcode = row['Item Code:'] || row['itemcode'] || row['Item Code']
         qty = (row['Qt.'] || row['Quantity'] || row['qtyavailable'] || row['QTA'] || 0).to_i
 
         if qty == 0
-          stats[:skipped] << { itemcode: itemcode, row: row[:_index] }
+          stats[:skipped] << { itemcode: raw_itemcode, row: row[:_index] }
           next
         end
 
+        item = if row[:_item_id]
+          Item.find(row[:_item_id])
+        else
+          Item.find_by(itemcode: raw_itemcode) || Item.find_by(gencode: raw_itemcode)
+        end
+
         detail_attrs = {
-          itemcode: itemcode,
+          itemcode: row[:_itemcode] || item&.itemcode || raw_itemcode,
+          item_id: item&.id,
           qty: qty,
           warehouse: warehouse,
           location_id: data[:location_id].presence,

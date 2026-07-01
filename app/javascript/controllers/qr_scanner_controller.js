@@ -12,6 +12,42 @@ export default class extends Controller {
   scanRow(event) {
     const input = event.currentTarget.parentElement.querySelector("[data-qr-scanner-target='input']");
     this.pendingInput = input;
+
+    this._callback = async (text) => {
+      input.value = text;
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+
+      const row = input.closest("[data-nested-form-target='row']");
+      if (!row) return;
+
+      try {
+        const resp = await fetch(`/inventories/lookup_by_qr?q=${encodeURIComponent(text)}`);
+        const data = await resp.json();
+        if (data.error) return;
+
+        const itemIdHidden = row.querySelector("input[type='hidden'][name*='[item_id]']");
+        const whHidden = row.querySelector("input[type='hidden'][name*='warehouse_id']");
+        const locHidden = row.querySelector("input[type='hidden'][name*='location_id']");
+        const selWh = row.querySelector(".selected-wh-display");
+        const selLoc = row.querySelector(".selected-loc-display");
+
+        if (itemIdHidden && data.item && data.item.id) {
+          itemIdHidden.value = data.item.id;
+          const collHidden = row.querySelector("input[type='hidden'][name*='collection_id']");
+          if (collHidden && data.collection_id) collHidden.value = data.collection_id;
+        }
+
+        const pos = data.inbound || (data.positions && data.positions[0]);
+        if (!pos) return;
+        if (whHidden && pos.warehouse_id) whHidden.value = pos.warehouse_id;
+        if (locHidden && pos.location_id) locHidden.value = pos.location_id;
+        if (selWh) selWh.textContent = pos.warehouse || "—";
+        if (selLoc) selLoc.textContent = pos.location || "—";
+      } catch (e) {
+        console.error("lookup_by_qr failed", e);
+      }
+    };
+
     this.overlayTarget.classList.remove("hidden");
     this._scan();
   }

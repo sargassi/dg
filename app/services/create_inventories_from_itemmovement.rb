@@ -19,12 +19,7 @@ class CreateInventoriesFromItemmovement
         enabled: true
       )
 
-      StockLevel.upsert({
-        gencode: gencode,
-        warehouse_id: detail.warehouse_id,
-        location_id: detail.location_id || 0,
-        current_qty: Arel.sql("COALESCE(current_qty, 0) - #{detail.qty.to_i}")
-      }, unique_by: [:gencode, :warehouse_id, :location_id])
+      StockLevel.adjust_qty!(gencode, detail.warehouse_id, detail.location_id, -detail.qty.to_i)
 
       records << Inventory.create!(
         itemcode: detail.itemcode,
@@ -38,12 +33,7 @@ class CreateInventoriesFromItemmovement
         enabled: true
       )
 
-      StockLevel.upsert({
-        gencode: gencode,
-        warehouse_id: itemmovement.dest_warehouse_id,
-        location_id: itemmovement.dest_location_id || 0,
-        current_qty: Arel.sql("COALESCE(current_qty, 0) + #{detail.qty.to_i}")
-      }, unique_by: [:gencode, :warehouse_id, :location_id])
+      StockLevel.adjust_qty!(gencode, itemmovement.dest_warehouse_id, itemmovement.dest_location_id, detail.qty.to_i)
     end
     records
   end

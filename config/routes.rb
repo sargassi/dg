@@ -47,6 +47,7 @@ Rails.application.routes.draw do
     collection do
       get 'autocomplete'
       get 'lookup_by_qr'
+      get 'export_xlsx'
     end
   end
   resources :items do

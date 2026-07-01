@@ -37,6 +37,13 @@
             data: { action: "change->search-filter#filter", search_filter_target: "select", search_filter_active_class: "bg-blue-400 dark:bg-blue-600 text-white dark:text-white", search_filter_inactive_class: "bg-white dark:bg-slate-700 dark:text-slate-200" } %>
     <% end %>
     <span class="text-sm font-bold text-slate-700 whitespace-nowrap border border-slate-300 rounded-full px-3 py-1 dark:text-slate-200 dark:border-slate-600 dark:bg-slate-700" data-search-filter-target="count"><%= @pagy.count %> articoli</span>
+    <%= link_to export_xlsx_inventories_path(q: params[:q], date: params[:date], collection_id: params[:collection_id], warehouse_id: params[:warehouse_id], format: :xlsx),
+                target: "_blank",
+                data: { turbo: false },
+                class: "inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border border-green-600 text-green-600 hover:bg-green-50 dark:border-green-500 dark:text-green-400 dark:hover:bg-green-900/20 ml-auto" do %>
+      <span class="material-symbols-outlined text-base">file_download</span>
+      Esporta Excel
+    <% end %>
   </div>
 
   <style>
@@ -50,13 +57,13 @@
         <table class="min-w-full">
           <thead>
             <tr>
-              <% %w[Codice Collezione].each do |h| %>
+              <% %w[Codice Collezione Descrizione].each do |h| %>
                 <th class="<%= style_table_th %> sticky top-0 z-10"><%= h %></th>
               <% end %>
               <th class="<%= style_table_th %> sticky top-0 z-10 whitespace-nowrap">
                 QTA <span class="text-[9px] text-slate-500 ml-1 font-normal dark:text-slate-300">al <span class="font-bold"><%= @date.strftime("%d-%m-%Y") %></span></span>
               </th>
-              <% %w[Movimenti QR Immagine Azioni].each do |h| %>
+              <% %w[Movimenti Immagine Azioni].each do |h| %>
                 <th class="<%= style_table_th %> sticky top-0 z-10"><%= h %></th>
               <% end %>
             </tr>
@@ -69,6 +76,7 @@
                   <%= item.itemcode %><%= item.fabricode %><%= item.varcode %>
                 </td>
                 <td class="<%= style_table_td %> text-xs font-bold uppercase"><%= @collection_by_gencode[inv.gencode] %></td>
+                <td class="<%= style_table_td %> text-xs max-w-[400px] truncate"><%= @items_by_gencode[inv.gencode]&.description %></td>
                 <td class="<%= style_table_td %> font-mono font-bold text-lg <%= inv.respond_to?(:current_qty) ? (inv.current_qty >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400') : (inv.net_qty.to_i >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400') %>"><%= inv.respond_to?(:current_qty) ? inv.current_qty : inv.net_qty.to_i %></td>
                 <td class="<%= style_table_td %> p-0">
                   <table class="w-full text-xs border-collapse table-fixed">
@@ -112,34 +120,36 @@
                                    <col class="w-16">
                                    <col class="w-14">
                                  </colgroup>
-                                 <tbody>
-                                   <% non_moves.each do |h| %>
-                                   <% if h.operationtype_id == 1 %>
-                                     <% itemin = @itemins_by_id[h.itemins_id] %>
-                                     <% date = itemin&.indate %>
-                                     <% operator = itemin&.operator %>
-                                     <tr class="border-b border-slate-300 dark:border-slate-600 last:border-b-0">
-                                       <td class="px-2 py-1.5 whitespace-nowrap text-slate-500 dark:text-slate-400 border-r border-slate-300 dark:border-slate-600"><%= date&.strftime("%d-%m-%Y") %></td>
-                                       <td class="px-2 py-1.5 border-r border-slate-300 dark:border-slate-600 text-[10px]"><span class="inline-block bg-green-100 text-green-700 px-1.5 py-0.5 rounded font-semibold leading-tight dark:bg-green-900/30 dark:text-green-300">Entrata</span></td>
-                                       <td class="px-2 py-1.5 text-slate-500 dark:text-slate-400 border-r border-slate-300 dark:border-slate-600 text-[10px]"><%= itemin&.notes.presence || "—" %></td>
-                                       <td class="px-2 py-1.5 text-right font-mono font-bold text-green-600 dark:text-green-400 border-r border-slate-300 dark:border-slate-600"><%= h.qtyavailable %></td>
-                                       <td class="px-2 py-1.5 text-slate-500 dark:text-slate-400 border-r border-slate-300 dark:border-slate-600"><%= operator&.name %></td>
-                                       <td class="px-2 py-1.5 font-mono text-slate-400 dark:text-slate-500 whitespace-nowrap"><%= "##{h.itemins_id}" %></td>
-                                     </tr>
-                                   <% else %>
-                                     <% itemout = @itemouts_by_id[h.itemouts_id] %>
-                                     <% date = itemout&.indate %>
-                                     <% operator = itemout&.operator %>
-                                     <tr class="border-b border-slate-300 dark:border-slate-600 last:border-b-0">
-                                       <td class="px-2 py-1.5 whitespace-nowrap text-slate-500 dark:text-slate-400 border-r border-slate-300 dark:border-slate-600"><%= date&.strftime("%d-%m-%Y") %></td>
-                                       <td class="px-2 py-1.5 border-r border-slate-300 dark:border-slate-600 text-[10px]"><span class="inline-block bg-red-100 text-red-700 px-1.5 py-0.5 rounded font-semibold leading-tight dark:bg-red-900/30 dark:text-red-300">Uscita</span></td>
-                                       <td class="px-2 py-1.5 text-slate-500 dark:text-slate-400 border-r border-slate-300 dark:border-slate-600 text-[10px]"><%= itemout&.notes.presence || "—" %></td>
-                                       <td class="px-2 py-1.5 text-right font-mono font-bold text-red-600 dark:text-red-400 border-r border-slate-300 dark:border-slate-600"><%= "-#{h.qtyavailable}" %></td>
-                                       <td class="px-2 py-1.5 text-slate-500 dark:text-slate-400 border-r border-slate-300 dark:border-slate-600"><%= operator&.name %></td>
-                                       <td class="px-2 py-1.5 font-mono text-slate-400 dark:text-slate-500 whitespace-nowrap"><%= "##{h.itemouts_id}" %></td>
-                                     </tr>
+                                  <tbody>
+                                    <% non_moves.group_by { |h| [h.operationtype_id, h.itemins_id || h.itemouts_id] }.each do |(op_type, _), group| %>
+                                      <% total_qty = group.sum { |h| h.qtyavailable.to_i } %>
+                                      <% first = group.first %>
+                                      <% if op_type == 1 %>
+                                        <% itemin = @itemins_by_id[first.itemins_id] %>
+                                        <% date = itemin&.indate %>
+                                        <% operator = itemin&.operator %>
+                                        <tr class="border-b border-slate-300 dark:border-slate-600 last:border-b-0">
+                                          <td class="px-2 py-1.5 whitespace-nowrap text-slate-500 dark:text-slate-400 border-r border-slate-300 dark:border-slate-600"><%= date&.strftime("%d-%m-%Y") %></td>
+                                          <td class="px-2 py-1.5 border-r border-slate-300 dark:border-slate-600 text-[10px]"><span class="inline-block bg-green-100 text-green-700 px-1.5 py-0.5 rounded font-semibold leading-tight dark:bg-green-900/30 dark:text-green-300">Entrata</span></td>
+                                          <td class="px-2 py-1.5 text-slate-500 dark:text-slate-400 border-r border-slate-300 dark:border-slate-600 text-[10px]"><%= itemin&.notes.presence || "—" %></td>
+                                          <td class="px-2 py-1.5 text-right font-mono font-bold text-green-600 dark:text-green-400 border-r border-slate-300 dark:border-slate-600"><%= total_qty %></td>
+                                          <td class="px-2 py-1.5 text-slate-500 dark:text-slate-400 border-r border-slate-300 dark:border-slate-600"><%= operator&.name %></td>
+                                          <td class="px-2 py-1.5 font-mono text-slate-400 dark:text-slate-500 whitespace-nowrap"><%= "##{first.itemins_id}" %></td>
+                                        </tr>
+                                      <% else %>
+                                        <% itemout = @itemouts_by_id[first.itemouts_id] %>
+                                        <% date = itemout&.indate %>
+                                        <% operator = itemout&.operator %>
+                                        <tr class="border-b border-slate-300 dark:border-slate-600 last:border-b-0">
+                                          <td class="px-2 py-1.5 whitespace-nowrap text-slate-500 dark:text-slate-400 border-r border-slate-300 dark:border-slate-600"><%= date&.strftime("%d-%m-%Y") %></td>
+                                          <td class="px-2 py-1.5 border-r border-slate-300 dark:border-slate-600 text-[10px]"><span class="inline-block bg-red-100 text-red-700 px-1.5 py-0.5 rounded font-semibold leading-tight dark:bg-red-900/30 dark:text-red-300">Uscita</span></td>
+                                          <td class="px-2 py-1.5 text-slate-500 dark:text-slate-400 border-r border-slate-300 dark:border-slate-600 text-[10px]"><%= itemout&.notes.presence || "—" %></td>
+                                          <td class="px-2 py-1.5 text-right font-mono font-bold text-red-600 dark:text-red-400 border-r border-slate-300 dark:border-slate-600"><%= "-#{total_qty}" %></td>
+                                          <td class="px-2 py-1.5 text-slate-500 dark:text-slate-400 border-r border-slate-300 dark:border-slate-600"><%= operator&.name %></td>
+                                          <td class="px-2 py-1.5 font-mono text-slate-400 dark:text-slate-500 whitespace-nowrap"><%= "##{first.itemouts_id}" %></td>
+                                        </tr>
+                                      <% end %>
                                     <% end %>
-                                  <% end %>
                                     <% moves.each do |h| %>
                                      <% mov = @itemmovements_by_id[h.itemmovement_id] %>
                                      <% next unless mov %>
@@ -163,9 +173,6 @@
                   </table>
                 </td>
                 <% item = @items_by_gencode[inv.gencode] %>
-                <td class="<%= style_table_td %>" style="width:130px">
-                  <%= item&.qrcode_svg&.html_safe %>
-                </td>
                 <td class="<%= style_table_td %>" style="width:120px">
                   <% if item&.pictures&.attached? %>
                     <%= link_to gallery_item_path(item, index: 0, q: params[:q], return_to: inventories_path(q: params[:q], date: params[:date], warehouse_id: params[:warehouse_id])), data: { turbo_frame: "item_modal" } do %>

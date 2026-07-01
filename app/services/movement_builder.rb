@@ -60,9 +60,9 @@ class MovementBuilder
   end
 
   def apply_defaults(detail)
-    detail[:collection_id]   ||= @defaults[:collection_id]   if @defaults[:collection_id].present?
-    detail[:warehouse_id]    ||= @defaults[:warehouse_id]    if @defaults[:warehouse_id].present?
-    detail[:location_id]     ||= @defaults[:location_id]     if @defaults[:location_id].present?
+    detail[:collection_id]   = @defaults[:collection_id]   if detail[:collection_id].blank?   && @defaults[:collection_id].present?
+    detail[:warehouse_id]    = @defaults[:warehouse_id]    if detail[:warehouse_id].blank?    && @defaults[:warehouse_id].present?
+    detail[:location_id]     = @defaults[:location_id]     if detail[:location_id].blank?     && @defaults[:location_id].present?
     detail[:operationtype_id] ||= DEFAULT_OPERATION[@movement_class]
     detail
   end

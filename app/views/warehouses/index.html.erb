@@ -94,7 +94,11 @@
         <% end %>
       </div>
 
-      <div class="mt-10 flex justify-end mr-6">
+      <div class="mt-10 flex justify-end mr-6 gap-3">
+        <%= link_to merge_warehouses_path, class: "inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-sm transition-colors" do %>
+          <span class="material-symbols-outlined text-base">merge</span>
+          Unisci magazzini
+        <% end %>
         <%= link_to qrcodes_warehouses_path, target: :_blank, class: "inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-sm transition-colors" do %>
           <span class="material-symbols-outlined text-base">qr_code</span>
           QR Resume

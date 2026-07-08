@@ -7,6 +7,9 @@ class WarehousesController < ApplicationController
     @warehouses = Warehouse.all.order(:code).includes(:locations)
     @warehouse = Warehouse.new
     @location = Location.new(enabled: true)
+    @inventory_counts = Inventory.where(warehouse_id: @warehouses.pluck(:id))
+                                 .group(:warehouse_id)
+                                 .count
   end
 
   def qrcodes
@@ -88,6 +91,24 @@ class WarehousesController < ApplicationController
       format.html { redirect_to warehouses_url, notice: "Magazzino eliminato con successo." }
       format.turbo_stream { redirect_to warehouses_url, notice: "Magazzino eliminato con successo." }
       format.json { head :no_content }
+    end
+  end
+
+  def merge
+    @warehouses = Warehouse.order(:code)
+    @stats = {}
+  end
+
+  def merge_apply
+    source_ids = params[:source_ids]
+    target_id = params[:target_id]
+
+    result = MergeWarehousesService.new.call(source_ids: source_ids, target_id: target_id)
+
+    if result.success
+      redirect_to warehouses_path, notice: "Unione completata. #{result.stats[:warehouses_disabled]} magazzini uniti in #{Warehouse.find(target_id).code}. #{result.stats[:inventories]} inventari, #{result.stats[:stock_levels] + result.stats[:stock_levels_merged]} stock levels, #{result.stats[:locations]} ubicazioni aggiornati."
+    else
+      redirect_to merge_warehouses_path, alert: result.error
     end
   end
 

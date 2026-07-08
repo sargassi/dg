@@ -13,6 +13,7 @@ class InventoriesController < ApplicationController
 
     @warehouses = Warehouse.order(:code)
     @collections = Collection.all
+    show_zero = params[:show_zero] == "1"
 
     if params[:date].present? && params[:date].to_date != Date.current
       # Historical date — use event log (slower but accurate)
@@ -38,13 +39,17 @@ class InventoriesController < ApplicationController
         :gencode,
         Arel.sql("MAX(inventories.itemcode) AS itemcode"),
         Arel.sql("SUM(CASE WHEN operationtype_id = 1 THEN COALESCE(qtyavailable, 0) ELSE 0 END - CASE WHEN operationtype_id = 2 THEN COALESCE(qtyavailable, 0) ELSE 0 END) AS net_qty")
-      ).order(:gencode)
+      )
+      unless show_zero
+        @inventories = @inventories.having(Arel.sql("SUM(CASE WHEN operationtype_id = 1 THEN COALESCE(qtyavailable, 0) ELSE 0 END - CASE WHEN operationtype_id = 2 THEN COALESCE(qtyavailable, 0) ELSE 0 END) > 0"))
+      end
+      @inventories = @inventories.order(:gencode)
 
       count = base.distinct.count(:gencode)
       @pagy, @inventories = pagy(@inventories, count: count)
     else
       # Current stock — use StockLevel (fast)
-      base = StockLevel.positive
+      base = StockLevel.all
 
       if params[:q].present?
         q = "%#{params[:q]}%"
@@ -59,6 +64,10 @@ class InventoriesController < ApplicationController
       if params[:collection_id].present?
         base = base.joins("INNER JOIN items ON items.gencode = stock_levels.gencode")
           .where(items: { collection_id: params[:collection_id] })
+      end
+
+      unless show_zero
+        base = base.where("COALESCE(current_qty, 0) > 0")
       end
 
       count = base.distinct.count(:gencode)
@@ -357,7 +366,6 @@ class InventoriesController < ApplicationController
 
   def import_parse
     return redirect_to inventories_import_path, alert: "Seleziona un file" unless params[:file].present?
-    return redirect_to inventories_import_path, alert: "Seleziona un magazzino" unless params[:warehouse_id].present?
     return redirect_to inventories_import_path, alert: "Seleziona un tipo operazione" unless params[:operationtype_id].present?
 
     service = ImportInventoryService.new
@@ -395,6 +403,11 @@ class InventoriesController < ApplicationController
 
     Rails.cache.write(inventories_import_cache_key, @data, expires_in: 30.minutes)
     respond_to { |format| format.turbo_stream }
+  end
+
+  def import_verify
+    @data = Rails.cache.read(inventories_import_cache_key)
+    return redirect_to inventories_import_path, alert: "Nessun dato da importare" unless @data&.dig(:rows)&.any?
   end
 
   def import_confirm

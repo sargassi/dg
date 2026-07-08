@@ -72,15 +72,21 @@ class MainwareController < ApplicationController
 
   def import
     @data = Rails.cache.read(import_cache_key)
-    @collections = Collection.all
+    @collections = Collection.all.order(:description)
   end
 
   def import_parse
     return redirect_to mainware_import_path, alert: "Seleziona un file" unless params[:file].present?
-    return redirect_to mainware_import_path, alert: "Seleziona una collezione" unless params[:collection_id].present?
+
+    metadata = {}
+    if params[:collection_id].present?
+      c = Collection.find(params[:collection_id])
+      metadata[:collection_id] = c.id
+    end
 
     service = ImportGeneralService.new
-    data = service.parse(params[:file], params[:collection_id])
+    data = service.parse(params[:file], metadata)
+
     Rails.cache.write(import_cache_key, data, expires_in: 30.minutes)
     redirect_to mainware_import_path, notice: "#{data[:rows].size} righe caricate. Verifica e modifica."
   end
@@ -99,7 +105,8 @@ class MainwareController < ApplicationController
     row[field] = value
 
     if ['Item Code:', 'Fabric code:', 'var. code:'].include?(field)
-      row[:_gencode] = [row['Item Code:'], row['Fabric code:'], row['var. code:']].map(&:to_s).join
+      coll_id = row[:_collection_id]
+      row[:_gencode] = [row['Item Code:'], row['Fabric code:'], row['var. code:']].map(&:to_s).join + "_#{coll_id}"
     end
 
     Rails.cache.write(import_cache_key, data, expires_in: 30.minutes)

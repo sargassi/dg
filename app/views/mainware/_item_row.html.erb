@@ -26,6 +26,7 @@
       <% end %>
     </td>
     <td class="<%= style_table_td %> font-mono text-blue-600 dark:text-blue-400" data-price-history-target="colprice"><%= number_to_currency(item.unit_price, unit: "€") %></td>
+    <td class="<%= style_table_td %> font-mono text-slate-600 dark:text-slate-400"><%= number_to_currency(item.vendita, unit: "€") %></td>
     <td class="<%= style_table_td %>" style="width:130px">
       <%= item.qrcode_svg.html_safe %>
     </td>
@@ -62,6 +63,7 @@
       <td colspan="10" class="p-0"></td>
       <td class="<%= style_table_td %> bg-green-50 dark:bg-green-900/20 font-bold"><div class="mb-4"><%= sibling.collection&.description&.upcase || "-" %></div></td>
       <td class="<%= style_table_td %> font-mono text-blue-600 dark:text-blue-400 bg-green-50 dark:bg-green-900/20"><%= number_to_currency(sibling.unit_price, unit: "€") %></td>
+      <td class="<%= style_table_td %> font-mono text-slate-600 dark:text-slate-400 bg-green-50 dark:bg-green-900/20"><%= number_to_currency(sibling.vendita, unit: "€") %></td>
       <td class="<%= style_table_td %> bg-green-50 dark:bg-green-900/20" style="width:80px"><%= sibling.qrcode_svg&.html_safe %></td>
       <td class="<%= style_table_td %> bg-green-50 dark:bg-green-900/20 align-middle" style="width:120px">
         <% if sibling.pictures.attached? %>

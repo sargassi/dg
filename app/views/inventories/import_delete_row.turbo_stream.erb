@@ -2,10 +2,36 @@
   <%= render partial: "import_rows" %>
 <% end %>
 
-<%= turbo_stream.update "import-count" do %>
-  <%= @data[:rows].size %>
+<%= turbo_stream.replace "import-summary" do %>
+  <% wh_rows = @data[:rows].group_by { |r| [r[:_warehouse_id], r[:_warehouse_code], r[:_warehouse_new]] }
+     coll_rows = @data[:rows].select { |r| r[:_collection_id] }.group_by { |r| [r[:_collection_id], r[:_collection_description], r[:_collection_new]] } %>
+  <div id="import-summary" class="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4 mb-4 text-sm">
+    <div class="font-semibold text-slate-700 dark:text-slate-300 mb-2">Riepilogo</div>
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <div class="text-xs text-slate-400 uppercase tracking-wide mb-1">Warehouse</div>
+        <% wh_rows.each do |(id, code, is_new), rows| %>
+          <div class="<%= 'text-green-700 dark:text-green-400' if is_new %>">
+            <%= "##{id} — #{code}" %>
+            <span class="text-slate-400">(<%= rows.size %> righe)</span>
+            <% if is_new %><span class="text-green-600 font-bold"> [NUOVO]</span><% end %>
+          </div>
+        <% end %>
+      </div>
+      <div>
+        <div class="text-xs text-slate-400 uppercase tracking-wide mb-1">Collection</div>
+        <% coll_rows.each do |(id, desc, is_new), rows| %>
+          <div class="<%= 'text-green-700 dark:text-green-400' if is_new %>">
+            <%= "##{id} — #{desc}" %>
+            <span class="text-slate-400">(<%= rows.size %> righe)</span>
+            <% if is_new %><span class="text-green-600 font-bold"> [NUOVO]</span><% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
 <% end %>
 
-<%= turbo_stream.update "import-count-btn" do %>
+<%= turbo_stream.update "import-count" do %>
   <%= @data[:rows].size %>
 <% end %>

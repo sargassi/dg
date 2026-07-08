@@ -35,9 +35,14 @@
              { include_blank: "TUTTI I MAGAZZINI" },
             class: "border border-slate-300 outline-none px-4 py-2 text-xs rounded-lg min-w-[180px] uppercase dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-slate-200",
             data: { action: "change->search-filter#filter", search_filter_target: "select", search_filter_active_class: "bg-blue-400 dark:bg-blue-600 text-white dark:text-white", search_filter_inactive_class: "bg-white dark:bg-slate-700 dark:text-slate-200" } %>
+      <label class="relative inline-flex items-center gap-2 cursor-pointer">
+        <%= f.check_box :show_zero, checked: params[:show_zero] == "1", class: "sr-only peer", data: { action: "change->search-filter#filter", search_filter_target: "input" } %>
+        <div class="w-9 h-5 bg-slate-200 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white dark:after:bg-slate-300 after:border-slate-300 dark:after:border-slate-600 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-accent"></div>
+        <span class="text-xs text-slate-400 dark:text-slate-300 uppercase tracking-wide select-none">Mostra zero</span>
+      </label>
     <% end %>
     <span class="text-sm font-bold text-slate-700 whitespace-nowrap border border-slate-300 rounded-full px-3 py-1 dark:text-slate-200 dark:border-slate-600 dark:bg-slate-700" data-search-filter-target="count"><%= @pagy.count %> articoli</span>
-    <%= link_to export_xlsx_inventories_path(q: params[:q], date: params[:date], collection_id: params[:collection_id], warehouse_id: params[:warehouse_id], format: :xlsx),
+    <%= link_to export_xlsx_inventories_path(q: params[:q], date: params[:date], collection_id: params[:collection_id], warehouse_id: params[:warehouse_id], show_zero: params[:show_zero], format: :xlsx),
                 target: "_blank",
                 data: { turbo: false },
                 class: "inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border border-green-600 text-green-600 hover:bg-green-50 dark:border-green-500 dark:text-green-400 dark:hover:bg-green-900/20 ml-auto" do %>
@@ -70,7 +75,7 @@
           </thead>
           <tbody>
             <% @inventories.each do |inv| %>
-              <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
+              <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50 <%= 'bg-red-50 dark:bg-red-900/10' if (inv.respond_to?(:current_qty) ? inv.current_qty : inv.net_qty.to_i) <= 0 %>">
                 <td class="<%= style_table_td %> font-mono whitespace-nowrap">
                   <% item = @items_by_gencode[inv.gencode] %>
                   <%= item.itemcode %><%= item.fabricode %><%= item.varcode %>

@@ -12,10 +12,11 @@ Rails.application.routes.draw do
   get 'inventories/movements/:type/:id/modal', to: 'inventories#movement_modal', as: :inventories_movement_modal
   get 'inventories/seleziona'
   post 'inventories/seleziona/prepare_carico', to: 'inventories#prepare_carico', as: :inventories_prepare_carico
-  get 'inventories/import'
+  get    'inventories/import'
   post   'inventories/import/parse',      to: 'inventories#import_parse'
   put    'inventories/import/update_row', to: 'inventories#import_update_row'
   delete 'inventories/import/delete_row', to: 'inventories#import_delete_row'
+  get    'inventories/import/verify',     to: 'inventories#import_verify'
   post   'inventories/import/confirm',    to: 'inventories#import_confirm'
   delete 'inventories/import/cancel',     to: 'inventories#import_cancel'
   get    'inventories/import/summary',    to: 'inventories#import_summary'
@@ -24,6 +25,8 @@ Rails.application.routes.draw do
       collection do
         get 'qrcodes', defaults: { format: :pdf }
         get 'lookup_by_qr'
+        get 'merge'
+        post 'merge_apply'
       end
     end
     resources :locations
@@ -38,6 +41,10 @@ Rails.application.routes.draw do
       collection do
         get  :preview
         post :confirm
+        get  :import
+        post :import_parse
+        post :import_confirm
+        delete :import_cancel
       end
     end
   end

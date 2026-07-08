@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_06_19_140000) do
+ActiveRecord::Schema[7.2].define(version: 2026_07_01_124517) do
   create_table "abilities", force: :cascade do |t|
     t.string "name", null: false
     t.string "description"
@@ -302,6 +302,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_06_19_140000) do
     t.string "gencode"
     t.text "qrcode_svg"
     t.integer "collection_id"
+    t.decimal "vendita"
     t.index ["collection_id"], name: "index_items_on_collection_id"
   end
 

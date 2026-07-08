@@ -1,14 +1,23 @@
 class ImportInventoryService
   require 'roo'
 
-  def parse(file, metadata = {})
-    spreadsheet = Roo::Excelx.new(file)
-    headers = spreadsheet.row(1)
+  KNOWN_HEADERS = ['Item Code:', 'Description:', 'Qt.', 'Fabric code:', 'var. code:', 'Fabric Code', 'Fabricode', 'Quantity', 'QTA', 'qtyavailable'].freeze
 
-    rows = (2..spreadsheet.last_row).map do |i|
+  def parse(file, metadata = {})
+    override_warehouse_id = metadata[:warehouse_id].to_i if metadata[:warehouse_id].present?
+    override_location_id = metadata[:location_id].to_i if metadata[:location_id].present?
+
+    spreadsheet = Roo::Excelx.new(file)
+    header_row = find_header_row(spreadsheet)
+    headers = spreadsheet.row(header_row)
+
+    rows = ((header_row + 1)..spreadsheet.last_row).map do |i|
       row = Hash[[headers, spreadsheet.row(i)].transpose]
       row[:_index] = i
       validate_row(row)
+      resolve_warehouse_location_collection(row,
+        override_warehouse_id: override_warehouse_id,
+        override_location_id: override_location_id)
       row
     end
 
@@ -19,6 +28,61 @@ class ImportInventoryService
       location_id: metadata[:location_id],
       operationtype_id: metadata[:operationtype_id]
     }
+  end
+
+  def find_header_row(spreadsheet)
+    (1..spreadsheet.last_row).each do |i|
+      row = spreadsheet.row(i)
+      next if row.nil? || row.empty?
+      matches = KNOWN_HEADERS.count { |h| row.any? { |cell| cell.to_s.strip == h } }
+      return i if matches >= 2
+    end
+    1
+  end
+
+  def resolve_warehouse_location_collection(row, override_warehouse_id: nil, override_location_id: nil)
+    if override_warehouse_id
+      w = Warehouse.find(override_warehouse_id)
+      row[:_warehouse_id] = w.id
+      row[:_warehouse_code] = w.code
+      row[:_warehouse_new] = false
+    else
+      dove_val = row['dove'].to_s.strip
+      if dove_val.present?
+        existing_w = Warehouse.find_by(code: dove_val)
+        if existing_w
+          row[:_warehouse_id] = existing_w.id
+          row[:_warehouse_code] = existing_w.code
+          row[:_warehouse_new] = false
+        else
+          w = Warehouse.create!(code: dove_val, enabled: true)
+          row[:_warehouse_id] = w.id
+          row[:_warehouse_code] = w.code
+          row[:_warehouse_new] = true
+        end
+      end
+    end
+
+    if override_location_id
+      loc = Location.find(override_location_id)
+      row[:_location_id] = loc.id
+      row[:_location_code] = loc.code
+    end
+
+    note_val = row['Note:'].to_s.strip
+    if note_val.present?
+      existing_c = Collection.find_by(description: note_val)
+      if existing_c
+        row[:_collection_id] = existing_c.id
+        row[:_collection_description] = existing_c.description
+        row[:_collection_new] = false
+      else
+        c = Collection.create!(description: note_val)
+        row[:_collection_id] = c.id
+        row[:_collection_description] = c.description
+        row[:_collection_new] = true
+      end
+    end
   end
 
   def validate_row(row)
@@ -57,8 +121,6 @@ class ImportInventoryService
 
     return stats unless [1, 2].include?(op_type_id)
 
-    warehouse = Warehouse.find(data[:warehouse_id])
-
     ActiveRecord::Base.transaction do
       movement = if op_type_id == 1
         Itemin.new(indate: Date.current, operator_id: user&.id, notes: "Importazione Excel")
@@ -87,12 +149,22 @@ class ImportInventoryService
           Item.find_by(itemcode: raw_itemcode) || Item.find_by(gencode: raw_itemcode)
         end
 
+        warehouse_id = row[:_warehouse_id] || data[:warehouse_id]
+
+        if warehouse_id.blank?
+          stats[:invalid] << { itemcode: raw_itemcode, row: row[:_index], error: "Magazzino non specificato" }
+          next
+        end
+
+        warehouse_obj = Warehouse.find(warehouse_id)
+
         detail_attrs = {
           itemcode: row[:_itemcode] || item&.itemcode || raw_itemcode,
           item_id: item&.id,
           qty: qty,
-          warehouse: warehouse,
-          location_id: data[:location_id].presence,
+          warehouse: warehouse_obj,
+          collection_id: row[:_collection_id],
+          location_id: row[:_location_id],
           operationtype_id: op_type_id
         }
 

@@ -105,6 +105,38 @@ class ItemoutsController < ApplicationController
     end
   end
 
+  def import
+    @data = Rails.cache.read(import_cache_key)
+  end
+
+  def import_parse
+    return redirect_to import_itemouts_path, alert: "Seleziona un file" unless params[:file].present?
+
+    service = ImportItemoutService.new
+    data = service.parse(params[:file])
+    Rails.cache.write(import_cache_key, data, expires_in: 30.minutes)
+    redirect_to import_itemouts_path, notice: "#{data[:rows].size} righe caricate. Verifica e conferma."
+  end
+
+  def import_confirm
+    data = Rails.cache.read(import_cache_key)
+    return redirect_to import_itemouts_path, alert: "Nessun dato da importare" unless data&.dig(:rows)&.any?
+
+    stats = ImportItemoutService.new.save(data, current_user)
+    Rails.cache.delete(import_cache_key)
+
+    if stats[:errors].any?
+      redirect_to inventories_dashboard_path, alert: "Importazione completata con #{stats[:created]} articoli. #{stats[:errors].size} errori."
+    else
+      redirect_to inventories_dashboard_path, notice: "Importazione uscite completata: #{stats[:created]} articoli su #{stats[:total]}."
+    end
+  end
+
+  def import_cancel
+    Rails.cache.delete(import_cache_key)
+    redirect_to import_itemouts_path, notice: "Importazione annullata."
+  end
+
   private
     def validate_stock_availability(details)
       item_ids = details.map { |d| d[:item_id] }.compact.uniq
@@ -133,5 +165,9 @@ class ItemoutsController < ApplicationController
     def itemout_params
       params.require(:itemout).permit(:indate, :notes, :operator_id,
         itemouts_details_attributes: [:id, :itemcode, :qty, :item_id, :collection_id, :warehouse_id, :location_id, :operationtype_id, :_destroy])
+    end
+
+    def import_cache_key
+      "import_itemout:#{session.id.to_s}"
     end
 end

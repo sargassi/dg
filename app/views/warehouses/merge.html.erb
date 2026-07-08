@@ -1,0 +1,80 @@
+<% menu = [
+  { label: 'Dashboard', path: inventories_dashboard_path, active: false, icon: 'dashboard', can: 'manage_inventory' },
+  { label: 'Ricerca magazzino', path: inventories_path, active: false, icon: 'inventory_2', can: 'manage_inventory' },
+  { label: 'Movimenti', path: inventories_movements_path, active: false, icon: 'swap_vert', can: 'manage_itemins' },
+  { label: 'Magazzini e ubiche', path: warehouses_path, active: false, icon: 'warehouse', can: 'manage_warehouses' },
+  { label: 'Unisci magazzini', path: merge_warehouses_path, active: true, icon: 'merge', can: 'manage_warehouses' },
+] %>
+<div class="<%= style_main_header_container %>">
+  <%= render partial: 'atoms/header', locals: {link: '/', label: 'Unisci magazzini', menu: menu} %>
+</div>
+
+<section class="<%= style_main_cnt %> overflow-y-auto min-w-0" style="height: calc(100vh - 140px);">
+  <% if notice.present? %>
+    <p class="py-2 px-3 bg-green-50 text-green-500 font-medium rounded-lg inline-block mb-5" id="notice"><%= notice %></p>
+  <% end %>
+
+  <% if @warehouses.count < 2 %>
+    <div class="bg-slate-50 rounded-lg p-8 text-center">
+      <span class="material-symbols-outlined text-4xl text-slate-300 mb-2">merge</span>
+      <p class="text-slate-500">Servono almeno 2 magazzini per unire.</p>
+    </div>
+  <% else %>
+    <%= form_with url: merge_apply_warehouses_path, method: :post, local: true, data: { turbo_confirm: "Confermi l'unione? I magazzini sorgente verranno disabilitati." } do |f| %>
+      <div class="<%= style_main_card %> mb-6">
+        <h3 class="<%= style_main_card_header %>">
+          <span class="material-symbols-outlined">merge</span>
+          Seleziona magazzini da unire
+        </h3>
+
+        <div class="overflow-x-auto">
+          <table class="min-w-full">
+            <thead>
+              <tr>
+                <th class="<%= style_table_th %> w-12 text-center">Unisci</th>
+                <th class="<%= style_table_th %> w-12 text-center">Dest.</th>
+                <th class="<%= style_table_th %>">Magazzino</th>
+                <th class="<%= style_table_th %> text-right w-24">Ubicazioni</th>
+                <th class="<%= style_table_th %> text-right w-24">Articoli</th>
+                <th class="<%= style_table_th %> text-center w-24">Stato</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @warehouses.each do |w| %>
+                <% inv_count = Inventory.where(warehouse_id: w.id).count %>
+                <tr class="hover:bg-slate-50 transition-colors <%= 'opacity-50' unless w.enabled %>">
+                  <td class="<%= style_table_td %> text-center">
+                    <%= check_box_tag "source_ids[]", w.id, false, id: "source_#{w.id}", class: "rounded border-slate-300 text-accent focus:ring-accent", disabled: !w.enabled %>
+                  </td>
+                  <td class="<%= style_table_td %> text-center">
+                    <%= radio_button_tag "target_id", w.id, false, id: "target_#{w.id}", class: "border-slate-300 text-accent focus:ring-accent", disabled: !w.enabled %>
+                  </td>
+                  <td class="<%= style_table_td %> text-sm">
+                    <%= label_tag "source_#{w.id}", class: "cursor-pointer flex items-center gap-2" do %>
+                      <span class="material-symbols-outlined text-slate-300 text-lg"><%= w.enabled ? 'store' : 'block' %></span>
+                      <span class="<%= w.enabled ? 'font-semibold text-slate-800' : 'text-slate-400' %>"><%= w.code %></span>
+                    <% end %>
+                  </td>
+                  <td class="<%= style_table_td %> text-right text-xs text-slate-500"><%= w.locations.count %></td>
+                  <td class="<%= style_table_td %> text-right text-xs text-slate-500"><%= inv_count %></td>
+                  <td class="<%= style_table_td %> text-center">
+                    <% if w.enabled %>
+                      <span class="text-xs text-emerald-600 font-medium">Attivo</span>
+                    <% else %>
+                      <span class="text-xs text-slate-400">Disabilitato</span>
+                    <% end %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="flex gap-4">
+        <%= f.submit "Unisci magazzini", class: "p-3 bg-accent inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer text-white" %>
+        <%= link_to "Annulla", warehouses_path, class: "p-3 bg-slate-300 inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer text-slate-700" %>
+      </div>
+    <% end %>
+  <% end %>
+</section>

@@ -5,7 +5,7 @@ class Item < ApplicationRecord
   before_save :regenerate_qr, if: :gencode_changed?
 
   def self.ransackable_attributes(auth_object = nil)
-         ["itemcode", "varcode", "description", "tg", "fabric", "colour", "unit_price", "materiale", "note"]
+         ["itemcode", "varcode", "description", "tg", "fabric", "colour", "unit_price", "vendita", "materiale", "note"]
   end
 
   def self.ransackable_associations(auth_object = nil)

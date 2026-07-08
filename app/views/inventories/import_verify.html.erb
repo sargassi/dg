@@ -1,0 +1,175 @@
+<% menu = [
+  { label: 'Dashboard', path: inventories_dashboard_path, active: false, icon: 'dashboard', can: 'manage_inventory' },
+  { label: 'Ricerca magazzino', path: inventories_path, active: true, icon: 'inventory_2', can: 'manage_inventory' },
+  { label: 'Movimenti', path: inventories_movements_path, active: false, icon: 'swap_vert', can: 'manage_itemins' },
+  { label: 'Magazzini e ubiche', path: warehouses_path, active: false, icon: 'warehouse', can: 'manage_warehouses' },
+] %>
+<div class="<%= style_main_header_container %>">
+  <%= render partial: 'atoms/header', locals: {link: '/', label: 'Inventario / Import / Verifica', menu: menu} %>
+</div>
+
+<% valid_rows = @data[:rows].select { |r| r[:_valid] }
+   invalid_rows = @data[:rows].select { |r| !r[:_valid] }
+   wh_new = @data[:rows].select { |r| r[:_warehouse_new] }.uniq { |r| r[:_warehouse_id] }
+   wh_existing = @data[:rows].select { |r| r[:_warehouse_id] && !r[:_warehouse_new] }.uniq { |r| r[:_warehouse_id] }
+    loc_new = []
+    loc_existing = []
+   coll_new = @data[:rows].select { |r| r[:_collection_new] }.uniq { |r| r[:_collection_id] }
+   coll_existing = @data[:rows].select { |r| r[:_collection_id] && !r[:_collection_new] }.uniq { |r| r[:_collection_id] } %>
+
+<section class="<%= style_main_cnt %>">
+  <div class="max-w-3xl mx-auto">
+
+    <h2 class="<%= style_main_sub_header %>">Verifica importazione</h2>
+
+    <% if invalid_rows.any? %>
+      <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-red-500">warning</span>
+          <span class="text-sm font-semibold text-red-800">
+            <%= invalid_rows.size %> riga<%= invalid_rows.size == 1 ? '' : 'he' %> non valid<%= invalid_rows.size == 1 ? 'a' : 'e' %>
+            sar<%= invalid_rows.size == 1 ? 'à' : 'anno' %> saltat<%= invalid_rows.size == 1 ? 'a' : 'e' %>
+          </span>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="grid grid-cols-5 gap-4 mb-8">
+      <div class="bg-slate-50 p-4 rounded-lg text-center">
+        <p class="text-3xl font-bold text-slate-700"><%= @data[:rows].size %></p>
+        <p class="text-xs text-slate-500 uppercase">Righe totali</p>
+      </div>
+      <div class="bg-green-50 p-4 rounded-lg text-center">
+        <p class="text-3xl font-bold text-green-700"><%= valid_rows.size %></p>
+        <p class="text-xs text-green-600 uppercase">Valide</p>
+      </div>
+      <div class="<%= invalid_rows.any? ? 'bg-red-50' : 'bg-slate-50' %> p-4 rounded-lg text-center">
+        <p class="text-3xl font-bold <%= invalid_rows.any? ? 'text-red-700' : 'text-slate-300' %>"><%= invalid_rows.size %></p>
+        <p class="text-xs <%= invalid_rows.any? ? 'text-red-600' : 'text-slate-400' %> uppercase">Non valide</p>
+      </div>
+      <div class="<%= wh_new.any? ? 'bg-green-50' : 'bg-slate-50' %> p-4 rounded-lg text-center">
+        <p class="text-3xl font-bold <%= wh_new.any? ? 'text-green-700' : 'text-slate-300' %>"><%= wh_new.size %></p>
+        <p class="text-xs <%= wh_new.any? ? 'text-green-600' : 'text-slate-400' %> uppercase">Nuovi wh</p>
+      </div>
+      <div class="<%= coll_new.any? ? 'bg-green-50' : 'bg-slate-50' %> p-4 rounded-lg text-center">
+        <p class="text-3xl font-bold <%= coll_new.any? ? 'text-green-700' : 'text-slate-300' %>"><%= coll_new.size %></p>
+        <p class="text-xs <%= coll_new.any? ? 'text-green-600' : 'text-slate-400' %> uppercase">Nuove coll.</p>
+      </div>
+    </div>
+
+    <div class="space-y-6 mb-8">
+      <% if wh_new.any? || wh_existing.any? %>
+        <div>
+          <h3 class="text-sm font-semibold text-slate-700 uppercase tracking-wide mb-2">Warehouse</h3>
+          <div class="border border-slate-200 rounded-lg divide-y divide-slate-100">
+            <% if wh_new.any? %>
+              <div class="bg-green-50 px-4 py-2">
+                <span class="text-xs font-semibold text-green-700 uppercase">Nuovi</span>
+              </div>
+              <% wh_new.each do |r| %>
+                <div class="px-4 py-2 text-sm text-green-700 flex items-center gap-2">
+                  <span class="material-symbols-outlined text-sm">add_circle</span>
+                  <span class="font-mono"><%= "##{r[:_warehouse_id]}" %></span>
+                  <span><%= r[:_warehouse_code] %></span>
+                </div>
+              <% end %>
+            <% end %>
+            <% if wh_existing.any? %>
+              <div class="bg-slate-50 px-4 py-2">
+                <span class="text-xs font-semibold text-slate-500 uppercase">Esistenti</span>
+              </div>
+              <% wh_existing.each do |r| %>
+                <div class="px-4 py-2 text-sm text-slate-700 flex items-center gap-2">
+                  <span class="material-symbols-outlined text-sm text-slate-400">check_circle</span>
+                  <span class="font-mono"><%= "##{r[:_warehouse_id]}" %></span>
+                  <span><%= r[:_warehouse_code] %></span>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <% if coll_new.any? || coll_existing.any? %>
+        <div>
+          <h3 class="text-sm font-semibold text-slate-700 uppercase tracking-wide mb-2">Collection</h3>
+          <div class="border border-slate-200 rounded-lg divide-y divide-slate-100">
+            <% if coll_new.any? %>
+              <div class="bg-green-50 px-4 py-2">
+                <span class="text-xs font-semibold text-green-700 uppercase">Nuove</span>
+              </div>
+              <% coll_new.each do |r| %>
+                <div class="px-4 py-2 text-sm text-green-700 flex items-center gap-2">
+                  <span class="material-symbols-outlined text-sm">add_circle</span>
+                  <span class="font-mono"><%= "##{r[:_collection_id]}" %></span>
+                  <span><%= r[:_collection_description] %></span>
+                </div>
+              <% end %>
+            <% end %>
+            <% if coll_existing.any? %>
+              <div class="bg-slate-50 px-4 py-2">
+                <span class="text-xs font-semibold text-slate-500 uppercase">Esistenti</span>
+              </div>
+              <% coll_existing.each do |r| %>
+                <div class="px-4 py-2 text-sm text-slate-700 flex items-center gap-2">
+                  <span class="material-symbols-outlined text-sm text-slate-400">check_circle</span>
+                  <span class="font-mono"><%= "##{r[:_collection_id]}" %></span>
+                  <span><%= r[:_collection_description] %></span>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <% if invalid_rows.any? %>
+      <div class="mb-8">
+        <h3 class="text-sm font-semibold text-slate-700 uppercase tracking-wide text-left mb-2">Righe non valide (saranno saltate)</h3>
+        <div class="overflow-x-auto border border-red-200 rounded-lg">
+          <table class="min-w-full text-xs">
+            <thead>
+              <tr class="bg-red-50">
+                <th class="px-3 py-2 text-left font-semibold text-red-700 uppercase">Riga</th>
+                <th class="px-3 py-2 text-left font-semibold text-red-700 uppercase">Articolo</th>
+                <th class="px-3 py-2 text-left font-semibold text-red-700 uppercase">Errore</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% invalid_rows.each do |r| %>
+                <tr class="border-t border-red-100">
+                  <td class="px-3 py-2 font-mono text-red-600"><%= r[:_index] %></td>
+                  <td class="px-3 py-2 font-mono text-red-800"><%= r['Item Code:'] || r['itemcode'] || r['Item Code'] %></td>
+                  <td class="px-3 py-2 text-red-600"><%= r[:_error] %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="flex gap-4" data-controller="loader">
+      <%= form_with url: inventories_import_confirm_path, method: :post,
+                    data: { action: "submit->loader#show" } do %>
+        <button type="submit" class="<%= style_import_btn %> bg-green-600" data-loader-target="form">
+          Conferma importazione (<%= valid_rows.size %> righe)
+        </button>
+      <% end %>
+
+      <%= button_to "Torna indietro", inventories_import_cancel_path, method: :delete, class: "#{style_import_btn} bg-gray-400" %>
+
+      <div data-loader-target="overlay" class="hidden fixed inset-0 z-50 bg-black/50 items-center justify-center">
+        <div class="bg-white dark:bg-slate-800 rounded-xl p-8 flex flex-col items-center gap-4 shadow-2xl">
+          <svg class="animate-spin h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span class="text-slate-700 dark:text-slate-200 font-semibold text-lg">Importazione in corso...</span>
+          <span class="text-slate-400 dark:text-slate-400 text-sm">Attendi il completamento</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>

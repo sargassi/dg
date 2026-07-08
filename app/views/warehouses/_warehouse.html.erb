@@ -14,6 +14,9 @@
       <% if warehouse.locations.any? %>
         <span class="text-xs text-slate-400"><%= warehouse.locations.count %> ubic<%= warehouse.locations.count == 1 ? 'a' : 'i' %></span>
       <% end %>
+      <% if (cnt = @inventory_counts[warehouse.id].to_i) > 0 %>
+        <span class="text-xs font-semibold text-blue-600"><%= cnt %> artic<%= cnt == 1 ? 'olo' : 'oli' %></span>
+      <% end %>
     </div>
     <div class="flex gap-0.5 items-center">
       <%= link_to edit_warehouse_path(warehouse), data: { turbo_frame: "warehouse_modal" }, class: "p-1.5 text-slate-300 hover:text-accent rounded-sm hover:bg-slate-100 transition-colors" do %>

@@ -31,6 +31,20 @@
               <% end %>
           </li>
         <% end %>
+        <% if current_user.godlike? || current_user.can?('manage_archive') %>
+          <li class="<%= style_side_li %>">
+              <%= link_to archive_items_path, class: style_side_a(archive_items_path) + " " + active_class_for_namespace('archive') do %>
+                  <span class="material-symbols-outlined">archive</span>
+                  <span>archivio</span>
+              <% end %>
+          </li>
+          <li class="<%= style_side_li %>">
+              <%= link_to import_archive_items_path, class: style_side_a(import_archive_items_path) do %>
+                  <span class="material-symbols-outlined">inventory_2</span>
+                  <span>importa</span>
+              <% end %>
+          </li>
+        <% end %>
         <%= render partial: "layouts/menus/side/logout" %>
 
     <% end %>

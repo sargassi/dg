@@ -112,6 +112,41 @@ module Archive
              margin: { top: 10, bottom: 10, left: 10, right: 10 }
     end
 
+    def import
+      @collections = Collection.joins(:items).distinct.order(row_order: :desc)
+
+      @items = Item.includes(:collection).with_attached_pictures
+        .joins(:stock_levels)
+        .where(stock_levels: { current_qty: 1.. })
+
+      if params[:collection_id].present?
+        @items = @items.where(collection_id: params[:collection_id])
+      end
+
+      if params[:q].present?
+        q = "%#{params[:q]}%"
+        @items = @items.where(
+          "items.gencode LIKE :q OR items.itemcode LIKE :q OR items.fabricode LIKE :q OR items.varcode LIKE :q OR items.description LIKE :q",
+          q: q
+        )
+      end
+
+      @items = @items.distinct
+      @pagy, @items = pagy(@items, items: 50)
+    end
+
+    def new
+      @item = Archive::Item.new
+      if params[:from_item_id].present?
+        source = Item.find_by(id: params[:from_item_id])
+        if source
+          @item.name = source.description.presence || source.gencode
+          @item.description = source.description
+          @item.notes = source.note
+        end
+      end
+    end
+
     def warehouse_search
       q = "%#{params[:q]}%"
       items = Item.where(

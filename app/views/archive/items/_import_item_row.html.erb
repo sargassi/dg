@@ -1,0 +1,28 @@
+<tbody>
+  <tr class="hover:bg-slate-50 transition-colors">
+    <td class="<%= style_table_td %> text-center">
+      <input type="checkbox"
+             data-seleziona-target="checkbox"
+             data-action="change->seleziona#toggleItem"
+             data-id="<%= item.id %>"
+             data-gencode="<%= item.gencode %>"
+             data-collection-id="<%= item.collection_id %>"
+             data-collection="<%= item.collection&.description %>"
+             data-itemcode="<%= item.itemcode %>"
+             class="rounded border-slate-300 text-accent focus:ring-accent cursor-pointer">
+    </td>
+    <td class="<%= style_table_td %> p-1">
+      <% if item.pictures.attached? %>
+        <%= image_tag item.pictures.first, class: "w-10 h-10 object-cover border border-slate-200 rounded block" %>
+      <% end %>
+    </td>
+    <td class="<%= style_table_td %> text-xs font-mono text-blue-600">
+      <div><%= item.gencode %></div>
+    </td>
+    <td class="<%= style_table_td %>"><%= item.itemcode %></td>
+    <td class="<%= style_table_td %>"><%= item.fabricode %></td>
+    <td class="<%= style_table_td %>"><%= item.varcode %></td>
+    <td class="<%= style_table_td %>"><%= item.description %></td>
+    <td class="<%= style_table_td %> font-bold"><%= item.collection&.description&.upcase %></td>
+  </tr>
+</tbody>

@@ -1,5 +1,6 @@
 class Item < ApplicationRecord
   belongs_to :collection
+  has_many :stock_levels, primary_key: :gencode, foreign_key: :gencode
   validates :gencode, uniqueness: true
   before_save :rebuild_gencode
   before_save :regenerate_qr, if: :gencode_changed?

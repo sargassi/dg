@@ -184,5 +184,28 @@ Rails.application.routes.draw do
     end
   end
 
+  namespace :archive do
+    resources :items do
+      collection do
+        get :qrcodes, defaults: { format: :pdf }
+        get :warehouse_search
+        get :import
+        post :import_itemout
+        post :import_confirm
+      end
+      member do
+        post :checkout
+        post :checkin
+        post :duplicate
+      end
+    end
+    resources :categories, only: [:index, :create, :update, :destroy]
+    resources :locations do
+      collection do
+        get :qrcodes, defaults: { format: :pdf }
+      end
+    end
+  end
+
   root to: "dashboard#index"
 end

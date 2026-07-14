@@ -5,13 +5,8 @@ one:
   fabricode: FAB001
   varcode: VAR001
   gencode: TEST001FAB001VAR001
-  description: Test Item One Description
-  tg: MyString
-  note: Test note for item one
-  fabric: MyString
-  colour: MyString
-  unit_price: 9.99
-  materiale: MyString
+  description: Test Item One
+  note: Note one
   collection: one
 
 two:
@@ -19,11 +14,6 @@ two:
   fabricode: FAB002
   varcode: VAR002
   gencode: TEST002FAB002VAR002
-  description: Test Item Two Description
-  tg: MyString
-  note: Test note for item two
-  fabric: MyString
-  colour: MyString
-  unit_price: 9.99
-  materiale: MyString
-  collection: two
+  description: Test Item Two
+  note: Note two
+  collection: one

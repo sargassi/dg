@@ -8,8 +8,8 @@ one:
   location: one
   itemcode: MyString
   operationtype: one
-  itemins: one
-  itemouts: one
+  itemin: one
+  itemout: one
   enabled: false
 
 two:
@@ -20,6 +20,6 @@ two:
   location: two
   itemcode: MyString
   operationtype: two
-  itemins: two
-  itemouts: two
+  itemin: two
+  itemout: two
   enabled: false

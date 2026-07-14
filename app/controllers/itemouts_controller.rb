@@ -19,7 +19,7 @@ class ItemoutsController < ApplicationController
         .map { |d| d.except("_destroy") }
       @itemout.itemouts_details.build(details)
     elsif session[:archive_itemout_prefill].present?
-      @itemout = Itemout.new(indate: Date.current, operator: current_user)
+      @itemout = Itemout.new(indate: Date.current)
       session[:archive_itemout_prefill].each do |data|
         @itemout.itemouts_details.build(
           itemcode: data["gencode"],
@@ -33,8 +33,8 @@ class ItemoutsController < ApplicationController
     else
       @itemout = Itemout.new(indate: Date.current)
     end
-    @warehouses = Warehouse.all
-    @locations = Location.all
+    @warehouses = Warehouse.order(:code)
+    @locations = Location.joins(:warehouse).order(:code)
     @operationtypes = Operationtype.all
   end
 

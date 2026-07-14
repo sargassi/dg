@@ -6,7 +6,8 @@ class ActiveSupport::TestCase
   # Run tests in parallel with specified workers
   parallelize(workers: :number_of_processors)
 
-  fixtures :users, :collections, :items, :warehouses, :locations, :operationtypes, :inventories, :itemins, :itemouts
+  # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
+  fixtures :all
 
   # Add more helper methods to be used by all tests here...
 end

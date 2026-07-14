@@ -8,7 +8,8 @@ one:
   location: one
   itemcode: MyString
   operationtype: one
-  gencode: TEST001FAB001VAR001
+  itemins: one
+  itemouts: one
   enabled: false
 
 two:
@@ -19,5 +20,6 @@ two:
   location: two
   itemcode: MyString
   operationtype: two
-  gencode: TEST002FAB002VAR002
+  itemins: two
+  itemouts: two
   enabled: false

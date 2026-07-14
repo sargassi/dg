@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  g: MyString
+  migration: MyString
+  prodrow: MyString
+  prodcode: one
+  area: one
+  user: 1
+  pub: 1
+
+two:
+  g: MyString
+  migration: MyString
+  prodrow: MyString
+  prodcode: two
+  area: two
+  user: 1
+  pub: 1

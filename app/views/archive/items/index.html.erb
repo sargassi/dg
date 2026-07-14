@@ -1,0 +1,261 @@
+<% content_for :page_header do %>
+<div class="flex items-center gap-4 px-0 py-0.5">
+  <h1 class="text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wide">
+    Archivio
+  </h1>
+  <div class="flex items-center gap-1">
+    <%= link_to archive_categories_path, class: "inline-flex items-center gap-1 px-3 py-1 text-xs font-medium text-slate-500 hover:text-accent hover:bg-slate-100 dark:hover:bg-slate-700 rounded-sm transition-colors" do %>
+      <span class="material-symbols-outlined text-sm">folder</span>
+      Categorie
+    <% end %>
+    <%= link_to archive_locations_path, class: "inline-flex items-center gap-1 px-3 py-1 text-xs font-medium text-slate-500 hover:text-accent hover:bg-slate-100 dark:hover:bg-slate-700 rounded-sm transition-colors" do %>
+      <span class="material-symbols-outlined text-sm">shelves</span>
+      Ubicazioni
+    <% end %>
+  </div>
+</div>
+<% end %>
+
+<section class="<%= style_main_cnt %> flex flex-row" style="height: calc(100vh - 110px);" data-controller="search-filter">
+
+  <div class="flex flex-col flex-1 min-w-0">
+
+    <div class="flex gap-4 items-center mb-4 flex-none">
+      <%= form_with url: archive_items_path, method: :get,
+                    data: { search_filter_target: "form", turbo_frame: "archive-items" },
+                    class: "flex items-center gap-3" do |f| %>
+        <div class="relative">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 text-base pointer-events-none">search</span>
+          <%= f.search_field :q,
+                value: params[:q],
+                placeholder: "Cerca per codice, nome...",
+                class: "#{style_search_input} rounded-lg pl-10 font-mono text-blue-600",
+                data: { action: "input->search-filter#filter", search_filter_target: "input" } %>
+        </div>
+        <%= f.collection_select :category_id, @categories, :id, :name,
+              { include_blank: "Tutte le categorie", selected: params[:category_id] },
+              class: "border border-slate-300 outline-none px-4 py-2 text-xs rounded-lg min-w-[180px] dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-slate-200",
+              data: { action: "change->search-filter#filter", search_filter_target: "select" } %>
+        <%= f.collection_select :location_id, @locations, :id, :code,
+              { include_blank: "Tutte le ubicazioni", selected: params[:location_id] },
+              class: "border border-slate-300 outline-none px-4 py-2 text-xs rounded-lg min-w-[180px] dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-slate-200",
+              data: { action: "change->search-filter#filter", search_filter_target: "select" } %>
+        <%= f.select :status,
+              options_for_select([["Tutti", ""], ["In archivio", "in"], ["Fuori", "out"]], params[:status]),
+              {},
+              class: "border border-slate-300 outline-none px-4 py-2 text-xs rounded-lg min-w-[150px] dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-slate-200",
+              data: { action: "change->search-filter#filter", search_filter_target: "select" } %>
+      <% end %>
+      <span class="text-sm font-bold text-slate-700 whitespace-nowrap border border-slate-300 rounded-full px-3 py-1 dark:text-slate-200 dark:border-slate-600 dark:bg-slate-700" data-search-filter-target="count"><%= @pagy.count %> articoli</span>
+      <div class="flex items-center gap-1 ml-auto">
+        <%= link_to archive_items_path(view: "list", q: params[:q], category_id: params[:category_id], location_id: params[:location_id], status: params[:status]), class: "p-1.5 rounded-sm #{params[:view] != 'cards' ? 'bg-accent text-white' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700'}", data: { turbo_frame: "archive-items" } do %>
+          <span class="material-symbols-outlined text-base">list</span>
+        <% end %>
+        <%= link_to archive_items_path(view: "cards", q: params[:q], category_id: params[:category_id], location_id: params[:location_id], status: params[:status]), class: "p-1.5 rounded-sm #{params[:view] == 'cards' ? 'bg-accent text-white' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700'}", data: { turbo_frame: "archive-items" } do %>
+          <span class="material-symbols-outlined text-base">grid_view</span>
+        <% end %>
+      </div>
+    </div>
+
+    <style>
+      turbo-frame#archive-items[busy] .archive-items-content { display: none; }
+      turbo-frame#archive-items[busy] .archive-items-loader { display: flex; }
+    </style>
+    <%= turbo_frame_tag "archive-items", class: "flex flex-col flex-1 min-h-0", data: { action: "turbo:frame-load->search-filter#onFrameLoad" } do %>
+      <div class="archive-items-content flex flex-col flex-1 min-h-0">
+        <span hidden data-filtered-count><%= @pagy.count %></span>
+        <div class="overflow-y-auto flex-1 min-h-0">
+          <% if params[:view] == 'cards' %>
+            <div class="<%= style_main_card_grid %>">
+              <%= render partial: 'item', collection: @items, as: :item %>
+            </div>
+          <% else %>
+            <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 shadow-sm rounded-sm">
+              <%= render partial: 'item_list', collection: @items, as: :item %>
+            </div>
+          <% end %>
+        </div>
+
+        <% if @pagy.pages > 1 %>
+          <div class="flex-none flex items-center gap-0.5 justify-end pt-3 pb-1">
+            <% if @pagy.prev %>
+              <a href="<%= pagy_url_for(@pagy, @pagy.prev) %>"
+                 data-turbo-frame="archive-items"
+                 class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm text-slate-700 hover:bg-slate-100 transition-colors dark:text-slate-200 dark:hover:bg-slate-700">
+                <span class="material-symbols-outlined text-base">chevron_left</span>
+              </a>
+            <% else %>
+              <span class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm text-slate-300 dark:text-slate-500 pointer-events-none">
+                <span class="material-symbols-outlined text-base">chevron_left</span>
+              </span>
+            <% end %>
+
+            <% @pagy.series.each do |pag_item| %>
+              <% if pag_item.is_a?(Integer) %>
+                <a href="<%= pagy_url_for(@pagy, pag_item) %>"
+                   data-turbo-frame="archive-items"
+                   class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm text-slate-700 hover:bg-slate-100 transition-colors dark:text-slate-200 dark:hover:bg-slate-700">
+                  <%= pag_item %>
+                </a>
+              <% elsif pag_item == :gap %>
+                <span class="px-1 text-slate-400 dark:text-slate-500 text-xs">…</span>
+              <% elsif pag_item == @pagy.page %>
+                <span class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm bg-accent text-white font-medium">
+                  <%= pag_item %>
+                </span>
+              <% end %>
+            <% end %>
+
+            <% if @pagy.next %>
+              <a href="<%= pagy_url_for(@pagy, @pagy.next) %>"
+                 data-turbo-frame="archive-items"
+                 class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm text-slate-700 hover:bg-slate-100 transition-colors dark:text-slate-200 dark:hover:bg-slate-700">
+                <span class="material-symbols-outlined text-base">chevron_right</span>
+              </a>
+            <% else %>
+              <span class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm text-slate-300 dark:text-slate-500 pointer-events-none">
+                <span class="material-symbols-outlined text-base">chevron_right</span>
+              </span>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="archive-items-loader hidden justify-center items-center py-12">
+        <svg class="animate-spin h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span class="ml-3 text-slate-600 dark:text-slate-300">Ricerca in corso...</span>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="w-80 flex-shrink-0 ml-4 space-y-4">
+    <div class="<%= style_main_card %>">
+      <div class="<%= style_main_card_header %>">
+        <span class="material-symbols-outlined text-lg">add</span>
+        Nuovo articolo
+      </div>
+      <%= render 'form', item: @new_item %>
+    </div>
+
+    <div class="<%= style_main_card %>" data-controller="autocomplete warehouse-import row-qr" data-autocomplete-url-value="<%= warehouse_search_archive_items_path %>" data-autocomplete-min-length-value="2">
+      <div class="<%= style_main_card_header %>">
+        <span class="material-symbols-outlined text-lg">inventory_2</span>
+        Importa da magazzino
+      </div>
+      <div class="p-3 space-y-3">
+        <div class="flex items-center gap-2">
+          <div class="relative flex-1" data-row-qr-target="input">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none">search</span>
+            <input type="text"
+                   data-autocomplete-target="input"
+                   data-action="input->autocomplete#search"
+                   class="w-full border border-slate-300 outline-none px-3 py-2 pl-10 text-xs rounded-sm dark:bg-slate-700 dark:text-slate-200 dark:border-slate-600"
+                   placeholder="Cerca per codice...">
+            <ul data-autocomplete-target="results"
+                class="hidden absolute z-50 left-0 right-0 mt-1 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-sm shadow-lg max-h-60 overflow-y-auto text-xs">
+            </ul>
+            <input type="hidden" data-autocomplete-target="hidden" name="item_id">
+          </div>
+          <button type="button"
+                  data-action="row-qr#scan"
+                  data-row-qr-target="button"
+                  class="p-2 text-slate-400 hover:text-accent rounded-sm hover:bg-slate-100 dark:hover:bg-slate-700"
+                  title="Scansiona QR">
+            <span class="material-symbols-outlined text-base">qr_code_scanner</span>
+          </button>
+        </div>
+
+        <div data-row-qr-target="overlay"
+             class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center">
+          <div class="relative bg-white dark:bg-slate-800 rounded-xl p-4 w-full max-w-sm mx-4">
+            <video id="warehouse-import-qr-video"
+                   data-row-qr-target="video"
+                   class="w-full aspect-square bg-black rounded-lg object-cover"
+                   autoplay playsinline></video>
+            <button type="button" data-action="row-qr#stop"
+                    class="mt-3 w-full px-4 py-2 bg-slate-700 text-white text-xs rounded-sm hover:bg-slate-600 cursor-pointer">
+              Chiudi
+            </button>
+          </div>
+        </div>
+
+        <div data-warehouse-import-target="info" class="hidden space-y-2 text-xs">
+          <div class="flex justify-between items-center p-2 bg-slate-50 dark:bg-slate-700/50 rounded-sm">
+            <div>
+              <span class="font-mono text-blue-600" data-warehouse-import-target="gencode"></span>
+              <span class="text-slate-400 ml-2" data-warehouse-import-target="description"></span>
+            </div>
+            <span class="text-green-600 font-medium" data-warehouse-import-target="stock"></span>
+          </div>
+
+          <div class="flex gap-2">
+            <%= link_to new_itemout_path, class: "flex-1 px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs rounded-sm text-center font-medium", data: { turbo_frame: "_top" } do %>
+              <span class="material-symbols-outlined text-sm align-middle">logout</span>
+              Scarica
+            <% end %>
+            <%= link_to new_archive_item_path, class: "flex-1 px-3 py-1.5 bg-accent hover:bg-accent-700 text-white text-xs rounded-sm text-center font-medium", data: { turbo_frame: "item_modal" } do %>
+              <span class="material-symbols-outlined text-sm align-middle">archive</span>
+              Crea in archivio
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%= turbo_frame_tag "item_modal" %>
+
+<div id="new-cat-modal" class="hidden fixed inset-0 bg-black/40 z-50 flex items-center justify-center" data-controller="modal" data-action="keydown.esc->modal#close click->modal#backdropClose">
+  <div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl w-full max-w-sm mx-4">
+    <div class="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-600">
+      <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">Nuova categoria</h2>
+      <button type="button" onclick="document.getElementById('new-cat-modal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+        <span class="material-symbols-outlined text-base">close</span>
+      </button>
+    </div>
+    <div class="p-4">
+      <form action="<%= archive_categories_path %>" method="POST">
+        <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+        <input type="hidden" name="return_to" value="<%= archive_items_path %>">
+        <input type="text" name="archive_category[name]" class="border border-slate-300 dark:border-slate-600 outline-none px-3 py-2 w-full text-sm dark:bg-slate-700 dark:text-slate-200" placeholder="Nome categoria" required>
+        <div class="flex gap-2 mt-4 justify-end">
+          <button type="button" onclick="document.getElementById('new-cat-modal').classList.add('hidden')" class="px-3 py-1.5 text-xs text-slate-500 hover:text-slate-700">Annulla</button>
+          <button type="submit" class="px-4 py-1.5 bg-accent text-white text-xs rounded-sm cursor-pointer">Crea</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div id="new-loc-modal" class="hidden fixed inset-0 bg-black/40 z-50 flex items-center justify-center" data-controller="modal" data-action="keydown.esc->modal#close click->modal#backdropClose">
+  <div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl w-full max-w-sm mx-4">
+    <div class="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-600">
+      <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">Nuova ubicazione</h2>
+      <button type="button" onclick="document.getElementById('new-loc-modal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+        <span class="material-symbols-outlined text-base">close</span>
+      </button>
+    </div>
+    <div class="p-4">
+      <form action="<%= archive_locations_path %>" method="POST">
+        <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+        <input type="hidden" name="return_to" value="<%= archive_items_path %>">
+        <div class="mb-3">
+          <label class="text-xs text-slate-400 tracking-wide block mb-1">Codice</label>
+          <input type="text" name="archive_location[code]" class="border border-slate-300 dark:border-slate-600 outline-none px-3 py-2 w-full text-sm dark:bg-slate-700 dark:text-slate-200" required>
+        </div>
+        <div class="mb-3">
+          <label class="text-xs text-slate-400 tracking-wide block mb-1">Descrizione</label>
+          <input type="text" name="archive_location[description]" class="border border-slate-300 dark:border-slate-600 outline-none px-3 py-2 w-full text-sm dark:bg-slate-700 dark:text-slate-200">
+        </div>
+        <div class="flex gap-2 justify-end">
+          <button type="button" onclick="document.getElementById('new-loc-modal').classList.add('hidden')" class="px-3 py-1.5 text-xs text-slate-500 hover:text-slate-700">Annulla</button>
+          <button type="submit" class="px-4 py-1.5 bg-accent text-white text-xs rounded-sm cursor-pointer">Crea</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

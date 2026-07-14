@@ -134,7 +134,7 @@ module Archive
           description: item.description,
           label: "#{item.itemcode}#{item.fabricode}#{item.varcode}",
           collection_id: item.collection_id,
-          stock_available: stock[item.gencode]&.total_qty || 0
+          qty_remaining: stock[item.gencode]&.total_qty || 0
         }
       }
     end

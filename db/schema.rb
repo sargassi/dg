@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_07_01_124517) do
+ActiveRecord::Schema[7.2].define(version: 2026_07_14_135625) do
   create_table "abilities", force: :cascade do |t|
     t.string "name", null: false
     t.string "description"
@@ -65,6 +65,58 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_01_124517) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_api_tokens_on_user_id"
+  end
+
+  create_table "archive_categories", force: :cascade do |t|
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "parent_id"
+    t.index ["name"], name: "index_archive_categories_on_name", unique: true
+    t.index ["parent_id"], name: "index_archive_categories_on_parent_id"
+  end
+
+  create_table "archive_items", force: :cascade do |t|
+    t.string "code", null: false
+    t.string "name", null: false
+    t.text "description"
+    t.integer "archive_category_id"
+    t.integer "archive_location_id"
+    t.string "status", default: "in", null: false
+    t.text "notes"
+    t.text "qrcode_svg"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "inventory_id"
+    t.index ["archive_category_id"], name: "index_archive_items_on_archive_category_id"
+    t.index ["archive_location_id"], name: "index_archive_items_on_archive_location_id"
+    t.index ["code"], name: "index_archive_items_on_code", unique: true
+    t.index ["inventory_id"], name: "index_archive_items_on_inventory_id"
+  end
+
+  create_table "archive_locations", force: :cascade do |t|
+    t.string "code", null: false
+    t.text "description"
+    t.boolean "enabled", default: true, null: false
+    t.text "qrcode_svg"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "parent_id"
+    t.index ["code"], name: "index_archive_locations_on_code", unique: true
+    t.index ["parent_id"], name: "index_archive_locations_on_parent_id"
+  end
+
+  create_table "archive_transactions", force: :cascade do |t|
+    t.integer "archive_item_id", null: false
+    t.string "action", null: false
+    t.datetime "date", null: false
+    t.integer "operator_id", null: false
+    t.string "out_to"
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["archive_item_id"], name: "index_archive_transactions_on_archive_item_id"
+    t.index ["operator_id"], name: "index_archive_transactions_on_operator_id"
   end
 
   create_table "areas", force: :cascade do |t|
@@ -303,6 +355,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_01_124517) do
     t.text "qrcode_svg"
     t.integer "collection_id"
     t.decimal "vendita"
+    t.boolean "qr_printed", default: false, null: false
     t.index ["collection_id"], name: "index_items_on_collection_id"
   end
 
@@ -501,6 +554,18 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_01_124517) do
     t.index ["user_id"], name: "index_tempesta_on_user_id"
   end
 
+  create_table "toolbar_configs", force: :cascade do |t|
+    t.string "section", null: false
+    t.string "item_label", null: false
+    t.boolean "visible", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "path"
+    t.string "icon"
+    t.integer "position", default: 0
+    t.index ["section", "item_label"], name: "index_toolbar_configs_on_section_and_item_label", unique: true
+  end
+
   create_table "uoms", force: :cascade do |t|
     t.string "code"
     t.datetime "created_at", null: false
@@ -582,6 +647,13 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_01_124517) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "api_tokens", "users"
+  add_foreign_key "archive_categories", "archive_categories", column: "parent_id"
+  add_foreign_key "archive_items", "archive_categories"
+  add_foreign_key "archive_items", "archive_locations"
+  add_foreign_key "archive_items", "inventories"
+  add_foreign_key "archive_locations", "archive_locations", column: "parent_id"
+  add_foreign_key "archive_transactions", "archive_items"
+  add_foreign_key "archive_transactions", "users", column: "operator_id"
   add_foreign_key "events", "eventypes"
   add_foreign_key "events", "users"
   add_foreign_key "inventories", "itemins", column: "itemins_id"

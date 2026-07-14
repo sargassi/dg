@@ -18,6 +18,18 @@ class ItemoutsController < ApplicationController
         .reject { |d| d["itemcode"].blank? && d["item_id"].blank? }
         .map { |d| d.except("_destroy") }
       @itemout.itemouts_details.build(details)
+    elsif session[:archive_itemout_prefill].present?
+      @itemout = Itemout.new(indate: Date.current, operator: current_user)
+      session[:archive_itemout_prefill].each do |data|
+        @itemout.itemouts_details.build(
+          itemcode: data["gencode"],
+          item_id: data["item_id"],
+          collection_id: data["collection_id"],
+          qty: data["qty"] || 1,
+          operationtype_id: 2
+        )
+      end
+      session.delete(:archive_itemout_prefill)
     else
       @itemout = Itemout.new(indate: Date.current)
     end

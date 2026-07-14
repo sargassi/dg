@@ -1,7 +1,7 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  prow: one
+  prow_id: 1
   f0: false
   f1: false
   f2: false
@@ -15,7 +15,7 @@ one:
   f5date: 2025-08-25 12:25:47
 
 two:
-  prow: two
+  prow_id: 2
   f0: false
   f1: false
   f2: false

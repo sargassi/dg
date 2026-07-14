@@ -147,9 +147,59 @@ module Archive
       end
     end
 
+    def import_itemout
+      selected = Array(params[:selected]).reject(&:blank?)
+      return redirect_to import_archive_items_path, alert: "Nessun articolo selezionato" if selected.empty?
+
+      session[:archive_itemout_prefill] = selected.map { |s|
+        s.respond_to?(:permit) ? s.permit(:item_id, :gencode, :collection_id, :qty).to_h : s.slice(:item_id, :gencode, :collection_id, :qty)
+      }
+      redirect_to new_itemout_path, notice: "#{selected.size} articoli pronti per lo scarico."
+    end
+
+    def import_confirm
+      selected = Array(params[:selected]).reject(&:blank?)
+      return redirect_to import_archive_items_path, alert: "Nessun articolo selezionato" if selected.empty?
+
+      created = []
+      errors = []
+
+      selected.each do |s|
+        item = ::Item.find_by(id: s[:item_id])
+        next unless item
+
+        archive_item = Archive::Item.new(
+          name: item.description.presence || item.gencode,
+          description: item.description,
+          notes: item.note,
+          status: "in"
+        )
+
+        if archive_item.save
+          if item.pictures.attached?
+            item.pictures.each { |pic| archive_item.pictures.attach(pic.blob) }
+          end
+
+          if s[:inventory_id].present?
+            archive_item.update_column(:inventory_id, s[:inventory_id])
+          end
+
+          created << archive_item.code
+        else
+          errors << "#{item.gencode}: #{archive_item.errors.full_messages.join(", ")}"
+        end
+      end
+
+      if errors.any?
+        redirect_to import_archive_items_path, alert: "Creati #{created.size}, errori: #{errors.join("; ")}"
+      else
+        redirect_to archive_items_path, notice: "#{created.size} articoli importati in archivio: #{created.join(", ")}"
+      end
+    end
+
     def warehouse_search
       q = "%#{params[:q]}%"
-      items = Item.where(
+      items = ::Item.where(
         "gencode LIKE :q OR itemcode LIKE :q OR fabricode LIKE :q OR varcode LIKE :q OR description LIKE :q",
         q: q
       ).select(:id, :gencode, :itemcode, :fabricode, :varcode, :description, :collection_id).limit(20)

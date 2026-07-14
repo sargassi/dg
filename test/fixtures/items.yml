@@ -1,25 +1,29 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  itemcode: MyString
-  fabricode: MyString
-  varcode: MyString
-  description: MyString
+  itemcode: TEST001
+  fabricode: FAB001
+  varcode: VAR001
+  gencode: TEST001FAB001VAR001
+  description: Test Item One Description
   tg: MyString
-  note: MyText
+  note: Test note for item one
   fabric: MyString
   colour: MyString
   unit_price: 9.99
   materiale: MyString
+  collection: one
 
 two:
-  itemcode: MyString
-  fabricode: MyString
-  varcode: MyString
-  description: MyString
+  itemcode: TEST002
+  fabricode: FAB002
+  varcode: VAR002
+  gencode: TEST002FAB002VAR002
+  description: Test Item Two Description
   tg: MyString
-  note: MyText
+  note: Test note for item two
   fabric: MyString
   colour: MyString
   unit_price: 9.99
   materiale: MyString
+  collection: two

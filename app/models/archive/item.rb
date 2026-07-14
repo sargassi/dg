@@ -3,6 +3,7 @@ module Archive
     belongs_to :category, class_name: "Archive::Category", foreign_key: :archive_category_id, optional: true
     belongs_to :location, class_name: "Archive::Location", foreign_key: :archive_location_id, optional: true
     belongs_to :inventory, optional: true
+    belongs_to :source_item, class_name: "Item", optional: true
     has_many :transactions, class_name: "Archive::Transaction", foreign_key: :archive_item_id, dependent: :destroy
     has_many_attached :pictures
 

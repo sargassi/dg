@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_07_14_135625) do
+ActiveRecord::Schema[7.2].define(version: 2026_07_14_160921) do
   create_table "abilities", force: :cascade do |t|
     t.string "name", null: false
     t.string "description"
@@ -88,10 +88,12 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_14_135625) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "inventory_id"
+    t.integer "source_item_id"
     t.index ["archive_category_id"], name: "index_archive_items_on_archive_category_id"
     t.index ["archive_location_id"], name: "index_archive_items_on_archive_location_id"
     t.index ["code"], name: "index_archive_items_on_code", unique: true
     t.index ["inventory_id"], name: "index_archive_items_on_inventory_id"
+    t.index ["source_item_id"], name: "index_archive_items_on_source_item_id"
   end
 
   create_table "archive_locations", force: :cascade do |t|
@@ -651,6 +653,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_14_135625) do
   add_foreign_key "archive_items", "archive_categories"
   add_foreign_key "archive_items", "archive_locations"
   add_foreign_key "archive_items", "inventories"
+  add_foreign_key "archive_items", "items", column: "source_item_id"
   add_foreign_key "archive_locations", "archive_locations", column: "parent_id"
   add_foreign_key "archive_transactions", "archive_items"
   add_foreign_key "archive_transactions", "users", column: "operator_id"

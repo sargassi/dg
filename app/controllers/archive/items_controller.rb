@@ -24,9 +24,12 @@ module Archive
         if params[:archive_item][:pictures].present?
           Array(params[:archive_item][:pictures]).reject(&:blank?).each { |pic| @item.pictures.attach(pic) }
         end
-        redirect_to archive_items_path, notice: "Articolo creato"
+        respond_to do |format|
+          format.turbo_stream { render turbo_stream: turbo_stream.refresh }
+          format.html { redirect_to archive_items_path, notice: "Articolo creato" }
+        end
       else
-        redirect_to archive_items_path, alert: @item.errors.full_messages.join(", ")
+        render :new, status: :unprocessable_entity
       end
     end
 
@@ -172,7 +175,8 @@ module Archive
           name: item.description.presence || item.gencode,
           description: item.description,
           notes: item.note,
-          status: "in"
+          status: "in",
+          source_item_id: item.id
         )
 
         if archive_item.save
@@ -197,6 +201,46 @@ module Archive
       end
     end
 
+    def import_single
+      item = ::Item.find_by(id: params[:item_id])
+      unless item
+        render turbo_stream: turbo_stream.refresh
+        return
+      end
+
+      archive_warehouse = Warehouse.find_or_create_by!(code: "archivio") do |w|
+        w.address = "Archivio"
+        w.city = "-"
+        w.cap = "-"
+      end
+      archive_location = ::Location.find_or_create_by!(code: "ARC-01", warehouse: archive_warehouse) do |l|
+        l.enabled = true
+      end
+
+      source_warehouse_id = params[:warehouse_id].presence
+      source_location_id   = params[:location_id].presence
+
+      if source_warehouse_id.present?
+        StockLevel.adjust_qty!(item.gencode, source_warehouse_id, source_location_id, -1)
+      end
+      StockLevel.adjust_qty!(item.gencode, archive_warehouse.id, archive_location.id, 1)
+
+      @archive_item = Archive::Item.create!(
+        name: item.description.presence || item.gencode,
+        description: item.description,
+        notes: item.note,
+        status: "in",
+        source_item_id: item.id
+      )
+
+      if item.pictures.attached?
+        item.pictures.each { |pic| @archive_item.pictures.attach(pic.blob) }
+      end
+
+      @item = @archive_item
+      render :edit
+    end
+
     def warehouse_search
       q = "%#{params[:q]}%"
       items = ::Item.where(
@@ -205,11 +249,19 @@ module Archive
       ).select(:id, :gencode, :itemcode, :fabricode, :varcode, :description, :collection_id).limit(20)
 
       gencodes = items.map(&:gencode).compact
-      stock = StockLevel.where(gencode: gencodes).positive.group(:gencode)
+
+      stock_qty = StockLevel.where(gencode: gencodes).positive.group(:gencode)
         .select(:gencode, Arel.sql("SUM(current_qty) AS total_qty"))
         .index_by(&:gencode)
 
+      positions = StockLevel.where(gencode: gencodes).positive
+        .joins(:warehouse).left_joins(:location)
+        .select(:gencode, :warehouse_id, :location_id, "warehouses.code AS warehouse_code", "locations.code AS location_code")
+        .group_by(&:gencode)
+        .transform_values(&:first)
+
       render json: items.map { |item|
+        pos = positions[item.gencode]
         {
           id: item.id,
           gencode: item.gencode,
@@ -219,7 +271,11 @@ module Archive
           description: item.description,
           label: "#{item.itemcode}#{item.fabricode}#{item.varcode}",
           collection_id: item.collection_id,
-          qty_remaining: stock[item.gencode]&.total_qty || 0
+          qty_remaining: stock_qty[item.gencode]&.total_qty || 0,
+          warehouse_id: pos&.warehouse_id,
+          location_id: pos&.location_id,
+          warehouse_code: pos&.warehouse_code,
+          location_code: pos&.location_code
         }
       }
     end

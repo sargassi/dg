@@ -49,6 +49,8 @@ class Archive::ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_equal @item.description, archive_items.first.description
     assert_equal @item.note, archive_items.first.notes
     assert_equal "in", archive_items.first.status
+    assert_equal @item.id, archive_items.first.source_item_id
+    assert_equal items(:two).id, archive_items.second.source_item_id
     assert_equal items(:two).description, archive_items.second.description
   end
 

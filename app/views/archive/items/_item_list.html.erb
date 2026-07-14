@@ -1,0 +1,76 @@
+<div class="flex items-center px-4 py-2.5 border-b border-slate-100 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group">
+  <div class="flex items-center gap-3 flex-1 min-w-0">
+    <% if item.pictures.attached? %>
+      <%= image_tag item.pictures.first, class: "w-10 h-10 object-cover border border-slate-200 dark:border-slate-600 rounded-sm flex-shrink-0" %>
+    <% else %>
+      <div class="w-10 h-10 bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-sm flex items-center justify-center flex-shrink-0">
+        <span class="material-symbols-outlined text-base text-slate-400">image</span>
+      </div>
+    <% end %>
+    <div class="flex-1 min-w-0">
+      <div class="flex items-center gap-2">
+        <span class="text-xs font-mono text-blue-600 dark:text-blue-400"><%= item.code %></span>
+        <span class="text-sm font-medium text-slate-800 dark:text-slate-200 truncate"><%= item.name %></span>
+      </div>
+      <div class="flex items-center gap-2 mt-0.5">
+        <% if item.category %>
+          <span class="text-xs text-slate-400"><%= item.category.full_name %></span>
+        <% end %>
+        <% if item.location %>
+          <span class="text-xs text-slate-400">· <%= item.location.full_name %></span>
+        <% end %>
+        <% if item.source_item %>
+          <span class="text-xs text-accent font-mono">
+            · <%= link_to item_path(item.source_item), class: "hover:text-accent-700", data: { turbo_frame: "_top" } do %><%= item.source_item.itemcode %><%= item.source_item.fabricode %><%= item.source_item.varcode %><% end %>
+          </span>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-3 flex-shrink-0">
+    <% if item.status == "in" %>
+      <span class="text-[10px] font-semibold text-green-600 dark:text-green-400 uppercase">In archivio</span>
+    <% else %>
+      <span class="text-[10px] font-semibold text-red-600 dark:text-red-400 uppercase">Fuori</span>
+    <% end %>
+
+    <div class="flex items-center gap-1">
+      <%= link_to archive_item_path(item), class: "p-1 text-slate-500 hover:text-accent rounded-sm hover:bg-slate-100 dark:hover:bg-slate-700", data: { turbo_frame: "item_modal" } do %>
+        <span class="material-symbols-outlined text-sm">visibility</span>
+      <% end %>
+      <%= link_to edit_archive_item_path(item), class: "p-1 text-slate-500 hover:text-accent rounded-sm hover:bg-slate-100 dark:hover:bg-slate-700", data: { turbo_frame: "item_modal" } do %>
+        <span class="material-symbols-outlined text-sm">edit</span>
+      <% end %>
+      <%= button_to duplicate_archive_item_path(item), method: :post, class: "p-1 text-slate-500 hover:text-accent rounded-sm hover:bg-slate-100 dark:hover:bg-slate-700", data: { turbo_frame: "_top" } do %>
+        <span class="material-symbols-outlined text-sm">content_copy</span>
+      <% end %>
+      <%= button_to archive_item_path(item), method: :delete, class: "p-1 text-slate-500 hover:text-red-500 rounded-sm hover:bg-slate-100 dark:hover:bg-slate-700", data: { turbo_confirm: "Eliminare #{item.name}?", turbo_frame: "_top" } do %>
+        <span class="material-symbols-outlined text-sm">delete</span>
+      <% end %>
+    </div>
+
+    <% if item.status == "in" %>
+      <button type="button" onclick="document.getElementById('checkout-form-<%= item.id %>').classList.toggle('hidden')" class="inline-flex items-center gap-1 text-xs bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded-sm font-medium">
+        <span class="material-symbols-outlined text-sm">logout</span>
+        Fuori
+      </button>
+    <% else %>
+      <%= button_to checkin_archive_item_path(item), method: :post, class: "inline-flex items-center gap-1 text-xs bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded-sm font-medium", data: { turbo_frame: "_top" } do %>
+        <span class="material-symbols-outlined text-sm">login</span>
+        Rientro
+      <% end %>
+    <% end %>
+  </div>
+</div>
+
+<% if item.status == "in" %>
+  <div id="checkout-form-<%= item.id %>" class="hidden px-4 py-2 bg-slate-50 dark:bg-slate-700/30 border-b border-slate-100 dark:border-slate-600">
+    <%= form_with url: checkout_archive_item_path(item), method: :post, data: { turbo_frame: "_top" }, class: "flex items-center gap-2" do |f| %>
+      <%= f.text_field :out_to, class: "border border-slate-300 dark:border-slate-600 outline-none px-2 py-1 text-xs flex-1 dark:bg-slate-700 dark:text-slate-200", placeholder: "A chi / dove", required: true %>
+      <%= f.text_field :notes, class: "border border-slate-300 dark:border-slate-600 outline-none px-2 py-1 text-xs flex-1 dark:bg-slate-700 dark:text-slate-200", placeholder: "Motivo" %>
+      <%= f.submit "Conferma", class: "px-3 py-1 bg-amber-500 hover:bg-amber-600 text-white text-xs rounded-sm cursor-pointer" %>
+      <button type="button" onclick="document.getElementById('checkout-form-<%= item.id %>').classList.add('hidden')" class="px-3 py-1 text-xs text-slate-500 hover:text-slate-700">Annulla</button>
+    <% end %>
+  </div>
+<% end %>

@@ -1,0 +1,160 @@
+<%= form_with model: item, url: item.persisted? ? archive_item_path(item) : archive_items_path, class: "contents", multipart: true, data: (local_assigns[:turbo_frame] ? { turbo_frame: turbo_frame, controller: "camera-capture", camera_capture_param_name_value: "archive_item[pictures]" } : { controller: "camera-capture", camera_capture_param_name_value: "archive_item[pictures]" }) do |form| %>
+  <% if item.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 px-3 py-2 font-medium rounded-sm mt-3">
+      <ul class="list-disc list-inside text-xs">
+        <% item.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="space-y-3">
+    <% if item.source_item %>
+      <div class="flex items-center gap-2 text-xs text-slate-500 bg-slate-50 dark:bg-slate-700/50 rounded-sm px-3 py-2">
+        <span class="material-symbols-outlined text-sm">inventory_2</span>
+        <span>Magazzino:</span>
+        <%= link_to item_path(item.source_item), class: "text-accent hover:text-accent-700 font-mono font-medium", data: { turbo_frame: "_top" } do %>
+          <%= item.source_item.itemcode %><%= item.source_item.fabricode %><%= item.source_item.varcode %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <div>
+      <%= form.label :name, "Nome", class: label_class %>
+      <%= form.text_field :name, class: input_class, placeholder: "Nome articolo" %>
+    </div>
+
+    <div>
+      <%= form.label :description, "Descrizione", class: label_class %>
+      <%= form.text_area :description, class: input_class, rows: 3, placeholder: "Descrizione..." %>
+    </div>
+
+    <div data-controller="category-cascade">
+      <div class="flex items-center justify-between mb-1">
+        <%= form.label :archive_category_id, "Categoria", class: label_class %>
+        <button type="button" onclick="document.getElementById('new-cat-modal').classList.remove('hidden')" class="text-xs text-accent hover:text-accent-700 flex items-center gap-0.5">
+          <span class="material-symbols-outlined text-sm">add_circle</span>
+        </button>
+      </div>
+      <%= form.collection_select :archive_category_id, Archive::Category.roots.order(:name), :id, :name,
+            { include_blank: "Seleziona categoria" },
+            class: select_class,
+            data: { category_cascade_target: "parentSelect", action: "change->category-cascade#change" } %>
+
+      <div data-category-cascade-target="childGroup" class="hidden mt-3">
+        <label class="text-xs text-slate-400 tracking-wide block mb-1">Sottocategoria</label>
+        <select name="archive_item[archive_category_id]" data-category-cascade-target="childSelect" data-action="change->category-cascade#childChange" class="<%= select_class %>">
+          <option value="">—</option>
+          <% Archive::Category.where.not(parent_id: nil).includes(:parent).order(:name).each do |cat| %>
+            <option value="<%= cat.id %>" data-parent-id="<%= cat.parent_id %>"><%= cat.name %></option>
+          <% end %>
+        </select>
+      </div>
+    </div>
+
+    <div>
+      <div class="flex items-center justify-between mb-1">
+        <%= form.label :archive_location_id, "Ubicazione", class: label_class %>
+        <button type="button" onclick="document.getElementById('new-loc-modal').classList.remove('hidden')" class="text-xs text-accent hover:text-accent-700 flex items-center gap-0.5">
+          <span class="material-symbols-outlined text-sm">add_circle</span>
+        </button>
+      </div>
+      <% loc_options = Archive::Location.sectors.order(:name).flat_map { |r| [[r.full_name, r.id]] + r.children.order(:name).map { |c| ["↳ #{c.name}", c.id] } } %>
+      <%= form.select :archive_location_id, options_for_select(loc_options, form.object.archive_location_id),
+            { include_blank: "Seleziona ubicazione" },
+            class: select_class %>
+    </div>
+
+    <div>
+      <%= form.label :notes, "Note", class: label_class %>
+      <%= form.text_area :notes, class: input_class, rows: 2, placeholder: "Note..." %>
+    </div>
+
+    <div data-controller="image-preview">
+      <%= form.label :pictures, "Immagini", class: label_class %>
+
+      <% if item.persisted? && item.pictures.attached? %>
+        <div class="flex flex-wrap gap-2 mt-2 mb-2" data-image-preview-target="existing">
+          <% item.pictures.each do |pic| %>
+            <div class="relative group" data-signed-id="<%= pic.signed_id %>">
+              <%= image_tag pic, class: "w-16 h-16 object-cover border border-slate-200 dark:border-slate-600 rounded-sm" %>
+              <button type="button" data-action="image-preview#removeExisting"
+                      class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                <span class="material-symbols-outlined text-xs leading-none">close</span>
+              </button>
+              <%= hidden_field_tag "archive_item[pictures][]", pic.signed_id, id: dom_id(pic),
+                    data: { image_preview_target: "hidden" } %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+
+      <div class="flex items-center gap-3 mt-2">
+        <button type="button" data-action="camera-capture#open"
+                class="inline-flex items-center gap-1 text-xs text-accent hover:text-accent-700 font-medium">
+          <span class="material-symbols-outlined text-lg">camera_alt</span>
+          Scatta foto
+        </button>
+        <div class="flex-1">
+          <%= hidden_field_tag "archive_item[pictures][]", "", id: nil %>
+          <%= form.file_field :pictures, multiple: true,
+                data: { image_preview_target: "input", camera_capture_target: "input", action: "change->image-preview#preview" },
+                class: "block w-full text-xs text-slate-500 file:mr-2 file:py-1 file:px-3 file:rounded-sm file:border-0 file:text-xs file:bg-accent file:text-white hover:file:bg-accent-700 cursor-pointer" %>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap gap-2 mt-2" data-image-preview-target="preview"></div>
+
+      <div data-camera-capture-target="summary"
+           class="hidden flex flex-wrap gap-2 mt-2 p-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-sm">
+      </div>
+
+      <div data-camera-capture-target="modal"
+           class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center">
+        <div class="relative bg-white dark:bg-slate-800 rounded-xl p-4 w-full max-w-lg mx-4">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-semibold text-slate-800 dark:text-slate-100">Scatta foto</h3>
+            <button type="button" data-action="camera-capture#close" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+              <span class="material-symbols-outlined">close</span>
+            </button>
+          </div>
+          <div class="relative">
+            <video data-camera-capture-target="video"
+                   class="w-full aspect-square bg-black rounded-lg object-cover"
+                   autoplay playsinline></video>
+            <div data-camera-capture-target="flash"
+                 class="hidden absolute inset-0 bg-white/80 rounded-lg pointer-events-none"></div>
+          </div>
+          <div data-camera-capture-target="preview"
+               class="flex flex-wrap gap-2 mt-2 min-h-0">
+          </div>
+          <div data-camera-capture-target="counter"
+               class="text-center text-xs text-slate-500 dark:text-slate-400 mt-2 min-h-[1.25rem]"></div>
+          <div class="flex gap-3 mt-3 justify-center">
+            <button type="button" data-action="camera-capture#shoot"
+                    class="inline-flex items-center gap-1 px-4 py-2 bg-accent text-white text-xs rounded-sm font-medium hover:bg-accent-700 cursor-pointer">
+              <span class="material-symbols-outlined text-lg">camera</span>
+              Scatta
+            </button>
+            <button type="button"
+                    data-camera-capture-target="confirmBtn"
+                    data-action="camera-capture#confirm"
+                    class="hidden inline-flex items-center gap-1 px-4 py-2 bg-green-600 text-white text-xs rounded-sm font-medium hover:bg-green-700 cursor-pointer">
+              <span class="material-symbols-outlined text-lg">check</span>
+              Conferma foto
+            </button>
+            <button type="button" data-action="camera-capture#close"
+                    class="px-4 py-2 text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 cursor-pointer">
+              Chiudi
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pt-2">
+      <%= form.submit "Salva", class: button_class(' bg-accent') + ' w-full text-center py-2' %>
+    </div>
+  </div>
+<% end %>

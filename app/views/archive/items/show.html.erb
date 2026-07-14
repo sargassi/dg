@@ -1,0 +1,99 @@
+<%= turbo_frame_tag "item_modal" do %>
+  <div class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center" data-controller="modal" data-action="keydown.esc->modal#close click->modal#backdropClose">
+    <div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-600">
+        <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">
+          <%= @item.code %> — <%= @item.name %>
+        </h2>
+        <%= link_to archive_items_path, class: "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200", data: { turbo_frame: "_top" } do %>
+          <span class="material-symbols-outlined text-base">close</span>
+        <% end %>
+      </div>
+
+      <div class="p-4 space-y-4">
+        <% if @item.pictures.attached? %>
+          <div class="flex gap-2 overflow-x-auto pb-2">
+            <% @item.pictures.each do |pic| %>
+              <%= image_tag pic, class: "h-40 w-auto border border-slate-200 dark:border-slate-600 rounded-sm" %>
+            <% end %>
+          </div>
+        <% end %>
+
+        <div class="grid grid-cols-2 gap-4 text-sm">
+          <div>
+            <span class="text-xs text-slate-400 uppercase tracking-wide">Categoria</span>
+            <p class="font-medium text-slate-800 dark:text-slate-200"><%= @item.category&.full_name || "—" %></p>
+          </div>
+          <div>
+            <span class="text-xs text-slate-400 uppercase tracking-wide">Ubicazione</span>
+            <p class="font-medium text-slate-800 dark:text-slate-200"><%= @item.location&.full_name || "—" %></p>
+          </div>
+          <div>
+            <span class="text-xs text-slate-400 uppercase tracking-wide">Stato</span>
+            <p class="font-medium <%= @item.status == "in" ? "text-green-600" : "text-red-600" %>"><%= @item.status == "in" ? "In archivio" : "Fuori" %></p>
+          </div>
+          <div>
+            <span class="text-xs text-slate-400 uppercase tracking-wide">QR Code</span>
+            <div class="w-16 h-16 mt-1"><%= @item.qrcode_svg&.html_safe %></div>
+          </div>
+          <% if @item.source_item %>
+            <div class="col-span-2">
+              <span class="text-xs text-slate-400 uppercase tracking-wide">Articolo magazzino</span>
+              <p class="font-medium">
+                <%= link_to item_path(@item.source_item), class: "text-accent hover:text-accent-700 font-mono", data: { turbo_frame: "_top" } do %>
+                  <%= @item.source_item.itemcode %><%= @item.source_item.fabricode %><%= @item.source_item.varcode %>
+                <% end %>
+                <span class="text-slate-400 text-xs ml-1"><%= @item.source_item.description %></span>
+              </p>
+            </div>
+          <% end %>
+        </div>
+
+        <% if @item.description.present? %>
+          <div>
+            <span class="text-xs text-slate-400 uppercase tracking-wide block mb-1">Descrizione</span>
+            <p class="text-sm text-slate-700 dark:text-slate-300"><%= @item.description %></p>
+          </div>
+        <% end %>
+
+        <% if @item.notes.present? %>
+          <div>
+            <span class="text-xs text-slate-400 uppercase tracking-wide block mb-1">Note</span>
+            <p class="text-sm text-slate-700 dark:text-slate-300"><%= @item.notes %></p>
+          </div>
+        <% end %>
+
+        <% if @item.transactions.any? %>
+          <div>
+            <span class="text-xs text-slate-400 uppercase tracking-wide block mb-2">Movimenti</span>
+            <div class="space-y-1 max-h-48 overflow-y-auto">
+              <% @item.transactions.order(date: :desc).each do |tx| %>
+                <div class="flex items-center gap-3 px-3 py-2 bg-slate-50 dark:bg-slate-700/50 rounded-sm text-xs">
+                  <span class="<%= tx.action == "checkout" ? "text-red-500" : "text-green-500" %> font-semibold uppercase"><%= tx.action == "checkout" ? "Uscita" : "Rientro" %></span>
+                  <span class="text-slate-500"><%= l(tx.date, format: :short) %></span>
+                  <span class="text-slate-600 dark:text-slate-400"><%= tx.operator&.name %></span>
+                  <% if tx.out_to.present? %>
+                    <span class="text-slate-400">→ <%= tx.out_to %></span>
+                  <% end %>
+                  <% if tx.notes.present? %>
+                    <span class="text-slate-400 italic">(<%= tx.notes %>)</span>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+
+        <div class="flex gap-2 pt-3 border-t border-slate-100 dark:border-slate-600">
+          <%= link_to edit_archive_item_path(@item), class: "px-3 py-1.5 bg-accent text-white text-xs rounded-sm", data: { turbo_frame: "item_modal" } do %>
+            <span class="material-symbols-outlined text-sm">edit</span>
+            Modifica
+          <% end %>
+          <%= link_to archive_items_path, class: "px-3 py-1.5 text-xs text-slate-500 hover:text-slate-700", data: { turbo_frame: "_top" } do %>
+            Chiudi
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

@@ -30,6 +30,26 @@
   <div class="<%= style_main_card_grid %>">
     <div class="<%= style_main_card %>">
       <h3 class="<%= style_main_card_header %>">
+        <span class="material-symbols-outlined text-slate-400 dark:text-slate-500">link</span>
+        Link rapidi
+      </h3>
+      <div class="space-y-3">
+        <% inventories_section_toolbar(skip_config: true).each do |item| %>
+          <%= link_to item[:path], class: style_main_card_link do %>
+            <span class="flex items-center gap-2">
+              <% if item[:icon] %>
+                <span class="material-symbols-outlined text-slate-400 dark:text-slate-300 text-base"><%= item[:icon] %></span>
+              <% end %>
+              <span class="text-sm text-slate-700 dark:text-slate-200"><%= item[:label] %></span>
+            </span>
+            <span class="material-symbols-outlined text-slate-300 dark:text-slate-400 text-base">arrow_forward_ios</span>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="<%= style_main_card %>">
+      <h3 class="<%= style_main_card_header %>">
         <span class="material-symbols-outlined text-slate-400 dark:text-slate-500">inventory_2</span>
         Magazzino
       </h3>

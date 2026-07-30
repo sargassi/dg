@@ -67,9 +67,7 @@ class ImportValidator
       new_items:          0,
       updated_items:      0,
       new_collections:    [],
-      existing_collections: [],
-      new_warehouses:     [],
-      existing_warehouses: []
+      existing_collections: []
     }
 
     data[:rows].each do |row|
@@ -85,15 +83,9 @@ class ImportValidator
       elsif row[:_collection_id].present?
         summary[:existing_collections] << row[:_collection_description] if row[:_collection_description].present?
       end
-
-      if row[:_warehouse_new]
-        summary[:new_warehouses] << row[:_warehouse_code] if row[:_warehouse_code].present?
-      elsif row[:_warehouse_id].present?
-        summary[:existing_warehouses] << row[:_warehouse_code] if row[:_warehouse_code].present?
-      end
     end
 
-    %i[new_collections existing_collections new_warehouses existing_warehouses].each do |key|
+    %i[new_collections existing_collections].each do |key|
       summary[key].uniq!
     end
 

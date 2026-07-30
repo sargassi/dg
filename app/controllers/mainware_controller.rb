@@ -148,8 +148,6 @@ class MainwareController < ApplicationController
       row[:_gencode] = ImportParser.gencode_for(row)
     elsif field == ImportParser::NOTE_KEY && override_collection_id.blank?
       parser.resolve_collection(row, override_collection_id: override_collection_id)
-    elsif field == ImportParser::DOVE_KEY
-      parser.resolve_warehouse(row)
     end
 
     Rails.cache.write(import_cache_key, data, expires_in: 30.minutes)

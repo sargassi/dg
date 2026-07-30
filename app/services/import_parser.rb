@@ -40,7 +40,6 @@ class ImportParser
       row = Hash[[headers, spreadsheet.row(i)].transpose]
       row[:_index] = i
       resolve_collection(row, override_collection_id: override_collection_id)
-      resolve_warehouse(row)
       row[:_gencode] = self.class.gencode_for(row)
       row
     end

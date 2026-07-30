@@ -4,7 +4,6 @@ class ImportPersister
   def ensure_dependencies!(data)
     ActiveRecord::Base.transaction do
       collection_map = {}
-      warehouse_map = {}
 
       data[:rows].each do |row|
         if row[:_collection_new] && row[:_collection_description].present?
@@ -12,14 +11,6 @@ class ImportPersister
           collection_map[desc] ||= Collection.create!(description: desc)
           row[:_collection_id] = collection_map[desc].id
           row[:_collection_new] = false
-        end
-
-        if row[:_warehouse_new] && row[:_warehouse_code].present?
-          code = row[:_warehouse_code]
-          warehouse_map[code] ||= Warehouse.create!(code: code, enabled: true)
-          row[:_warehouse_id] = warehouse_map[code].id
-          row[:_warehouse_code] = warehouse_map[code].code
-          row[:_warehouse_new] = false
         end
       end
     end

@@ -32,26 +32,18 @@
       </div>
 
       <div class="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg text-center">
-        <p class="text-3xl font-bold text-slate-700 dark:text-slate-200"><%= @summary[:new_collections].size + @summary[:new_warehouses].size %></p>
+        <p class="text-3xl font-bold text-slate-700 dark:text-slate-200"><%= @summary[:new_collections].size %></p>
         <p class="text-xs text-slate-500 dark:text-slate-400 uppercase">Nuove anagrafiche</p>
       </div>
     </div>
 
-    <% if @summary[:new_collections].any? || @summary[:new_warehouses].any? %>
+    <% if @summary[:new_collections].any? %>
       <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4 mb-6">
         <p class="text-sm font-semibold text-yellow-800 dark:text-yellow-300 mb-2">Verranno create le seguenti anagrafiche:</p>
-        <% if @summary[:new_collections].any? %>
-          <div class="mb-2">
-            <span class="text-xs font-semibold text-yellow-700 dark:text-yellow-400 uppercase">Collezioni</span>
-            <p class="text-sm text-yellow-800 dark:text-yellow-300"><%= @summary[:new_collections].join(", ") %></p>
-          </div>
-        <% end %>
-        <% if @summary[:new_warehouses].any? %>
-          <div>
-            <span class="text-xs font-semibold text-yellow-700 dark:text-yellow-400 uppercase">Magazzini</span>
-            <p class="text-sm text-yellow-800 dark:text-yellow-300"><%= @summary[:new_warehouses].join(", ") %></p>
-          </div>
-        <% end %>
+        <div class="mb-2">
+          <span class="text-xs font-semibold text-yellow-700 dark:text-yellow-400 uppercase">Collezioni</span>
+          <p class="text-sm text-yellow-800 dark:text-yellow-300"><%= @summary[:new_collections].join(", ") %></p>
+        </div>
       </div>
     <% end %>
 

@@ -2,10 +2,10 @@ module InventoriesViews
   extend ActiveSupport::Concern
 
   included do
-    before_action :prepend_inventories_view_prefix
-
-    def prepend_inventories_view_prefix
-      lookup_context.prefixes = ["inventories"] | lookup_context.prefixes
-    end
+    singleton_class.prepend(Module.new {
+      def _prefixes
+        @_prefixes ||= ["inventories"] | super
+      end
+    })
   end
 end

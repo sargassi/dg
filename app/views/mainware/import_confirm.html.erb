@@ -55,7 +55,7 @@
       </div>
     <% end %>
 
-    <%= form_with url: mainware_import_confirm_path, method: :post do %>
+    <%= form_with url: mainware_import_confirm_path, method: :post, local: true do %>
       <%= hidden_field_tag :confirmed, true %>
       <button type="submit" class="block w-full text-center <%= style_import_btn %> bg-green-600 mb-3">
         Conferma e avvia importazione

@@ -66,6 +66,7 @@
             <th class="<%= style_table_th %> sticky top-0 z-10 w-12 text-center"></th>
             <th class="<%= style_table_th %> sticky top-0 z-10 w-16 text-center">Riga</th>
             <th class="<%= style_table_th %> sticky top-0 z-10 w-40">Gencode</th>
+            <th class="<%= style_table_th %> sticky top-0 z-10 w-36">Collezione</th>
             <% @data[:headers].each do |h| %>
               <th class="<%= style_table_th %> sticky top-0 z-10"><%= h %></th>
             <% end %>
@@ -97,6 +98,18 @@
                   data-inline-edit-target="gencode"
                   title="<%= row_errors[:gencode]&.join(', ') %>">
                 <%= row[:_gencode] %>
+              </td>
+
+              <td class="<%= style_table_td %> text-xs <%= 'text-red-600 dark:text-red-400 font-medium' if !(row[:_collection_id].present? || row[:_collection_description].present?) %>">
+                <% if row[:_collection_id].present? %>
+                  <span class="text-slate-400 dark:text-slate-500">#<%= row[:_collection_id] %></span>
+                  <span class="text-slate-700 dark:text-slate-200"><%= row[:_collection_description] %></span>
+                <% elsif row[:_collection_new] %>
+                  <span class="text-green-600 dark:text-green-400 font-medium">Nuova:</span>
+                  <%= row[:_collection_description] %>
+                <% else %>
+                  <span class="italic text-slate-400 dark:text-slate-500">— mancante —</span>
+                <% end %>
               </td>
 
               <% @data[:headers].each do |header| %>

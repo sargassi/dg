@@ -27,15 +27,16 @@ class MergeCollectionsService
     ActiveRecord::Base.transaction do
       source_ids.each do |sid|
         moved_ids = Item.where(collection_id: sid).pluck(:id)
-        next if moved_ids.empty?
 
-        Item.where(id: moved_ids).update_all(collection_id: target_id)
-        stats[:items_moved] += moved_ids.size
+        if moved_ids.any?
+          Item.where(id: moved_ids).update_all(collection_id: target_id)
+          stats[:items_moved] += moved_ids.size
 
-        moved_ids.each_slice(100) do |batch|
-          Item.where(id: batch).each do |item|
-            new_gencode = [item.itemcode, item.fabricode, item.varcode].map(&:to_s).join + "_#{target_id}"
-            item.update_columns(gencode: new_gencode)
+          moved_ids.each_slice(100) do |batch|
+            Item.where(id: batch).each do |item|
+              new_gencode = [item.itemcode, item.fabricode, item.varcode].map(&:to_s).join + "_#{target_id}"
+              item.update_columns(gencode: new_gencode)
+            end
           end
         end
 

@@ -17,7 +17,7 @@
       <p class="text-slate-500">Servono almeno 2 collezioni per unire.</p>
     </div>
   <% else %>
-    <%= form_with url: merge_apply_collections_path, method: :post, local: true, data: { turbo_confirm: "Confermi l'unione? Le collezioni sorgente verranno eliminate e i loro articoli spostati." } do |f| %>
+    <%= form_with url: merge_apply_collections_path, method: :post, data: { turbo: false, confirm: "Confermi l'unione? Le collezioni sorgente verranno eliminate e i loro articoli spostati." } do |f| %>
       <div class="<%= style_main_card %> mb-6">
         <h3 class="<%= style_main_card_header %>">
           <span class="material-symbols-outlined">merge</span>

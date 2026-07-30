@@ -71,7 +71,7 @@ class ImportParser
       return
     end
 
-    note_val = row[NOTE_KEY].to_s.strip
+    note_val = row[NOTE_KEY].to_s.strip.upcase
     if note_val.present?
       existing_c = Collection.find_by(description: note_val)
       if existing_c

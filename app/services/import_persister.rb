@@ -7,8 +7,8 @@ class ImportPersister
 
       data[:rows].each do |row|
         if row[:_collection_new] && row[:_collection_description].present?
-          desc = row[:_collection_description]
-          collection_map[desc] ||= Collection.create!(description: desc)
+          desc = row[:_collection_description].to_s.strip.upcase
+          collection_map[desc] ||= Collection.find_or_create_by!(description: desc)
           row[:_collection_id] = collection_map[desc].id
           row[:_collection_new] = false
         end

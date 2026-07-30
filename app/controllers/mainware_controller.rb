@@ -169,7 +169,7 @@ class MainwareController < ApplicationController
     data = Rails.cache.read(import_cache_key)
     return redirect_to mainware_import_path, alert: "Nessun dato da importare" unless data&.dig(:rows)&.any?
 
-    new_name = params[:new_collection_name].to_s.strip
+    new_name = params[:new_collection_name].to_s.strip.upcase
     if new_name.present?
       collection = Collection.find_or_create_by!(description: new_name)
     elsif params[:collection_id].present?

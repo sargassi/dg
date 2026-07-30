@@ -71,7 +71,9 @@ class ImportPersister
 
   def parse_price(val)
     return 0.0 if val.blank? || val.to_s.strip.empty?
-    cleaned = val.to_s.gsub(',', '.').strip
+    cleaned = val.to_s
+                 .gsub(/[€$£\s]/, '')
+                 .gsub(',', '.')
     num = Float(cleaned)
     raise ArgumentError, "prezzo negativo non valido: #{val}" if num.negative?
     num.round(2)

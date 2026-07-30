@@ -148,6 +148,47 @@ class InventoryStockController < ApplicationController
     redirect_to app_in_warehouse_path, notice: "#{selected.size} articoli pronti per il carico."
   end
 
+  def qr_select
+    @collections = Collection.joins(:items).distinct.order(row_order: :desc)
+    @itemz = Item.includes(:collection).with_attached_pictures
+
+    if params[:collection_id].present?
+      @itemz = @itemz.where(collection_id: params[:collection_id])
+    end
+
+    if params[:qr_printed].present?
+      @itemz = @itemz.where(qr_printed: params[:qr_printed] == "true")
+    end
+
+    if params[:q].present?
+      q = "%#{params[:q]}%"
+      @itemz = @itemz.where(
+        "gencode LIKE :q OR itemcode LIKE :q OR fabricode LIKE :q OR varcode LIKE :q OR description LIKE :q OR fabric LIKE :q OR colour LIKE :q",
+        q: q
+      )
+    end
+
+    @pagy, @itemz = pagy(@itemz)
+  end
+
+  def generate_qr
+    selected = params[:selected] || []
+    ids = selected.map { |s| s[:item_id] || s["item_id"] }
+    Item.where(id: ids).update_all(qr_printed: true)
+    session[:qr_items] = ids
+    redirect_to inventories_qr_output_path(format: :pdf)
+  end
+
+  def qr_output
+    ids = session[:qr_items] || []
+    @items = Item.where(id: ids).includes(:collection)
+    render pdf: "qr_codici",
+           orientation: "portrait",
+           page_size: "A4",
+           margin: { top: 10, bottom: 10, left: 10, right: 10 },
+           show_as_html: params.key?("debug")
+  end
+
   def lookup_by_qr
     text = params[:q].to_s.strip
     result = parse_qr_code(text)

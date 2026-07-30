@@ -14,6 +14,9 @@ Rails.application.routes.draw do
   get 'inventories/movements/:type/:id/modal', to: 'inventory_movements#movement_modal', as: :inventories_movement_modal
   get 'inventories/seleziona', to: 'inventory_stock#seleziona', as: :inventories_seleziona
   post 'inventories/seleziona/prepare_carico', to: 'inventory_stock#prepare_carico', as: :inventories_prepare_carico
+  get 'inventories/qr_select', to: 'inventory_stock#qr_select', as: :inventories_qr_select
+  post 'inventories/generate_qr', to: 'inventory_stock#generate_qr'
+  get 'inventories/qr_output', to: 'inventory_stock#qr_output', as: :inventories_qr_output, defaults: { format: :pdf }
   get    'inventories/import', to: 'inventory_import#import', as: :inventories_import
   post   'inventories/import/parse', to: 'inventory_import#import_parse', as: :inventories_import_parse
   put    'inventories/import/update_row', to: 'inventory_import#import_update_row'

@@ -34,9 +34,8 @@ class MergeCollectionsService
 
         moved_ids.each_slice(100) do |batch|
           Item.where(id: batch).each do |item|
-            item.collection_id = target_id
-            item.rebuild_gencode
-            item.update_columns(gencode: item.gencode)
+            new_gencode = [item.itemcode, item.fabricode, item.varcode].map(&:to_s).join + "_#{target_id}"
+            item.update_columns(gencode: new_gencode)
           end
         end
 

@@ -83,6 +83,7 @@ class InventoryMovementsController < ApplicationController
     end
 
     render pdf: "etichette_#{params[:type]}_#{params[:id]}",
+           template: "inventories/movement_label",
            orientation: "portrait",
            page_size: "A4",
            margin: { top: "0mm", bottom: "0mm", left: "0mm", right: "0mm" },
@@ -100,6 +101,6 @@ class InventoryMovementsController < ApplicationController
       Itemmovement.includes(itemmovements_details: [:item]).find(params[:id])
     end
     @type = params[:type].to_sym
-    render layout: false
+    render layout: false, template: "inventories/movement_modal"
   end
 end

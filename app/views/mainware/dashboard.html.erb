@@ -1,9 +1,5 @@
 <% content_for :page_header do %>
-<div class="flex items-center gap-2 px-0 py-0.5">
-  <h1 class="text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wide">
-    Articoli
-  </h1>
-</div>
+<%= render "application/breadcrumb", dashboard_path: mainware_dashboard_path, section_name: "Articoli" %>
 <% end %>
 
 <section class="<%= style_main_cnt %> space-y-8">

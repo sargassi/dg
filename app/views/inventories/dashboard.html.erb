@@ -1,9 +1,5 @@
 <% content_for :page_header do %>
-<div class="flex items-center gap-2 px-0 py-0.5">
-  <h1 class="text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wide">
-    Magazzino
-  </h1>
-</div>
+<%= render "application/breadcrumb", dashboard_path: inventories_dashboard_path, section_name: "Magazzino" %>
 <% end %>
 
 <section class="<%= style_main_cnt %> space-y-8">
@@ -27,27 +23,21 @@
     <% end %>
   </div>
 
-  <div class="<%= style_main_card_grid %>">
-    <div class="<%= style_main_card %>">
-      <h3 class="<%= style_main_card_header %>">
-        <span class="material-symbols-outlined text-slate-400 dark:text-slate-500">link</span>
-        Link rapidi
-      </h3>
-      <div class="space-y-3">
-        <% inventories_section_toolbar(skip_config: true).each do |item| %>
-          <%= link_to item[:path], class: style_main_card_link do %>
-            <span class="flex items-center gap-2">
-              <% if item[:icon] %>
-                <span class="material-symbols-outlined text-slate-400 dark:text-slate-300 text-base"><%= item[:icon] %></span>
-              <% end %>
-              <span class="text-sm text-slate-700 dark:text-slate-200"><%= item[:label] %></span>
-            </span>
-            <span class="material-symbols-outlined text-slate-300 dark:text-slate-400 text-base">arrow_forward_ios</span>
+  <div class="bg-slate-100 dark:bg-slate-800/50 rounded-lg p-4 mb-6">
+    <h3 class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">Link rapidi</h3>
+    <div class="flex items-center gap-2 flex-wrap">
+      <% inventories_section_toolbar(skip_config: true).each do |item| %>
+        <%= link_to item[:path], class: "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-accent hover:text-accent dark:hover:border-accent-400 dark:hover:text-accent-300 transition" do %>
+          <% if item[:icon] %>
+            <span class="material-symbols-outlined text-sm"><%= item[:icon] %></span>
           <% end %>
+          <%= item[:label] %>
         <% end %>
-      </div>
+      <% end %>
     </div>
+  </div>
 
+  <div class="<%= style_main_card_grid %>">
     <div class="<%= style_main_card %>">
       <h3 class="<%= style_main_card_header %>">
         <span class="material-symbols-outlined text-slate-400 dark:text-slate-500">inventory_2</span>

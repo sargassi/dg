@@ -6,7 +6,7 @@ module ApplicationHelper
     case controller_path
     when /^mainware/, /^items/, /^collections/, /^fabriclus/
       mainware_section_toolbar rescue []
-    when /^inventories/, /^warehouses/, /^locations/, /^itemins/, /^itemouts/
+    when /^inventory/, /^warehouses/, /^locations/, /^itemins/, /^itemouts/
       inventories_section_toolbar rescue []
     when /^production/, /^stages/
       production_section_toolbar rescue []

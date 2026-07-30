@@ -149,7 +149,7 @@
           Conferma importazione (<span id="import-count-btn"><%= @data[:rows].size %></span>)
         </button>
       <% else %>
-        <%= form_with url: mainware_import_confirm_path, method: :post, local: true do %>
+        <%= form_with url: mainware_import_confirm_path, method: :post, data: { turbo: false } do %>
           <button type="submit" class="<%= style_import_btn %> bg-green-600">
             Conferma importazione (<span id="import-count-btn"><%= @data[:rows].size %></span>)
           </button>

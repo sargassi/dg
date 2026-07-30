@@ -112,13 +112,14 @@ When a collection override is selected at upload, the `Note:` column is disabled
 
 ## Phase 3 — Recommended next steps
 
-### 1. Better import error summary
+### 1. Better import error summary — Done
 
-When rows fail during the job, show actual cell values and group repeated errors. Add CSV/Excel export of the failed rows so the user can fix and re-import.
+Errors are now grouped by message, show the actual row/gencode/cell values, and can be exported as `.xlsx`.
 
 **Files involved:**
 - `app/services/import_general_service.rb` (`save` error collection)
 - `app/views/mainware/import_summary.html.erb`
+- `app/controllers/mainware_controller.rb` (`import_failed_rows`)
 
 ### 2. Import history / audit log
 

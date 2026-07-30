@@ -266,7 +266,12 @@ class ImportGeneralService
           stats[:updated_ids] << item.id
         end
       rescue => e
-        stats[:errors] << { row: row[:_index], error: e.message }
+        stats[:errors] << {
+          row: row[:_index],
+          gencode: gencode,
+          fields: row.reject { |k, _| k.to_s.start_with?('_') },
+          error: e.message
+        }
       end
     end
 

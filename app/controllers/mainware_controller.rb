@@ -208,6 +208,25 @@ class MainwareController < ApplicationController
     return redirect_to mainware_index_path unless @stats
   end
 
+  def import_failed_rows
+    stats = Rails.cache.read("import:stats:#{session.id}")
+    return redirect_to mainware_index_path unless stats&.dig(:errors)&.any?
+
+    package = Axlsx::Package.new
+    wb = package.workbook
+    wb.add_worksheet(name: "Errori") do |sheet|
+      headers = ["Riga", "Gencode", "Errore"] + stats[:errors].first[:fields].keys.map(&:to_s)
+      sheet.add_row headers
+      stats[:errors].each do |err|
+        sheet.add_row [err[:row], err[:gencode], err[:error]] + err[:fields].values.map(&:to_s)
+      end
+    end
+
+    send_data package.to_stream.read,
+      filename: "righe_errore_import.xlsx",
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  end
+
   def import_cancel
     Rails.cache.delete(import_cache_key)
     redirect_to mainware_import_path, notice: "Importazione annullata."

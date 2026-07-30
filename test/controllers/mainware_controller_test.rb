@@ -40,4 +40,9 @@ class MainwareControllerTest < ActionDispatch::IntegrationTest
     file.close
     file.unlink
   end
+
+  test "should redirect failed rows export when no import stats" do
+    get mainware_import_failed_rows_url
+    assert_redirected_to mainware_index_url
+  end
 end

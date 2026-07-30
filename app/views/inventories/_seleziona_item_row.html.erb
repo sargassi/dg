@@ -22,12 +22,12 @@
     <td class="<%= style_table_td %>"><%= item.itemcode %></td>
     <td class="<%= style_table_td %>"><%= item.fabricode %></td>
     <td class="<%= style_table_td %>"><%= item.varcode %></td>
+    <td class="<%= style_table_td %> font-bold"><%= item.collection&.description&.upcase %></td>
     <td class="<%= style_table_td %>"><%= item.description %></td>
     <td class="<%= style_table_td %>"><%= item.tg %></td>
     <td class="<%= style_table_td %>"><%= item.fabric %></td>
     <td class="<%= style_table_td %>"><%= item.colour %></td>
     <td class="<%= style_table_td %>"><%= item.materiale %></td>
     <td class="<%= style_table_td %>"><%= item.note %></td>
-    <td class="<%= style_table_td %> font-bold"><%= item.collection&.description&.upcase %></td>
   </tr>
 </tbody>

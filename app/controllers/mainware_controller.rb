@@ -75,10 +75,10 @@ class MainwareController < ApplicationController
     @data = Rails.cache.read(import_cache_key)
     @collections = Collection.all.order(:description)
     if @data
-      service = ImportGeneralService.new
-      @warnings = service.validate_rows(@data)
-      @validation_details = service.validation_details(@data)
-      @row_classes = service.classify_rows(@data)
+      validator = ImportValidator.new
+      @warnings = validator.validate_rows(@data)
+      @validation_details = validator.validation_details(@data)
+      @row_classes = validator.classify_rows(@data)
     else
       @warnings = []
       @validation_details = {}
@@ -90,7 +90,7 @@ class MainwareController < ApplicationController
     package = Axlsx::Package.new
     wb = package.workbook
     wb.add_worksheet(name: "Template") do |sheet|
-      sheet.add_row ImportGeneralService::TEMPLATE_HEADERS
+      sheet.add_row ImportParser::TEMPLATE_HEADERS
       sheet.add_row ["ABC123", "FAB001", "01", "Descrizione esempio", "M", "Blue", "Cotton", 100, "Spring 2024", "WH01"]
     end
     send_data package.to_stream.read,
@@ -120,8 +120,8 @@ class MainwareController < ApplicationController
       metadata[:collection_id] = c.id
     end
 
-    service = ImportGeneralService.new
-    data = service.parse(params[:file], metadata)
+    parser = ImportParser.new
+    data = parser.parse(params[:file], metadata)
     data[:_collection_override_id] = metadata[:collection_id]
     data[:_file_name] = params[:file].original_filename
 
@@ -141,16 +141,15 @@ class MainwareController < ApplicationController
     return head :not_found unless row
 
     row[field] = value
-    service = ImportGeneralService.new
+    parser = ImportParser.new
     override_collection_id = data[:_collection_override_id]
 
-    if ['Item Code:', 'Fabric code:', 'var. code:'].include?(field)
-      coll_id = row[:_collection_id]
-      row[:_gencode] = [row['Item Code:'], row['Fabric code:'], row['var. code:']].map(&:to_s).join + "_#{coll_id}"
-    elsif field == 'Note:' && override_collection_id.blank?
-      service.resolve_collection(row, override_collection_id: override_collection_id)
-    elsif field == 'dove'
-      service.resolve_warehouse(row)
+    if ImportParser::GCODE_KEYS.include?(field)
+      row[:_gencode] = ImportParser.gencode_for(row)
+    elsif field == ImportParser::NOTE_KEY && override_collection_id.blank?
+      parser.resolve_collection(row, override_collection_id: override_collection_id)
+    elsif field == ImportParser::DOVE_KEY
+      parser.resolve_warehouse(row)
     end
 
     Rails.cache.write(import_cache_key, data, expires_in: 30.minutes)
@@ -172,12 +171,12 @@ class MainwareController < ApplicationController
     data = Rails.cache.read(import_cache_key)
     return redirect_to mainware_import_path, alert: "Nessun dato da importare" unless data&.dig(:rows)&.any?
 
-    warnings = ImportGeneralService.new.validate_rows(data)
+    warnings = ImportValidator.new.validate_rows(data)
     return redirect_to mainware_import_path, alert: "Correggi gli errori prima di confermare: #{warnings.first}" if warnings.any?
 
     if params[:confirmed].present?
-      service = ImportGeneralService.new
-      service.ensure_dependencies!(data)
+      persister = ImportPersister.new
+      persister.ensure_dependencies!(data)
       Rails.cache.write(import_cache_key, data, expires_in: 30.minutes)
 
       import_log = ImportLog.create!(
@@ -194,7 +193,7 @@ class MainwareController < ApplicationController
       ImportJob.perform_later(session.id.to_s)
       redirect_to mainware_import_processing_path
     else
-      @summary = ImportGeneralService.new.summarize(data)
+      @summary = ImportValidator.new.summarize(data)
       render
     end
   end
@@ -257,7 +256,7 @@ class MainwareController < ApplicationController
 
     created_ids = import_log&.created_ids.presence || stats&.dig(:created_ids) || []
     count = created_ids.size
-    ImportGeneralService.new.rollback({ created_ids: created_ids })
+    ImportPersister.new.rollback({ created_ids: created_ids })
     import_log&.update!(status: 'rolled_back')
     Rails.cache.delete("import:stats:#{session.id}")
     Rails.cache.delete("import:log:#{session.id}")

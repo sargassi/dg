@@ -163,10 +163,42 @@ The item list now has a "Colonne" dropdown to show/hide columns, persisted in `l
 | Idea | Rationale | Effort |
 |---|---|---|
 | **Replace session cache with an import record** | `ImportLog` could hold parsed rows, making imports resumable and shareable across tabs. | High |
-| **Split `ImportGeneralService`** | Separate `Parser`, `Validator`, `Persister`, and `DependencyResolver` concerns. | Medium |
+| **Split `ImportGeneralService`** | Separate `Parser`, `Validator`, `Persister` concerns. | Medium |
 | **Background-job safety** | The project has no Active Job queue adapter. Either configure one or make imports synchronous with a streaming progress response. | High |
 | **Batch / transaction-safe persistence** | Wrap the whole import in a transaction, or process in batches so partial failures are recoverable. | Medium |
 | **Bulk actions on item list** | Select rows, move collection, delete, export. | Medium |
+
+---
+
+## Phase 4 — Service split + bug fixes
+
+### 1. Split `ImportGeneralService` into three specialized classes
+
+- **`ImportParser`** — `parse`, `find_header_row`, `normalize_header`, `resolve_collection`, `resolve_warehouse`, `gencode_for` (class method), all constants (`ITEM_CODE_KEY`, `FABRIC_CODE_KEY`, `VAR_CODE_KEY`, `NOTE_KEY`, `DOVE_KEY`, `GCODE_KEYS`, `KNOWN_HEADERS`, `TEMPLATE_HEADERS`, `FIELD_MAP`)
+- **`ImportValidator`** — `validate_rows`, `validation_details`, `classify_rows`, `summarize`
+- **`ImportPersister`** — `ensure_dependencies!`, `save`, `rollback`, `parse_price` (private)
+
+`ImportGeneralService` is now a thin delegator for backward compatibility; all callers in `mainware_controller.rb` and `import_job.rb` use the new classes directly.
+
+### 2. Bugs fixed during the split
+
+| Bug | Severity | Fix |
+|---|---|---|
+| `to_f.round` truncated prices to integers | P0 | Changed to `parse_price()` with `.round(2)` |
+| Non-numeric prices (e.g. "N/A") silently imported as 0.0 | P0 | `parse_price` now raises `ArgumentError` for non-numeric input; row is captured as `stats[:errors]` |
+| QR code generated twice per item during `save` | P1 | Removed explicit `RQRCode::QRCode.new(gencode).as_svg(...)` from `save`; `Item` model's `before_save :regenerate_qr` callback handles it |
+| `summarize` used nil `_collection_id` in gencode, producing gencodes with trailing `_` | P1 | Uses `ImportParser.gencode_for` with `_collection_description` fallback |
+| Duplicate gencode formula (5+ places) | P2 | Extracted to `ImportParser.gencode_for` class method, shared by all three services |
+| Magic strings for header keys (`'Item Code:'`, `'Fabric code:'`, `'var. code:'`, `'Note:'`, `'dove'`) | P2 | Extracted to `ImportParser` constants; `GCODE_KEYS` array used in `import_update_row` |
+
+### Files changed / created
+
+- **New:** `app/services/import_parser.rb`
+- **New:** `app/services/import_validator.rb`
+- **New:** `app/services/import_persister.rb`
+- **Modified:** `app/services/import_general_service.rb` → thin delegator
+- **Modified:** `app/controllers/mainware_controller.rb` → uses new classes
+- **Modified:** `app/jobs/import_job.rb` → uses `ImportPersister`
 
 ---
 

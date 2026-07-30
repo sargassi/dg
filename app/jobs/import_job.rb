@@ -8,7 +8,7 @@ class ImportJob < ApplicationJob
     log_id = Rails.cache.read("import:log:#{session_id}")
     import_log = ImportLog.find_by(id: log_id)
 
-    stats = ImportGeneralService.new.save(data) do |done, total|
+    stats = ImportPersister.new.save(data) do |done, total|
       Rails.cache.write("import:progress:#{session_id}", { total: total, done: done, complete: false, import_log_id: log_id }, expires_in: 10.minutes)
     end
 

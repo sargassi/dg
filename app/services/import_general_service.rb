@@ -122,28 +122,62 @@ class ImportGeneralService
     end
   end
 
-  def validate_rows(data)
-    errors = []
+  def classify_rows(data)
+    gencodes = data[:rows].filter_map do |row|
+      coll_id = row[:_collection_id] || row[:_collection_description]
+      next nil if coll_id.blank?
+      [row['Item Code:'].to_s.strip, row['Fabric code:'].to_s.strip, row['var. code:'].to_s.strip].join + "_#{coll_id}"
+    end
+    existing_gencodes = Item.where(gencode: gencodes).pluck(:gencode).to_set
+
+    data[:rows].each_with_object({}) do |row, result|
+      coll_id = row[:_collection_id] || row[:_collection_description]
+      gencode = coll_id.present? ? [row['Item Code:'].to_s.strip, row['Fabric code:'].to_s.strip, row['var. code:'].to_s.strip].join + "_#{coll_id}" : nil
+      result[row[:_index]] = existing_gencodes.include?(gencode) ? :update : :new
+    end
+  end
+
+  def validation_details(data)
+    details = {}
     gencode_counts = Hash.new { |h, k| h[k] = [] }
 
-    data[:rows].each_with_index do |row, idx|
-      row_label = row[:_index].present? ? "Riga #{row[:_index]}" : "Riga #{idx + 1}"
+    data[:rows].each do |row|
+      idx = row[:_index]
+      row_errors = {}
       item_code = row['Item Code:'].to_s.strip
       collection_ok = row[:_collection_id].present? || row[:_collection_description].present?
 
-      errors << "#{row_label}: manca il codice articolo" if item_code.blank?
-      errors << "#{row_label}: manca la collezione (aggiungi la colonna Note: o seleziona un override)" unless collection_ok
+      row_errors['Item Code:'] = ['manca il codice articolo'] if item_code.blank?
+      row_errors['Note:'] = ['manca la collezione'] unless collection_ok
 
       if collection_ok && item_code.present?
         coll_id = row[:_collection_id] || row[:_collection_description]
         gencode = [item_code, row['Fabric code:'].to_s.strip, row['var. code:'].to_s.strip].join + "_#{coll_id}"
-        gencode_counts[gencode] << row_label
+        gencode_counts[gencode] << idx
+      end
+
+      details[idx] = row_errors
+    end
+
+    gencode_counts.each do |gencode, indices|
+      if indices.size > 1
+        indices.each { |idx| details[idx][:gencode] = ['gencode duplicato'] }
       end
     end
 
-    gencode_counts.each do |gencode, labels|
-      if labels.size > 1
-        errors << "#{labels.join(', ')}: gencode duplicato (#{gencode})"
+    details
+  end
+
+  def validate_rows(data)
+    details = validation_details(data)
+    errors = []
+
+    details.each do |idx, row_errors|
+      row_label = "Riga #{idx}"
+      row_errors.each do |field, messages|
+        messages.each do |message|
+          errors << "#{row_label}: #{message}"
+        end
       end
     end
 

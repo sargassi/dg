@@ -74,7 +74,6 @@ Rails.application.routes.draw do
 
   get 'mainware/home'
   get 'mainware/index'
-  get 'mainware/search'
   get 'mainware/import'
   get    'mainware/import/template', to: 'mainware#import_template'
   post   'mainware/import/parse',      to: 'mainware#import_parse'

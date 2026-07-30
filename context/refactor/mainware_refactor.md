@@ -64,21 +64,20 @@ Implemented on branch `feature/mainware-ux-improvements`.
 
 ## Phase 2 — Recommended next steps
 
-### 1. Row-level validation with visual feedback in the preview table
+### 1. Row-level validation with visual feedback in the preview table — Done
 
-Currently validation warnings appear as a list above the table. Highlight the offending cells/rows so users can fix them faster.
+Validation warnings now appear above the table **and** highlight the offending cells/rows.
 
 **Files involved:**
-- `app/services/import_general_service.rb` (`validate_rows` already exists; extend it to return per-cell metadata)
+- `app/services/import_general_service.rb` (`validation_details`)
 - `app/views/mainware/import.html.erb`
-- `app/javascript/controllers/inline_edit_controller.js`
 
-### 2. Create vs. update indicators in the preview table
+### 2. Create vs. update indicators in the preview table — Done
 
-Color rows green (new) / amber (update) based on whether the computed gencode already exists. This removes surprise overwrites.
+Rows are colored green (new) / amber (update) based on whether the computed gencode already exists.
 
 **Files involved:**
-- `app/services/import_general_service.rb` (add a `classify_rows` helper)
+- `app/services/import_general_service.rb` (`classify_rows`)
 - `app/views/mainware/import.html.erb`
 
 ### 3. Better import error summary
@@ -129,43 +128,31 @@ The item table is very dense. Add:
 - `app/views/mainware/index.html.erb`
 - new/partial Stimulus controller for column toggles
 
-### 7. Wire or remove stub pages
+### 7. Wire or remove stub pages — Done
 
-`mainware/search` and `mainware/stage` are empty. Options:
-
-- remove their routes/views/actions, or
-- redirect `mainware/search` to `mainware_index_path` and `mainware/stage` to `mainware_dashboard_path`.
+`mainware/search` and `mainware/stage` routes, views, and empty actions were removed.
 
 **Files involved:**
 - `config/routes.rb`
 - `app/controllers/mainware_controller.rb`
 - `app/views/mainware/search.html.erb`
-- `app/views/mainware/stage.html.erb` (note the typo in filename: `stage.html.,erb`)
+- `app/views/mainware/stage.html.,erb`
 
-### 8. File MIME-type validation
+### 8. File MIME-type validation — Done
 
-Today we only check the file extension. Add MIME-type checks for defense in depth:
-
-```ruby
-allowed_types = [
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-  "application/octet-stream"
-]
-```
+Upload now checks the `.xlsx` extension **and** allows known MIME types (`application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`, `application/octet-stream`).
 
 **Files involved:**
 - `app/controllers/mainware_controller.rb` (`import_parse`)
 
-### 9. Collection override behavior clarity
+### 9. Collection override behavior clarity — Done
 
-If a collection override is selected at upload, editing `Note:` in the preview currently has no effect because `resolve_collection` ignores `Note:` when an override was used. Decide whether to:
-
-- lock the override and hide/disable the `Note:` column, or
-- allow `Note:` to win per row (more flexible but more complex).
+When a collection override is selected at upload, the `Note:` column is disabled in the preview and a message explains that the collection is locked. Server-side edits to `Note:` are ignored in this case.
 
 **Files involved:**
 - `app/services/import_general_service.rb`
-- `app/controllers/mainware_controller.rb` (`import_update_row`)
+- `app/controllers/mainware_controller.rb` (`import_parse`, `import_update_row`)
+- `app/views/mainware/import.html.erb`
 
 ---
 

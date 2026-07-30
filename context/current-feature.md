@@ -4,7 +4,7 @@ Mainware / Articles module UX and import workflow improvements.
 
 ## Status
 
-Done — phase 1 complete and merged into `feature/mainware-ux-improvements`. Phase 2 roadmap is documented in `context/refactor/mainware_refactor.md`.
+In Progress — implementing Phase 2 from `context/refactor/mainware_refactor.md`.
 
 ## Goals (phase 1 — done)
 

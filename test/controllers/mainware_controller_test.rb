@@ -12,11 +12,6 @@ class MainwareControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "should get search" do
-    get mainware_search_url
-    assert_response :success
-  end
-
   test "should get searchqr" do
     get mainware_searchqr_url
     assert_response :success

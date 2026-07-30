@@ -74,7 +74,16 @@ class MainwareController < ApplicationController
   def import
     @data = Rails.cache.read(import_cache_key)
     @collections = Collection.all.order(:description)
-    @warnings = @data ? ImportGeneralService.new.validate_rows(@data) : []
+    if @data
+      service = ImportGeneralService.new
+      @warnings = service.validate_rows(@data)
+      @validation_details = service.validation_details(@data)
+      @row_classes = service.classify_rows(@data)
+    else
+      @warnings = []
+      @validation_details = {}
+      @row_classes = {}
+    end
   end
 
   def import_template
@@ -92,7 +101,12 @@ class MainwareController < ApplicationController
   def import_parse
     return redirect_to mainware_import_path, alert: "Seleziona un file" unless params[:file].present?
 
-    unless params[:file].original_filename.to_s.downcase.end_with?(".xlsx")
+    allowed_types = [
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "application/octet-stream"
+    ].freeze
+
+    unless params[:file].original_filename.to_s.downcase.end_with?(".xlsx") || allowed_types.include?(params[:file].content_type)
       return redirect_to mainware_import_path, alert: "Il file deve essere in formato .xlsx"
     end
 
@@ -108,6 +122,7 @@ class MainwareController < ApplicationController
 
     service = ImportGeneralService.new
     data = service.parse(params[:file], metadata)
+    data[:_collection_override_id] = metadata[:collection_id]
 
     Rails.cache.write(import_cache_key, data, expires_in: 30.minutes)
     redirect_to mainware_import_path, notice: "#{data[:rows].size} righe caricate. Verifica e modifica."
@@ -126,12 +141,13 @@ class MainwareController < ApplicationController
 
     row[field] = value
     service = ImportGeneralService.new
+    override_collection_id = data[:_collection_override_id]
 
     if ['Item Code:', 'Fabric code:', 'var. code:'].include?(field)
       coll_id = row[:_collection_id]
       row[:_gencode] = [row['Item Code:'], row['Fabric code:'], row['var. code:']].map(&:to_s).join + "_#{coll_id}"
-    elsif field == 'Note:'
-      service.resolve_collection(row)
+    elsif field == 'Note:' && override_collection_id.blank?
+      service.resolve_collection(row, override_collection_id: override_collection_id)
     elsif field == 'dove'
       service.resolve_warehouse(row)
     end
@@ -205,13 +221,6 @@ class MainwareController < ApplicationController
     ImportGeneralService.new.rollback(stats)
     Rails.cache.delete("import:stats:#{session.id}")
     redirect_to mainware_index_path, notice: "Rollback completato: #{count} articoli eliminati."
-  end
-
-  def stage
-
-  end
-
-  def search
   end
 
   def searchqr

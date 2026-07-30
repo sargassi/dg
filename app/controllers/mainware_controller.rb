@@ -91,7 +91,7 @@ class MainwareController < ApplicationController
     wb = package.workbook
     wb.add_worksheet(name: "Template") do |sheet|
       sheet.add_row ImportParser::TEMPLATE_HEADERS
-      sheet.add_row ["ABC123", "FAB001", "01", "Descrizione esempio", "M", "Blue", "Cotton", 100, "Spring 2024", "WH01"]
+      sheet.add_row ["ABC123", "FAB001", "01", "Descrizione esempio", "M", "Blue", "Cotton", 80, 100, "Spring 2024", "WH01"]
     end
     send_data package.to_stream.read,
       filename: "template_import_articoli.xlsx",

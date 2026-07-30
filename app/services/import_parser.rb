@@ -6,9 +6,10 @@ class ImportParser
   VAR_CODE_KEY    = 'var. code:'.freeze
   NOTE_KEY        = 'Note:'.freeze
   DOVE_KEY        = 'dove'.freeze
+  PREZZO_KEY      = 'Prezzo'.freeze
 
-  KNOWN_HEADERS = [ITEM_CODE_KEY, FABRIC_CODE_KEY, VAR_CODE_KEY, 'Description:', 'Prezzo showroom', 'materiale', 'colour:', 'Tg.'].freeze
-  TEMPLATE_HEADERS = [ITEM_CODE_KEY, FABRIC_CODE_KEY, VAR_CODE_KEY, 'Description:', 'Tg.', 'colour:', 'materiale', 'Prezzo showroom', NOTE_KEY, DOVE_KEY].freeze
+  KNOWN_HEADERS = [ITEM_CODE_KEY, FABRIC_CODE_KEY, VAR_CODE_KEY, 'Description:', PREZZO_KEY, 'Prezzo showroom', 'materiale', 'colour:', 'Tg.'].freeze
+  TEMPLATE_HEADERS = [ITEM_CODE_KEY, FABRIC_CODE_KEY, VAR_CODE_KEY, 'Description:', 'Tg.', 'colour:', 'materiale', PREZZO_KEY, 'Prezzo showroom', NOTE_KEY, DOVE_KEY].freeze
 
   FIELD_MAP = {
     'item code:'      => :itemcode,

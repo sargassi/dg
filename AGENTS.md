@@ -11,6 +11,7 @@ Read these first for full project context:
 - @context/flows/articles_flow.md — Mainware module flow and Excel import pipeline
 - @context/flows/inventories_flow.md — Inventory, movements, and warehouse flow
 - @context/flows/production_flow.md — Production orders, prow rows, and tempesta stage tracking
+- @context/refactor/mainware_refactor.md — Mainware refactor roadmap and phase planning
 
 ## Commands
 

@@ -12,7 +12,7 @@
 
 <% if current_user.godlike? || current_user.can?('manage_inventory') || current_user.can?('manage_itemins') || current_user.can?('manage_itemouts') || current_user.can?('manage_warehouses') || current_user.can?('manage_locations') || current_user.can?('manage_operationtypes') %>
   <li class="<%= style_side_li %>">
-      <%= link_to inventories_dashboard_path, class: style_side_a(inventories_dashboard_path) + " " + active_class_for_controllers('inventories', 'itemins', 'itemouts', 'warehouses', 'locations') do %>
+      <%= link_to inventories_dashboard_path, class: style_side_a(inventories_dashboard_path) + " " + active_class_for_controllers('inventories', 'inventory_stock', 'inventory_movements', 'inventory_import', 'itemins', 'itemouts', 'warehouses', 'locations') do %>
           <span class="material-symbols-outlined">
               inventory_2
           </span>

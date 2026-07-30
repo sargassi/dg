@@ -6,7 +6,9 @@
 </div>
 <% end %>
 
-<section class="<%= style_main_cnt %> flex flex-col" style="height: calc(100vh - 110px);" data-controller="search-filter">
+<% column_headers = %w[Gencode Item Fabric Var. Descrizione Tg Fabric Color Materiale Note Collezione Prezzo Showroom QR Immagini Azioni] %>
+
+<section class="<%= style_main_cnt %> flex flex-col" style="height: calc(100vh - 110px);" data-controller="search-filter column-toggle" data-column-toggle-storage-key-value="mainware-index-hidden-columns">
   <div class="flex gap-4 items-center mb-4 flex-none">
     <%= form_with url: mainware_index_path, method: :get,
                   data: { search_filter_target: "form", turbo_frame: "items-table" },
@@ -25,7 +27,31 @@
             data: { search_filter_target: "select", action: "change->search-filter#filter", search_filter_active_class: "bg-blue-400 dark:bg-blue-600 text-white dark:text-white", search_filter_inactive_class: "bg-white dark:bg-slate-700 dark:text-slate-200" } %>
     <% end %>
     <span id="count-display" data-search-filter-target="count" class="text-sm font-bold text-slate-700 dark:text-slate-200 whitespace-nowrap border border-slate-300 dark:border-slate-600 dark:bg-slate-700 rounded-full px-3 py-1"><%= @pagy.count %> articoli</span>
-    <%= link_to "Importa da Excel", mainware_import_path, class: "#{style_import_btn} ml-auto" %>
+
+    <div class="relative ml-auto">
+      <button type="button"
+              data-action="click->column-toggle#toggleMenu"
+              class="inline-flex items-center gap-1 px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 text-xs font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+        <span class="material-symbols-outlined text-base">view_column</span>
+        Colonne
+      </button>
+      <div data-column-toggle-target="menu"
+           class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg z-20 p-2 max-h-80 overflow-y-auto">
+        <% column_headers.each_with_index do |header, idx| %>
+          <label class="flex items-center gap-2 px-2 py-1.5 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 rounded cursor-pointer">
+            <input type="checkbox"
+                   checked
+                   data-column-toggle-checkbox
+                   data-index="<%= idx %>"
+                   data-action="change->column-toggle#toggle"
+                   class="rounded border-slate-300 text-accent focus:ring-accent">
+            <%= header %>
+          </label>
+        <% end %>
+      </div>
+    </div>
+
+    <%= link_to "Importa da Excel", mainware_import_path, class: "#{style_import_btn} ml-2" %>
   </div>
 
   <style>
@@ -40,7 +66,7 @@
         <table class="min-w-full">
           <thead>
             <tr>
-              <% %w[Gencode Item Fabric Var. Descrizione Tg Fabric Color Materiale Note Collezione Prezzo Showroom QR Immagini Azioni].each do |h| %>
+              <% column_headers.each do |h| %>
                 <th class="<%= style_table_th %> sticky top-0 z-10"><%= h %></th>
               <% end %>
             </tr>

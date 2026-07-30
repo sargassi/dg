@@ -4,7 +4,7 @@ Mainware / Articles module UX and import workflow improvements.
 
 ## Status
 
-In Progress — implementing Phase 3 from `context/refactor/mainware_refactor.md`. Current item: column visibility toggle + saved filters on `mainware/index`.
+Done — Phase 3 from `context/refactor/mainware_refactor.md` is complete.
 
 ## Goals (phase 1 — done)
 

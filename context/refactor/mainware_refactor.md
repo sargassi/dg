@@ -148,17 +148,13 @@ The processing page now detects a missing/stuck progress cache or a job error, s
 - `app/views/mainware/import_processing.html.erb`
 - `app/controllers/mainware_controller.rb` (`import_cancel`)
 
-### 4. Column visibility toggle and saved filters on `mainware/index`
+### 4. Column visibility toggle and saved filters on `mainware/index` — Done
 
-The item table is very dense. Add:
-
-- a dropdown to show/hide columns
-- persist the user’s preference in `localStorage`
-- keep collection filter + search in the URL for shareability
+The item list now has a "Colonne" dropdown to show/hide columns, persisted in `localStorage`. Filters already keep the URL via the existing search form.
 
 **Files involved:**
 - `app/views/mainware/index.html.erb`
-- new/partial Stimulus controller for column toggles
+- `app/javascript/controllers/column_toggle_controller.js`
 
 ---
 

@@ -9,6 +9,12 @@ export default class extends Controller {
     this.pendingInput = null;
   }
 
+  start(event) {
+    if (event) event.preventDefault();
+    this.overlayTarget.classList.remove("hidden");
+    this._scan();
+  }
+
   scanRow(event) {
     const input = event.currentTarget.parentElement.querySelector("[data-qr-scanner-target='input']");
     this.pendingInput = input;

@@ -7,7 +7,9 @@ class InventoryStockController < ApplicationController
     @query = InventoryStockQuery.new(params).with_history
     @date = @query.date
     @warehouses = Warehouse.order(:code)
-    @collections = Collection.all
+    @collections = Collection.joins(:items)
+      .where(items: { gencode: StockLevel.positive.select(:gencode) })
+      .distinct.order(:description)
 
     @inventories = @query.results
     count = @query.historical? ? @query.inventory_scope.distinct.count(:gencode) : @query.stock_scope.distinct.count(:gencode)

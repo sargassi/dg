@@ -1,13 +1,5 @@
 <% content_for :page_header do %>
-<div class="flex items-center gap-2 px-0 py-0.5">
-  <%= link_to inventories_dashboard_path, class: "text-sm font-semibold text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 tracking-wide" do %>
-    Magazzino
-  <% end %>
-  <span class="text-slate-300 dark:text-slate-600">/</span>
-  <h1 class="text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wide">
-    QR Select
-  </h1>
-</div>
+<%= render "application/breadcrumb", dashboard_path: inventories_dashboard_path, section_name: "Magazzino", page_title: "QR Select" %>
 <% end %>
 
 <section class="<%= style_main_cnt %> flex flex-row" style="height: calc(100vh - 110px);" data-controller="qr-select search-filter">

@@ -1,13 +1,6 @@
 <% content_for :page_header do %>
-<div class="flex items-center gap-2 px-0 py-0.5">
-  <%= link_to mainware_dashboard_path, class: "text-sm font-semibold text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 tracking-wide" do %>
-    Articoli
-  <% end %>
-  <span class="text-slate-300 dark:text-slate-600">/</span>
-  <h1 class="text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wide">
-    Importazione #<%= @import_log.id %>
-  </h1>
-</div>
+<% title = "Importazione ##{@import_log.id}" %>
+<%= render "application/breadcrumb", dashboard_path: mainware_dashboard_path, section_name: "Articoli", page_title: title %>
 <% end %>
 
 <section class="<%= style_main_cnt %>">

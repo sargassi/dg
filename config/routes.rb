@@ -8,20 +8,20 @@ Rails.application.routes.draw do
   end
   get 'etichecks/etichette'
   resources :etichecks
-  get 'inventories/dashboard'
-  get 'inventories/movements'
-  get 'inventories/movements/:type/:id/label', to: 'inventories#movement_label', as: :inventories_movement_label, defaults: { format: :pdf }
-  get 'inventories/movements/:type/:id/modal', to: 'inventories#movement_modal', as: :inventories_movement_modal
-  get 'inventories/seleziona'
-  post 'inventories/seleziona/prepare_carico', to: 'inventories#prepare_carico', as: :inventories_prepare_carico
-  get    'inventories/import'
-  post   'inventories/import/parse',      to: 'inventories#import_parse'
-  put    'inventories/import/update_row', to: 'inventories#import_update_row'
-  delete 'inventories/import/delete_row', to: 'inventories#import_delete_row'
-  get    'inventories/import/verify',     to: 'inventories#import_verify'
-  post   'inventories/import/confirm',    to: 'inventories#import_confirm'
-  delete 'inventories/import/cancel',     to: 'inventories#import_cancel'
-  get    'inventories/import/summary',    to: 'inventories#import_summary'
+  get 'inventories/dashboard', to: 'inventory_movements#dashboard', as: :inventories_dashboard
+  get 'inventories/movements', to: 'inventory_movements#movements', as: :inventories_movements
+  get 'inventories/movements/:type/:id/label', to: 'inventory_movements#movement_label', as: :inventories_movement_label, defaults: { format: :pdf }
+  get 'inventories/movements/:type/:id/modal', to: 'inventory_movements#movement_modal', as: :inventories_movement_modal
+  get 'inventories/seleziona', to: 'inventory_stock#seleziona', as: :inventories_seleziona
+  post 'inventories/seleziona/prepare_carico', to: 'inventory_stock#prepare_carico', as: :inventories_prepare_carico
+  get    'inventories/import', to: 'inventory_import#import', as: :inventories_import
+  post   'inventories/import/parse', to: 'inventory_import#import_parse', as: :inventories_import_parse
+  put    'inventories/import/update_row', to: 'inventory_import#import_update_row'
+  delete 'inventories/import/delete_row', to: 'inventory_import#import_delete_row'
+  get    'inventories/import/verify', to: 'inventory_import#import_verify', as: :inventories_import_verify
+  post   'inventories/import/confirm', to: 'inventory_import#import_confirm', as: :inventories_import_confirm
+  delete 'inventories/import/cancel', to: 'inventory_import#import_cancel', as: :inventories_import_cancel
+  get    'inventories/import/summary', to: 'inventory_import#import_summary', as: :inventories_import_summary
   scope '/inventories' do
     resources :warehouses do
       collection do
@@ -52,11 +52,12 @@ Rails.application.routes.draw do
   end
   get '/itemins(/*path)' => redirect('/inventories/itemins/%{path}')
   get '/itemouts(/*path)' => redirect('/inventories/itemouts/%{path}')
-  resources :inventories do
+  get '/inventories', to: 'inventory_stock#index', as: :inventories
+  resources :inventories, except: [:index] do
     collection do
-      get 'autocomplete'
-      get 'lookup_by_qr'
-      get 'export_xlsx'
+      get :autocomplete, to: 'inventory_stock#autocomplete'
+      get :lookup_by_qr, to: 'inventory_stock#lookup_by_qr'
+      get :export_xlsx, to: 'inventory_stock#export_xlsx'
     end
   end
   resources :items do

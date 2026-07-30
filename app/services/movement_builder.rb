@@ -18,7 +18,7 @@ class MovementBuilder
   def initialize(movement_class, params, defaults: {})
     @movement_class = movement_class
     @details_assoc   = DETAIL_ASSOCIATIONS.fetch(movement_class)
-    @params          = params
+    @params          = (params.respond_to?(:to_unsafe_h) ? params.to_unsafe_h : params.to_h).with_indifferent_access
     @defaults        = defaults
   end
 
@@ -31,7 +31,7 @@ class MovementBuilder
   private
 
   def header_params
-    @params.to_unsafe_h.except(
+    @params.except(
       :details_attributes,
       :itemins_details_attributes,
       :itemouts_details_attributes,
@@ -43,7 +43,7 @@ class MovementBuilder
     details_attr_key = detect_details_key
     return [] unless details_attr_key
 
-    (@params.to_unsafe_h[details_attr_key.to_s]&.values || [])
+    (@params[details_attr_key]&.values || [])
       .reject { |d| d["_destroy"] == "1" || d[:_destroy] == "1" }
       .reject { |d| d["itemcode"].blank? && d["item_id"].blank? &&
                      d[:itemcode].blank?  && d[:item_id].blank? }

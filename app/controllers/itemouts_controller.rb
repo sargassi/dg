@@ -76,12 +76,7 @@ class ItemoutsController < ApplicationController
     @params = session[:itemout_preview]&.with_indifferent_access
     return redirect_to new_itemout_path, alert: "Nessun dato, riprova" unless @params
 
-    @itemout = Itemout.new(indate: @params[:indate], notes: @params[:notes], operator_id: @params[:operator_id])
-
-    details = (@params[:itemouts_details_attributes] || {}).values
-      .reject { |d| d["_destroy"] == "1" }
-      .map { |d| d.slice("itemcode", "qty", "item_id", "collection_id", "warehouse_id", "location_id", "operationtype_id") }
-    @itemout.itemouts_details.build(details)
+    @itemout = MovementBuilder.new(Itemout, @params).build
 
     begin
       ActiveRecord::Base.transaction do

@@ -176,6 +176,21 @@ class AppController < ApplicationController
         render :move_products, status: :unprocessable_entity and return
       end
 
+      gencodes = details.map { |d| d[:gencode] }.compact.uniq
+      stock = StockLevel.where(gencode: gencodes)
+        .each_with_object({}) { |sl, h| h[[sl.gencode, sl.warehouse_id, sl.location_id]] = sl.current_qty }
+
+      details.each do |d|
+        next if d[:gencode].blank?
+        available = stock[[d[:gencode], d[:warehouse_id].to_i, d[:location_id].to_i]] || 0
+        if d[:qty].to_i > available
+          @movement = Itemmovement.new(indate: p[:indate])
+          load_form_data(ordered: true)
+          flash.now[:alert] = "#{d[:gencode]}: quantità #{d[:qty]} supera la disponibilità (#{available} pz)"
+          render :move_products, status: :unprocessable_entity and return
+        end
+      end
+
       grouped = details.group_by { |d| [d[:warehouse_id], d[:location_id]] }
 
       Itemmovement.transaction do

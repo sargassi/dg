@@ -9,6 +9,7 @@ class Itemmovement < ApplicationRecord
 
   validates :indate, presence: true
   validates :dest_warehouse_id, presence: true
+  validates :source_warehouse_id, presence: true
 
   validate :at_least_one_detail
 

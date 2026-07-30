@@ -103,11 +103,11 @@ class InventoryStockQuery
     @itemmovement_ids ||= history_records.map(&:itemmovement_id).compact.uniq
   end
 
-  private
-
   def historical?
     date && date.to_date != Date.current
   end
+
+  private
 
   def parse_date(raw)
     if raw.present?

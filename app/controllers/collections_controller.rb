@@ -73,6 +73,23 @@ class CollectionsController < ApplicationController
     head :ok
   end
 
+  def merge
+    @collections = Collection.order(:description)
+  end
+
+  def merge_apply
+    source_ids = params[:source_ids]
+    target_id = params[:target_id]
+
+    result = MergeCollectionsService.new.call(source_ids: source_ids, target_id: target_id)
+
+    if result.success
+      redirect_to collections_path, notice: "Unione completata. #{result.stats[:items_moved]} articoli spostati, #{result.stats[:collections_removed]} collezioni rimosse."
+    else
+      redirect_to merge_collections_path, alert: result.error
+    end
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_collection

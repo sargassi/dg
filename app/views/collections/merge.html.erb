@@ -1,0 +1,66 @@
+<% content_for :page_header do %>
+<div class="flex items-center gap-2 px-0 py-0.5">
+  <h1 class="text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wide">
+    Unisci collezioni
+  </h1>
+</div>
+<% end %>
+
+<section class="<%= style_main_cnt %> overflow-y-auto min-w-0" style="height: calc(100vh - 140px);">
+  <% if notice.present? %>
+    <p class="py-2 px-3 bg-green-50 text-green-500 font-medium rounded-lg inline-block mb-5" id="notice"><%= notice %></p>
+  <% end %>
+
+  <% if @collections.count < 2 %>
+    <div class="bg-slate-50 rounded-lg p-8 text-center">
+      <span class="material-symbols-outlined text-4xl text-slate-300 mb-2">merge</span>
+      <p class="text-slate-500">Servono almeno 2 collezioni per unire.</p>
+    </div>
+  <% else %>
+    <%= form_with url: merge_apply_collections_path, method: :post, local: true, data: { turbo_confirm: "Confermi l'unione? Le collezioni sorgente verranno eliminate e i loro articoli spostati." } do |f| %>
+      <div class="<%= style_main_card %> mb-6">
+        <h3 class="<%= style_main_card_header %>">
+          <span class="material-symbols-outlined">merge</span>
+          Seleziona collezioni da unire
+        </h3>
+
+        <div class="overflow-x-auto">
+          <table class="min-w-full">
+            <thead>
+              <tr>
+                <th class="<%= style_table_th %> w-12 text-center">Unisci</th>
+                <th class="<%= style_table_th %> w-12 text-center">Dest.</th>
+                <th class="<%= style_table_th %>">Collezione</th>
+                <th class="<%= style_table_th %> text-right w-24">Articoli</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @collections.each do |c| %>
+                <tr class="hover:bg-slate-50 transition-colors">
+                  <td class="<%= style_table_td %> text-center">
+                    <%= check_box_tag "source_ids[]", c.id, false, id: "source_#{c.id}", class: "rounded border-slate-300 text-accent focus:ring-accent" %>
+                  </td>
+                  <td class="<%= style_table_td %> text-center">
+                    <%= radio_button_tag "target_id", c.id, false, id: "target_#{c.id}", class: "border-slate-300 text-accent focus:ring-accent" %>
+                  </td>
+                  <td class="<%= style_table_td %> text-sm">
+                    <%= label_tag "source_#{c.id}", class: "cursor-pointer flex items-center gap-2" do %>
+                      <span class="material-symbols-outlined text-slate-300 text-lg">collections_bookmark</span>
+                      <span class="font-semibold text-slate-800"><%= c.description %></span>
+                    <% end %>
+                  </td>
+                  <td class="<%= style_table_td %> text-right text-xs text-slate-500"><%= c.items.count %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="flex gap-4">
+        <%= f.submit "Unisci collezioni", class: "p-3 bg-accent inline-block tracking-wider rounded-sm text-xs cursor-pointer text-white" %>
+        <%= link_to "Annulla", collections_path, class: "p-3 bg-slate-300 inline-block tracking-wider rounded-sm text-xs cursor-pointer text-slate-700" %>
+      </div>
+    <% end %>
+  <% end %>
+</section>

@@ -2,6 +2,8 @@ Rails.application.routes.draw do
   resources :collections do
     collection do
       post :reorder
+      get :merge
+      post :merge_apply
     end
   end
   get 'etichecks/etichette'

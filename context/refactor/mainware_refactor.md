@@ -62,9 +62,11 @@ Implemented on branch `feature/mainware-ux-improvements`.
 
 ---
 
-## Phase 2 — Recommended next steps
+## Phase 2 — Done (quick wins + preview safety)
 
-### 1. Row-level validation with visual feedback in the preview table — Done
+Implemented on branch `feature/mainware-ux-improvements`.
+
+### 1. Row-level validation with visual feedback in the preview table
 
 Validation warnings now appear above the table **and** highlight the offending cells/rows.
 
@@ -72,7 +74,7 @@ Validation warnings now appear above the table **and** highlight the offending c
 - `app/services/import_general_service.rb` (`validation_details`)
 - `app/views/mainware/import.html.erb`
 
-### 2. Create vs. update indicators in the preview table — Done
+### 2. Create vs. update indicators in the preview table
 
 Rows are colored green (new) / amber (update) based on whether the computed gencode already exists.
 
@@ -80,7 +82,37 @@ Rows are colored green (new) / amber (update) based on whether the computed genc
 - `app/services/import_general_service.rb` (`classify_rows`)
 - `app/views/mainware/import.html.erb`
 
-### 3. Better import error summary
+### 3. Wire or remove stub pages
+
+`mainware/search` and `mainware/stage` routes, views, and empty actions were removed.
+
+**Files involved:**
+- `config/routes.rb`
+- `app/controllers/mainware_controller.rb`
+- `app/views/mainware/search.html.erb`
+- `app/views/mainware/stage.html.,erb`
+
+### 4. File MIME-type validation
+
+Upload now checks the `.xlsx` extension **and** allows known MIME types (`application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`, `application/octet-stream`).
+
+**Files involved:**
+- `app/controllers/mainware_controller.rb` (`import_parse`)
+
+### 5. Collection override behavior clarity
+
+When a collection override is selected at upload, the `Note:` column is disabled in the preview and a message explains that the collection is locked. Server-side edits to `Note:` are ignored in this case.
+
+**Files involved:**
+- `app/services/import_general_service.rb`
+- `app/controllers/mainware_controller.rb` (`import_parse`, `import_update_row`)
+- `app/views/mainware/import.html.erb`
+
+---
+
+## Phase 3 — Recommended next steps
+
+### 1. Better import error summary
 
 When rows fail during the job, show actual cell values and group repeated errors. Add CSV/Excel export of the failed rows so the user can fix and re-import.
 
@@ -88,7 +120,7 @@ When rows fail during the job, show actual cell values and group repeated errors
 - `app/services/import_general_service.rb` (`save` error collection)
 - `app/views/mainware/import_summary.html.erb`
 
-### 4. Import history / audit log
+### 2. Import history / audit log
 
 Introduce an `ImportLog` model to record each import run: user, file name, row counts, created/updated IDs, errors. This enables:
 
@@ -105,7 +137,7 @@ Introduce an `ImportLog` model to record each import run: user, file name, row c
 - `app/jobs/import_job.rb`
 - `app/services/import_general_service.rb`
 
-### 5. Progress failure handling and cancel action
+### 3. Progress failure handling and cancel action
 
 - Detect when `import:progress:*` cache disappears or the job errors out.
 - Offer a "Cancel / rollback" button on the processing page.
@@ -116,7 +148,7 @@ Introduce an `ImportLog` model to record each import run: user, file name, row c
 - `app/views/mainware/import_processing.html.erb`
 - `app/controllers/mainware_controller.rb`
 
-### 6. Column visibility toggle and saved filters on `mainware/index`
+### 4. Column visibility toggle and saved filters on `mainware/index`
 
 The item table is very dense. Add:
 
@@ -127,32 +159,6 @@ The item table is very dense. Add:
 **Files involved:**
 - `app/views/mainware/index.html.erb`
 - new/partial Stimulus controller for column toggles
-
-### 7. Wire or remove stub pages — Done
-
-`mainware/search` and `mainware/stage` routes, views, and empty actions were removed.
-
-**Files involved:**
-- `config/routes.rb`
-- `app/controllers/mainware_controller.rb`
-- `app/views/mainware/search.html.erb`
-- `app/views/mainware/stage.html.,erb`
-
-### 8. File MIME-type validation — Done
-
-Upload now checks the `.xlsx` extension **and** allows known MIME types (`application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`, `application/octet-stream`).
-
-**Files involved:**
-- `app/controllers/mainware_controller.rb` (`import_parse`)
-
-### 9. Collection override behavior clarity — Done
-
-When a collection override is selected at upload, the `Note:` column is disabled in the preview and a message explains that the collection is locked. Server-side edits to `Note:` are ignored in this case.
-
-**Files involved:**
-- `app/services/import_general_service.rb`
-- `app/controllers/mainware_controller.rb` (`import_parse`, `import_update_row`)
-- `app/views/mainware/import.html.erb`
 
 ---
 
@@ -170,18 +176,16 @@ When a collection override is selected at upload, the `Note:` column is disabled
 
 ## Risks and considerations
 
-- **Silent overwrites** are still possible: an import row whose gencode matches an existing item will update it. Phase 2 should make this explicit.
-- **Collection-less rows** still fail at persistence time. Phase 2 validation should prevent this before confirm.
-- **No audit trail** means accidental imports are hard to undo. `ImportLog` is the highest-value phase 2 item.
+- **Silent overwrites** are still possible: an import row whose gencode matches an existing item will update it. Phase 3 should make this fully explicit (e.g., via `ImportLog` and a failed-row export).
+- **Collection-less rows** still fail at persistence time. Phase 2 validation already prevents confirming them; Phase 3 could add a friendlier repair flow.
+- **No audit trail** means accidental imports are hard to undo. `ImportLog` is the highest-value Phase 3 item.
 - **Active Job** runs inline in dev/test. In production, the lack of a queue adapter could block requests for large imports.
 
 ---
 
-## Suggested phase 2 order
+## Suggested phase 3 order
 
-1. Wire/remove stub pages (quick win).
-2. Add create vs. update row highlighting (high visibility, low risk).
-3. Improve error summary with failed-row export (high usability).
-4. Introduce `ImportLog` model and use it for rollback/history (largest payoff).
-5. Progress failure handling + cancel action (safety).
-6. Column visibility toggle (polish).
+1. Improve error summary with failed-row export (high usability).
+2. Introduce `ImportLog` model and use it for rollback/history (largest payoff).
+3. Progress failure handling + cancel action (safety).
+4. Column visibility toggle (polish).

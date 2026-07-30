@@ -4,7 +4,7 @@ Mainware / Articles module UX and import workflow improvements.
 
 ## Status
 
-In Progress — implementing Phase 2 from `context/refactor/mainware_refactor.md`.
+Done — Phase 2 quick wins + preview safety are complete. Phase 3 roadmap is documented in `context/refactor/mainware_refactor.md`.
 
 ## Goals (phase 1 — done)
 

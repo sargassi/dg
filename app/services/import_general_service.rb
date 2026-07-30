@@ -3,21 +3,20 @@ class ImportGeneralService
   require 'rqrcode'
 
   KNOWN_HEADERS = ['Item Code:', 'Fabric code:', 'var. code:', 'Description:', 'Prezzo showroom', 'materiale', 'colour:', 'Tg.'].freeze
+  TEMPLATE_HEADERS = ['Item Code:', 'Fabric code:', 'var. code:', 'Description:', 'Tg.', 'colour:', 'materiale', 'Prezzo showroom', 'Note:', 'dove'].freeze
 
   FIELD_MAP = {
-    'Item Code:'        => :itemcode,
-    'Fabric code:'      => :fabricode,
-    'var. code:'        => :varcode,
-    'Description:'      => :description,
-    'Description: '     => :description,
-    'Fabric:'           => :fabric,
-    'fabric:'           => :fabric,
-    'Tg.'               => :tg,
-    'colour:'           => :colour,
-    'prezzo'            => :unit_price,
-    'Prezzo showroom'   => :vendita,
-    'materiale'         => :materiale
-  }
+    'item code:'      => :itemcode,
+    'fabric code:'    => :fabricode,
+    'var. code:'      => :varcode,
+    'description:'    => :description,
+    'fabric:'         => :fabric,
+    'tg.'             => :tg,
+    'colour:'         => :colour,
+    'prezzo showroom' => :vendita,
+    'prezzo'          => :unit_price,
+    'materiale'       => :materiale
+  }.freeze
 
   def parse(file, metadata = {})
     override_collection_id = metadata[:collection_id].to_i if metadata[:collection_id].present?
@@ -47,6 +46,10 @@ class ImportGeneralService
     1
   end
 
+  def normalize_header(header)
+    header.to_s.downcase.strip
+  end
+
   def resolve_collection(row, override_collection_id: nil)
     if override_collection_id
       c = Collection.find(override_collection_id)
@@ -64,11 +67,14 @@ class ImportGeneralService
         row[:_collection_description] = existing_c.description
         row[:_collection_new] = false
       else
-        c = Collection.create!(description: note_val)
-        row[:_collection_id] = c.id
-        row[:_collection_description] = c.description
+        row[:_collection_id] = nil
+        row[:_collection_description] = note_val
         row[:_collection_new] = true
       end
+    else
+      row[:_collection_id] = nil
+      row[:_collection_description] = nil
+      row[:_collection_new] = false
     end
   end
 
@@ -81,12 +87,112 @@ class ImportGeneralService
         row[:_warehouse_code] = existing_w.code
         row[:_warehouse_new] = false
       else
-        w = Warehouse.create!(code: dove_val, enabled: true)
-        row[:_warehouse_id] = w.id
-        row[:_warehouse_code] = w.code
+        row[:_warehouse_id] = nil
+        row[:_warehouse_code] = dove_val
         row[:_warehouse_new] = true
       end
+    else
+      row[:_warehouse_id] = nil
+      row[:_warehouse_code] = nil
+      row[:_warehouse_new] = false
     end
+  end
+
+  def ensure_dependencies!(data)
+    ActiveRecord::Base.transaction do
+      collection_map = {}
+      warehouse_map = {}
+
+      data[:rows].each do |row|
+        if row[:_collection_new] && row[:_collection_description].present?
+          desc = row[:_collection_description]
+          collection_map[desc] ||= Collection.create!(description: desc)
+          row[:_collection_id] = collection_map[desc].id
+          row[:_collection_new] = false
+        end
+
+        if row[:_warehouse_new] && row[:_warehouse_code].present?
+          code = row[:_warehouse_code]
+          warehouse_map[code] ||= Warehouse.create!(code: code, enabled: true)
+          row[:_warehouse_id] = warehouse_map[code].id
+          row[:_warehouse_code] = warehouse_map[code].code
+          row[:_warehouse_new] = false
+        end
+      end
+    end
+  end
+
+  def validate_rows(data)
+    errors = []
+    gencode_counts = Hash.new { |h, k| h[k] = [] }
+
+    data[:rows].each_with_index do |row, idx|
+      row_label = row[:_index].present? ? "Riga #{row[:_index]}" : "Riga #{idx + 1}"
+      item_code = row['Item Code:'].to_s.strip
+      collection_ok = row[:_collection_id].present? || row[:_collection_description].present?
+
+      errors << "#{row_label}: manca il codice articolo" if item_code.blank?
+      errors << "#{row_label}: manca la collezione (aggiungi la colonna Note: o seleziona un override)" unless collection_ok
+
+      if collection_ok && item_code.present?
+        coll_id = row[:_collection_id] || row[:_collection_description]
+        gencode = [item_code, row['Fabric code:'].to_s.strip, row['var. code:'].to_s.strip].join + "_#{coll_id}"
+        gencode_counts[gencode] << row_label
+      end
+    end
+
+    gencode_counts.each do |gencode, labels|
+      if labels.size > 1
+        errors << "#{labels.join(', ')}: gencode duplicato (#{gencode})"
+      end
+    end
+
+    errors
+  end
+
+  def summarize(data)
+    gencodes = data[:rows].map do |row|
+      [row['Item Code:'], row['Fabric code:'], row['var. code:']].map(&:to_s).join + "_#{row[:_collection_id]}"
+    end
+    existing_gencodes = Item.where(gencode: gencodes).pluck(:gencode).to_set
+
+    summary = {
+      total: data[:rows].size,
+      new_items: 0,
+      updated_items: 0,
+      new_collections: [],
+      existing_collections: [],
+      new_warehouses: [],
+      existing_warehouses: []
+    }
+
+    data[:rows].each do |row|
+      gencode = [row['Item Code:'], row['Fabric code:'], row['var. code:']].map(&:to_s).join + "_#{row[:_collection_id]}"
+      if existing_gencodes.include?(gencode)
+        summary[:updated_items] += 1
+      else
+        summary[:new_items] += 1
+      end
+
+      if row[:_collection_new]
+        summary[:new_collections] << row[:_collection_description] if row[:_collection_description].present?
+      elsif row[:_collection_id].present?
+        summary[:existing_collections] << row[:_collection_description] if row[:_collection_description].present?
+      end
+
+      if row[:_warehouse_new]
+        summary[:new_warehouses] << row[:_warehouse_code] if row[:_warehouse_code].present?
+      elsif row[:_warehouse_id].present?
+        summary[:existing_warehouses] << row[:_warehouse_code] if row[:_warehouse_code].present?
+      end
+    end
+
+    summary[:new_collections].uniq!
+    summary[:existing_collections].uniq!
+    summary[:new_warehouses].uniq!
+    summary[:existing_warehouses].uniq!
+
+    summary
   end
 
   def save(data)
@@ -104,8 +210,11 @@ class ImportGeneralService
         item = Item.find_or_initialize_by(gencode: gencode)
         new_record = item.new_record?
 
-        FIELD_MAP.each do |header, field|
-          val = row[header]
+        header_map = row.keys.each_with_object({}) { |h, m| m[normalize_header(h)] = h }
+        FIELD_MAP.each do |norm_header, field|
+          raw_header = header_map[norm_header]
+          next unless raw_header
+          val = row[raw_header]
           val = val.to_f.round if %i[unit_price vendita].include?(field)
           item[field] = val
         end

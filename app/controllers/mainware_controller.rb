@@ -66,6 +66,7 @@ class MainwareController < ApplicationController
 
   def dashboard
     @items_count = Item.count
+    @collections_count = Collection.count
     @warehouses_count = Warehouse.count
     @locations_count = Location.count
   end
@@ -73,10 +74,31 @@ class MainwareController < ApplicationController
   def import
     @data = Rails.cache.read(import_cache_key)
     @collections = Collection.all.order(:description)
+    @warnings = @data ? ImportGeneralService.new.validate_rows(@data) : []
+  end
+
+  def import_template
+    package = Axlsx::Package.new
+    wb = package.workbook
+    wb.add_worksheet(name: "Template") do |sheet|
+      sheet.add_row ImportGeneralService::TEMPLATE_HEADERS
+      sheet.add_row ["ABC123", "FAB001", "01", "Descrizione esempio", "M", "Blue", "Cotton", 100, "Spring 2024", "WH01"]
+    end
+    send_data package.to_stream.read,
+      filename: "template_import_articoli.xlsx",
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
   end
 
   def import_parse
     return redirect_to mainware_import_path, alert: "Seleziona un file" unless params[:file].present?
+
+    unless params[:file].original_filename.to_s.downcase.end_with?(".xlsx")
+      return redirect_to mainware_import_path, alert: "Il file deve essere in formato .xlsx"
+    end
+
+    if params[:file].size > 5.megabytes
+      return redirect_to mainware_import_path, alert: "Il file è troppo grande (massimo 5 MB)"
+    end
 
     metadata = {}
     if params[:collection_id].present?
@@ -103,10 +125,15 @@ class MainwareController < ApplicationController
     return head :not_found unless row
 
     row[field] = value
+    service = ImportGeneralService.new
 
     if ['Item Code:', 'Fabric code:', 'var. code:'].include?(field)
       coll_id = row[:_collection_id]
       row[:_gencode] = [row['Item Code:'], row['Fabric code:'], row['var. code:']].map(&:to_s).join + "_#{coll_id}"
+    elsif field == 'Note:'
+      service.resolve_collection(row)
+    elsif field == 'dove'
+      service.resolve_warehouse(row)
     end
 
     Rails.cache.write(import_cache_key, data, expires_in: 30.minutes)
@@ -128,10 +155,22 @@ class MainwareController < ApplicationController
     data = Rails.cache.read(import_cache_key)
     return redirect_to mainware_import_path, alert: "Nessun dato da importare" unless data&.dig(:rows)&.any?
 
-    total = data[:rows].size
-    Rails.cache.write("import:progress:#{session.id}", { total: total, done: 0, complete: false }, expires_in: 10.minutes)
-    ImportJob.perform_later(session.id.to_s)
-    redirect_to mainware_import_processing_path
+    warnings = ImportGeneralService.new.validate_rows(data)
+    return redirect_to mainware_import_path, alert: "Correggi gli errori prima di confermare: #{warnings.first}" if warnings.any?
+
+    if params[:confirmed].present?
+      service = ImportGeneralService.new
+      service.ensure_dependencies!(data)
+      Rails.cache.write(import_cache_key, data, expires_in: 30.minutes)
+
+      total = data[:rows].size
+      Rails.cache.write("import:progress:#{session.id}", { total: total, done: 0, complete: false }, expires_in: 10.minutes)
+      ImportJob.perform_later(session.id.to_s)
+      redirect_to mainware_import_processing_path
+    else
+      @summary = ImportGeneralService.new.summarize(data)
+      render
+    end
   end
 
   def import_processing
@@ -179,15 +218,19 @@ class MainwareController < ApplicationController
     if params[:q].present?
       raw_q = params[:q].to_s.strip
       gencode = parse_qr_gencode(raw_q)
-      q = "%#{gencode}%"
 
       siblings_count_sql = "(SELECT COUNT(*) FROM items AS s WHERE s.itemcode = items.itemcode AND s.fabricode = items.fabricode AND s.varcode = items.varcode)"
       @itemz = Item.select("items.*, #{siblings_count_sql} AS siblings_count").includes(:collection)
 
-      @itemz = @itemz.where(
-        "items.gencode LIKE :q OR items.itemcode LIKE :q OR items.fabricode LIKE :q OR items.varcode LIKE :q OR items.description LIKE :q OR items.fabric LIKE :q OR items.colour LIKE :q",
-        q: q
-      )
+      @itemz = @itemz.where(gencode: gencode)
+      if @itemz.none?
+        q = "%#{gencode}%"
+        @itemz = Item.select("items.*, #{siblings_count_sql} AS siblings_count").includes(:collection)
+        @itemz = @itemz.where(
+          "items.gencode LIKE :q OR items.itemcode LIKE :q OR items.fabricode LIKE :q OR items.varcode LIKE :q OR items.description LIKE :q OR items.fabric LIKE :q OR items.colour LIKE :q",
+          q: q
+        )
+      end
 
       base_keys = @itemz.pluck(:itemcode, :fabricode, :varcode).uniq
       if base_keys.any?

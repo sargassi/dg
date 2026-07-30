@@ -76,6 +76,7 @@ Rails.application.routes.draw do
   get 'mainware/index'
   get 'mainware/search'
   get 'mainware/import'
+  get    'mainware/import/template', to: 'mainware#import_template'
   post   'mainware/import/parse',      to: 'mainware#import_parse'
   put    'mainware/import/update_row', to: 'mainware#import_update_row'
   delete 'mainware/import/delete_row', to: 'mainware#import_delete_row'

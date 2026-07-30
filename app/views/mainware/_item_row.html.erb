@@ -28,7 +28,7 @@
     <td class="<%= style_table_td %> font-mono text-blue-600 dark:text-blue-400" data-price-history-target="colprice"><%= number_to_currency(item.unit_price, unit: "€") %></td>
     <td class="<%= style_table_td %> font-mono text-slate-600 dark:text-slate-400"><%= number_to_currency(item.vendita, unit: "€") %></td>
     <td class="<%= style_table_td %>" style="width:130px">
-      <%= item.qrcode_svg.html_safe %>
+      <%= item.qrcode_svg&.html_safe %>
     </td>
     <td class="<%= style_table_td %> align-top" style="width:120px">
         <% if item.pictures.attached? %>
@@ -64,7 +64,7 @@
       <td class="<%= style_table_td %> bg-green-50 dark:bg-green-900/20 font-bold"><div class="mb-4"><%= sibling.collection&.description&.upcase || "-" %></div></td>
       <td class="<%= style_table_td %> font-mono text-blue-600 dark:text-blue-400 bg-green-50 dark:bg-green-900/20"><%= number_to_currency(sibling.unit_price, unit: "€") %></td>
       <td class="<%= style_table_td %> font-mono text-slate-600 dark:text-slate-400 bg-green-50 dark:bg-green-900/20"><%= number_to_currency(sibling.vendita, unit: "€") %></td>
-      <td class="<%= style_table_td %> bg-green-50 dark:bg-green-900/20" style="width:80px"><%= sibling.qrcode_svg&.html_safe %></td>
+      <td class="<%= style_table_td %> bg-green-50 dark:bg-green-900/20" style="width:80px"><%= sibling.qrcode_svg&.html_safe || "-" %></td>
       <td class="<%= style_table_td %> bg-green-50 dark:bg-green-900/20 align-middle" style="width:120px">
         <% if sibling.pictures.attached? %>
           <%= link_to gallery_item_path(sibling, index: 0, q: params[:q], collection_id: params[:collection_id], return_to: return_path.call(q: params[:q], collection_id: params[:collection_id], expand_history: item.id)), data: { turbo_frame: "item_modal" } do %>

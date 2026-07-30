@@ -10,6 +10,7 @@ Mainware is the legacy/general warehouse module. It is centered on the `Item` ca
   - Inserimento (`new_item_path`)
   - Importa (`mainware_import_path`)
   - Ricerca Articoli (`mainware_index_path`)
+- Below the cards there are grouped links: Generale (Articoli, Collezioni with counts) and Consultazione (Ricerca articoli, Ricerca x QR Code, Storico Prezzi).
 
 ## Subsections
 
@@ -30,9 +31,9 @@ Mainware is the legacy/general warehouse module. It is centered on the `Item` ca
 
 ### 3. Ricerca QR — `mainware/searchqr`
 
-- Same search logic as `mainware/index`, but with a QR scanner interface.
-- Uses the `qr-scanner` Stimulus controller and the ZXing library (`@zxing/library`) to read QR codes from the camera.
+- QR scanner interface using the `qr-scanner` Stimulus controller and the ZXing library (`@zxing/library`).
 - After scanning, the decoded value is placed in the search field and the form is submitted.
+- Tries an exact `gencode` match first; if no result, falls back to the same `LIKE` search used in `mainware/index`.
 - Results render using the same `_item_row` partial.
 
 ### 4. Storico Prezzi — `mainware/prices_compare`
@@ -48,14 +49,15 @@ Multi-step bulk import pipeline.
 
 #### Upload / parse — `mainware/import` + `mainware/import_parse`
 
-1. User uploads an `.xlsx` file and optionally selects a collection override.
-2. `ImportGeneralService` uses `Roo` to read the spreadsheet.
-3. The header row is auto-discovered by looking for known headers (`Item Code:`, `Fabric code:`, `var. code:`, `Description:`, `Prezzo showroom`, `materiale`, `colour:`, `Tg.`).
-4. Columns are mapped to `Item` fields.
-5. Collection is resolved from the `Note:` column or the override; a new collection is created if needed.
-6. Warehouse is resolved from the `dove` column; a new warehouse is created if needed.
-7. A `_gencode` is computed for each row.
-8. Parsed data is stored in Rails cache keyed by the session id.
+1. User uploads an `.xlsx` file (validated client-side and server-side, max 5 MB) and optionally selects a collection override.
+2. A template can be downloaded from `mainware/import/template`.
+3. `ImportGeneralService` uses `Roo` to read the spreadsheet.
+4. The header row is auto-discovered by looking for known headers (`Item Code:`, `Fabric code:`, `var. code:`, `Description:`, `Prezzo showroom`, `materiale`, `colour:`, `Tg.`).
+5. Columns are mapped to `Item` fields using a normalized header map.
+6. Collection is resolved from the `Note:` column or the override; a **new collection is marked but not created yet**.
+7. Warehouse is resolved from the `dove` column; a **new warehouse is marked but not created yet**.
+8. A `_gencode` is computed for each row.
+9. Parsed data is stored in Rails cache keyed by the session id.
 
 #### Preview / edit — `mainware/import`
 
@@ -63,13 +65,16 @@ Multi-step bulk import pipeline.
 - Inline editing via the `inline-edit` Stimulus controller:
   - Changes are sent immediately to `mainware/import_update_row` via `PUT`.
   - If item/fabric/var codes change, the gencode is recalculated.
+  - If `Note:` or `dove` change, the collection/warehouse resolution is re-evaluated.
 - Rows can be deleted via `mainware/import_delete_row` (Turbo Stream).
 - Summary box shows which warehouses and collections will be used and which are new.
 
 #### Confirm — `mainware/import_confirm`
 
-- Writes a progress entry to cache and enqueues `ImportJob.perform_later(session_id)`.
-- Redirects to the processing page.
+- The first POST (without `confirmed=true`) renders a summary page showing:
+  - total rows, new items, updated items
+  - any new collections or warehouses that will be created
+- The second POST (`confirmed=true`) creates the pending collections/warehouses, writes the updated rows back to cache, enqueues `ImportJob.perform_later(session_id)`, and redirects to the processing page.
 
 #### Processing — `mainware/import_processing`
 

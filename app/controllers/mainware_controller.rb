@@ -167,6 +167,31 @@ class MainwareController < ApplicationController
     respond_to { |format| format.turbo_stream }
   end
 
+  def import_bulk_collection
+    data = Rails.cache.read(import_cache_key)
+    return redirect_to mainware_import_path, alert: "Nessun dato da importare" unless data&.dig(:rows)&.any?
+
+    new_name = params[:new_collection_name].to_s.strip
+    if new_name.present?
+      collection = Collection.find_or_create_by!(description: new_name)
+    elsif params[:collection_id].present?
+      collection = Collection.find(params[:collection_id])
+    else
+      return redirect_to mainware_import_path, alert: "Seleziona o crea una collezione."
+    end
+
+    parser = ImportParser.new
+    data[:rows].each do |row|
+      parser.resolve_collection(row, override_collection_id: collection.id)
+      row[:_gencode] = ImportParser.gencode_for(row)
+    end
+
+    data[:_collection_override_id] = collection.id
+
+    Rails.cache.write(import_cache_key, data, expires_in: 30.minutes)
+    redirect_to mainware_import_path, notice: "Collezione '#{collection.description}' applicata a #{data[:rows].size} righe."
+  end
+
   def import_confirm
     data = Rails.cache.read(import_cache_key)
     return redirect_to mainware_import_path, alert: "Nessun dato da importare" unless data&.dig(:rows)&.any?

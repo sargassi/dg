@@ -86,6 +86,7 @@ Rails.application.routes.draw do
   get    'mainware/import/progress',   to: 'mainware#import_progress_json'
   get    'mainware/import/summary',    to: 'mainware#import_summary'
   get    'mainware/import/failed_rows', to: 'mainware#import_failed_rows'
+  post   'mainware/import/bulk_collection', to: 'mainware#import_bulk_collection'
   get 'mainware/dashboard'
   get 'mainware/prices_compare', to: 'mainware#prices_compare'
   get 'mainware/searchqr'

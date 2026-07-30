@@ -28,8 +28,8 @@
           <table class="min-w-full">
             <thead>
               <tr>
-                <th class="<%= style_table_th %> w-12 text-center">Unisci</th>
                 <th class="<%= style_table_th %> w-12 text-center">Dest.</th>
+                <th class="<%= style_table_th %> w-12 text-center">Unisci</th>
                 <th class="<%= style_table_th %>">Collezione</th>
                 <th class="<%= style_table_th %> text-right w-24">Articoli</th>
               </tr>
@@ -38,10 +38,10 @@
               <% @collections.each do |c| %>
                 <tr class="hover:bg-slate-50 transition-colors">
                   <td class="<%= style_table_td %> text-center">
-                    <%= check_box_tag "source_ids[]", c.id, false, id: "source_#{c.id}", class: "rounded border-slate-300 text-accent focus:ring-accent" %>
+                    <%= radio_button_tag "target_id", c.id, false, id: "target_#{c.id}", class: "border-slate-300 text-accent focus:ring-accent" %>
                   </td>
                   <td class="<%= style_table_td %> text-center">
-                    <%= radio_button_tag "target_id", c.id, false, id: "target_#{c.id}", class: "border-slate-300 text-accent focus:ring-accent" %>
+                    <%= check_box_tag "source_ids[]", c.id, false, id: "source_#{c.id}", class: "rounded border-slate-300 text-accent focus:ring-accent" %>
                   </td>
                   <td class="<%= style_table_td %> text-sm">
                     <%= label_tag "source_#{c.id}", class: "cursor-pointer flex items-center gap-2" do %>

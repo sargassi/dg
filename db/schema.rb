@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_07_15_124702) do
+ActiveRecord::Schema[7.2].define(version: 2026_07_30_132033) do
   create_table "abilities", force: :cascade do |t|
     t.string "name", null: false
     t.string "description"
@@ -248,6 +248,24 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_15_124702) do
     t.decimal "mtkgprezzi"
     t.decimal "mtkg20prezzi"
     t.string "perche"
+  end
+
+  create_table "import_logs", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "file_name"
+    t.integer "total_rows"
+    t.integer "created_count"
+    t.integer "updated_count"
+    t.integer "error_count"
+    t.text "created_ids"
+    t.text "updated_ids"
+    t.text "error_details"
+    t.string "status", default: "pending"
+    t.datetime "started_at"
+    t.datetime "finished_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_import_logs_on_user_id"
   end
 
   create_table "inventories", force: :cascade do |t|
@@ -666,6 +684,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_15_124702) do
   add_foreign_key "archive_transactions", "users", column: "operator_id"
   add_foreign_key "events", "eventypes"
   add_foreign_key "events", "users"
+  add_foreign_key "import_logs", "users"
   add_foreign_key "inventories", "itemins", column: "itemins_id"
   add_foreign_key "inventories", "itemmovements"
   add_foreign_key "inventories", "itemouts", column: "itemouts_id"

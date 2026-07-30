@@ -123,6 +123,7 @@ class MainwareController < ApplicationController
     service = ImportGeneralService.new
     data = service.parse(params[:file], metadata)
     data[:_collection_override_id] = metadata[:collection_id]
+    data[:_file_name] = params[:file].original_filename
 
     Rails.cache.write(import_cache_key, data, expires_in: 30.minutes)
     redirect_to mainware_import_path, notice: "#{data[:rows].size} righe caricate. Verifica e modifica."
@@ -179,8 +180,17 @@ class MainwareController < ApplicationController
       service.ensure_dependencies!(data)
       Rails.cache.write(import_cache_key, data, expires_in: 30.minutes)
 
+      import_log = ImportLog.create!(
+        user: current_user,
+        file_name: data[:_file_name],
+        total_rows: data[:rows].size,
+        status: 'pending',
+        started_at: Time.current
+      )
+      Rails.cache.write("import:log:#{session.id}", import_log.id, expires_in: 10.minutes)
+
       total = data[:rows].size
-      Rails.cache.write("import:progress:#{session.id}", { total: total, done: 0, complete: false }, expires_in: 10.minutes)
+      Rails.cache.write("import:progress:#{session.id}", { total: total, done: 0, complete: false, import_log_id: import_log.id }, expires_in: 10.minutes)
       ImportJob.perform_later(session.id.to_s)
       redirect_to mainware_import_processing_path
     else
@@ -206,6 +216,9 @@ class MainwareController < ApplicationController
   def import_summary
     @stats = Rails.cache.read("import:stats:#{session.id}")
     return redirect_to mainware_index_path unless @stats
+
+    log_id = Rails.cache.read("import:log:#{session.id}")
+    @import_log = ImportLog.find_by(id: log_id)
   end
 
   def import_failed_rows
@@ -228,17 +241,26 @@ class MainwareController < ApplicationController
   end
 
   def import_cancel
+    log_id = Rails.cache.read("import:log:#{session.id}")
+    ImportLog.find_by(id: log_id)&.update!(status: 'cancelled')
     Rails.cache.delete(import_cache_key)
+    Rails.cache.delete("import:stats:#{session.id}")
+    Rails.cache.delete("import:log:#{session.id}")
     redirect_to mainware_import_path, notice: "Importazione annullata."
   end
 
   def import_rollback
     stats = Rails.cache.read("import:stats:#{session.id}")
-    return redirect_to mainware_index_path, alert: "Nessuna importazione da annullare" unless stats
+    log_id = Rails.cache.read("import:log:#{session.id}")
+    import_log = ImportLog.find_by(id: log_id)
+    return redirect_to mainware_index_path, alert: "Nessuna importazione da annullare" unless stats || import_log
 
-    count = stats[:created_ids]&.size || 0
-    ImportGeneralService.new.rollback(stats)
+    created_ids = import_log&.created_ids.presence || stats&.dig(:created_ids) || []
+    count = created_ids.size
+    ImportGeneralService.new.rollback({ created_ids: created_ids })
+    import_log&.update!(status: 'rolled_back')
     Rails.cache.delete("import:stats:#{session.id}")
+    Rails.cache.delete("import:log:#{session.id}")
     redirect_to mainware_index_path, notice: "Rollback completato: #{count} articoli eliminati."
   end
 

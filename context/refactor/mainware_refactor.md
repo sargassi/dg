@@ -121,33 +121,32 @@ Errors are now grouped by message, show the actual row/gencode/cell values, and 
 - `app/views/mainware/import_summary.html.erb`
 - `app/controllers/mainware_controller.rb` (`import_failed_rows`)
 
-### 2. Import history / audit log
+### 2. Import history / audit log — Done
 
-Introduce an `ImportLog` model to record each import run: user, file name, row counts, created/updated IDs, errors. This enables:
-
-- rollback of updates (today only creates can be rolled back)
-- re-running a previous import
-- audit trail
+Every confirmed import creates an `ImportLog` record. The job updates it with counts, created/updated IDs, and error details. Rollback now uses the log as a fallback if the cache is gone. A simple index/show UI lists all imports.
 
 **New files:**
 - `app/models/import_log.rb`
-- migration for `import_logs`
+- `db/migrate/*_create_import_logs.rb`
+- `app/controllers/import_logs_controller.rb`
+- `app/views/import_logs/index.html.erb`
+- `app/views/import_logs/show.html.erb`
 
 **Files involved:**
-- `app/controllers/mainware_controller.rb` (`import_confirm`, `import_rollback`)
+- `app/controllers/mainware_controller.rb` (`import_parse`, `import_confirm`, `import_rollback`, `import_summary`)
 - `app/jobs/import_job.rb`
 - `app/services/import_general_service.rb`
+- `app/views/mainware/dashboard.html.erb`
+- `app/views/mainware/import_summary.html.erb`
 
-### 3. Progress failure handling and cancel action
+### 3. Progress failure handling and cancel action — Done
 
-- Detect when `import:progress:*` cache disappears or the job errors out.
-- Offer a "Cancel / rollback" button on the processing page.
-- Surface job errors in the summary page instead of leaving the spinner running.
+The processing page now detects a missing/stuck progress cache or a job error, shows a message, and offers links to the summary / cancel. Cancelling an import also marks the `ImportLog` as `cancelled`.
 
 **Files involved:**
 - `app/javascript/controllers/import_progress_controller.js`
 - `app/views/mainware/import_processing.html.erb`
-- `app/controllers/mainware_controller.rb`
+- `app/controllers/mainware_controller.rb` (`import_cancel`)
 
 ### 4. Column visibility toggle and saved filters on `mainware/index`
 

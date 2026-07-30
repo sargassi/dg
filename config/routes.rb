@@ -89,6 +89,7 @@ Rails.application.routes.draw do
   get 'mainware/dashboard'
   get 'mainware/prices_compare', to: 'mainware#prices_compare'
   get 'mainware/searchqr'
+  resources :import_logs, only: [:index, :show]
   mount API::Base, at: "/"
 
   get 'eticamps/etichette'

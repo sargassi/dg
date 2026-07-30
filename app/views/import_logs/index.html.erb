@@ -1,0 +1,67 @@
+<% content_for :page_header do %>
+<div class="flex items-center gap-2 px-0 py-0.5">
+  <h1 class="text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wide">
+    Storico importazioni
+  </h1>
+</div>
+<% end %>
+
+<section class="<%= style_main_cnt %>">
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-xl font-bold text-slate-800 dark:text-slate-100">Importazioni</h2>
+    <%= link_to "Torna alla dashboard", mainware_dashboard_path, class: "text-sm text-accent hover:underline" %>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="min-w-full">
+      <thead>
+        <tr>
+          <th class="<%= style_table_th %>">Data</th>
+          <th class="<%= style_table_th %>">Utente</th>
+          <th class="<%= style_table_th %>">File</th>
+          <th class="<%= style_table_th %>">Stato</th>
+          <th class="<%= style_table_th %> text-right">Righe</th>
+          <th class="<%= style_table_th %> text-right">Nuovi</th>
+          <th class="<%= style_table_th %> text-right">Aggiornati</th>
+          <th class="<%= style_table_th %> text-right">Errori</th>
+          <th class="<%= style_table_th %>"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @import_logs.each do |log| %>
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
+            <td class="<%= style_table_td %>"><%= l log.created_at, format: :short %></td>
+            <td class="<%= style_table_td %>"><%= log.user&.email %></td>
+            <td class="<%= style_table_td %>"><%= log.file_name %></td>
+            <td class="<%= style_table_td %>">
+              <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium
+                <%= case log.status
+                    when 'completed' then 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+                    when 'rolled_back' then 'bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-300'
+                    when 'failed' then 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+                    else 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
+                    end %>">
+                <%= log.status %>
+              </span>
+            </td>
+            <td class="<%= style_table_td %> text-right"><%= log.total_rows %></td>
+            <td class="<%= style_table_td %> text-right"><%= log.created_count %></td>
+            <td class="<%= style_table_td %> text-right"><%= log.updated_count %></td>
+            <td class="<%= style_table_td %> text-right"><%= log.error_count %></td>
+            <td class="<%= style_table_td %>">
+              <%= link_to import_log_path(log), class: "text-accent hover:underline text-sm" do %>
+                Dettagli
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <% if @import_logs.empty? %>
+    <div class="text-center py-12 text-slate-400 dark:text-slate-500">
+      <p>Nessuna importazione registrata.</p>
+    </div>
+  <% end %>
+</section>

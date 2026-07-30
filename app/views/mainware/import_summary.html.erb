@@ -76,6 +76,16 @@
       Vai alla lista articoli
     <% end %>
 
+    <% if @import_log %>
+      <%= link_to import_log_path(@import_log), class: "block w-full #{style_import_btn} bg-blue-600 text-center cursor-pointer mb-3" do %>
+        Vedi dettaglio importazione
+      <% end %>
+    <% end %>
+
+    <%= link_to import_logs_path, class: "block w-full text-center text-sm text-slate-500 hover:text-slate-700 mb-3" do %>
+      Storico importazioni
+    <% end %>
+
     <% if @stats[:created_ids]&.any? %>
       <%= button_to mainware_import_rollback_path, method: :delete,
             class: "block w-full #{style_import_btn} bg-red-600 text-center cursor-pointer",

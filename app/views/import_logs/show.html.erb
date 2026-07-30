@@ -1,0 +1,65 @@
+<% content_for :page_header do %>
+<div class="flex items-center gap-2 px-0 py-0.5">
+  <h1 class="text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wide">
+    Importazione #<%= @import_log.id %>
+  </h1>
+</div>
+<% end %>
+
+<section class="<%= style_main_cnt %>">
+  <div class="max-w-3xl mx-auto bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-8">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-100">Dettagli importazione</h2>
+      <%= link_to "Torna allo storico", import_logs_path, class: "text-sm text-accent hover:underline" %>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 mb-6">
+      <div class="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg">
+        <p class="text-xs text-slate-500 dark:text-slate-400 uppercase">File</p>
+        <p class="text-sm font-medium text-slate-700 dark:text-slate-200"><%= @import_log.file_name || "-" %></p>
+      </div>
+      <div class="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg">
+        <p class="text-xs text-slate-500 dark:text-slate-400 uppercase">Stato</p>
+        <p class="text-sm font-medium text-slate-700 dark:text-slate-200"><%= @import_log.status %></p>
+      </div>
+      <div class="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg">
+        <p class="text-xs text-slate-500 dark:text-slate-400 uppercase">Utente</p>
+        <p class="text-sm font-medium text-slate-700 dark:text-slate-200"><%= @import_log.user&.email || "-" %></p>
+      </div>
+      <div class="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg">
+        <p class="text-xs text-slate-500 dark:text-slate-400 uppercase">Data</p>
+        <p class="text-sm font-medium text-slate-700 dark:text-slate-200"><%= l @import_log.created_at, format: :long %></p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-4 gap-4 mb-8">
+      <div class="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg text-center">
+        <p class="text-2xl font-bold text-slate-700 dark:text-slate-200"><%= @import_log.total_rows %></p>
+        <p class="text-xs text-slate-500 dark:text-slate-400 uppercase">Righe</p>
+      </div>
+      <div class="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg text-center">
+        <p class="text-2xl font-bold text-green-700 dark:text-green-400"><%= @import_log.created_count %></p>
+        <p class="text-xs text-green-600 dark:text-green-400 uppercase">Nuovi</p>
+      </div>
+      <div class="bg-accent-50 dark:bg-blue-900/20 p-4 rounded-lg text-center">
+        <p class="text-2xl font-bold text-blue-700 dark:text-blue-400"><%= @import_log.updated_count %></p>
+        <p class="text-xs text-blue-600 dark:text-blue-400 uppercase">Aggiornati</p>
+      </div>
+      <div class="<%= @import_log.error_count.to_i > 0 ? 'bg-red-50 dark:bg-red-900/20' : 'bg-slate-50 dark:bg-slate-700/50' %> p-4 rounded-lg text-center">
+        <p class="text-2xl font-bold <%= @import_log.error_count.to_i > 0 ? 'text-red-700 dark:text-red-400' : 'text-slate-700 dark:text-slate-200' %>"><%= @import_log.error_count %></p>
+        <p class="text-xs <%= @import_log.error_count.to_i > 0 ? 'text-red-600 dark:text-red-400' : 'text-slate-500 dark:text-slate-400' %> uppercase">Errori</p>
+      </div>
+    </div>
+
+    <% if @import_log.error_details.is_a?(Array) && @import_log.error_details.any? %>
+      <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg p-4">
+        <p class="text-sm font-semibold text-red-800 dark:text-red-300 mb-2">Errori:</p>
+        <ul class="text-xs text-red-700 dark:text-red-400 space-y-1">
+          <% @import_log.error_details.each do |err| %>
+            <li>Riga <%= err.is_a?(Hash) ? (err['row'] || err[:row]) : '-' %>: <%= err.is_a?(Hash) ? (err['error'] || err[:error]) : err %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+  </div>
+</section>

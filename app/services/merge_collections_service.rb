@@ -24,6 +24,12 @@ class MergeCollectionsService
 
     stats = { items_moved: 0, collections_removed: 0 }
 
+    conflicts = detect_conflicts(source_ids, target_id)
+    if conflicts.any?
+      conflict_list = conflicts.map { |c| "#{c[0]}#{c[1]}#{c[2]}" }.join(', ')
+      return Result.new(success: false, error: "Impossibile unire: #{conflicts.size} articoli esistono già nella collezione di destinazione (#{target.description}). Conflitti: #{conflict_list}")
+    end
+
     ActiveRecord::Base.transaction do
       source_ids.each do |sid|
         moved_ids = Item.where(collection_id: sid).pluck(:id)
@@ -52,5 +58,15 @@ class MergeCollectionsService
     Result.new(success: false, error: "Impossibile eliminare: #{e.message}")
   rescue => e
     Result.new(success: false, error: "Errore: #{e.message}")
+  end
+
+  private
+
+  def detect_conflicts(source_ids, target_id)
+    source_keys = Item.where(collection_id: source_ids).pluck(:itemcode, :fabricode, :varcode)
+    return [] if source_keys.empty?
+
+    target_keys = Item.where(collection_id: target_id).pluck(:itemcode, :fabricode, :varcode).to_set
+    source_keys.select { |key| target_keys.include?(key) }
   end
 end

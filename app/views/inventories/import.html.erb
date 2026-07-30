@@ -1,12 +1,10 @@
-<% menu = [
-  { label: 'Dashboard', path: inventories_dashboard_path, active: false, icon: 'dashboard', can: 'manage_inventory' },
-  { label: 'Ricerca magazzino', path: inventories_path, active: true, icon: 'inventory_2', can: 'manage_inventory' },
-  { label: 'Movimenti', path: inventories_movements_path, active: false, icon: 'swap_vert', can: 'manage_itemins' },
-  { label: 'Magazzini e ubiche', path: warehouses_path, active: false, icon: 'warehouse', can: 'manage_warehouses' },
-] %>
-<div class="<%= style_main_header_container %>">
-  <%= render partial: 'atoms/header', locals: {link: '/', label: 'mag Import', menu: menu} %>
+<% content_for :page_header do %>
+<div class="flex items-center gap-2 px-0 py-0.5">
+  <h1 class="text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wide">
+    mag Import
+  </h1>
 </div>
+<% end %>
 
 <section class="<%= style_main_cnt %> overflow-y-auto min-w-0" style="height: calc(100vh - 140px);">
   <% if @data.present? %>
@@ -23,7 +21,7 @@
       <div class="font-semibold text-slate-700 dark:text-slate-300 mb-2">Riepilogo</div>
       <div class="grid grid-cols-3 gap-4">
         <div>
-          <div class="text-xs text-slate-400 uppercase tracking-wide mb-1">Warehouse</div>
+          <div class="text-xs text-slate-400 tracking-wide mb-1">Warehouse</div>
           <% if wh_rows.any? %>
             <% wh_rows.each do |(id, code, is_new), rows| %>
               <div class="<%= 'text-green-700 dark:text-green-400' if is_new %>">
@@ -37,7 +35,7 @@
           <% end %>
         </div>
         <div>
-          <div class="text-xs text-slate-400 uppercase tracking-wide mb-1">Ubicazione</div>
+          <div class="text-xs text-slate-400 tracking-wide mb-1">Ubicazione</div>
           <% if loc_rows.any? %>
             <% loc_rows.each do |(id, code), rows| %>
               <div>#<%= id %> — <%= code %> <span class="text-slate-400">(<%= rows.size %> righe)</span></div>
@@ -47,7 +45,7 @@
           <% end %>
         </div>
         <div>
-          <div class="text-xs text-slate-400 uppercase tracking-wide mb-1">Collection</div>
+          <div class="text-xs text-slate-400 tracking-wide mb-1">Collection</div>
           <% if coll_rows.any? %>
             <% coll_rows.each do |(id, desc, is_new), rows| %>
               <div class="<%= 'text-green-700 dark:text-green-400' if is_new %>">
@@ -105,25 +103,25 @@
 
           <div class="flex flex-wrap items-end gap-4">
             <div class="w-72">
-              <label class="text-xs text-slate-400 uppercase tracking-wide block mb-1">File Excel</label>
+              <label class="text-xs text-slate-400 tracking-wide block mb-1">File Excel</label>
               <%= f.file_field :file,
                   class: style_import_field,
                   required: true %>
             </div>
             <div class="w-56">
-              <label class="text-xs text-slate-400 uppercase tracking-wide block mb-1">Magazzino <span class="text-slate-300">(opzionale)</span></label>
+              <label class="text-xs text-slate-400 tracking-wide block mb-1">Magazzino <span class="text-slate-300">(opzionale)</span></label>
               <%= f.collection_select :warehouse_id, @warehouses, :id, :code,
                   { include_blank: "Usa dove: (da file)" },
                   class: style_select_class %>
             </div>
             <div class="w-56">
-              <label class="text-xs text-slate-400 uppercase tracking-wide block mb-1">Ubicazione <span class="text-slate-300">(opzionale)</span></label>
+              <label class="text-xs text-slate-400 tracking-wide block mb-1">Ubicazione <span class="text-slate-300">(opzionale)</span></label>
               <%= f.collection_select :location_id, @locations, :id, :code,
                   { include_blank: "Nessuna ubicazione" },
                   class: style_select_class %>
             </div>
             <div class="w-56">
-              <label class="text-xs text-slate-400 uppercase tracking-wide block mb-1">Operazione</label>
+              <label class="text-xs text-slate-400 tracking-wide block mb-1">Operazione</label>
               <%= f.collection_select :operationtype_id, @operationtypes, :id, :description,
                   { include_blank: "Seleziona operazione" },
                   required: true,

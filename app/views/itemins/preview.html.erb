@@ -1,12 +1,10 @@
-<% menu = [
-  { label: 'Dashboard', path: inventories_dashboard_path, active: false, icon: 'dashboard', can: 'manage_inventory' },
-  { label: 'Ricerca magazzino', path: inventories_path, active: false, icon: 'inventory_2', can: 'manage_inventory' },
-  { label: 'Movimenti', path: inventories_movements_path, active: false, icon: 'swap_vert', can: 'manage_itemins' },
-  { label: 'Magazzini e ubiche', path: warehouses_path, active: false, icon: 'warehouse', can: 'manage_warehouses' },
-] %>
-<div class="<%= style_main_header_container %>">
-  <%= render partial: 'atoms/header', locals: { link: '/', label: 'Inventario / Anteprima Carico', menu: menu } %>
+<% content_for :page_header do %>
+<div class="flex items-center gap-2 px-0 py-0.5">
+  <h1 class="text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wide">
+    Inventario / Anteprima Carico
+  </h1>
 </div>
+<% end %>
 
 <section class="<%= style_main_cnt %> max-w-5xl mx-auto">
   <div class="<%= style_main_card %> mb-6">
@@ -17,15 +15,15 @@
 
     <div class="grid grid-cols-3 gap-4 text-sm mb-6">
       <div>
-        <span class="text-xs text-slate-400 uppercase block">Data</span>
+        <span class="text-xs text-slate-400 block">Data</span>
         <span class="font-medium"><%= @params[:indate] %></span>
       </div>
       <div>
-        <span class="text-xs text-slate-400 uppercase block">Operatore</span>
+        <span class="text-xs text-slate-400 block">Operatore</span>
         <span class="font-medium"><%= @operator&.name || @params[:operator_id] %></span>
       </div>
       <div>
-        <span class="text-xs text-slate-400 uppercase block">Note</span>
+        <span class="text-xs text-slate-400 block">Note</span>
         <span class="font-medium"><%= @params[:notes].presence || "-" %></span>
       </div>
     </div>

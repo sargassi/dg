@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_07_14_160921) do
+ActiveRecord::Schema[7.2].define(version: 2026_07_15_124702) do
   create_table "abilities", force: :cascade do |t|
     t.string "name", null: false
     t.string "description"
@@ -71,9 +71,14 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_14_160921) do
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "parent_id"
     t.index ["name"], name: "index_archive_categories_on_name", unique: true
-    t.index ["parent_id"], name: "index_archive_categories_on_parent_id"
+  end
+
+  create_table "archive_item_types", force: :cascade do |t|
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_archive_item_types_on_name", unique: true
   end
 
   create_table "archive_items", force: :cascade do |t|
@@ -89,7 +94,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_14_160921) do
     t.datetime "updated_at", null: false
     t.integer "inventory_id"
     t.integer "source_item_id"
+    t.integer "archive_item_type_id"
     t.index ["archive_category_id"], name: "index_archive_items_on_archive_category_id"
+    t.index ["archive_item_type_id"], name: "index_archive_items_on_archive_item_type_id"
     t.index ["archive_location_id"], name: "index_archive_items_on_archive_location_id"
     t.index ["code"], name: "index_archive_items_on_code", unique: true
     t.index ["inventory_id"], name: "index_archive_items_on_inventory_id"
@@ -649,8 +656,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_14_160921) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "api_tokens", "users"
-  add_foreign_key "archive_categories", "archive_categories", column: "parent_id"
   add_foreign_key "archive_items", "archive_categories"
+  add_foreign_key "archive_items", "archive_item_types"
   add_foreign_key "archive_items", "archive_locations"
   add_foreign_key "archive_items", "inventories"
   add_foreign_key "archive_items", "items", column: "source_item_id"

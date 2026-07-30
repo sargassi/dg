@@ -1,0 +1,161 @@
+<% content_for :page_header do %>
+<div class="flex items-center gap-2 px-0 py-0.5">
+  <h1 class="text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wide">
+    Ubicazioni Archivio
+  </h1>
+</div>
+<% end %>
+
+<section class="<%= style_main_cnt %>">
+  <% if notice.present? %>
+    <p class="py-2 px-3 bg-green-50 text-green-500 font-medium rounded-lg inline-block mb-5" id="notice"><%= notice %></p>
+  <% end %>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+    <div>
+      <div class="<%= style_main_card %>">
+        <h3 class="<%= style_main_card_header %>">
+          <span class="material-symbols-outlined">shelves</span>
+          Ubicazioni Archivio
+          <span class="<%= style_main_card_badge %>"><%= @locations.count %></span>
+        </h3>
+
+        <div id="locations" class="space-y-0">
+          <% if @locations.any? %>
+            <% sectors = @locations.select { |l| l.parent_id.nil? } %>
+            <% sectors.each_with_index do |sector, s_idx| %>
+              <div id="<%= dom_id(sector) %>" class="flex items-center justify-between py-3 px-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors border-b border-slate-100 dark:border-slate-600 group">
+                <div class="flex items-center gap-3">
+                  <% if sector.qrcode_svg.present? %>
+                    <span class="inline-block w-8 h-8 overflow-hidden flex-shrink-0"><%= sector.qrcode_svg.html_safe %></span>
+                  <% else %>
+                    <span class="material-symbols-outlined text-slate-300 text-xl">qr_code</span>
+                  <% end %>
+                  <div>
+                    <span class="text-base font-bold text-slate-800 dark:text-slate-200"><%= sector.code %></span>
+                    <% if sector.description.present? %>
+                      <span class="text-xs text-slate-400 ml-1"><%= sector.description %></span>
+                    <% end %>
+                    <div class="flex items-center gap-2 mt-0.5">
+                      <span class="text-xs <%= sector.enabled ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-300 dark:text-slate-500' %>">
+                        <%= sector.enabled ? 'Abilitato' : 'Disabilitato' %>
+                      </span>
+                      <% if sector.items.any? %>
+                        <span class="text-xs text-slate-400"><%= sector.items.count %> artic<%= sector.items.count == 1 ? 'olo' : 'oli' %></span>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex gap-0.5 items-center">
+                  <%= link_to edit_archive_location_path(sector), data: { turbo_frame: "location_modal" }, class: "p-1.5 text-slate-300 hover:text-accent rounded-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors" do %>
+                    <span class="material-symbols-outlined text-lg">edit</span>
+                  <% end %>
+                  <%= button_to archive_location_path(sector), method: :delete, data: { turbo_frame: "_top", turbo_confirm: sector.items.any? ? "Impossibile eliminare: ci sono articoli in questa ubicazione" : "Eliminare '#{sector.code}'?" }, class: "p-1.5 text-slate-300 hover:text-red-500 rounded-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors" do %>
+                    <span class="material-symbols-outlined text-lg">delete</span>
+                  <% end %>
+                </div>
+              </div>
+
+              <% children = @locations.select { |l| l.parent_id == sector.id } %>
+              <% children.each do |child| %>
+                <div id="<%= dom_id(child) %>" class="flex items-center justify-between py-2.5 pl-9 pr-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors border-b border-slate-100 dark:border-slate-600 group">
+                  <div class="flex items-center gap-3">
+                    <% if child.qrcode_svg.present? %>
+                      <span class="inline-block w-7 h-7 overflow-hidden flex-shrink-0"><%= child.qrcode_svg.html_safe %></span>
+                    <% else %>
+                      <span class="material-symbols-outlined text-slate-300 text-lg">qr_code</span>
+                    <% end %>
+                    <div>
+                      <span class="text-sm font-medium text-slate-700 dark:text-slate-300"><%= child.code %></span>
+                      <% if child.description.present? %>
+                        <span class="text-xs text-slate-400 ml-1"><%= child.description %></span>
+                      <% end %>
+                      <div class="flex items-center gap-2 mt-0.5">
+                        <span class="text-xs <%= child.enabled ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-300 dark:text-slate-500' %>">
+                          <%= child.enabled ? 'Abilitato' : 'Disabilitato' %>
+                        </span>
+                        <% if child.items.any? %>
+                          <span class="text-xs text-slate-400"><%= child.items.count %> artic<%= child.items.count == 1 ? 'olo' : 'oli' %></span>
+                        <% end %>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="flex gap-0.5 items-center">
+                    <%= link_to edit_archive_location_path(child), data: { turbo_frame: "location_modal" }, class: "p-1.5 text-slate-300 hover:text-accent rounded-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors" do %>
+                      <span class="material-symbols-outlined text-lg">edit</span>
+                    <% end %>
+                    <%= button_to archive_location_path(child), method: :delete, data: { turbo_frame: "_top", turbo_confirm: child.items.any? ? "Impossibile eliminare: ci sono articoli in questa ubicazione" : "Eliminare '#{child.code}'?" }, class: "p-1.5 text-slate-300 hover:text-red-500 rounded-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors" do %>
+                      <span class="material-symbols-outlined text-lg">delete</span>
+                    <% end %>
+                  </div>
+                </div>
+              <% end %>
+
+              <% if s_idx < sectors.length - 1 %>
+                <hr class="border-t border-slate-200 dark:border-slate-500">
+              <% end %>
+            <% end %>
+          <% else %>
+            <div class="text-sm text-slate-400 italic py-4">Nessuna ubicazione configurata</div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="<%= style_main_card %> mb-8">
+        <h3 class="<%= style_main_card_header %>">
+          <span class="material-symbols-outlined">add_box</span>
+          Nuova ubicazione
+        </h3>
+
+        <%= form_with(model: @new_location, url: archive_locations_path, class: "contents") do |form| %>
+          <% if @new_location.errors.any? %>
+            <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium mb-4 border border-red-200 text-sm">
+              <h2><%= pluralize(@new_location.errors.count, "error") %> impediscono il salvataggio:</h2>
+              <ul class="mt-1 list-disc list-inside">
+                <% @new_location.errors.each do |error| %>
+                  <li><%= error.full_message %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <div class="mb-4">
+            <%= form.label :code, "Codice", class: "text-xs text-slate-400 tracking-wide block mb-1" %>
+            <%= form.text_field :code, class: "border border-slate-300 dark:border-slate-600 outline-none px-3 py-2 w-full text-sm dark:bg-slate-700 dark:text-slate-200", placeholder: "Codice ubicazione", required: true %>
+          </div>
+
+          <div class="mb-4">
+            <%= form.label :parent_id, "Settore", class: "text-xs text-slate-400 tracking-wide block mb-1" %>
+            <%= form.collection_select :parent_id, @locations.select { |l| l.parent_id.nil? }, :id, :code, { include_blank: "— nessun settore —" }, class: "border border-slate-300 dark:border-slate-600 outline-none px-3 py-2 w-full text-sm dark:bg-slate-700 dark:text-slate-200" %>
+          </div>
+
+          <div class="mb-4">
+            <%= form.label :description, "Descrizione", class: "text-xs text-slate-400 tracking-wide block mb-1" %>
+            <%= form.text_area :description, rows: 2, class: "border border-slate-300 dark:border-slate-600 outline-none px-3 py-2 w-full text-sm dark:bg-slate-700 dark:text-slate-200", placeholder: "Descrizione (opzionale)" %>
+          </div>
+
+          <div class="mb-4">
+            <%= style_toggle_switch(form, :enabled, "Abilitato") %>
+          </div>
+
+          <div class="mt-6">
+            <%= form.submit "Crea ubicazione", class: "p-3 bg-accent inline-block tracking-wider rounded-sm text-xs cursor-pointer text-white" %>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="mt-6 flex justify-end mr-2">
+        <%= link_to qrcodes_archive_locations_path, target: :_blank, class: "inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-sm transition-colors" do %>
+          <span class="material-symbols-outlined text-base">qr_code</span>
+          QR Ubicazioni
+        <% end %>
+      </div>
+
+      <%= turbo_frame_tag "location_modal" %>
+    </div>
+
+  </div>
+</section>

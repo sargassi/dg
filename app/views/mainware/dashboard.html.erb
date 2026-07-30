@@ -1,7 +1,10 @@
-<% menu = mainware_menu(active: 'dashboard') %>
-<div class="<%= style_main_header_container %>">
-  <%= render partial: 'atoms/header', locals: {link: '/', label: 'Dashboard', menu: menu} %>
+<% content_for :page_header do %>
+<div class="flex items-center gap-2 px-0 py-0.5">
+  <h1 class="text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wide">
+    Dashboard
+  </h1>
 </div>
+<% end %>
 
 <section class="<%= style_main_cnt %> space-y-8">
   <div>

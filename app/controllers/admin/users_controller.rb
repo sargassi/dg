@@ -63,7 +63,7 @@ module Admin
           end
         end
 
-        redirect_to params[:return_to].presence || admin_users_path, notice: "Utente aggiornato."
+        redirect_to safe_return_to_path(admin_users_path), notice: "Utente aggiornato."
       else
         @all_abilities = Ability.includes(:user_abilities).order(:category, :name)
         if params[:return_to].present?

@@ -27,6 +27,7 @@
     <table class="min-w-full">
       <thead>
         <tr>
+          <th class="<%= style_table_th %> w-20">QR</th>
           <th class="<%= style_table_th %>">Codice</th>
           <th class="<%= style_table_th %> w-16">Q.tà</th>
         </tr>
@@ -34,6 +35,11 @@
       <tbody>
         <% @itemin.itemins_details.each do |d| %>
           <tr>
+            <td class="<%= style_table_td %> text-center">
+              <% if d.item&.qrcode_svg.present? %>
+                <span class="inline-block w-12 h-12"><%= d.item.qrcode_svg.html_safe %></span>
+              <% end %>
+            </td>
             <td class="<%= style_table_td %> font-mono"><%= d.item&.gencode.presence || d.itemcode %></td>
             <td class="<%= style_table_td %> text-center"><%= d.qty %></td>
           </tr>

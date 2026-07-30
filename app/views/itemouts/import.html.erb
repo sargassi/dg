@@ -1,10 +1,10 @@
-<% menu = [
-  { label: 'Uscite', path: itemouts_path, active: false, icon: 'output', can: 'manage_itemouts' },
-  { label: 'Import uscite', path: import_itemouts_path, active: true, icon: 'file_upload', can: 'manage_itemouts' },
-] %>
-<div class="<%= style_main_header_container %>">
-  <%= render partial: 'atoms/header', locals: {link: '/', label: 'Import uscite da Excel', menu: menu} %>
+<% content_for :page_header do %>
+<div class="flex items-center gap-2 px-0 py-0.5">
+  <h1 class="text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wide">
+    Import uscite da Excel
+  </h1>
 </div>
+<% end %>
 
 <section class="<%= style_main_cnt %> overflow-y-auto min-w-0" style="height: calc(100vh - 140px);">
   <% if @data.present? %>
@@ -18,15 +18,15 @@
     <div id="import-summary" class="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4 mb-4 text-sm">
       <div class="grid grid-cols-3 gap-4">
         <div>
-          <div class="text-xs text-slate-400 uppercase tracking-wide mb-1">Totale righe</div>
+          <div class="text-xs text-slate-400 tracking-wide mb-1">Totale righe</div>
           <div class="font-semibold"><%= @data[:rows].size %></div>
         </div>
         <div>
-          <div class="text-xs text-slate-400 uppercase tracking-wide mb-1">Valide</div>
+          <div class="text-xs text-slate-400 tracking-wide mb-1">Valide</div>
           <div class="font-semibold text-green-600"><%= valid_count %></div>
         </div>
         <div>
-          <div class="text-xs text-slate-400 uppercase tracking-wide mb-1">Non valide</div>
+          <div class="text-xs text-slate-400 tracking-wide mb-1">Non valide</div>
           <div class="font-semibold text-red-600"><%= invalid_count %></div>
         </div>
       </div>
@@ -84,7 +84,7 @@
 
           <div class="flex flex-wrap items-end gap-4">
             <div class="w-72">
-              <label class="text-xs text-slate-400 uppercase tracking-wide block mb-1">File Excel</label>
+              <label class="text-xs text-slate-400 tracking-wide block mb-1">File Excel</label>
               <%= f.file_field :file, class: style_import_field, required: true %>
             </div>
             <%= f.submit "Carica",

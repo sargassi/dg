@@ -3,15 +3,13 @@
 <% days = (first_day..last_day).to_a %>
 <% today = Date.today %>
 
-<% menu = [
-  { label: 'Dashboard', path: directory_dashboard_path, active: false, icon: 'dashboard', can: 'manage_directory' },
-  { label: 'Anagrafiche', path: directory_path, active: false, icon: 'contact_page', can: 'manage_directory' },
-  { label: 'Calendario', path: directory_events_path, active: true, icon: 'calendar_month', can: 'manage_events_calendar' },
-  { label: 'Cerca Eventi', path: search_directory_events_path, active: false, icon: 'search', can: 'manage_events_calendar' },
-] %>
-<div class="<%= style_main_header_container %>">
-  <%= render partial: 'atoms/header', locals: {link: '/', label: 'Calendario', menu: menu} %>
+<% content_for :page_header do %>
+<div class="flex items-center gap-2 px-0 py-0.5">
+  <h1 class="text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wide">
+    Calendario
+  </h1>
 </div>
+<% end %>
 
 <section class="<%= style_main_cnt %>">
   <%= turbo_frame_tag "calendar", data: { controller: "insertevent" } do %>
@@ -25,7 +23,7 @@
         <div class="overflow-x-auto">
           <div class="grid grid-cols-7 border-t border-l border-slate-200 min-w-[560px]">
             <% calendar_weekdays_short.each do |wd| %>
-              <div class="border-r border-b border-slate-200 px-1.5 py-2 text-center text-[11px] font-semibold text-slate-600 uppercase tracking-wide">
+              <div class="border-r border-b border-slate-200 px-1.5 py-2 text-center text-[11px] font-semibold text-slate-600 tracking-wide">
                 <%= wd %>
               </div>
             <% end %>
@@ -77,7 +75,7 @@
         </h4>
 
         <%= link_to new_directory_event_path(start_date: @todate, selected_date: @todate),
-              class: "flex flex-col w-16  items-center justify-center gap-1  p-2  bg-accent tracking-wider  uppercase text-xs cursor-pointer text-white",
+              class: "flex flex-col w-16  items-center justify-center gap-1  p-2  bg-accent tracking-wider  text-xs cursor-pointer text-white",
               data: { turbo_frame: "event_modal" } do %>
           <span class="material-symbols-outlined text-base">add</span>
         <% end %>
@@ -121,14 +119,14 @@
         <% if @week_events.any? %>
 
           <hr class="my-6 border-slate-200">
-          <h5 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-4">Prossimi giorni</h5>
+          <h5 class="text-xs font-semibold text-slate-500 tracking-wider mb-4">Prossimi giorni</h5>
 
           <div class="space-y-3">
             <% ((@todate + 1)..@end_of_week).each do |day| %>
               <% events_for_day = calendar_events_for_day(day, @week_events) %>
               <% if events_for_day.any? %>
                 <div class="mt-8 px-2">
-                  <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1"><%= l(day, format: '%A %d') %></p>
+                  <p class="text-xs font-semibold text-slate-500 tracking-wider mb-1"><%= l(day, format: '%A %d') %></p>
                   <div class="space-y-0.5">
                     <% events_for_day.each do |event| %>
                       <div class="flex items-center gap-1.5 px-1.5 py-0.5 hover:bg-slate-50 transition rounded-sm group">

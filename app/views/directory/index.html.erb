@@ -1,12 +1,10 @@
-<% menu = [
-  { label: 'Dashboard', path: directory_dashboard_path, active: false, icon: 'dashboard', can: 'manage_directory' },
-  { label: 'Anagrafiche', path: directory_path, active: true, icon: 'contact_page', can: 'manage_directory' },
-  { label: 'Calendario', path: directory_events_path, active: false, icon: 'calendar_month', can: 'manage_events_calendar' },
-  { label: 'Cerca Eventi', path: search_directory_events_path, active: false, icon: 'search', can: 'manage_events_calendar' },
-] %>
-<div class="<%= style_main_header_container %>">
-  <%= render partial: 'atoms/header', locals: {link: '/', label: 'Anagrafiche', menu: menu} %>
+<% content_for :page_header do %>
+<div class="flex items-center gap-2 px-0 py-0.5">
+  <h1 class="text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wide">
+    Anagrafiche
+  </h1>
 </div>
+<% end %>
 
 <section class="<%= style_main_cnt %> flex flex-col" style="height: calc(100vh - 140px);" data-controller="search-filter">
   <% if notice.present? %>
@@ -42,7 +40,7 @@
       <% { 'company_operator' => 'Operatori', 'customer' => 'Clienti', 'supplier' => 'Fornitori' }.each do |type, label| %>
         <% next unless grouped[type]&.any? %>
         <div class="mb-8 last:mb-0">
-          <h4 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2">
+          <h4 class="text-sm font-semibold text-slate-500 tracking-wider mb-4 flex items-center gap-2">
             <span class="material-symbols-outlined text-base">circle</span>
             <%= label %>
           </h4>

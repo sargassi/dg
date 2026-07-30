@@ -1,12 +1,10 @@
-<% menu = [
-  { label: 'Dashboard', path: inventories_dashboard_path, active: false, icon: 'dashboard', can: 'manage_inventory' },
-  { label: 'Ricerca magazzino', path: inventories_path, active: false, icon: 'inventory_2', can: 'manage_inventory' },
-  { label: 'Movimenti', path: inventories_movements_path, active: true, icon: 'swap_vert', can: 'manage_itemins' },
-  { label: 'Magazzini e ubiche', path: warehouses_path, active: false, icon: 'warehouse', can: 'manage_warehouses' },
-] %>
-<div class="<%= style_main_header_container %>">
-  <%= render partial: 'atoms/header', locals: { link: '/', label: 'Movimenti', menu: menu } %>
+<% content_for :page_header do %>
+<div class="flex items-center gap-2 px-0 py-0.5">
+  <h1 class="text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wide">
+    Movimenti
+  </h1>
 </div>
+<% end %>
 
 <section class="<%= style_main_cnt %> flex flex-col" style="height: calc(100vh - 140px);" data-controller="search-filter">
   <div class="flex gap-4 items-center mb-4 flex-none">
@@ -24,7 +22,7 @@
       <%= f.select :operationtype_id,
             options_for_select([["IN", 1], ["OUT", 2], ["SPOSTAMENTO", 3]], params[:operationtype_id]),
             { include_blank: "Tutte le operazioni" },
-            class: "border border-slate-300 outline-none px-3 py-1.5 text-xs rounded-lg min-w-[200px] uppercase dark:border-slate-600 #{params[:operationtype_id].present? ? 'bg-blue-400 dark:bg-blue-600 text-white dark:text-white' : 'bg-white dark:bg-slate-700 dark:text-slate-200'}",
+            class: "border border-slate-300 outline-none px-3 py-1.5 text-xs rounded-lg min-w-[200px] dark:border-slate-600 #{params[:operationtype_id].present? ? 'bg-blue-400 dark:bg-blue-600 text-white dark:text-white' : 'bg-white dark:bg-slate-700 dark:text-slate-200'}",
             data: { action: "change->search-filter#filter", search_filter_target: "select" } %>
       <%= f.date_field :date_from,
             value: params[:date_from],
@@ -37,7 +35,7 @@
       <%= f.select :operator_id,
             options_from_collection_for_select(@operators, :id, :name, params[:operator_id]),
             { include_blank: "Tutti gli operatori" },
-            class: "border border-slate-300 outline-none px-3 py-1.5 text-xs rounded-lg min-w-[200px] uppercase dark:border-slate-600 #{params[:operator_id].present? ? 'bg-blue-400 dark:bg-blue-600 text-white dark:text-white' : 'bg-white dark:bg-slate-700 dark:text-slate-200'}",
+            class: "border border-slate-300 outline-none px-3 py-1.5 text-xs rounded-lg min-w-[200px] dark:border-slate-600 #{params[:operator_id].present? ? 'bg-blue-400 dark:bg-blue-600 text-white dark:text-white' : 'bg-white dark:bg-slate-700 dark:text-slate-200'}",
             data: { action: "change->search-filter#filter", search_filter_target: "select" } %>
     <% end %>
     <span class="text-sm font-bold text-slate-700 whitespace-nowrap border border-slate-300 rounded-full px-3 py-1 dark:text-slate-200 dark:border-slate-600 dark:bg-slate-700" data-search-filter-target="count"><%= @pagy.count %> movimenti</span>
@@ -106,7 +104,7 @@
                     <%= details.first&.location&.code || "—" %>
                   <% end %>
                 </td>
-                <td class="<%= style_table_td %> text-blue-400 dark:text-blue-300 uppercase font-bold"><%= record.operator&.name %></td>
+                <td class="<%= style_table_td %> text-blue-400 dark:text-blue-300 font-bold"><%= record.operator&.name %></td>
                 <td class="<%= style_table_td %> font-mono text-blue-600 dark:text-blue-400 whitespace-nowrap"><%= doc_link if type == :itemin && total_qty > 0 %></td>
                 <td class="<%= style_table_td %> whitespace-nowrap">
                   <%= link_to "Apri", inventories_movement_modal_path(type:, id: record.id),

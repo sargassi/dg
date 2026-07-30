@@ -1,0 +1,34 @@
+<style>
+  body { font-family: Arial, sans-serif; }
+  .page { width: 100%; }
+  h1 { font-size: 18pt; color: #333; margin-bottom: 10mm; text-align: center; }
+  .grid { width: 100%; border-collapse: collapse; }
+  .grid td { width: 25%; text-align: center; vertical-align: top; padding: 2mm; }
+  .card { border: 1px solid #ccc; padding: 3mm; margin: 1mm; }
+  .card .qr svg { width: 20mm; height: 20mm; display: block; margin: 0 auto; }
+  .card .code { font-size: 8pt; font-weight: bold; font-family: monospace; color: #222; margin-top: 1mm; }
+  .card .name { font-size: 7pt; color: #666; margin-top: 0.5mm; }
+</style>
+
+<div class="page">
+  <h1>QR Code Archivio </h1>
+
+  <table class="grid">
+    <% @items.each_with_index do |item, idx| %>
+      <% if idx % 4 == 0 %><tr><% end %>
+      <td>
+        <div class="card">
+          <div class="qr"><%= item.qrcode_svg.html_safe %></div>
+          <div class="code"><%= item.code %></div>
+          <div class="name"><%= item.name %></div>
+        </div>
+      </td>
+      <% if (idx + 1) % 4 == 0 && (idx + 1) < @items.length %></tr><% end %>
+    <% end %>
+    <% remainder = @items.length % 4 %>
+    <% if remainder > 0 %>
+      <% (4 - remainder).times do %><td></td><% end %>
+      </tr>
+    <% end %>
+  </table>
+</div>

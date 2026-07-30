@@ -189,17 +189,20 @@ Rails.application.routes.draw do
       collection do
         get :qrcodes, defaults: { format: :pdf }
         get :warehouse_search
-        get :import
-        post :import_itemout
-        post :import_confirm
+         get :import
+         post :import_itemout
+         post :import_confirm
+         post :import_single
       end
       member do
         post :checkout
         post :checkin
         post :duplicate
+        get :gallery
       end
     end
     resources :categories, only: [:index, :create, :update, :destroy]
+    resources :item_types, only: [:create], controller: "item_types"
     resources :locations do
       collection do
         get :qrcodes, defaults: { format: :pdf }

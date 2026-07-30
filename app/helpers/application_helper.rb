@@ -2,6 +2,34 @@ module ApplicationHelper
 
   include Pagy::Frontend
 
+  def section_toolbar_items
+    case controller_path
+    when /^mainware/, /^items/, /^collections/, /^fabriclus/
+      mainware_section_toolbar rescue []
+    when /^inventories/, /^warehouses/, /^locations/, /^itemins/, /^itemouts/
+      inventories_section_toolbar rescue []
+    when /^production/, /^stages/
+      production_section_toolbar rescue []
+    when /^utilities/, /^eticheck/, /^eticamp/, /^etilab/, /^etigen/
+      utilities_section_toolbar rescue []
+    when /^directory/, /^admin/
+      directory_section_toolbar rescue []
+    else
+      []
+    end
+  end
+
+  def toolbar_link_class(item)
+    base = 'inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium whitespace-nowrap leading-tight border-b-2 '
+    if request.path == item[:path]
+      "#{base} text-accent dark:text-accent-300 border-accent"
+    elsif item[:type] == :action
+      "#{base} text-accent-600 dark:text-accent-400 hover:text-accent-700 dark:hover:text-accent-300 hover:border-accent-400 dark:hover:border-accent-500"
+    else
+      "#{base} text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 hover:border-slate-300 dark:hover:border-slate-500"
+    end
+  end
+
 
   #styles
     def style_side_ul
@@ -75,7 +103,7 @@ module ApplicationHelper
   end
 
   def style_main_cnt
-    'bg-white dark:bg-slate-800 rounded-none border-l border-r border-b border-slate-200 dark:border-slate-600 py-16 px-5'
+    'rounded-none p-4 bg-white dark:bg-slate-700/80'
   end
 
   def style_main_header_container

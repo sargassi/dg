@@ -9,7 +9,18 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  helper_method :safe_return_to_path
+
   private
+
+  def safe_return_to_path(fallback)
+    path = params[:return_to]
+    return fallback unless path.is_a?(String) && path.present?
+    return path if URI.parse(path).relative?
+    fallback
+  rescue URI::InvalidURIError
+    fallback
+  end
 
   def require_ability!(ability_name)
     unless current_user.can?(ability_name)

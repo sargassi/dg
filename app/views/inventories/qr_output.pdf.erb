@@ -1,0 +1,27 @@
+<style>
+  body { font-family: sans-serif; margin: 0; padding: 0; }
+  .grid { display: flex; flex-wrap: wrap; gap: 4mm; }
+  .card {
+    width: 45mm; height: 45mm;
+    border: 1px solid #ccc;
+    padding: 3mm;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .card img { width: 28mm; height: 28mm; display: block; }
+  .card .code { font-size: 7pt; margin-top: 1mm; font-family: monospace; }
+  .card .desc { font-size: 6pt; color: #666; }
+</style>
+<% qr = CreateQrService.new %>
+<div class="grid">
+  <% @items.each do |item| %>
+    <div class="card">
+      <%= image_tag(qr.call(item.gencode).to_data_url, style: "width:28mm;height:28mm;") %>
+      <div class="code"><%= item.gencode %></div>
+      <div class="desc"><%= item.collection&.description %></div>
+    </div>
+  <% end %>
+</div>

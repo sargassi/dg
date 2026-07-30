@@ -1,0 +1,17 @@
+<%= turbo_frame_tag "location_modal" do %>
+  <div class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center" data-controller="modal" data-action="keydown.esc->modal#close click->modal#backdropClose">
+    <div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700">
+        <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">Modifica Ubicazione</h2>
+        <%= link_to archive_locations_path, class: "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200", data: { turbo_frame: "_top" } do %>
+          <span class="material-symbols-outlined text-base">close</span>
+        <% end %>
+      </div>
+      <div class="p-4">
+        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 shadow-sm p-6">
+          <%= render 'form', location: @location %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

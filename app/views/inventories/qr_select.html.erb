@@ -1,0 +1,137 @@
+<% content_for :page_header do %>
+<div class="flex items-center gap-2 px-0 py-0.5">
+  <h1 class="text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wide">
+    Seleziona articoli per QR
+  </h1>
+</div>
+<% end %>
+
+<section class="<%= style_main_cnt %> flex flex-row" style="height: calc(100vh - 110px);" data-controller="qr-select search-filter">
+
+  <%# Main content (search + table) %>
+  <div class="flex flex-col flex-1 min-w-0">
+
+  <%# Search bar %>
+  <div class="flex gap-4 items-center mb-4 flex-none">
+    <%= form_with url: inventories_qr_select_path, method: :get,
+                  data: { search_filter_target: "form", turbo_frame: "items-table" },
+                  class: "flex items-center gap-3" do |f| %>
+      <div class="relative">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none">search</span>
+        <%= f.search_field :q,
+              value: params[:q],
+              placeholder: "Cerca in tutte le colonne",
+              class: "#{style_search_input} rounded-lg pl-10 font-mono text-blue-600",
+              data: { action: "input->search-filter#filter", search_filter_target: "input" } %>
+      </div>
+      <%= f.collection_select :collection_id, @collections, :id, :description,
+            { include_blank: "Tutte le collezioni", selected: params[:collection_id] },
+            class: "border border-accent-100 outline-none p-2 text-xs bg-white rounded-lg shadow-sm w-40",
+            data: { search_filter_target: "select", action: "change->search-filter#filter" } %>
+      <%= f.select :qr_printed,
+            options_for_select([["Tutti", ""], ["Stampati", "true"], ["Non stampati", "false"]], params[:qr_printed]),
+            {},
+            class: "border border-accent-100 outline-none p-2 text-xs bg-white rounded-lg shadow-sm w-36",
+            data: { search_filter_target: "select", action: "change->search-filter#filter" } %>
+    <% end %>
+    <span class="text-sm font-bold text-slate-700 whitespace-nowrap border border-slate-300 rounded-full px-3 py-1" data-search-filter-target="count"><%= @pagy.count %> articoli</span>
+  </div>
+
+  <style>
+    turbo-frame#items-table[busy] .items-table-content { display: none; }
+    turbo-frame#items-table[busy] .items-table-loader { display: flex; }
+  </style>
+  <%= turbo_frame_tag "items-table", class: "flex flex-col flex-1 min-h-0", data: { action: "turbo:frame-load->search-filter#onFrameLoad turbo:frame-load->qr-select#syncFrame" } do %>
+    <div class="items-table-content flex flex-col flex-1 min-h-0">
+      <span hidden data-filtered-count><%= @pagy.count %></span>
+      <div class="overflow-x-auto flex-1 min-h-0 overflow-y-auto">
+        <table class="min-w-full">
+          <thead>
+            <tr>
+              <th class="<%= style_table_th %> sticky top-0 z-10 w-10"></th>
+              <th class="<%= style_table_th %> sticky top-0 z-10 w-12">Stampato</th>
+              <th class="<%= style_table_th %> sticky top-0 z-10 w-12">Img</th>
+              <% %w[Gencode Item Fabric Var Descrizione Tg Fabric Color Materiale Note Collezione].each do |h| %>
+                <th class="<%= style_table_th %> sticky top-0 z-10"><%= h %></th>
+              <% end %>
+            </tr>
+          </thead>
+          <%= render partial: 'qr_select_item_row', collection: @itemz, as: :item %>
+        </table>
+      </div>
+
+      <% if @pagy.pages > 1 %>
+        <div class="flex-none flex items-center gap-0.5 justify-end pt-3 pb-1">
+          <% if @pagy.prev %>
+            <a href="<%= pagy_url_for(@pagy, @pagy.prev) %>"
+               data-turbo-frame="items-table"
+               class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm text-slate-700 hover:bg-slate-100 transition-colors">
+              <span class="material-symbols-outlined text-base">chevron_left</span>
+            </a>
+          <% else %>
+            <span class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm text-slate-300 pointer-events-none">
+              <span class="material-symbols-outlined text-base">chevron_left</span>
+            </span>
+          <% end %>
+
+          <% @pagy.series.each do |pag_item| %>
+            <% if pag_item.is_a?(Integer) %>
+              <a href="<%= pagy_url_for(@pagy, pag_item) %>"
+                 data-turbo-frame="items-table"
+                 class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm text-slate-700 hover:bg-slate-100 transition-colors">
+                <%= pag_item %>
+              </a>
+            <% elsif pag_item == :gap %>
+              <span class="px-1 text-slate-400 text-xs">…</span>
+            <% elsif pag_item == @pagy.page %>
+              <span class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm bg-accent text-white font-medium">
+                <%= pag_item %>
+              </span>
+            <% end %>
+          <% end %>
+
+          <% if @pagy.next %>
+            <a href="<%= pagy_url_for(@pagy, @pagy.next) %>"
+               data-turbo-frame="items-table"
+               class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm text-slate-700 hover:bg-slate-100 transition-colors">
+              <span class="material-symbols-outlined text-base">chevron_right</span>
+            </a>
+          <% else %>
+            <span class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm text-slate-300 pointer-events-none">
+              <span class="material-symbols-outlined text-base">chevron_right</span>
+            </span>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="items-table-loader hidden justify-center items-center py-12">
+      <svg class="animate-spin h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      <span class="ml-3 text-slate-600">Ricerca in corso...</span>
+    </div>
+  <% end %>
+  </div>
+
+  <%# Sidebar basket %>
+  <div data-qr-select-target="basket"
+       class="hidden w-96 flex-shrink-0 ml-4 bg-white border-l-2 border-accent shadow-lg flex flex-col overflow-hidden">
+    <div class="px-4 py-3 border-b border-slate-200 flex items-center justify-between">
+      <span class="text-sm font-semibold text-slate-700" data-qr-select-target="basketCount">0 articoli selezionati</span>
+      <span class="material-symbols-outlined text-slate-400 text-lg">qr_code</span>
+    </div>
+    <div class="flex-1 overflow-y-auto px-4 py-2 space-y-2" data-qr-select-target="basketItems">
+    </div>
+    <div class="px-4 py-3 border-t border-slate-200">
+      <%= form_tag inventories_generate_qr_path, method: :post, data: { qr_select_target: "form" }, target: "_blank" do %>
+        <div data-qr-select-target="hiddenInputs"></div>
+        <button type="submit" class="w-full px-4 py-2 text-sm tracking-wide text-white rounded-sm bg-slate-700 hover:bg-slate-800 font-medium flex items-center justify-center gap-2">
+          <span class="material-symbols-outlined text-base">download</span>
+          Scarica PDF
+        </button>
+      <% end %>
+    </div>
+  </div>
+</section>

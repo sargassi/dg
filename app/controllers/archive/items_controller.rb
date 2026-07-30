@@ -5,14 +5,16 @@ module Archive
 
     def index
       @categories = Archive::Category.order(:name)
+      @item_types = Archive::ItemType.order(:name)
       @locations = Archive::Location.where(enabled: true).order(:code)
-      @items = Archive::Item.includes(:category, :location)
+      @items = Archive::Item.includes(:category, :location, :item_type)
                             .search(params[:q])
                             .by_category(params[:category_id])
+                            .by_item_type(params[:item_type_id])
                             .by_location(params[:location_id])
                             .by_status(params[:status])
                             .order(created_at: :desc)
-      @pagy, @items = pagy(@items, items: 50)
+      @pagy, @items = pagy(@items, items: 20)
 
       @new_item = Archive::Item.new
     end
@@ -24,10 +26,7 @@ module Archive
         if params[:archive_item][:pictures].present?
           Array(params[:archive_item][:pictures]).reject(&:blank?).each { |pic| @item.pictures.attach(pic) }
         end
-        respond_to do |format|
-          format.turbo_stream { render turbo_stream: turbo_stream.refresh }
-          format.html { redirect_to archive_items_path, notice: "Articolo creato" }
-        end
+        redirect_to archive_items_path(page: params[:page]), notice: "Articolo creato"
       else
         render :new, status: :unprocessable_entity
       end
@@ -50,10 +49,7 @@ module Archive
         @item.pictures.attach(new_files) if new_files.any?
       end
       if @item.update(item_params.except(:pictures))
-        respond_to do |format|
-          format.turbo_stream { render turbo_stream: turbo_stream.refresh }
-          format.html { redirect_to archive_items_path, notice: "Articolo aggiornato" }
-        end
+        redirect_to archive_items_path(page: params[:page]), notice: "Articolo aggiornato"
       else
         render :edit, status: :unprocessable_entity
       end
@@ -65,21 +61,22 @@ module Archive
         name: @original.name,
         description: @original.description,
         archive_category_id: @original.archive_category_id,
+        archive_item_type_id: @original.archive_item_type_id,
         archive_location_id: @original.archive_location_id,
         notes: @original.notes
       )
       if @item.save
         @original.pictures.each { |pic| @item.pictures.attach(pic.blob) } if @original.pictures.attached?
-        redirect_to archive_items_path, notice: "Articolo duplicato (#{@item.code})"
+        redirect_to archive_items_path(page: params[:page]), notice: "Articolo duplicato (#{@item.code})"
       else
-        redirect_to archive_items_path, alert: "Errore duplicazione: #{@item.errors.full_messages.join(", ")}"
+        redirect_to archive_items_path(page: params[:page]), alert: "Errore duplicazione: #{@item.errors.full_messages.join(", ")}"
       end
     end
 
     def destroy
       @item = Archive::Item.find(params[:id])
       @item.destroy!
-      redirect_to archive_items_path, notice: "Articolo eliminato"
+      redirect_to archive_items_path(page: params[:page]), notice: "Articolo eliminato"
     end
 
     def checkout
@@ -92,7 +89,7 @@ module Archive
         notes: params[:notes]
       )
       @item.update!(status: "out")
-      redirect_to archive_items_path, notice: "Articolo preso in carico da #{params[:out_to]}"
+      redirect_to archive_items_path(page: params[:page]), notice: "Articolo preso in carico da #{params[:out_to]}"
     end
 
     def checkin
@@ -104,7 +101,7 @@ module Archive
         notes: params[:notes]
       )
       @item.update!(status: "in")
-      redirect_to archive_items_path, notice: "Articolo rientrato"
+      redirect_to archive_items_path(page: params[:page]), notice: "Articolo rientrato"
     end
 
     def qrcodes
@@ -135,7 +132,7 @@ module Archive
       end
 
       @items = @items.distinct
-      @pagy, @items = pagy(@items, items: 50)
+      @pagy, @items = pagy(@items, items: 20)
     end
 
     def new
@@ -197,7 +194,7 @@ module Archive
       if errors.any?
         redirect_to import_archive_items_path, alert: "Creati #{created.size}, errori: #{errors.join("; ")}"
       else
-        redirect_to archive_items_path, notice: "#{created.size} articoli importati in archivio: #{created.join(", ")}"
+        redirect_to archive_items_path(page: params[:page]), notice: "#{created.size} articoli importati in archivio: #{created.join(", ")}"
       end
     end
 
@@ -220,10 +217,25 @@ module Archive
       source_warehouse_id = params[:warehouse_id].presence
       source_location_id   = params[:location_id].presence
 
-      if source_warehouse_id.present?
-        StockLevel.adjust_qty!(item.gencode, source_warehouse_id, source_location_id, -1)
-      end
-      StockLevel.adjust_qty!(item.gencode, archive_warehouse.id, archive_location.id, 1)
+      movement = Itemmovement.new(
+        indate: Date.current,
+        operator: current_user,
+        source_warehouse_id: source_warehouse_id,
+        source_location_id: source_location_id,
+        dest_warehouse_id: archive_warehouse.id,
+        dest_location_id: archive_location.id
+      )
+      movement.itemmovements_details.build(
+        itemcode: item.gencode,
+        item_id: item.id,
+        collection_id: item.collection_id,
+        qty: 1,
+        warehouse_id: source_warehouse_id,
+        location_id: source_location_id,
+        operationtype_id: 2
+      )
+      movement.save!
+      CreateInventoriesFromItemmovement.new.call(movement)
 
       @archive_item = Archive::Item.create!(
         name: item.description.presence || item.gencode,
@@ -241,20 +253,32 @@ module Archive
       render :edit
     end
 
+    def gallery
+      @item = Archive::Item.find(params[:id])
+      @index = (params[:index] || 0).to_i
+      @pictures = @item.pictures
+      render layout: false
+    end
+
     def warehouse_search
       q = "%#{params[:q]}%"
       items = ::Item.where(
         "gencode LIKE :q OR itemcode LIKE :q OR fabricode LIKE :q OR varcode LIKE :q OR description LIKE :q",
         q: q
-      ).select(:id, :gencode, :itemcode, :fabricode, :varcode, :description, :collection_id).limit(20)
+      ).includes(:collection).select(:id, :gencode, :itemcode, :fabricode, :varcode, :description, :collection_id).limit(20)
 
       gencodes = items.map(&:gencode).compact
 
-      stock_qty = StockLevel.where(gencode: gencodes).positive.group(:gencode)
+      archive_wh_id = Warehouse.find_by(code: "archivio")&.id
+
+      stock_qty = StockLevel.where(gencode: gencodes).positive
+        .where.not(warehouse_id: archive_wh_id)
+        .group(:gencode)
         .select(:gencode, Arel.sql("SUM(current_qty) AS total_qty"))
         .index_by(&:gencode)
 
       positions = StockLevel.where(gencode: gencodes).positive
+        .where.not(warehouse_id: archive_wh_id)
         .joins(:warehouse).left_joins(:location)
         .select(:gencode, :warehouse_id, :location_id, "warehouses.code AS warehouse_code", "locations.code AS location_code")
         .group_by(&:gencode)
@@ -271,6 +295,7 @@ module Archive
           description: item.description,
           label: "#{item.itemcode}#{item.fabricode}#{item.varcode}",
           collection_id: item.collection_id,
+          collection: item.collection&.description&.upcase,
           qty_remaining: stock_qty[item.gencode]&.total_qty || 0,
           warehouse_id: pos&.warehouse_id,
           location_id: pos&.location_id,
@@ -283,7 +308,7 @@ module Archive
     private
 
     def item_params
-      params.require(:archive_item).permit(:name, :description, :archive_category_id, :archive_location_id, :notes, :status, pictures: [])
+      params.require(:archive_item).permit(:name, :description, :archive_category_id, :archive_location_id, :archive_item_type_id, :notes, :status, pictures: [])
     end
   end
 end

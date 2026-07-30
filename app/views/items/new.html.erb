@@ -1,7 +1,10 @@
-<% menu = mainware_menu(active: 'nuovo_articolo') %>
-<div class="<%= style_main_header_container %>">
-  <%= render partial: 'atoms/header', locals: { link: '/', label: 'Articoli / Nuovo', menu: menu } %>
+<% content_for :page_header do %>
+<div class="flex items-center gap-2 px-0 py-0.5">
+  <h1 class="text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wide">
+    Articoli / Nuovo
+  </h1>
 </div>
+<% end %>
 
 <section class="<%= style_main_cnt %>">
   <div class="flex flex-col lg:flex-row gap-8 items-start" data-controller="item-clone qr-scanner" data-item-clone-url-value="<%= autocomplete_items_path %>">
@@ -13,7 +16,7 @@
       <div class="border-2 border-dashed border-slate-200 bg-slate-50 rounded-sm px-6 py-4">
         <div class="flex items-center gap-2 mb-3">
           <span class="material-symbols-outlined text-base text-slate-400">qr_code_scanner</span>
-          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Scansiona QR articolo simile</span>
+          <span class="text-xs font-semibold text-slate-500 tracking-wide">Scansiona QR articolo simile</span>
         </div>
         <button type="button"
                 data-action="click->qr-scanner#scanRow"
@@ -27,11 +30,11 @@
       <div class="border-2 border-dashed border-slate-200 bg-slate-50 rounded-sm px-6 py-4">
         <div class="flex items-center gap-2 mb-3">
           <span class="material-symbols-outlined text-base text-slate-400">content_copy</span>
-          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Precompila da esistente</span>
-          <span class="ml-auto text-[10px] text-slate-400 bg-slate-200 px-2 py-0.5 rounded-sm uppercase tracking-wide font-medium">Opzionale</span>
+          <span class="text-xs font-semibold text-slate-500 tracking-wide">Precompila da esistente</span>
+          <span class="ml-auto text-[10px] text-slate-400 bg-slate-200 px-2 py-0.5 rounded-sm tracking-wide font-medium">Opzionale</span>
         </div>
 
-        <label class="text-xs text-slate-400 uppercase tracking-wide block mb-1">Cerca articolo</label>
+        <label class="text-xs text-slate-400 tracking-wide block mb-1">Cerca articolo</label>
         <div class="relative">
           <input type="text"
             data-item-clone-target="input"

@@ -1,7 +1,10 @@
-<% menu = mainware_menu(active: 'articoli') + [{ label: 'Ubiche', path: locations_path, active: false, icon: 'location_on', can: 'manage_locations' }] %>
-<div class="<%= style_main_header_container %>">
-  <%= render partial: 'atoms/header', locals: {link: '/', label: 'Generale / Import', menu: menu} %>
+<% content_for :page_header do %>
+<div class="flex items-center gap-2 px-0 py-0.5">
+  <h1 class="text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wide">
+    Generale / Import
+  </h1>
 </div>
+<% end %>
 
 <section class="<%= style_main_cnt %>">
   <div class="max-w-md mx-auto bg-white border border-slate-200 rounded-lg p-8 text-center">

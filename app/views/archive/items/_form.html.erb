@@ -1,4 +1,5 @@
-<%= form_with model: item, url: item.persisted? ? archive_item_path(item) : archive_items_path, class: "contents", multipart: true, data: (local_assigns[:turbo_frame] ? { turbo_frame: turbo_frame, controller: "camera-capture", camera_capture_param_name_value: "archive_item[pictures]" } : { controller: "camera-capture", camera_capture_param_name_value: "archive_item[pictures]" }) do |form| %>
+<%= form_with model: item, url: item.persisted? ? archive_item_path(item) : archive_items_path, class: "contents", multipart: true, data: { turbo: false, controller: "camera-capture", camera_capture_param_name_value: "archive_item[pictures]" } do |form| %>
+  <%= hidden_field_tag :page, params[:page] %>
   <% if item.errors.any? %>
     <div id="error_explanation" class="bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 px-3 py-2 font-medium rounded-sm mt-3">
       <ul class="list-disc list-inside text-xs">
@@ -30,27 +31,28 @@
       <%= form.text_area :description, class: input_class, rows: 3, placeholder: "Descrizione..." %>
     </div>
 
-    <div data-controller="category-cascade">
+    <div>
+      <div class="flex items-center justify-between mb-1">
+        <%= form.label :archive_item_type_id, "Tipologia", class: label_class %>
+        <button type="button" onclick="document.getElementById('new-type-modal').classList.remove('hidden')" class="text-xs text-accent hover:text-accent-700 flex items-center gap-0.5">
+          <span class="material-symbols-outlined text-sm">add_circle</span>
+        </button>
+      </div>
+      <%= form.collection_select :archive_item_type_id, Archive::ItemType.order(:name), :id, :name,
+            { include_blank: "Seleziona tipologia" },
+            class: select_class %>
+    </div>
+
+    <div>
       <div class="flex items-center justify-between mb-1">
         <%= form.label :archive_category_id, "Categoria", class: label_class %>
         <button type="button" onclick="document.getElementById('new-cat-modal').classList.remove('hidden')" class="text-xs text-accent hover:text-accent-700 flex items-center gap-0.5">
           <span class="material-symbols-outlined text-sm">add_circle</span>
         </button>
       </div>
-      <%= form.collection_select :archive_category_id, Archive::Category.roots.order(:name), :id, :name,
+      <%= form.collection_select :archive_category_id, Archive::Category.order(:name), :id, :name,
             { include_blank: "Seleziona categoria" },
-            class: select_class,
-            data: { category_cascade_target: "parentSelect", action: "change->category-cascade#change" } %>
-
-      <div data-category-cascade-target="childGroup" class="hidden mt-3">
-        <label class="text-xs text-slate-400 tracking-wide block mb-1">Sottocategoria</label>
-        <select name="archive_item[archive_category_id]" data-category-cascade-target="childSelect" data-action="change->category-cascade#childChange" class="<%= select_class %>">
-          <option value="">—</option>
-          <% Archive::Category.where.not(parent_id: nil).includes(:parent).order(:name).each do |cat| %>
-            <option value="<%= cat.id %>" data-parent-id="<%= cat.parent_id %>"><%= cat.name %></option>
-          <% end %>
-        </select>
-      </div>
+            class: select_class %>
     </div>
 
     <div>

@@ -2,6 +2,7 @@ import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
   static targets = ["modal", "video", "preview", "input", "confirmBtn", "counter", "flash", "summary"];
+  static values = { paramName: { type: String, default: "item[pictures]" } }
 
   connect() {
     this.photos = [];
@@ -160,7 +161,7 @@ export default class extends Controller {
 
     const formData = event.detail.fetchOptions.body;
     this._pendingPhotos.forEach((blob, i) => {
-      formData.append("item[pictures][]", blob, `camera_${i}.jpg`);
+      formData.append(`${this.paramNameValue}[]`, blob, `camera_${i}.jpg`);
     });
   }
 }

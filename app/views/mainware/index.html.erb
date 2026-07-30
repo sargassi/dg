@@ -1,7 +1,10 @@
-<% menu = mainware_menu(active: 'articoli') %>
-<div class="<%= style_main_header_container %>">
-  <%= render partial: 'atoms/header', locals: {link: '/', label: 'Articoli', menu: menu} %>
+<% content_for :page_header do %>
+<div class="flex items-center gap-2 px-0 py-0.5">
+  <h1 class="text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wide">
+    Articoli
+  </h1>
 </div>
+<% end %>
 
 <section class="<%= style_main_cnt %> flex flex-col" style="height: calc(100vh - 110px);" data-controller="search-filter">
   <div class="flex gap-4 items-center mb-4 flex-none">

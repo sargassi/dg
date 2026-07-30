@@ -1,12 +1,10 @@
-<% menu = [
-  { label: 'Dashboard', path: inventories_dashboard_path, active: false, icon: 'dashboard', can: 'manage_inventory' },
-  { label: 'Ricerca magazzino', path: inventories_path, active: true, icon: 'inventory_2', can: 'manage_inventory' },
-  { label: 'Movimenti', path: inventories_movements_path, active: false, icon: 'swap_vert', can: 'manage_itemins' },
-  { label: 'Magazzini e ubiche', path: warehouses_path, active: false, icon: 'warehouse', can: 'manage_warehouses' },
-] %>
-<div class="<%= style_main_header_container %>">
-  <%= render partial: 'atoms/header', locals: {link: '/', label: 'Inventario / Import / Verifica', menu: menu} %>
+<% content_for :page_header do %>
+<div class="flex items-center gap-2 px-0 py-0.5">
+  <h1 class="text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wide">
+    Inventario / Import / Verifica
+  </h1>
 </div>
+<% end %>
 
 <% valid_rows = @data[:rows].select { |r| r[:_valid] }
    invalid_rows = @data[:rows].select { |r| !r[:_valid] }
@@ -60,7 +58,7 @@
     <div class="space-y-6 mb-8">
       <% if wh_new.any? || wh_existing.any? %>
         <div>
-          <h3 class="text-sm font-semibold text-slate-700 uppercase tracking-wide mb-2">Warehouse</h3>
+          <h3 class="text-sm font-semibold text-slate-700 tracking-wide mb-2">Warehouse</h3>
           <div class="border border-slate-200 rounded-lg divide-y divide-slate-100">
             <% if wh_new.any? %>
               <div class="bg-green-50 px-4 py-2">
@@ -92,7 +90,7 @@
 
       <% if coll_new.any? || coll_existing.any? %>
         <div>
-          <h3 class="text-sm font-semibold text-slate-700 uppercase tracking-wide mb-2">Collection</h3>
+          <h3 class="text-sm font-semibold text-slate-700 tracking-wide mb-2">Collection</h3>
           <div class="border border-slate-200 rounded-lg divide-y divide-slate-100">
             <% if coll_new.any? %>
               <div class="bg-green-50 px-4 py-2">
@@ -125,7 +123,7 @@
 
     <% if invalid_rows.any? %>
       <div class="mb-8">
-        <h3 class="text-sm font-semibold text-slate-700 uppercase tracking-wide text-left mb-2">Righe non valide (saranno saltate)</h3>
+        <h3 class="text-sm font-semibold text-slate-700 tracking-wide text-left mb-2">Righe non valide (saranno saltate)</h3>
         <div class="overflow-x-auto border border-red-200 rounded-lg">
           <table class="min-w-full text-xs">
             <thead>

@@ -28,7 +28,21 @@
             </section>
 
             <section class="home px-4 my-2 ml-16 grow">
-            <%= render partial: 'layouts/menus/top/structure' %>
+            <div class="flex items-center justify-between px-3 py-2.5 bg-slate-100 dark:bg-slate-700/80 border-b border-slate-300 dark:border-slate-600">
+              <%= yield(:page_header) %>
+              <% if current_user.present? %>
+              <div class="flex items-center gap-1.5">
+                <span class="text-[10px] text-slate-500 dark:text-slate-400 font-medium truncate max-w-28"><%= current_user.email %></span>
+                <%= link_to edit_profile_path, data: { turbo_frame: "profile_modal" }, class: "w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-accent dark:hover:text-accent-300 transition rounded-sm hover:bg-white/60 dark:hover:bg-slate-600" do %>
+                  <span class="material-symbols-outlined text-sm">person</span>
+                <% end %>
+                <a href="#" data-action="click->theme#toggle" class="w-6 h-6 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-400 transition rounded-sm hover:bg-white/60 dark:hover:bg-slate-600">
+                  <span class="material-symbols-outlined text-sm" data-theme-target="icon">light_mode</span>
+                </a>
+              </div>
+              <% end %>
+            </div>
+            <%= render 'atoms/section_toolbar', items: section_toolbar_items %>
             <%= yield %>
             </section>
         </main>

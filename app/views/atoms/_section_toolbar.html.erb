@@ -1,0 +1,20 @@
+<% if local_assigns[:items] && items.any? %>
+  <div class="sticky top-0 z-40 bg-white dark:bg-slate-900 overflow-x-auto">
+    <div class="bg-slate-100 flex items-center gap-3 px-2 py-2">
+      <% items.each_with_index do |item, idx| %>
+        <%= link_to item[:path],
+              class: toolbar_link_class(item),
+              data: { turbo_frame: "_top" },
+              title: item[:label] do %>
+          <% if item[:icon] %>
+            <span class="material-symbols-outlined text-sm leading-none flex-shrink-0"><%= item[:icon] %></span>
+          <% end %>
+          <span class="truncate max-w-[120px]"><%= item[:label] %></span>
+        <% end %>
+        <% if idx < items.length - 1 && item[:group] != items[idx + 1][:group] %>
+          <span class="w-px h-4 bg-slate-300 dark:bg-slate-600 mx-1.5 flex-shrink-0"></span>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+<% end %>

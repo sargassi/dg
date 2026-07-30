@@ -1,15 +1,10 @@
-<% menu = [
-  { label: 'Dashboard Etichette', path: utilities_dashboard_path, active: false, icon: 'dashboard', can: 'manage_utilities_labels' },
-  { label: 'Proforma', path: utilities_etichette_path, active: false, icon: 'label', can: 'print_labels_proforma' },
-  { label: 'Generiche', path: utilities_etichette_gen_path, active: false, icon: 'description', can: 'print_labels_gen' },
-  { label: 'Laboratorio', path: utilities_etichette_lab_path, active: true, icon: 'science', can: 'print_labels_lab' },
-  { label: 'Campione', path: utilities_etichette_camp_path, active: false, icon: 'agriculture', can: 'print_labels_camp' },
-  { label: 'Taglio', path: utilities_etichette_check_path, active: false, icon: 'agriculture', can: 'print_labels_check' },
-] %>
-
-<div class="<%= style_main_header_container %>">
-    <%= render partial: 'atoms/header', locals: {link: '/', label: 'Etichette laboratorio', menu: menu} %>
+<% content_for :page_header do %>
+<div class="flex items-center gap-2 px-0 py-0.5">
+  <h1 class="text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wide">
+    Etichette laboratorio
+  </h1>
 </div>
+<% end %>
 <%= render partial: 'atoms/form_import_lab', locals: {pdf: 'y'} %>
 
 <section class="<%= style_main_cnt %>">

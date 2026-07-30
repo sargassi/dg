@@ -1,0 +1,52 @@
+<% content_for :page_header do %>
+<div class="flex items-center gap-2 px-0 py-0.5">
+  <h1 class="text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wide">
+    QR Codici Selezionati
+  </h1>
+</div>
+<% end %>
+
+<section class="<%= style_main_cnt %>">
+  <div class="flex items-center gap-3 mb-6 no-print">
+    <span class="text-sm text-slate-600"><%= @items.count %> articoli selezionati</span>
+    <button onclick="window.print()" class="text-xs bg-accent text-white px-4 py-2 rounded-sm font-medium hover:opacity-90 transition flex items-center gap-1">
+      <span class="material-symbols-outlined text-base">print</span>
+      Stampa
+    </button>
+    <%= link_to inventories_qr_output_path(format: :pdf), class: "text-xs bg-slate-700 text-white px-4 py-2 rounded-sm font-medium hover:opacity-90 transition flex items-center gap-1" do %>
+      <span class="material-symbols-outlined text-base">download</span>
+      Scarica PDF
+    <% end %>
+    <%= link_to inventories_qr_select_path, class: "text-xs text-slate-500 hover:text-accent transition ml-auto flex items-center gap-1" do %>
+      <span class="material-symbols-outlined text-base">arrow_back</span>
+      Torna alla selezione
+    <% end %>
+  </div>
+
+  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+    <% @items.each do |item| %>
+      <div class="bg-white border border-slate-200 rounded-sm p-3 flex flex-col items-center text-center">
+        <% if item.qrcode_svg.present? %>
+          <span class="inline-block w-24 h-24 mb-2"><%= item.qrcode_svg.html_safe %></span>
+        <% end %>
+        <div class="text-xs font-mono text-blue-600 font-semibold truncate w-full"><%= item.gencode %></div>
+        <div class="text-[10px] text-slate-500 truncate w-full"><%= item.description %></div>
+        <div class="text-[10px] text-slate-400 truncate w-full"><%= item.collection&.description %></div>
+      </div>
+    <% end %>
+    <% if @items.empty? %>
+      <div class="col-span-full flex items-center justify-center py-20 text-sm text-slate-400 italic">
+        Nessun articolo selezionato.
+        <%= link_to "Torna alla selezione", inventories_qr_select_path, class: "text-accent hover:underline ml-1 not-italic" %>
+      </div>
+    <% end %>
+  </div>
+</section>
+
+<style media="print">
+  body { background: white !important; }
+  section { background: white !important; }
+  .no-print { display: none !important; }
+  .grid { gap: 8px; }
+  .grid > div { break-inside: avoid; page-break-inside: avoid; }
+</style>

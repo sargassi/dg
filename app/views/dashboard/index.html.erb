@@ -1,27 +1,12 @@
-<% menu = [{ label: 'Home', path: '/', active: true, icon: 'home' }] %>
-<% if current_user.godlike? %>
-  <% menu << { label: 'Utilità', path: utilities_dashboard_path, active: false, icon: 'description', can: 'manage_utilities_labels' } %>
-<% end %>
-<% if current_user.godlike? %>
-  <% menu << { label: 'Produzione', path: production_dashboard_path, active: false, icon: 'checklist_rtl', can: 'view_production' } %>
-<% end %>
-<% if current_user.godlike? %>
-  <% menu << { label: 'Main', path: mainware_dashboard_path, active: false, icon: 'shelf_position', can: 'manage_mainware' } %>
-<% end %>
-<% if current_user.godlike? %>
-  <% menu << { label: 'Magazzino', path: inventories_dashboard_path, active: false, icon: 'inventory_2', can: 'manage_inventory' } %>
-<% end %>
-<% if current_user.godlike? %>
-  <% menu << { label: 'Rubrica', path: directory_path, active: false, icon: 'contact_page', can: 'manage_directory' } %>
-<% end %>
-<% if current_user.godlike? %>
-  <% menu << { label: 'Admin', path: admin_users_path, active: false, icon: 'admin_panel_settings' } %>
-<% end %>
-<div class="<%= style_main_header_container %>">
-  <%= render partial: 'atoms/header', locals: { link: '/', label: "ok'am srl", menu: menu } %>
+<% content_for :page_header do %>
+<div class="flex items-center gap-2 px-0 py-0.5">
+  <h1 class="text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wide">
+    ok'am srl
+  </h1>
 </div>
+<% end %>
 
-<section class="<%= style_main_cnt %> space-y-8">
+<section class="bg-white rounded-none p-4">
   <% if current_user.godlike? || current_user.has_role?(:ufficio) %>
     <%= render partial: 'dashboard/atoms/ufficio' %>
   <% elsif current_user.has_role?(:lab) %>

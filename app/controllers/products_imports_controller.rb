@@ -6,15 +6,17 @@ class ProductsImportsController < ApplicationController
   end
 
   def create
-    begin
-    @products_import = ProductsImport.new(params[:products_import])
-    rescue => e
-      puts e.inspect
-    end
+    @products_import = ProductsImport.new(products_import_params)
     if @products_import.save
       redirect_to utilities_etichette_path
     else
       render :new
     end
+  end
+
+  private
+
+  def products_import_params
+    params.require(:products_import).permit(:file)
   end
 end

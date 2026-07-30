@@ -1,12 +1,10 @@
-<% menu = [
-  { label: 'Dashboard', path: inventories_dashboard_path, active: true, icon: 'dashboard', can: 'manage_inventory' },
-  { label: 'Ricerca magazzino', path: inventories_path, active: false, icon: 'inventory_2', can: 'manage_inventory' },
-  { label: 'Movimenti', path: inventories_movements_path, active: false, icon: 'swap_vert', can: 'manage_itemins' },
-  { label: 'Magazzini e ubiche', path: warehouses_path, active: false, icon: 'warehouse', can: 'manage_warehouses' },
-] %>
-<div class="<%= style_main_header_container %>">
-  <%= render partial: 'atoms/header', locals: { link: '/', label: 'Magazzino', menu: menu } %>
+<% content_for :page_header do %>
+<div class="flex items-center gap-2 px-0 py-0.5">
+  <h1 class="text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wide">
+    Magazzino
+  </h1>
 </div>
+<% end %>
 
 <section class="<%= style_main_cnt %> space-y-8">
   <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -113,7 +111,7 @@
     </h3>
     <div class="grid grid-cols-3 gap-4 px-0">
       <div>
-        <h4 class="text-xs font-semibold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider mb-2 flex items-center gap-1">
+        <h4 class="text-xs font-semibold text-emerald-700 dark:text-emerald-400 tracking-wider mb-2 flex items-center gap-1">
           <span class="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
           Entrate
         </h4>
@@ -133,7 +131,7 @@
                     <% end %>
                   </div>
                 </div>
-                <div class="text-[10px] text-slate-500 dark:text-slate-300 ml-2 whitespace-nowrap uppercase font-bold"><%= mov.operator&.name %></div>
+                <div class="text-[10px] text-slate-500 dark:text-slate-300 ml-2 whitespace-nowrap font-bold"><%= mov.operator&.name %></div>
               <% end %>
             <% end %>
           </div>
@@ -145,7 +143,7 @@
       </div>
 
       <div>
-        <h4 class="text-xs font-semibold text-slate-700 dark:text-slate-200 uppercase tracking-wider mb-2 flex items-center gap-1">
+        <h4 class="text-xs font-semibold text-slate-700 dark:text-slate-200 tracking-wider mb-2 flex items-center gap-1">
           <span class="inline-block w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-500"></span>
           Variazioni
         </h4>
@@ -162,7 +160,7 @@
                     <%= mov.source_warehouse&.code %>/<%= mov.source_location&.code %> → <%= mov.dest_warehouse&.code %>/<%= mov.dest_location&.code %>
                   </div>
                 </div>
-                <div class="text-[10px] text-slate-500 dark:text-slate-300 ml-2 whitespace-nowrap uppercase font-bold"><%= mov.operator&.name %></div>
+                <div class="text-[10px] text-slate-500 dark:text-slate-300 ml-2 whitespace-nowrap font-bold"><%= mov.operator&.name %></div>
               </div>
             <% end %>
           </div>
@@ -174,7 +172,7 @@
       </div>
 
       <div>
-        <h4 class="text-xs font-semibold text-red-700 dark:text-red-400 uppercase tracking-wider mb-2 flex items-center gap-1">
+        <h4 class="text-xs font-semibold text-red-700 dark:text-red-400 tracking-wider mb-2 flex items-center gap-1">
           <span class="inline-block w-2 h-2 rounded-full bg-red-500"></span>
           Uscite
         </h4>
@@ -194,7 +192,7 @@
                     <% end %>
                   </div>
                 </div>
-                <div class="text-[10px] text-slate-500 dark:text-slate-300 ml-2 whitespace-nowrap uppercase font-bold"><%= mov.operator&.name %></div>
+                <div class="text-[10px] text-slate-500 dark:text-slate-300 ml-2 whitespace-nowrap font-bold"><%= mov.operator&.name %></div>
               <% end %>
             <% end %>
           </div>

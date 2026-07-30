@@ -1,0 +1,45 @@
+<%= form_with(model: location, url: location.persisted? ? archive_location_path(location) : archive_locations_path, class: "contents", data: { turbo_frame: "_top" }) do |form| %>
+  <% if location.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium mt-3 border border-red-200 text-sm">
+      <h2><%= pluralize(location.errors.count, "error") %> impediscono il salvataggio:</h2>
+      <ul class="mt-1 list-disc list-inside">
+        <% location.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="my-5">
+    <%= form.label :code, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+    <%= form.text_field :code, class: "border border-slate-300 dark:border-slate-600 outline-none px-3 py-2 mt-2 w-full text-sm dark:bg-slate-700 dark:text-slate-200", required: true %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :parent_id, "Settore", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+    <%= form.collection_select :parent_id, @sectors || Archive::Location.sectors.order(:code), :id, :code, { include_blank: "— nessun settore —" }, class: "border border-slate-300 dark:border-slate-600 outline-none px-3 py-2 mt-2 w-full text-sm dark:bg-slate-700 dark:text-slate-200" %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :description, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+    <%= form.text_area :description, rows: 3, class: "border border-slate-300 dark:border-slate-600 outline-none px-3 py-2 mt-2 w-full text-sm dark:bg-slate-700 dark:text-slate-200" %>
+  </div>
+
+  <div class="my-5">
+    <%= style_toggle_switch(form, :enabled, "Abilitato") %>
+  </div>
+
+  <% if location.persisted? && location.qrcode_svg.present? %>
+    <div class="my-5 flex items-center gap-4 p-3 bg-slate-50 dark:bg-slate-700/50 rounded-sm">
+      <span class="inline-block w-12 h-12"><%= location.qrcode_svg.html_safe %></span>
+      <div>
+        <div class="text-xs text-slate-400 uppercase tracking-wide mb-1">QR Code</div>
+        <div class="text-xs font-mono text-slate-600 dark:text-slate-400"><%= location.gencode %></div>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="mt-6">
+    <%= form.submit class: style_import_btn %>
+  </div>
+<% end %>

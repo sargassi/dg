@@ -1,7 +1,10 @@
-<% menu = mainware_menu(active: 'collezioni') %>
-<div class="<%= style_main_header_container %>">
-  <%= render partial: 'atoms/header', locals: {link: '/', label: 'Collezioni', menu: menu} %>
+<% content_for :page_header do %>
+<div class="flex items-center gap-2 px-0 py-0.5">
+  <h1 class="text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wide">
+    Collezioni
+  </h1>
 </div>
+<% end %>
 
 <section class="<%= style_main_cnt %>">
   <% if notice.present? %>
@@ -47,11 +50,11 @@
 
           <div class="grid grid-cols-[1fr_auto] gap-6 items-end mb-4">
             <div>
-              <%= form.label 'Descrizione collezione', class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+              <%= form.label 'Descrizione collezione', class: "text-xs text-slate-400 tracking-wide block mb-1" %>
               <%= form.text_field :description, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm", placeholder: "Descrizione collezione", required: true %>
             </div>
             <div>
-              <%= form.submit "Crea Collezione", class: "p-3 bg-accent inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer text-white" %>
+              <%= form.submit "Crea Collezione", class: "p-3 bg-accent inline-block tracking-wider rounded-sm text-xs cursor-pointer text-white" %>
             </div>
           </div>
         <% end %>

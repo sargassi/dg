@@ -1,0 +1,45 @@
+<% content_for :page_header do %>
+<div class="flex items-center gap-2 px-0 py-0.5">
+  <h1 class="text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wide">
+    Amministrazione
+  </h1>
+</div>
+<% end %>
+
+<section class="<%= style_main_cnt %>">
+  <div class="<%= style_main_card_grid %>">
+
+    <div class="<%= style_main_card %>">
+      <h3 class="<%= style_main_card_header %>">
+        <span class="material-symbols-outlined text-slate-400 dark:text-slate-500">people</span>
+        Utenti
+        <span class="<%= style_main_card_badge %>"><%= @users_count %></span>
+      </h3>
+      <div class="space-y-3">
+        <%= link_to admin_users_path, class: style_main_card_link do %>
+          <span class="text-sm text-slate-700 dark:text-slate-200">Gestione Operatori</span>
+          <span class="material-symbols-outlined text-slate-300 dark:text-slate-400 text-base">arrow_forward_ios</span>
+        <% end %>
+        <%= link_to new_admin_user_path, class: style_main_card_link do %>
+          <span class="text-sm text-slate-700 dark:text-slate-200">Nuovo Utente</span>
+          <span class="material-symbols-outlined text-slate-300 dark:text-slate-400 text-base">arrow_forward_ios</span>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="<%= style_main_card %>">
+      <h3 class="<%= style_main_card_header %>">
+        <span class="material-symbols-outlined text-slate-400 dark:text-slate-500">tune</span>
+        Menu
+        <span class="<%= style_main_card_badge %>"><%= @toolbar_configs_count %></span>
+      </h3>
+      <div class="space-y-3">
+        <%= link_to admin_toolbar_configs_path, class: style_main_card_link do %>
+          <span class="text-sm text-slate-700 dark:text-slate-200">Configurazione Menu</span>
+          <span class="material-symbols-outlined text-slate-300 dark:text-slate-400 text-base">arrow_forward_ios</span>
+        <% end %>
+      </div>
+    </div>
+
+  </div>
+</section>

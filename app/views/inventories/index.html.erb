@@ -1,12 +1,10 @@
-<% menu = [
-  { label: 'Dashboard', path: inventories_dashboard_path, active: false, icon: 'dashboard', can: 'manage_inventory' },
-  { label: 'Ricerca magazzino', path: inventories_path, active: true, icon: 'inventory_2', can: 'manage_inventory' },
-  { label: 'Movimenti', path: inventories_movements_path, active: false, icon: 'swap_vert', can: 'manage_itemins' },
-  { label: 'Magazzini e ubiche', path: warehouses_path, active: false, icon: 'warehouse', can: 'manage_warehouses' },
-] %>
-<div class="<%= style_main_header_container %>">
-  <%= render partial: 'atoms/header', locals: {link: '/', label: 'Ricerca', menu: menu} %>
+<% content_for :page_header do %>
+<div class="flex items-center gap-2 px-0 py-0.5">
+  <h1 class="text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wide">
+    Ricerca
+  </h1>
 </div>
+<% end %>
 
 <section class="<%= style_main_cnt %> flex flex-col" style="height: calc(100vh - 140px);" data-controller="search-filter">
   <div class="flex gap-4 items-center mb-4 flex-none">
@@ -33,12 +31,12 @@
       <%= f.select :warehouse_id,
             options_from_collection_for_select(@warehouses, :id, :code, params[:warehouse_id]),
              { include_blank: "TUTTI I MAGAZZINI" },
-            class: "border border-slate-300 outline-none px-4 py-2 text-xs rounded-lg min-w-[180px] uppercase dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-slate-200",
+            class: "border border-slate-300 outline-none px-4 py-2 text-xs rounded-lg min-w-[180px] dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-slate-200",
             data: { action: "change->search-filter#filter", search_filter_target: "select", search_filter_active_class: "bg-blue-400 dark:bg-blue-600 text-white dark:text-white", search_filter_inactive_class: "bg-white dark:bg-slate-700 dark:text-slate-200" } %>
       <label class="relative inline-flex items-center gap-2 cursor-pointer">
         <%= f.check_box :show_zero, checked: params[:show_zero] == "1", class: "sr-only peer", data: { action: "change->search-filter#filter", search_filter_target: "input" } %>
         <div class="w-9 h-5 bg-slate-200 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white dark:after:bg-slate-300 after:border-slate-300 dark:after:border-slate-600 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-accent"></div>
-        <span class="text-xs text-slate-400 dark:text-slate-300 uppercase tracking-wide select-none">Mostra zero</span>
+        <span class="text-xs text-slate-400 dark:text-slate-300 tracking-wide select-none">Mostra zero</span>
       </label>
     <% end %>
     <span class="text-sm font-bold text-slate-700 whitespace-nowrap border border-slate-300 rounded-full px-3 py-1 dark:text-slate-200 dark:border-slate-600 dark:bg-slate-700" data-search-filter-target="count"><%= @pagy.count %> articoli</span>
@@ -108,7 +106,7 @@
                            <% loc_groups.each do |loc_id, records| %>
                              <% non_moves, moves = records.partition { |r| !r.itemmovement_id } %>
                              <tr>
-                                <td colspan="5" class="pl-8 pr-1 py-1.5 font-semibold text-slate-600 bg-slate-100 border-l-2 border-l-slate-300 border-b border-slate-300 text-xs uppercase tracking-wider dark:text-slate-300 dark:bg-slate-800/50 dark:border-l-slate-600 dark:border-slate-600">
+                                <td colspan="5" class="pl-8 pr-1 py-1.5 font-semibold text-slate-600 bg-slate-100 border-l-2 border-l-slate-300 border-b border-slate-300 text-xs tracking-wider dark:text-slate-300 dark:bg-slate-800/50 dark:border-l-slate-600 dark:border-slate-600">
                                   <button type="button" data-action="click->spostamenti-toggle#toggle" data-group="<%= wh_id %>-<%= loc_id %>" class="inline-flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white bg-transparent p-0.5 -ml-5 align-middle">
                                     <span class="material-symbols-outlined text-lg leading-none">list</span>
                                   </button>

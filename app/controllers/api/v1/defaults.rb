@@ -20,6 +20,22 @@ module API
           def logger
             Rails.logger
           end
+
+          def warden
+            env["warden"]
+          end
+
+          def current_user
+            warden&.user
+          end
+
+          def authenticate_api!
+            error!("Unauthorized", 401) unless warden&.authenticated?
+          end
+        end
+
+        before do
+          authenticate_api!
         end
 
         rescue_from ActiveRecord::RecordNotFound do |e|

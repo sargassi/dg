@@ -1,4 +1,10 @@
-<%= render partial: 'atoms/header', locals: {link: '/', label: 'Produzione / Ricerca x QR Code'} %>
+<% content_for :page_header do %>
+<div class="flex items-center gap-2 px-0 py-0.5">
+  <h1 class="text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wide">
+    Produzione / Ricerca x QR Code
+  </h1>
+</div>
+<% end %>
 <%= turbo_frame_tag 'rez' do %>
   <%= render partial: 'atoms/search_qr' %>
 <% if params[:q].present? %>

@@ -4,10 +4,12 @@ module Archive
     belongs_to :location, class_name: "Archive::Location", foreign_key: :archive_location_id, optional: true
     belongs_to :inventory, optional: true
     belongs_to :source_item, class_name: "Item", optional: true
+    belongs_to :item_type, class_name: "Archive::ItemType", foreign_key: :archive_item_type_id, optional: true
     has_many :transactions, class_name: "Archive::Transaction", foreign_key: :archive_item_id, dependent: :destroy
     has_many_attached :pictures
 
     validates :name, presence: true
+    validates :archive_item_type_id, presence: { message: "Seleziona una tipologia" }, on: :update
     validates :code, uniqueness: true, allow_nil: true
     before_create :generate_code
     after_create_commit :generate_qr_code
@@ -16,6 +18,7 @@ module Archive
     scope :in_stock, -> { where(status: "in") }
     scope :checked_out, -> { where(status: "out") }
     scope :by_category, ->(id) { where(archive_category_id: id) if id.present? }
+    scope :by_item_type, ->(id) { where(archive_item_type_id: id) if id.present? }
     scope :by_location, ->(id) { where(archive_location_id: id) if id.present? }
     scope :by_status, ->(s) { where(status: s) if s.present? }
     scope :search, ->(q) {

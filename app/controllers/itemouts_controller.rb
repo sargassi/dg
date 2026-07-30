@@ -1,6 +1,19 @@
 class ItemoutsController < ApplicationController
+  include MovementWorkflow
   before_action -> { require_ability!('manage_itemouts') }
   before_action :set_itemout, only: %i[ show edit update destroy ]
+
+  movement_workflow(
+    movement_class:        Itemout,
+    movement_var:          :@itemout,
+    details_attr_key:      :itemouts_details_attributes,
+    preview_session_key:   :itemout_preview,
+    inventory_service:     CreateInventoriesFromItemout,
+    new_path_helper:       :new_itemout_path,
+    preview_path_helper:   :preview_itemouts_path,
+    success_redirect_path: :inventories_dashboard_path,
+    preview_notice_label:  "scarico"
+  )
 
   def index
     @itemouts = Itemout.all
@@ -10,15 +23,7 @@ class ItemoutsController < ApplicationController
   end
 
   def new
-    if session[:itemout_preview].present?
-      preview = session[:itemout_preview]
-      @itemout = Itemout.new(indate: preview["indate"], notes: preview["notes"])
-      details = (preview["itemouts_details_attributes"] || {}).values
-        .reject { |d| d["_destroy"] == "1" }
-        .reject { |d| d["itemcode"].blank? && d["item_id"].blank? }
-        .map { |d| d.except("_destroy") }
-      @itemout.itemouts_details.build(details)
-    elsif session[:archive_itemout_prefill].present?
+    if session[:archive_itemout_prefill].present?
       @itemout = Itemout.new(indate: Date.current)
       session[:archive_itemout_prefill].each do |data|
         @itemout.itemouts_details.build(
@@ -31,64 +36,11 @@ class ItemoutsController < ApplicationController
       end
       session.delete(:archive_itemout_prefill)
     else
-      @itemout = Itemout.new(indate: Date.current)
+      super
     end
-    @warehouses = Warehouse.order(:code)
-    @locations = Location.joins(:warehouse).order(:code)
-    @operationtypes = Operationtype.all
   end
 
   def edit
-  end
-
-  def create
-    @itemout = Itemout.new(indate: itemout_params[:indate], notes: itemout_params[:notes], operator_id: itemout_params[:operator_id])
-    details = (itemout_params[:itemouts_details_attributes]&.values || []).reject { |d| d[:_destroy] == "1" }.reject { |d| d[:itemcode].blank? && d[:item_id].blank? }.map { |d| d.except(:_destroy) }
-
-    validate_stock_availability(details)
-
-    if @itemout.valid?
-      session[:itemout_preview] = itemout_params.to_unsafe_h
-      @params = itemout_params.to_unsafe_h.with_indifferent_access
-      @details = (@params[:itemouts_details_attributes] || {}).values.reject { |d| d[:_destroy] == "1" }
-
-      respond_to do |format|
-        format.html { redirect_to preview_itemouts_path, notice: "Anteprima scarico pronta" }
-        format.turbo_stream { redirect_to preview_itemouts_path, notice: "Anteprima scarico pronta" }
-      end
-    else
-      @warehouses = Warehouse.all
-      @locations = Location.all
-      @operationtypes = Operationtype.all
-      flash.now[:alert] = @itemout.errors.full_messages.to_sentence
-      render :new, status: :unprocessable_entity
-    end
-  end
-
-  def preview
-    @params = session[:itemout_preview]&.with_indifferent_access
-    return redirect_to new_itemout_path, alert: "Nessun dato in anteprima" unless @params
-
-    @details = (@params[:itemouts_details_attributes] || {}).values.reject { |d| d[:_destroy] == "1" }
-  end
-
-  def confirm
-    @params = session[:itemout_preview]&.with_indifferent_access
-    return redirect_to new_itemout_path, alert: "Nessun dato, riprova" unless @params
-
-    @itemout = MovementBuilder.new(Itemout, @params).build
-
-    begin
-      ActiveRecord::Base.transaction do
-        @itemout.save!
-        CreateInventoriesFromItemout.new.call(@itemout)
-      end
-
-      session.delete(:itemout_preview)
-      redirect_to inventories_dashboard_path, notice: "Scarico creato con #{@itemout.itemouts_details.size} articoli"
-    rescue => e
-      redirect_to new_itemout_path, alert: "Errore durante il salvataggio: #{e.message}"
-    end
   end
 
   def update
@@ -145,36 +97,41 @@ class ItemoutsController < ApplicationController
   end
 
   private
-    def validate_stock_availability(details)
-      item_ids = details.map { |d| d[:item_id] }.compact.uniq
-      items = Item.where(id: item_ids).index_by(&:id)
-      gencodes = items.values.map(&:gencode).compact.uniq
 
-      stock = StockLevel.where(gencode: gencodes)
-        .each_with_object({}) { |sl, h| h[[sl.gencode, sl.warehouse_id, sl.location_id]] = sl.current_qty }
+  def before_create_validation(movement, details)
+    item_ids = details.map { |d| d[:item_id] }.compact.uniq
+    items = Item.where(id: item_ids).index_by(&:id)
+    gencodes = items.values.map(&:gencode).compact.uniq
 
-      details.each do |d|
-        next unless d[:item_id]
-        item = items[d[:item_id].to_i]
-        next unless item
+    stock = StockLevel.where(gencode: gencodes)
+      .each_with_object({}) { |sl, h| h[[sl.gencode, sl.warehouse_id, sl.location_id]] = sl.current_qty }
 
-        available = stock[[item.gencode, d[:warehouse_id].to_i, d[:location_id].to_i]] || 0
-        if d[:qty].to_i > available
-          @itemout.errors.add(:base, "#{item.gencode}: quantità #{d[:qty]} supera la disponibilità (#{available} pz)")
-        end
+    details.each do |d|
+      next unless d[:item_id]
+      item = items[d[:item_id].to_i]
+      next unless item
+
+      available = stock[[item.gencode, d[:warehouse_id].to_i, d[:location_id].to_i]] || 0
+      if d[:qty].to_i > available
+        movement.errors.add(:base, "#{item.gencode}: quantità #{d[:qty]} supera la disponibilità (#{available} pz)")
       end
     end
+  end
 
-    def set_itemout
-      @itemout = Itemout.find(params[:id])
-    end
+  def set_itemout
+    @itemout = Itemout.find(params[:id])
+  end
 
-    def itemout_params
-      params.require(:itemout).permit(:indate, :notes, :operator_id,
-        itemouts_details_attributes: [:id, :itemcode, :qty, :item_id, :collection_id, :warehouse_id, :location_id, :operationtype_id, :_destroy])
-    end
+  def permitted_params
+    params.require(:itemout).permit(:indate, :notes, :operator_id,
+      itemouts_details_attributes: [:id, :itemcode, :qty, :item_id, :collection_id, :warehouse_id, :location_id, :operationtype_id, :_destroy])
+  end
 
-    def import_cache_key
-      "import_itemout:#{session.id.to_s}"
-    end
+  def itemout_params
+    permitted_params
+  end
+
+  def import_cache_key
+    "import_itemout:#{session.id.to_s}"
+  end
 end

@@ -4,165 +4,29 @@ class InventoryStockController < ApplicationController
   before_action -> { require_ability!('manage_inventory') }
 
   def index
-    @date = if params[:date].present?
-      Date.parse(params[:date]) rescue Date.current
-    else
-      Date.current
-    end
-
+    @query = InventoryStockQuery.new(params).with_history
+    @date = @query.date
     @warehouses = Warehouse.order(:code)
     @collections = Collection.all
-    show_zero = params[:show_zero] == "1"
 
-    if params[:date].present? && params[:date].to_date != Date.current
-      base = Inventory.where.not(gencode: nil)
-        .left_joins(:itemin, :itemout)
-        .where("COALESCE(itemins.indate, itemouts.indate) <= ?", @date)
+    @inventories = @query.results
+    count = @query.historical? ? @query.inventory_scope.distinct.count(:gencode) : @query.stock_scope.distinct.count(:gencode)
+    @pagy, @inventories = pagy(@inventories, count: count)
 
-      if params[:warehouse_id].present?
-        base = base.where(warehouse_id: params[:warehouse_id])
-      end
-      if params[:collection_id].present? || params[:q].present?
-        base = base.joins("INNER JOIN items ON items.gencode = inventories.gencode")
-        if params[:collection_id].present?
-          base = base.where(items: { collection_id: params[:collection_id] })
-        end
-        if params[:q].present?
-          q = "%#{params[:q]}%"
-          base = base.where("items.gencode LIKE :q OR items.itemcode LIKE :q OR items.description LIKE :q", q: q)
-        end
-      end
-
-      @inventories = base.group(:gencode).select(
-        :gencode,
-        Arel.sql("MAX(inventories.itemcode) AS itemcode"),
-        Arel.sql("SUM(CASE WHEN operationtype_id = 1 THEN COALESCE(qtyavailable, 0) ELSE 0 END - CASE WHEN operationtype_id = 2 THEN COALESCE(qtyavailable, 0) ELSE 0 END) AS net_qty")
-      )
-      unless show_zero
-        @inventories = @inventories.having(Arel.sql("SUM(CASE WHEN operationtype_id = 1 THEN COALESCE(qtyavailable, 0) ELSE 0 END - CASE WHEN operationtype_id = 2 THEN COALESCE(qtyavailable, 0) ELSE 0 END) > 0"))
-      end
-      @inventories = @inventories.order(:gencode)
-
-      count = base.distinct.count(:gencode)
-      @pagy, @inventories = pagy(@inventories, count: count)
-    else
-      base = StockLevel.all
-
-      if params[:q].present?
-        q = "%#{params[:q]}%"
-        base = base.joins("INNER JOIN items ON items.gencode = stock_levels.gencode")
-          .where("items.gencode LIKE :q OR items.itemcode LIKE :q OR items.description LIKE :q", q: q)
-      end
-
-      if params[:warehouse_id].present?
-        base = base.where(warehouse_id: params[:warehouse_id])
-      end
-
-      if params[:collection_id].present?
-        base = base.joins("INNER JOIN items ON items.gencode = stock_levels.gencode")
-          .where(items: { collection_id: params[:collection_id] })
-      end
-
-      unless show_zero
-        base = base.where("COALESCE(current_qty, 0) > 0")
-      end
-
-      count = base.distinct.count(:gencode)
-      @inventories = base.group(:gencode)
-        .select(:gencode, Arel.sql("SUM(current_qty) AS current_qty"))
-        .order(:gencode)
-      @pagy, @inventories = pagy(@inventories, count: count)
-    end
-
-    gencodes = @inventories.map(&:gencode).compact
-    @history_by_gencode = {}
-    history_records = Inventory.where(gencode: gencodes)
-      .left_joins(:itemin, :itemout, :itemmovement)
-      .where("COALESCE(itemins.indate, itemouts.indate, itemmovements.indate) <= ?", @date)
-      .includes(:warehouse, :location, :operationtype)
-      .order(Arel.sql("COALESCE(itemins.indate, itemouts.indate, itemmovements.indate) ASC, inventories.created_at ASC"))
-
-    if params[:warehouse_id].present?
-      history_records = history_records.where(warehouse_id: params[:warehouse_id])
-    end
-    itemin_ids = history_records.map(&:itemins_id).compact.uniq
-    itemout_ids = history_records.map(&:itemouts_id).compact.uniq
-    itemmovement_ids = history_records.map(&:itemmovement_id).compact.uniq
-    @itemins_by_id = Itemin.includes(:operator).where(id: itemin_ids).index_by(&:id)
-    @itemouts_by_id = Itemout.includes(:operator).where(id: itemout_ids).index_by(&:id)
-    @itemmovements_by_id = Itemmovement.includes(:operator, :source_warehouse, :dest_warehouse, :source_location, :dest_location).where(id: itemmovement_ids).index_by(&:id)
-
-    history_records.group_by(&:gencode).each do |gencode, records|
-      @history_by_gencode[gencode] = records.group_by(&:warehouse_id).transform_values do |wh_records|
-        wh_records.group_by { |r| r.location_id || 0 }.transform_values do |loc_records|
-          loc_records.partition { |r| !r.itemmovement_id }.flatten
-        end
-      end
-    end
-
-    items = Item.where(gencode: gencodes).includes(:collection).with_attached_pictures.index_by(&:gencode)
-    @collection_by_gencode = items.transform_values { |item| item.collection&.description }
-    @items_by_gencode = items
+    @history_by_gencode = @query.history_by_gencode
+    @itemins_by_id = @query.itemins_by_id
+    @itemouts_by_id = @query.itemouts_by_id
+    @itemmovements_by_id = @query.itemmovements_by_id
+    @collection_by_gencode = @query.collection_by_gencode
+    @items_by_gencode = @query.items_by_gencode
   end
 
   def export_xlsx
-    @date = if params[:date].present?
-      Date.parse(params[:date]) rescue Date.current
-    else
-      Date.current
-    end
-
-    if params[:date].present? && params[:date].to_date != Date.current
-      base = Inventory.where.not(gencode: nil)
-        .left_joins(:itemin, :itemout)
-        .where("COALESCE(itemins.indate, itemouts.indate) <= ?", @date)
-
-      if params[:warehouse_id].present?
-        base = base.where(warehouse_id: params[:warehouse_id])
-      end
-      if params[:collection_id].present? || params[:q].present?
-        base = base.joins("INNER JOIN items ON items.gencode = inventories.gencode")
-        if params[:collection_id].present?
-          base = base.where(items: { collection_id: params[:collection_id] })
-        end
-        if params[:q].present?
-          q = "%#{params[:q]}%"
-          base = base.where("items.gencode LIKE :q OR items.itemcode LIKE :q OR items.description LIKE :q", q: q)
-        end
-      end
-
-      @inventories = base.group(:gencode).select(
-        :gencode,
-        Arel.sql("MAX(inventories.itemcode) AS itemcode"),
-        Arel.sql("SUM(CASE WHEN operationtype_id = 1 THEN COALESCE(qtyavailable, 0) ELSE 0 END - CASE WHEN operationtype_id = 2 THEN COALESCE(qtyavailable, 0) ELSE 0 END) AS net_qty")
-      ).order(:gencode)
-    else
-      base = StockLevel.positive
-
-      if params[:q].present?
-        q = "%#{params[:q]}%"
-        base = base.joins("INNER JOIN items ON items.gencode = stock_levels.gencode")
-          .where("items.gencode LIKE :q OR items.itemcode LIKE :q OR items.description LIKE :q", q: q)
-      end
-
-      if params[:warehouse_id].present?
-        base = base.where(warehouse_id: params[:warehouse_id])
-      end
-
-      if params[:collection_id].present?
-        base = base.joins("INNER JOIN items ON items.gencode = stock_levels.gencode")
-          .where(items: { collection_id: params[:collection_id] })
-      end
-
-      @inventories = base.group(:gencode)
-        .select(:gencode, Arel.sql("SUM(current_qty) AS current_qty"))
-        .order(:gencode)
-    end
-
-    gencodes = @inventories.map(&:gencode).compact
-    items = Item.where(gencode: gencodes).includes(:collection).index_by(&:gencode)
-    @collection_by_gencode = items.transform_values { |item| item.collection&.description }
-    @items_by_gencode = items
+    @query = InventoryStockQuery.new(params)
+    @date = @query.date
+    @inventories = @query.results
+    @collection_by_gencode = @query.collection_by_gencode
+    @items_by_gencode = @query.items_by_gencode
 
     warehouse_label = params[:warehouse_id].present? ? Warehouse.find_by(id: params[:warehouse_id])&.code || params[:warehouse_id] : "Tutti"
     collection_label = params[:collection_id].present? ? Collection.find_by(id: params[:collection_id])&.description || params[:collection_id] : "Tutte"

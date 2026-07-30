@@ -200,23 +200,28 @@ class MainwareController < ApplicationController
     return redirect_to mainware_import_path, alert: "Correggi gli errori prima di confermare: #{warnings.first}" if warnings.any?
 
     if params[:confirmed].present?
-      persister = ImportPersister.new
-      persister.ensure_dependencies!(data)
-      Rails.cache.write(import_cache_key, data, expires_in: 30.minutes)
+      begin
+        persister = ImportPersister.new
+        persister.ensure_dependencies!(data)
+        Rails.cache.write(import_cache_key, data, expires_in: 30.minutes)
 
-      import_log = ImportLog.create!(
-        user: current_user,
-        file_name: data[:_file_name],
-        total_rows: data[:rows].size,
-        status: 'pending',
-        started_at: Time.current
-      )
-      Rails.cache.write("import:log:#{session.id}", import_log.id, expires_in: 10.minutes)
+        import_log = ImportLog.create!(
+          user: current_user,
+          file_name: data[:_file_name],
+          total_rows: data[:rows].size,
+          status: 'pending',
+          started_at: Time.current
+        )
+        Rails.cache.write("import:log:#{session.id}", import_log.id, expires_in: 10.minutes)
 
-      total = data[:rows].size
-      Rails.cache.write("import:progress:#{session.id}", { total: total, done: 0, complete: false, import_log_id: import_log.id }, expires_in: 10.minutes)
-      ImportJob.perform_later(session.id.to_s)
-      redirect_to mainware_import_processing_path
+        total = data[:rows].size
+        Rails.cache.write("import:progress:#{session.id}", { total: total, done: 0, complete: false, import_log_id: import_log.id }, expires_in: 10.minutes)
+        ImportJob.perform_later(session.id.to_s)
+        redirect_to mainware_import_processing_path
+      rescue => e
+        Rails.logger.error("Import confirm failed: #{e.message}\n#{e.backtrace.first(10).join("\n")}")
+        redirect_to mainware_import_path, alert: "Errore durante l'avvio dell'importazione: #{e.message}"
+      end
     else
       @summary = ImportValidator.new.summarize(data)
       render

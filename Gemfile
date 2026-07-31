@@ -102,6 +102,7 @@ end
 gem "rails-html-sanitizer", "~> 1.6.2"
 gem "loofah", "~> 2.25"
 gem "rack", "~> 2.2.18"
+gem "websocket-driver", ">= 0.8.2"
 
 gem "ed25519", "~> 1.3"
 

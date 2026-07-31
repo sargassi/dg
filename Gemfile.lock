@@ -354,10 +354,10 @@ GEM
       actionpack (>= 6.1)
       activesupport (>= 6.1)
       sprockets (>= 3.0.0)
-    sqlite3 (1.7.3)
+    sqlite3 (2.9.5)
       mini_portile2 (~> 2.8.0)
-    sqlite3 (1.7.3-arm64-darwin)
-    sqlite3 (1.7.3-x86_64-linux)
+    sqlite3 (2.9.5-arm64-darwin)
+    sqlite3 (2.9.5-x86_64-linux-gnu)
     sshkit (1.25.0)
       base64
       logger
@@ -450,7 +450,7 @@ DEPENDENCIES
   selenium-webdriver (~> 4.16)
   simple_calendar
   sprockets-rails
-  sqlite3 (~> 1.7)
+  sqlite3 (>= 2.9.5)
   stimulus-rails
   tailwindcss-rails (~> 3.3.1)
   trix

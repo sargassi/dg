@@ -68,7 +68,7 @@ gem 'trix'
 gem "image_processing", "~> 1.2"
 
 # Use sqlite3 as the database for Active Record
-gem "sqlite3", "~> 1.7"
+gem "sqlite3", ">= 2.9.5"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem

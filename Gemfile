@@ -99,7 +99,7 @@ group :test do
 end
 
 # Security patches for known vulnerabilities
-gem "rails-html-sanitizer", "~> 1.6.2"
+gem "rails-html-sanitizer", ">= 1.7.1"
 gem "loofah", "~> 2.25"
 gem "rack", "~> 2.2.18"
 gem "websocket-driver", ">= 0.8.2"

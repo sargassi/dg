@@ -105,6 +105,7 @@ gem "rack", "~> 2.2.18"
 gem "websocket-driver", ">= 0.8.2"
 gem "activestorage", ">= 7.2.3.2"
 gem "net-imap", ">= 0.6.4.1"
+gem "msgpack", ">= 1.8.2"
 
 gem "ed25519", "~> 1.3"
 

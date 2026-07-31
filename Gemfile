@@ -57,7 +57,7 @@ gem "rqrcode", "~> 2.0"
 
 gem "devise"
 
-gem 'carrierwave', '>= 3.0.0.beta', '< 4.0'
+gem 'carrierwave', '>= 3.1.3', '< 4.0'
 
 gem 'trix'
 

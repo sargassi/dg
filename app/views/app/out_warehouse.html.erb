@@ -1,20 +1,15 @@
-<% menu = [
-  { label: 'Dashboard', path: inventories_dashboard_path, active: false, icon: 'dashboard', can: 'manage_inventory' },
-  { label: 'Ricerca magazzino', path: inventories_path, active: false, icon: 'inventory_2', can: 'manage_inventory' },
-  { label: 'Movimenti', path: inventories_movements_path, active: false, icon: 'swap_vert', can: 'manage_itemins' },
-  { label: 'Magazzini e ubiche', path: warehouses_path, active: false, icon: 'warehouse', can: 'manage_warehouses' },
-] %>
-<div class="<%= style_main_header_container %>">
-  <%= render partial: 'atoms/header', locals: { link: inventories_dashboard_path, label: 'OUT', menu: menu } %>
-</div>
+<% content_for :page_header do %>
+<%= render "application/breadcrumb", dashboard_path: inventories_dashboard_path, section_name: "Magazzino", page_title: "Scarico" %>
+<% end %>
 
 <%= form_with(model: @itemout, url: app_out_warehouse_path, id: "itemout-form", data: { controller: "qr-scanner" }) do |form| %>
   <%= form.hidden_field :operator_id, value: current_user.id %>
+  <%= hidden_field_tag :return_to, @return_to %>
 
   <%# Mobile %>
   <section class="<%= style_main_cnt %> lg:hidden" data-controller="defaults">
     <div class="max-w-lg mx-auto space-y-4">
-      <div class="bg-amber-50 rounded p-3 space-y-3">
+      <div class="bg-red-50 rounded p-3 space-y-3">
         <div>
           <%= form.label :indate, "Data", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
           <%= form.date_field :indate, class: "w-full border border-slate-300 outline-none px-2 py-1.5 text-sm bg-white rounded" %>
@@ -29,7 +24,7 @@
           <div class="flex flex-col items-center">
             <label class="text-xs text-slate-400 uppercase tracking-wide block mb-1">Dove</label>
             <button type="button" data-action="click->qr-scanner#scanWarehouseLoc"
-                    class="flex-shrink-0 w-10 h-10 flex items-center justify-center border border-transparent rounded-md bg-indigo-500 text-white hover:bg-indigo-600"
+                      class="flex-shrink-0 w-10 h-10 flex items-center justify-center border border-transparent rounded-md <%= style_scan_button %>"
                       title="Scansiona QR">
               <span class="material-symbols-outlined text-base">qr_code_scanner</span>
             </button>
@@ -91,8 +86,9 @@
         </div>
       </div>
 
-      <div class="pt-2">
-        <%= form.submit "Salva Scarico", class: "w-full rounded py-3 px-5 bg-accent text-white font-medium cursor-pointer text-center" %>
+      <div class="pt-2 flex gap-2">
+        <%= form.button "Salva Scarico", class: "#{style_lg_btn} flex-1 #{style_save_button} cursor-pointer" %>
+        <%= link_to "Annulla", @return_to, class: "#{style_lg_btn} flex-1 #{style_cancel_button}" %>
       </div>
     </div>
   </section>
@@ -101,12 +97,12 @@
   <section class="<%= style_main_cnt %> hidden lg:block" data-controller="defaults">
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
       <div class="lg:col-span-3 space-y-6">
-        <div class="bg-amber-50 rounded-lg p-5">
+        <div class="bg-red-50 rounded-lg p-5">
           <div class="flex items-start gap-3">
             <div class="flex flex-col items-center">
               <label class="text-xs text-slate-400 uppercase tracking-wide block mb-1">Dove</label>
               <button type="button" data-action="click->qr-scanner#scanWarehouseLoc"
-                      class="flex-shrink-0 w-10 h-10 flex items-center justify-center border border-transparent rounded-md bg-indigo-500 text-white hover:bg-indigo-600"
+                    class="flex-shrink-0 w-10 h-10 flex items-center justify-center border border-transparent rounded-md <%= style_scan_button %>"
                       title="Scansiona QR">
                 <span class="material-symbols-outlined text-base">qr_code_scanner</span>
               </button>
@@ -170,7 +166,7 @@
         </div>
       </div>
 
-      <div class="bg-amber-50 rounded-lg p-5 sticky top-0 self-start space-y-4">
+      <div class="bg-blue-50 rounded-lg p-5 sticky top-0 self-start space-y-4">
         <div>
           <%= form.label :indate, "Data", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
           <%= form.date_field :indate, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
@@ -181,8 +177,9 @@
           <%= form.text_area :notes, rows: 2, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
         </div>
 
-        <div class="pt-2">
-          <%= form.submit "Salva Scarico", class: "rounded-lg py-3 px-5 bg-accent text-white inline-block font-medium cursor-pointer w-full" %>
+        <div class="pt-2 flex gap-2">
+          <%= form.button "Salva Scarico", class: "#{style_lg_btn(' rounded-lg')} flex-1 #{style_save_button} cursor-pointer" %>
+          <%= link_to "Annulla", @return_to, class: "#{style_lg_btn(' rounded-lg')} flex-1 #{style_cancel_button}" %>
         </div>
       </div>
     </div>
@@ -195,7 +192,7 @@
       <h3 class="text-lg font-semibold text-slate-800 dark:text-slate-100">Scansiona QR Code</h3>
       <button type="button"
               data-action="click->qr-scanner#stop"
-              class="p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400">
+              class="<%= style_close_btn %>">
         <span class="material-symbols-outlined">close</span>
       </button>
     </div>

@@ -120,7 +120,7 @@
         <%= hidden_field_tag "item[pictures][]", "", id: nil %>
         <%= form.file_field :pictures, multiple: true, direct_upload: true,
               data: { image_preview_target: "input", camera_capture_target: "input", action: "change->image-preview#preview" },
-              class: "block w-full text-sm text-slate-500 file:mr-3 file:py-2 file:px-3 file:border-0 file:text-xs file:uppercase file:tracking-wider file:cursor-pointer file:bg-accent file:text-white hover:file:bg-accent-600 border border-slate-300 rounded-sm" %>
+              class: "#{style_upload_field} #{style_upload_field_btn}" %>
       </div>
       <div class="flex gap-1.5" data-image-preview-target="preview"></div>
     </div>
@@ -137,7 +137,7 @@
           <h3 class="text-lg font-semibold text-slate-800 dark:text-slate-100">Scatta foto</h3>
           <button type="button"
                   data-action="camera-capture#close"
-                  class="p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400">
+                  class="<%= style_close_btn %>">
             <span class="material-symbols-outlined">close</span>
           </button>
         </div>
@@ -177,9 +177,9 @@
   </div>
 
   <div class="flex gap-2 mt-4 pt-4 border-t border-slate-200 items-center">
-    <%= form.submit "Modifica", class: "p-3 bg-accent inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer text-white" %>
+    <%= form.submit "Modifica", class: "p-3 #{style_save_button} inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer" %>
     <%= link_to safe_return_to_path(mainware_index_path(q: params[:q], collection_id: params[:collection_id])),
-          class: "p-3 bg-gray-300 inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer text-slate-700",
+          class: "p-3 #{style_cancel_button} inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer",
           data: { turbo_frame: "_top" } do %>
       Annulla
     <% end %>

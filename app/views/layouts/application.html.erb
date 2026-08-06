@@ -13,7 +13,7 @@
 
   <body class="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 transition-colors">
 
-    <% if controller_name == 'app' %>
+    <% if controller_name == 'app' && !app_warehouse_actions? && !%w[dashboard dashboard_articoli dashboard_magazzino dashboard_produzione inserimento mobile_in mobile_out mobile_var mobile_in_confirmation mobile_out_confirmation mobile_var_confirmation].include?(action_name) %>
       <%= yield %>
 
     <% elsif controller_name == 'sessions' %>

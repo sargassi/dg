@@ -136,6 +136,12 @@
       </div>
     <% end %>
 
+    <% if (@stats[:invalid]&.any? || @stats[:skipped]&.any?) %>
+      <%= link_to inventories_import_failed_rows_path, class: "block w-full #{style_import_btn} bg-amber-600 text-center cursor-pointer mb-2" do %>
+        Scarica righe non importate (XLSX)
+      <% end %>
+    <% end %>
+
     <%= link_to inventories_path, class: "block w-full #{style_import_btn} bg-green-600 text-center cursor-pointer" do %>
       Vai alla lista articoli
     <% end %>

@@ -6,7 +6,7 @@
 </div>
 <% end %>
 
-<%= render partial: 'atoms/form_gen', locals: {pdf: 'n'} %>
+<%= render partial: 'atoms/form_import', locals: {prods: @profnew, pdf: 'n', customer: 'y', form_url: production_proformas_path} %>
 
 <section class="<%= style_main_cnt %>">
   <%= render partial: 'atoms/ux/pagy' %>

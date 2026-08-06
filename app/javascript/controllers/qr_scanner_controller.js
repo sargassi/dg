@@ -1,8 +1,9 @@
 import { BrowserQRCodeReader } from "https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/+esm";
 import { Controller } from "@hotwired/stimulus";
+import { playScanSound } from "scan_sound";
 
 export default class extends Controller {
-  static targets = ["input", "video", "overlay"];
+  static targets = ["input", "video", "overlay", "scanTitle"];
 
   connect() {
     this.codeReader = new BrowserQRCodeReader();
@@ -60,8 +61,12 @@ export default class extends Controller {
 
   scanWarehouseLoc(event) {
     const section = event.currentTarget.closest("[data-controller='defaults']") || this.element.closest("[data-controller='defaults']");
+    const label = event.currentTarget.dataset.qrLabel || "";
+    if (this.hasScanTitleTarget) {
+      this.scanTitleTarget.textContent = label ? `${label} — Scansiona Ubica` : "Scansiona Ubica";
+    }
     this._callback = async (text) => {
-      const resp = await fetch(`/inventories/warehouses/lookup_by_qr?q=${encodeURIComponent(text)}`);
+      const resp = await fetch(`/warehouses/lookup_by_qr?q=${encodeURIComponent(text)}`);
       const data = await resp.json();
       if (!section) return;
       const whSelect = section.querySelector("[data-defaults-target='warehouse']");
@@ -82,6 +87,7 @@ export default class extends Controller {
   }
 
   async _scan() {
+    let decoded = false;
     try {
       const result = await this.codeReader.decodeFromInputVideoDevice(undefined, this.videoTarget.id);
       if (this._callback) {
@@ -94,10 +100,20 @@ export default class extends Controller {
           target.dispatchEvent(new Event("input", { bubbles: true }));
         }
       }
+      decoded = true;
+      playScanSound();
     } catch (err) {
+      // "Video stream has ended before any code could be detected" is thrown
+      // when the camera stream stops (overlay closed / stopped). Expected.
+      if (err && typeof err.message === "string" && err.message.includes("Video stream has ended")) return;
       console.error(err);
     } finally {
-      this.stop();
+      // Only close the overlay after a successful scan. On camera errors
+      // (e.g. missing permission / no user gesture) keep the modal open so
+      // the user can retry or pick "manual selection".
+      if (decoded) {
+        this.stop();
+      }
     }
   }
 

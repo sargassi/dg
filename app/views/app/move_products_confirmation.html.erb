@@ -5,7 +5,7 @@
   { label: 'Magazzini e ubiche', path: warehouses_path, active: false, icon: 'warehouse', can: 'manage_warehouses' },
 ] %>
 <div class="<%= style_main_header_container %>">
-  <%= render partial: 'atoms/header', locals: { link: inventories_dashboard_path, label: 'Spostamento Creato', menu: menu } %>
+  <%= render partial: 'atoms/header', locals: { link: @return_to, label: 'Spostamento Creato', menu: menu } %>
 </div>
 
 <section class="<%= style_main_cnt %> space-y-6">
@@ -51,7 +51,7 @@
   <% end %>
 
   <div class="flex justify-center gap-4">
-    <%= link_to inventories_dashboard_path, class: "rounded-lg py-3 px-6 border border-slate-300 text-slate-700 font-medium inline-block hover:bg-slate-50" do %>
+    <%= link_to @return_to, class: "rounded-lg py-3 px-6 border border-slate-300 text-slate-700 font-medium inline-block hover:bg-slate-50" do %>
       <span class="material-symbols-outlined text-base align-middle">arrow_back</span> Indietro
     <% end %>
     <%= link_to "Nuovo spostamento", app_move_products_path, class: "rounded-lg py-3 px-6 bg-accent text-white font-medium cursor-pointer inline-block" %>

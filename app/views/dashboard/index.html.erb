@@ -6,8 +6,10 @@
 </div>
 <% end %>
 
-<section class="bg-white rounded-none p-4">
-  <% if current_user.godlike? || current_user.has_role?(:ufficio) %>
+<section class="bg-white dark:bg-slate-900 rounded-none p-4">
+  <% if current_user.godlike? %>
+    <%= render 'dashboard/portal' %>
+  <% elsif current_user.has_role?(:ufficio) %>
     <%= render partial: 'dashboard/atoms/ufficio' %>
   <% elsif current_user.has_role?(:lab) %>
     <%= render partial: 'dashboard/atoms/lab' %>

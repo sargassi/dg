@@ -5,7 +5,7 @@
         <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">
           <%= @item.code %> — <%= @item.name %>
         </h2>
-        <%= link_to archive_items_path(page: params[:page]), class: "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200", data: { turbo_frame: "_top" } do %>
+        <%= link_to archive_items_path(page: params[:page]), class: "#{style_close_btn}", data: { turbo_frame: "_top" } do %>
           <span class="material-symbols-outlined text-base">close</span>
         <% end %>
       </div>

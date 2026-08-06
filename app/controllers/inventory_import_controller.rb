@@ -18,6 +18,7 @@ class InventoryImportController < ApplicationController
       warehouse_id: params[:warehouse_id],
       location_id: params[:location_id],
       operationtype_id: params[:operationtype_id])
+    data[:_file_name] = params[:file].original_filename
     Rails.cache.write(import_cache_key, data, expires_in: 30.minutes)
     Rails.cache.delete(inventories_import_stats_key)
     redirect_to inventories_import_path, notice: "#{data[:rows].size} righe caricate. Verifica e modifica."
@@ -60,6 +61,18 @@ class InventoryImportController < ApplicationController
     return redirect_to inventories_import_path, alert: "Nessun dato da importare" unless data&.dig(:rows)&.any?
 
     stats = ImportInventoryService.new.save(data, current_user)
+    ImportLog.create!(
+      user: current_user,
+      file_name: data[:_file_name],
+      total_rows: stats[:total],
+      created_count: stats[:created],
+      error_count: stats[:errors].size + stats[:invalid].size + stats[:skipped].size,
+      created_ids: stats[:items].map { |i| i[:inventory_id] },
+      error_details: (stats[:invalid] + stats[:errors]).map { |e| { row: e[:row], error: e[:error] } },
+      status: stats[:errors].any? ? 'failed' : 'completed',
+      started_at: Time.current,
+      finished_at: Time.current
+    )
     Rails.cache.delete(import_cache_key)
     Rails.cache.write(inventories_import_stats_key, stats, expires_in: 5.minutes)
     redirect_to inventories_import_summary_path
@@ -68,6 +81,27 @@ class InventoryImportController < ApplicationController
   def import_summary
     @stats = Rails.cache.read(inventories_import_stats_key)
     return redirect_to inventories_path unless @stats
+  end
+
+  def import_failed_rows
+    stats = Rails.cache.read(inventories_import_stats_key)
+    return redirect_to inventories_path unless stats
+
+    invalid = stats[:invalid] || []
+    skipped = stats[:skipped] || []
+    rows = invalid.map { |r| [r[:row], r[:itemcode], r[:error]] } +
+           skipped.map { |r| [r[:row], r[:itemcode], "QTA 0 (saltato)"] }
+
+    package = Axlsx::Package.new
+    wb = package.workbook
+    wb.add_worksheet(name: "Righe non importate") do |sheet|
+      sheet.add_row ["Riga", "Articolo", "Errore"]
+      rows.each { |row| sheet.add_row row }
+    end
+
+    send_data package.to_stream.read,
+      filename: "righe_non_importate.xlsx",
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
   end
 
   def import_cancel

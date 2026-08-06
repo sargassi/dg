@@ -131,7 +131,7 @@
 
   <%# ── Actions ────────────────────────────────────────────────────────── %>
   <div class="flex items-center gap-4 pt-5 border-t border-slate-200">
-    <%= f.submit "Salva", class: style_main_btn %>
+    <%= f.submit "Salva", class: "py-1 px-2 #{style_save_button} tracking-wide text-xs rounded-sm inline-block cursor-pointer" %>
     <% if @user.persisted? && @user != current_user %>
       <%= link_to "Elimina utente", admin_user_path(@user), method: :delete,
           data: { turbo_confirm: "Sei sicuro?" },

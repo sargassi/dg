@@ -12,7 +12,7 @@
         <button type="button"
                 data-action="click->qr-scanner#start"
                 data-qr-scanner-target="button"
-                class="flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-accent-300 dark:border-accent-500 text-accent-700 dark:text-accent-200 bg-accent-50 dark:bg-accent-900/20 hover:bg-accent-100 dark:hover:bg-accent-900/40 transition text-sm font-bold whitespace-nowrap">
+                class="inline-flex items-center justify-center gap-2 px-3 py-2 rounded text-sm font-bold transition whitespace-nowrap <%= style_scan_button %>">
           <span class="material-symbols-outlined text-lg">qr_code_scanner</span>
           Scansiona QR
         </button>
@@ -86,7 +86,7 @@
         <h3 class="text-lg font-semibold text-slate-800 dark:text-slate-100">Scansiona QR Code</h3>
         <button type="button"
                 data-action="click->qr-scanner#stop"
-                class="p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400">
+                class="<%= style_close_btn %>">
           <span class="material-symbols-outlined">close</span>
         </button>
       </div>

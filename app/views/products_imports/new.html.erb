@@ -10,6 +10,6 @@
       <% end %>
     </ul>
   <% end %>
-  <%= f.file_field :file %>
+  <%= f.file_field :file, class: "#{style_upload_field} #{style_upload_field_btn}" %>
   <%= f.submit "Import File" %>
 <% end %>

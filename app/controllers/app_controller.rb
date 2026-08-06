@@ -61,24 +61,23 @@ class AppController < ApplicationController
   end
 
   def in_warehouse
+    set_return_to(inventories_dashboard_path)
+
     if request.post?
-      @itemin = MovementBuilder.new(
+      result = MovementCreationService.new(
         Itemin, params[:itemin],
         defaults: {
           collection_id: params[:default_collection_id],
           warehouse_id: params[:default_warehouse_id],
           location_id: params[:default_location_id]
         }
-      ).build
+      ).call
+      @itemin = result.movement
 
-      if @itemin.valid?
-        ActiveRecord::Base.transaction do
-          @itemin.save!
-          CreateInventoriesFromItemin.new.call(@itemin)
-        end
-        redirect_to app_in_warehouse_confirmation_path(itemin_id: @itemin.id, from_seleziona: params[:from_seleziona])
+      if result.success
+        redirect_to @return_to, notice: "Carico creato con successo."
       else
-        @from_seleziona = params[:from_seleziona] == "1"
+        @from_seleziona = params[:return_to].to_s.include?(inventories_seleziona_path)
         @default_collection_id = params[:default_collection_id]
         @default_warehouse_id = params[:default_warehouse_id]
         @default_location_id = params[:default_location_id]
@@ -89,6 +88,7 @@ class AppController < ApplicationController
     else
       @itemin = Itemin.new(indate: Date.current)
       @default_collection_id = @default_warehouse_id = @default_location_id = nil
+      @from_seleziona = @return_to.to_s.include?(inventories_seleziona_path)
 
       if session[:carico_prefill].present?
         @from_seleziona = true
@@ -96,7 +96,7 @@ class AppController < ApplicationController
         details = prefill.map { |s|
           item = Item.find_by(id: s["item_id"])
           {
-            itemcode: item&.gencode || s["gencode"],
+            itemcode: item&.itemcode || s["gencode"],
             item_id: s["item_id"],
             collection_id: s["collection_id"],
             qty: (s["qty"] || 1).to_i,
@@ -113,26 +113,25 @@ class AppController < ApplicationController
 
   def in_warehouse_confirmation
     @itemin = Itemin.includes(itemins_details: [:warehouse, :location, :item]).find(params[:itemin_id])
-    @from_seleziona = params[:from_seleziona] == "1"
+    @return_to = safe_return_to(params[:return_to]) || inventories_dashboard_path
   end
 
   def out_warehouse
+    set_return_to(inventories_dashboard_path)
+
     if request.post?
-      @itemout = MovementBuilder.new(
+      result = MovementCreationService.new(
         Itemout, params[:itemout],
         defaults: {
           collection_id: params[:default_collection_id],
           warehouse_id: params[:default_warehouse_id],
           location_id: params[:default_location_id]
         }
-      ).build
+      ).call
+      @itemout = result.movement
 
-      if @itemout.valid?
-        ActiveRecord::Base.transaction do
-          @itemout.save!
-          CreateInventoriesFromItemout.new.call(@itemout)
-        end
-        redirect_to app_out_warehouse_confirmation_path(itemout_id: @itemout.id)
+      if result.success
+        redirect_to @return_to, notice: "Scarico creato con successo."
       else
         @default_collection_id = params[:default_collection_id]
         @default_warehouse_id = params[:default_warehouse_id]
@@ -150,9 +149,12 @@ class AppController < ApplicationController
 
   def out_warehouse_confirmation
     @itemout = Itemout.includes(itemouts_details: [:warehouse, :location, :item]).find(params[:itemout_id])
+    @return_to = safe_return_to(params[:return_to]) || inventories_dashboard_path
   end
 
   def move_products
+    set_return_to(inventories_dashboard_path)
+
     if request.post?
       p = move_products_params
       @created_ids = []
@@ -176,17 +178,22 @@ class AppController < ApplicationController
         render :move_products, status: :unprocessable_entity and return
       end
 
-      gencodes = details.map { |d| d[:gencode] }.compact.uniq
+      item_ids = details.map { |d| d[:item_id] }.compact.uniq
+      items = Item.where(id: item_ids).index_by(&:id)
+      gencodes = items.values.map(&:gencode).compact.uniq
       stock = StockLevel.where(gencode: gencodes)
         .each_with_object({}) { |sl, h| h[[sl.gencode, sl.warehouse_id, sl.location_id]] = sl.current_qty }
 
       details.each do |d|
-        next if d[:gencode].blank?
-        available = stock[[d[:gencode], d[:warehouse_id].to_i, d[:location_id].to_i]] || 0
+        next unless d[:item_id]
+        item = items[d[:item_id].to_i]
+        next unless item
+
+        available = stock[[item.gencode, d[:warehouse_id].to_i, d[:location_id].to_i]] || 0
         if d[:qty].to_i > available
           @movement = Itemmovement.new(indate: p[:indate])
           load_form_data(ordered: true)
-          flash.now[:alert] = "#{d[:gencode]}: quantità #{d[:qty]} supera la disponibilità (#{available} pz)"
+          flash.now[:alert] = "#{item.gencode}: quantità #{d[:qty]} supera la disponibilità (#{available} pz)"
           render :move_products, status: :unprocessable_entity and return
         end
       end
@@ -203,12 +210,12 @@ class AppController < ApplicationController
           )
           movement.itemmovements_details.build(group_details)
           movement.save!
-          CreateInventoriesFromItemmovement.new.call(movement)
+          InventoryCreator.new.call(movement)
           @created_ids << movement.id
         end
       end
 
-      redirect_to app_move_products_confirmation_path(ids: @created_ids.join(","))
+      redirect_to @return_to, notice: "Spostamento creato con successo."
     else
       @movement = Itemmovement.new(indate: Date.current)
       @default_dest_warehouse_id = @default_dest_location_id = nil
@@ -228,6 +235,188 @@ class AppController < ApplicationController
     @movements = Itemmovement.includes(:source_warehouse, :dest_warehouse, :source_location, :dest_location, itemmovements_details: :item).where(id: ids).order(:id)
   end
 
+  def mobile_in
+    set_return_to(app_dashboard_path)
+
+    if request.post?
+      result = MovementCreationService.new(
+        Itemin, params[:itemin],
+        defaults: {
+          collection_id: params[:default_collection_id],
+          warehouse_id: params[:default_warehouse_id],
+          location_id: params[:default_location_id]
+        }
+      ).call
+      @itemin = result.movement
+
+      if result.success
+        redirect_to app_mobile_in_confirmation_path(itemin_id: @itemin.id), notice: "Carico creato con successo."
+      else
+        @default_collection_id = params[:default_collection_id]
+        @default_warehouse_id = params[:default_warehouse_id]
+        @default_location_id = params[:default_location_id]
+        load_form_data
+        flash.now[:alert] = @itemin.errors.full_messages.to_sentence
+        render :mobile_in, status: :unprocessable_entity
+      end
+    else
+      @itemin = Itemin.new(indate: Date.current)
+      @default_collection_id = @default_warehouse_id = @default_location_id = nil
+      load_form_data
+    end
+  end
+
+  def mobile_in_confirmation
+    @itemin = Itemin.includes(itemins_details: [:warehouse, :location, :item]).find(params[:itemin_id])
+  end
+
+  def mobile_out
+    set_return_to(app_dashboard_path)
+
+    if request.post?
+      p = params[:itemout]
+      details = MovementBuilder.filter_details(Itemout, p, defaults: {
+          collection_id: params[:default_collection_id],
+          warehouse_id: params[:default_warehouse_id],
+          location_id: params[:default_location_id]
+        }).reject { |d| d[:warehouse_id].blank? }
+
+      item_ids = details.map { |d| d[:item_id] }.compact.uniq
+      items = Item.where(id: item_ids).index_by(&:id)
+      gencodes = items.values.map(&:gencode).compact.uniq
+      stock = StockLevel.where(gencode: gencodes)
+        .each_with_object({}) { |sl, h| h[[sl.gencode, sl.warehouse_id, sl.location_id]] = sl.current_qty }
+
+      details.each do |d|
+        next unless d[:item_id]
+        item = items[d[:item_id].to_i]
+        next unless item
+
+        available = stock[[item.gencode, d[:warehouse_id].to_i, d[:location_id].to_i]] || 0
+        if d[:qty].to_i > available
+          @itemout = Itemout.new(indate: p[:indate])
+          @default_collection_id = params[:default_collection_id]
+          @default_warehouse_id = params[:default_warehouse_id]
+          @default_location_id = params[:default_location_id]
+          load_form_data
+          flash.now[:alert] = "#{item.gencode}: quantità #{d[:qty]} supera la disponibilità (#{available} pz)"
+          render :mobile_out, status: :unprocessable_entity and return
+        end
+      end
+
+      result = MovementCreationService.new(
+        Itemout, params[:itemout],
+        defaults: {
+          collection_id: params[:default_collection_id],
+          warehouse_id: params[:default_warehouse_id],
+          location_id: params[:default_location_id]
+        }
+      ).call
+      @itemout = result.movement
+
+      if result.success
+        redirect_to app_mobile_out_confirmation_path(itemout_id: @itemout.id), notice: "Scarico creato con successo."
+      else
+        @default_collection_id = params[:default_collection_id]
+        @default_warehouse_id = params[:default_warehouse_id]
+        @default_location_id = params[:default_location_id]
+        load_form_data
+        flash.now[:alert] = @itemout.errors.full_messages.to_sentence.presence || result.error
+        render :mobile_out, status: :unprocessable_entity
+      end
+    else
+      @itemout = Itemout.new(indate: Date.current)
+      @default_collection_id = @default_warehouse_id = @default_location_id = nil
+      load_form_data
+    end
+  end
+
+  def mobile_out_confirmation
+    @itemout = Itemout.includes(itemouts_details: [:warehouse, :location, :item]).find(params[:itemout_id])
+  end
+
+  def mobile_var
+    set_return_to(app_dashboard_path)
+
+    if request.post?
+      p = move_products_params
+      details = MovementBuilder.filter_details(Itemmovement, p, defaults: {
+          warehouse_id: params[:source_warehouse_id],
+          location_id: params[:source_location_id]
+        }).reject { |d| d[:warehouse_id].blank? }
+
+      if params[:dest_warehouse_id].blank?
+        @movement = Itemmovement.new(indate: p[:indate])
+        load_form_data(ordered: true)
+        flash.now[:alert] = "Seleziona un magazzino di destinazione."
+        render :mobile_var, status: :unprocessable_entity and return
+      end
+
+      if details.empty?
+        @movement = Itemmovement.new(indate: p[:indate])
+        load_form_data(ordered: true)
+        flash.now[:alert] = "Nessun articolo valido. Compila il codice articolo selezionando dall'autocomplete."
+        render :mobile_var, status: :unprocessable_entity and return
+      end
+
+      item_ids = details.map { |d| d[:item_id] }.compact.uniq
+      items = Item.where(id: item_ids).index_by(&:id)
+      gencodes = items.values.map(&:gencode).compact.uniq
+      stock = StockLevel.where(gencode: gencodes)
+        .each_with_object({}) { |sl, h| h[[sl.gencode, sl.warehouse_id, sl.location_id]] = sl.current_qty }
+
+      details.each do |d|
+        next unless d[:item_id]
+        item = items[d[:item_id].to_i]
+        next unless item
+
+        available = stock[[item.gencode, d[:warehouse_id].to_i, d[:location_id].to_i]] || 0
+        if d[:qty].to_i > available
+          @movement = Itemmovement.new(indate: p[:indate])
+          load_form_data(ordered: true)
+          flash.now[:alert] = "#{item.gencode}: quantità #{d[:qty]} supera la disponibilità (#{available} pz)"
+          render :mobile_var, status: :unprocessable_entity and return
+        end
+      end
+
+      grouped = details.group_by { |d| [d[:warehouse_id], d[:location_id]] }
+
+      @created_ids = []
+      Itemmovement.transaction do
+        grouped.each do |(wh_id, loc_id), group_details|
+          movement = Itemmovement.new(
+            indate: p[:indate], notes: p[:notes], operator_id: p[:operator_id],
+            source_warehouse_id: wh_id, source_location_id: loc_id,
+            dest_warehouse_id: params[:dest_warehouse_id],
+            dest_location_id: params[:dest_location_id]
+          )
+          movement.itemmovements_details.build(group_details)
+          movement.save!
+          InventoryCreator.new.call(movement)
+          @created_ids << movement.id
+        end
+      end
+
+      redirect_to app_mobile_var_confirmation_path(ids: @created_ids.join(",")), notice: "Spostamento creato con successo."
+    else
+      @movement = Itemmovement.new(indate: Date.current)
+      @default_dest_warehouse_id = @default_dest_location_id = nil
+      load_form_data(ordered: true)
+    end
+  rescue ActiveRecord::RecordInvalid => e
+    @movement = Itemmovement.new(indate: params[:itemmovement][:indate], dest_warehouse_id: params[:dest_warehouse_id], dest_location_id: params[:dest_location_id])
+    @default_dest_warehouse_id = params[:dest_warehouse_id]
+    @default_dest_location_id = params[:dest_location_id]
+    load_form_data(ordered: true)
+    flash.now[:alert] = e.record.errors.full_messages.to_sentence
+    render :mobile_var, status: :unprocessable_entity
+  end
+
+  def mobile_var_confirmation
+    ids = params[:ids].to_s.split(",")
+    @movements = Itemmovement.includes(:source_warehouse, :dest_warehouse, :source_location, :dest_location, itemmovements_details: :item).where(id: ids).order(:id)
+  end
+
   def itemins_list
     redirect_to inventories_movements_path(operationtype_id: 1)
   end
@@ -242,6 +431,20 @@ class AppController < ApplicationController
 
   private
 
+  def set_return_to(fallback)
+    @return_to = safe_return_to(params[:return_to]) || safe_return_to(request.referer) || fallback
+  end
+
+  def safe_return_to(url)
+    return nil if url.blank?
+    uri = URI.parse(url)
+    return nil if uri.host.present? && uri.host != request.host
+    return nil if uri.path.blank?
+    uri.path
+  rescue URI::InvalidURIError
+    nil
+  end
+
   def set_app_menu
     active = action_name
     @app_menu = [
@@ -250,9 +453,9 @@ class AppController < ApplicationController
       { label: 'Magazzino', path: app_dashboard_magazzino_path, icon: 'warehouse', active: active == 'dashboard_magazzino', can: 'manage_app_sectors' },
       { label: 'Produzione', path: app_dashboard_produzione_path, icon: 'precision_manufacturing', active: active == 'dashboard_produzione', can: 'manage_app_sectors' },
       { label: 'Inserimento', path: app_inserimento_path, icon: 'add_box', active: active == 'inserimento', can: 'manage_app_sectors' },
-      { label: 'IN', path: app_in_warehouse_path, icon: 'download', active: %w[in_warehouse in_warehouse_confirmation].include?(active), can: 'manage_app_sectors' },
-      { label: 'OUT', path: app_out_warehouse_path, icon: 'upload', active: %w[out_warehouse out_warehouse_confirmation].include?(active), can: 'manage_app_sectors' },
-      { label: 'VAR', path: app_move_products_path, icon: 'swap_horiz', active: %w[move_products move_products_confirmation].include?(active), can: 'manage_app_sectors' },
+      { label: 'IN', path: app_mobile_in_path, icon: 'download', active: %w[mobile_in mobile_in_confirmation].include?(active), can: 'manage_app_sectors' },
+      { label: 'OUT', path: app_mobile_out_path, icon: 'upload', active: %w[mobile_out mobile_out_confirmation].include?(active), can: 'manage_app_sectors' },
+      { label: 'VAR', path: app_mobile_var_path, icon: 'swap_horiz', active: %w[mobile_var mobile_var_confirmation].include?(active), can: 'manage_app_sectors' },
       { label: 'Carichi', path: inventories_movements_path(operationtype_id: 1), icon: 'list_alt', active: false, can: 'manage_app_sectors' },
       { label: 'Scarichi', path: inventories_movements_path(operationtype_id: 2), icon: 'list_alt', active: false, can: 'manage_app_sectors' },
       { label: 'Variazioni', path: inventories_movements_path(operationtype_id: 3), icon: 'swap_vert', active: false, can: 'manage_app_sectors' },

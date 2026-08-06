@@ -3,7 +3,7 @@
     <div class="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between p-4 border-b border-slate-200">
         <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-600">Modifica Magazzino</h2>
-        <%= link_to warehouses_path, class: "text-slate-400 hover:text-slate-600", data: { turbo_frame: "_top" } do %>
+        <%= link_to warehouses_path, class: "#{style_close_btn}", data: { turbo_frame: "_top" } do %>
           <span class="material-symbols-outlined text-base">close</span>
         <% end %>
       </div>

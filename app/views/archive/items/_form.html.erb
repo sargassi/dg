@@ -102,7 +102,7 @@
           <%= hidden_field_tag "archive_item[pictures][]", "", id: nil %>
           <%= form.file_field :pictures, multiple: true,
                 data: { image_preview_target: "input", camera_capture_target: "input", action: "change->image-preview#preview" },
-                class: "block w-full text-xs text-slate-500 file:mr-2 file:py-1 file:px-3 file:rounded-sm file:border-0 file:text-xs file:bg-accent file:text-white hover:file:bg-accent-700 cursor-pointer" %>
+                class: "#{style_upload_field} #{style_upload_field_btn}" %>
         </div>
       </div>
 
@@ -117,7 +117,7 @@
         <div class="relative bg-white dark:bg-slate-800 rounded-xl p-4 w-full max-w-lg mx-4">
           <div class="flex items-center justify-between mb-3">
             <h3 class="text-sm font-semibold text-slate-800 dark:text-slate-100">Scatta foto</h3>
-            <button type="button" data-action="camera-capture#close" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+            <button type="button" data-action="camera-capture#close" class="<%= style_close_btn %>">
               <span class="material-symbols-outlined">close</span>
             </button>
           </div>
@@ -156,7 +156,7 @@
     </div>
 
     <div class="pt-2">
-      <%= form.submit "Salva", class: button_class(' bg-accent') + ' w-full text-center py-2' %>
+      <%= form.submit "Salva", class: button_class(' ' + style_save_button) + ' w-full text-center py-2' %>
     </div>
   </div>
 <% end %>

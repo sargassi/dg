@@ -72,7 +72,11 @@
               <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50 <%= 'bg-red-50 dark:bg-red-900/10' if (inv.respond_to?(:current_qty) ? inv.current_qty : inv.net_qty.to_i) <= 0 %>">
                 <td class="<%= style_table_td %> font-mono whitespace-nowrap">
                   <% item = @items_by_gencode[inv.gencode] %>
-                  <%= item.itemcode %><%= item.fabricode %><%= item.varcode %>
+                  <% if item %>
+                    <%= item.itemcode %><%= item.fabricode %><%= item.varcode %>
+                  <% else %>
+                    <span class="text-slate-400" title="Articolo non trovato"><%= inv.respond_to?(:itemcode) ? inv.itemcode : "—" %></span>
+                  <% end %>
                 </td>
                 <td class="<%= style_table_td %> text-xs font-bold uppercase"><%= @collection_by_gencode[inv.gencode] %></td>
                 <td class="<%= style_table_td %> text-xs max-w-[400px] truncate"><%= @items_by_gencode[inv.gencode]&.description %></td>

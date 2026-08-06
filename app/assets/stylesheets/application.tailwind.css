@@ -318,4 +318,18 @@
         mask-image: linear-gradient(to right, black calc(100% - 2rem), transparent 100%);
         -webkit-mask-image: linear-gradient(to right, black calc(100% - 2rem), transparent 100%);
     }
+
+    .splash-in {
+        animation: splashFade 0.25s ease-out;
+    }
+    @keyframes splashFade {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+}
+
+
+#mobile {
+    height: 80vh;
+    background: rgba(0,0,0,.01);
 }

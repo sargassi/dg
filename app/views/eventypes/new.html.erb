@@ -4,7 +4,7 @@
       <div class="flex items-center justify-between border-b border-slate-200 px-4 py-3">
         <h2 class="text-sm font-semibold text-slate-700">Nuovo Tipo Evento</h2>
         <%= link_to directory_events_path(start_date: params[:start_date] || Date.today),
-              class: "text-slate-400 hover:text-slate-600 transition",
+              class: "#{style_close_btn}",
               data: { turbo_frame: "_top" } do %>
           <span class="material-symbols-outlined text-lg">close</span>
         <% end %>
@@ -35,7 +35,7 @@
           </div>
 
           <div class="flex gap-2">
-            <%= form.submit "Crea", class: "p-3 bg-accent inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer text-white" %>
+            <%= form.submit "Crea", class: "p-3 #{style_save_button} inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer" %>
           </div>
         <% end %>
       </div>

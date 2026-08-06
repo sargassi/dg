@@ -11,7 +11,12 @@ class StockLevel < ApplicationRecord
       warehouse_id: warehouse_id,
       location_id: location_id || 0
     )
-    sl.current_qty = (sl.current_qty || 0) + delta
+    new_qty = (sl.current_qty || 0) + delta
+    raise InsufficientStockError, "Stock negativo per #{gencode}" if new_qty.negative?
+
+    sl.current_qty = new_qty
     sl.save!
   end
+
+  class InsufficientStockError < StandardError; end
 end

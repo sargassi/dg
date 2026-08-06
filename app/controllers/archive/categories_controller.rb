@@ -11,7 +11,7 @@ module Archive
       @category = Archive::Category.new(category_params)
       dest = params[:return_to].presence || archive_categories_path
       if @category.save
-        redirect_to dest, notice: @category.parent ? "Sottocategoria creata" : "Categoria creata"
+        redirect_to dest, notice: "Categoria creata"
       else
         redirect_to dest, alert: @category.errors.full_messages.join(", ")
       end

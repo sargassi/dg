@@ -1,5 +1,5 @@
 class WarehousesController < ApplicationController
-  before_action -> { require_ability!('manage_warehouses') }
+  before_action -> { require_ability!('manage_warehouses') }, except: [:lookup_by_qr]
   before_action :set_warehouse, only: %i[ show edit update destroy ]
 
   # GET /warehouses or /warehouses.json

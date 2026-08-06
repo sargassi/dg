@@ -10,6 +10,7 @@ class ToolbarConfig < ApplicationRecord
     production:  { label: "Produzione",  controller: :production_section_toolbar },
     utilities:   { label: "Utilità",     controller: :utilities_section_toolbar },
     directory:   { label: "Anagrafiche", controller: :directory_section_toolbar },
+    archive:     { label: "Archivio",    controller: :archive_section_toolbar },
   }.freeze
 
   def self.visible?(section, label)

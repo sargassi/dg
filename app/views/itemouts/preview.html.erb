@@ -57,11 +57,11 @@
 
   <div class="flex gap-4">
     <%= form_with url: confirm_itemouts_path, method: :post do %>
-      <button type="submit" class="<%= style_import_btn %> bg-green-600">
+      <button type="submit" class="<%= style_save_button %> px-5 py-2 tracking-wider rounded-sm uppercase text-xs cursor-pointer transition-colors">
         Conferma e Salva (<%= @details.size %> articoli)
       </button>
     <% end %>
 
-    <%= link_to "Annulla", new_itemout_path, class: "#{style_import_btn} bg-gray-400 text-center" %>
+    <%= link_to "Annulla", new_itemout_path, class: "#{style_cancel_button} px-5 py-2 tracking-wider rounded-sm uppercase text-xs cursor-pointer transition-colors text-center" %>
   </div>
 </section>

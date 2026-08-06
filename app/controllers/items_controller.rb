@@ -1,5 +1,5 @@
 class ItemsController < ApplicationController
-  before_action -> { require_ability!('manage_items') }
+  before_action -> { require_ability!('manage_items') }, except: [:autocomplete]
   before_action :set_item, only: %i[ show edit update destroy delete_picture gallery price_history ]
 
   # GET /items or /items.json

@@ -16,6 +16,11 @@ module Archive
                             .order(created_at: :desc)
       @pagy, @items = pagy(@items, items: 20)
 
+      if params[:view].present?
+        session[:archive_items_view] = params[:view]
+      end
+      @view = session[:archive_items_view] || "list"
+
       @new_item = Archive::Item.new
     end
 
@@ -115,7 +120,7 @@ module Archive
     def import
       @collections = Collection.joins(:items).distinct.order(row_order: :desc)
 
-      @items = Item.includes(:collection).with_attached_pictures
+      @items = ::Item.includes(:collection).with_attached_pictures
         .joins(:stock_levels)
         .where(stock_levels: { current_qty: 1.. })
 
@@ -226,7 +231,7 @@ module Archive
         dest_location_id: archive_location.id
       )
       movement.itemmovements_details.build(
-        itemcode: item.gencode,
+        itemcode: item.itemcode,
         item_id: item.id,
         collection_id: item.collection_id,
         qty: 1,
@@ -235,7 +240,7 @@ module Archive
         operationtype_id: 2
       )
       movement.save!
-      CreateInventoriesFromItemmovement.new.call(movement)
+      InventoryCreator.new.call(movement)
 
       @archive_item = Archive::Item.create!(
         name: item.description.presence || item.gencode,

@@ -10,12 +10,18 @@ class Archive::ItemsControllerTest < ActionDispatch::IntegrationTest
     Archive::Item.delete_all
   end
 
+  test "import renders items with stock" do
+    get import_archive_items_path
+
+    assert_response :success
+    assert_select "body"
+  end
+
   test "import_itemout stores selection in session and redirects" do
     selected = [
       { item_id: @item.id, gencode: @item.gencode, collection_id: @item.collection_id, qty: 2 },
       { item_id: items(:two).id, gencode: items(:two).gencode, collection_id: items(:two).collection_id, qty: 1 }
     ]
-
     post import_itemout_archive_items_path, params: { selected: selected }
 
     assert_redirected_to new_itemout_path

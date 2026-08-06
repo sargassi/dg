@@ -20,7 +20,7 @@
         </div>
         <button type="button"
                 data-action="click->qr-scanner#scanRow"
-                class="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-lg border border-accent-300 text-accent-700 bg-accent-50 hover:bg-accent-100 transition text-sm font-bold">
+                class="<%= style_md_btn %> <%= style_scan_button %>">
           <span class="material-symbols-outlined text-lg">qr_code_scanner</span>
           Scansiona QR Code
         </button>
@@ -76,7 +76,7 @@
           <h3 class="text-lg font-semibold text-slate-800 dark:text-slate-100">Scansiona QR Code</h3>
           <button type="button"
                   data-action="click->qr-scanner#stop"
-                  class="p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400">
+                  class="<%= style_close_btn %>">
             <span class="material-symbols-outlined">close</span>
           </button>
         </div>

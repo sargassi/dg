@@ -1,6 +1,6 @@
-<div class="<%= style_main_header_container %>">
-  <%= render partial: 'atoms/header', locals: { link: app_dashboard_path, label: 'Articoli', menu: @app_menu } %>
-</div>
+<% content_for :page_header do %>
+  <%= render "application/breadcrumb", dashboard_path: app_dashboard_path, section_name: "App", page_title: "Articoli" %>
+<% end %>
 
 <section class="<%= style_main_cnt %> pt-8 space-y-8">
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

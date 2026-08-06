@@ -1,6 +1,6 @@
-<div class="<%= style_main_header_container %>">
-  <%= render partial: 'atoms/header', locals: { link: mainware_dashboard_path, label: 'Inserimento articolo', menu: mainware_menu(active: 'dashboard') } %>
-</div>
+<% content_for :page_header do %>
+  <%= render "application/breadcrumb", dashboard_path: app_dashboard_path, section_name: "App", page_title: "Inserimento articolo" %>
+<% end %>
 
 <section class="<%= style_main_cnt %>">
   <div class="flex flex-col lg:flex-row gap-8 items-start" data-controller="item-clone qr-scanner" data-item-clone-url-value="<%= autocomplete_items_path %>">
@@ -16,7 +16,7 @@
         </div>
         <button type="button"
                 data-action="click->qr-scanner#scanRow"
-                class="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-lg border border-accent-300 text-accent-700 bg-accent-50 hover:bg-accent-100 transition text-sm font-bold">
+                class="<%= style_md_btn %> <%= style_scan_button_outline %>">
           <span class="material-symbols-outlined text-lg">qr_code_scanner</span>
           Scansiona QR Code
         </button>
@@ -152,7 +152,7 @@
                   </button>
                   <%= f.file_field :pictures, multiple: true, direct_upload: true,
                         data: { camera_capture_target: "input" },
-                        class: "block w-full flex-1 text-sm text-slate-500 file:mr-3 file:py-2 file:px-3 file:border-0 file:text-xs file:uppercase file:tracking-wider file:cursor-pointer file:bg-accent file:text-white hover:file:bg-accent-600 border border-slate-300 rounded-sm" %>
+                        class: "#{style_upload_field} #{style_upload_field_btn}" %>
                 </div>
 
                 <div data-camera-capture-target="summary"
@@ -167,7 +167,7 @@
                       <h3 class="text-lg font-semibold text-slate-800 dark:text-slate-100">Scatta foto</h3>
                       <button type="button"
                               data-action="camera-capture#close"
-                              class="p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400">
+                              class="<%= style_close_btn %>">
                         <span class="material-symbols-outlined">close</span>
                       </button>
                     </div>
@@ -209,8 +209,8 @@
           </div>
 
           <div class="flex flex-col sm:flex-row gap-2 mt-4 pt-4 border-t border-slate-200">
-            <%= f.submit "Salva", class: "p-3 bg-accent inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer text-white sm:w-auto w-full text-center" %>
-            <%= link_to app_dashboard_path, class: "p-3 bg-gray-300 inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer text-slate-700 sm:w-auto w-full text-center" do %>
+            <%= f.submit "Salva", class: "p-3 #{style_save_button} inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer sm:w-auto w-full text-center" %>
+            <%= link_to app_dashboard_path, class: "p-3 #{style_cancel_button} inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer sm:w-auto w-full text-center" do %>
               Annulla
             <% end %>
           </div>
@@ -226,7 +226,7 @@
           <h3 class="text-lg font-semibold text-slate-800 dark:text-slate-100">Scansiona QR Code</h3>
           <button type="button"
                   data-action="click->qr-scanner#stop"
-                  class="p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400">
+                  class="<%= style_close_btn %>">
             <span class="material-symbols-outlined">close</span>
           </button>
         </div>

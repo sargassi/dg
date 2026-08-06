@@ -1,0 +1,45 @@
+<%# QR scan overlay contained inside the #mobile wizard container.
+   # It fills the container (absolute inset-0) and hides the underlying inputs.
+   # locals:
+   #   overlay: stimulus controller owning the overlay+video targets (e.g. "qr-scanner")
+   #   close_action: stimulus action for the close button
+   #   video_id: unique id for the <video> (zxing resolves it via getElementById)
+   #   title, hint: heading and helper text
+   #   manual_select: bool — show a "manual selection" button
+   #   continuous: bool — show a "Fatto" button to end continuous scanning %>
+<div data-<%= overlay %>-target="overlay" class="hidden absolute inset-0 z-50 flex flex-col bg-white dark:bg-slate-800 rounded-lg p-4">
+  <div class="flex items-center justify-between mb-3">
+    <h3 class="text-base font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+      <span class="material-symbols-outlined text-xl text-accent">qr_code_scanner</span>
+      <span data-<%= overlay %>-target="scanTitle"><%= title %></span>
+    </h3>
+    <button type="button" data-action="<%= close_action %>" class="w-11 h-11 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-700 dark:bg-slate-600 dark:hover:bg-slate-500 flex items-center justify-center cursor-pointer">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+  </div>
+  <div class="rounded-lg overflow-hidden bg-black flex-1 min-h-0">
+    <video id="<%= video_id %>" data-<%= overlay %>-target="video" class="w-full h-full object-cover" autoplay playsinline></video>
+  </div>
+  <p class="text-sm text-slate-500 dark:text-slate-400 text-center mt-3"><%= hint %></p>
+  <% if local_assigns[:continuous] %>
+    <p data-mobile-wizard-target="scanCount" class="text-sm font-bold text-emerald-600 dark:text-emerald-400 text-center mt-1">0 articoli scansionati</p>
+    <div data-mobile-wizard-target="overlayList" class="mt-3 space-y-2 max-h-40 overflow-y-auto"></div>
+  <% end %>
+  <% if local_assigns[:manual_select] %>
+    <button type="button"
+            data-action="<%= close_action %> click->mobile-wizard#manualSelect"
+            class="mt-3 w-full py-3 rounded-lg bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer">
+      <span class="material-symbols-outlined text-lg">list</span>
+      Selezione manuale
+    </button>
+  <% end %>
+  <% if local_assigns[:continuous] %>
+    <button type="button"
+            data-mobile-wizard-target="doneBtn"
+            data-action="mobile-wizard#finishScan"
+            class="hidden mt-3 w-full py-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer">
+      <span class="material-symbols-outlined text-lg">check</span>
+      Fatto
+    </button>
+  <% end %>
+</div>

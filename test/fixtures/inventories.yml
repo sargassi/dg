@@ -7,9 +7,9 @@ one:
   warehouse: one
   location: one
   itemcode: MyString
+  gencode: G1
   operationtype: one
   itemin: one
-  itemout: one
   enabled: false
 
 two:
@@ -19,7 +19,7 @@ two:
   warehouse: two
   location: two
   itemcode: MyString
+  gencode: G2
   operationtype: two
-  itemin: two
   itemout: two
   enabled: false

@@ -8,7 +8,6 @@ class ItemoutsController < ApplicationController
     movement_var:          :@itemout,
     details_attr_key:      :itemouts_details_attributes,
     preview_session_key:   :itemout_preview,
-    inventory_service:     CreateInventoriesFromItemout,
     new_path_helper:       :new_itemout_path,
     preview_path_helper:   :preview_itemouts_path,
     success_redirect_path: :inventories_dashboard_path,
@@ -26,8 +25,9 @@ class ItemoutsController < ApplicationController
     if session[:archive_itemout_prefill].present?
       @itemout = Itemout.new(indate: Date.current)
       session[:archive_itemout_prefill].each do |data|
+        item = Item.find_by(id: data["item_id"])
         @itemout.itemouts_details.build(
-          itemcode: data["gencode"],
+          itemcode: item&.itemcode || data["gencode"],
           item_id: data["item_id"],
           collection_id: data["collection_id"],
           qty: data["qty"] || 1,

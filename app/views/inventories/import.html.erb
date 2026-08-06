@@ -85,9 +85,9 @@
 
     <div class="flex gap-4">
       <%= link_to "Vai alla verifica", inventories_import_verify_path,
-          class: "#{style_import_btn} bg-green-600 text-center" %>
+          class: "#{style_save_button} px-5 py-2 tracking-wider rounded-sm uppercase text-xs cursor-pointer transition-colors text-center" %>
 
-      <%= button_to "Annulla", inventories_import_cancel_path, method: :delete, class: "#{style_import_btn} bg-gray-400" %>
+      <%= button_to "Annulla", inventories_import_cancel_path, method: :delete, class: "#{style_cancel_button} px-5 py-2 tracking-wider rounded-sm uppercase text-xs cursor-pointer transition-colors" %>
     </div>
 
   <% else %>
@@ -124,7 +124,7 @@
                   class: style_select_class %>
             </div>
             <%= f.submit "Carica",
-                class: style_import_btn,
+                class: "px-5 py-2 tracking-wider rounded-sm uppercase text-xs cursor-pointer transition-colors #{style_action_btn}",
                 data: { turbo_submits_with: "Caricamento..." } %>
           </div>
         <% end %>

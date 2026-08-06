@@ -8,7 +8,6 @@ class IteminsController < ApplicationController
     movement_var:          :@itemin,
     details_attr_key:      :itemins_details_attributes,
     preview_session_key:   :itemin_preview,
-    inventory_service:     CreateInventoriesFromItemin,
     new_path_helper:       :new_itemin_path,
     preview_path_helper:   :preview_itemins_path,
     success_redirect_path: :inventories_dashboard_path,

@@ -18,7 +18,7 @@
 
   <% end %>
         <%= hidden_field_tag :place, nil, :value => params[:place] %>
-        <%= button_tag(:class => style_main_btn_icon + " hidden", :id => 'btin') do %>
+        <%= button_tag(:class => "my-6 h-10 w-10 rounded-sm inline-block cursor-pointer #{style_scan_button} hidden", :id => 'btin') do %>
           <span class="material-symbols-outlined font-bold">
           qr_code_scanner
           </span>

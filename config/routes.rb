@@ -25,16 +25,8 @@ Rails.application.routes.draw do
   post   'inventories/import/confirm', to: 'inventory_import#import_confirm', as: :inventories_import_confirm
   delete 'inventories/import/cancel', to: 'inventory_import#import_cancel', as: :inventories_import_cancel
   get    'inventories/import/summary', to: 'inventory_import#import_summary', as: :inventories_import_summary
+  get    'inventories/import/failed_rows', to: 'inventory_import#import_failed_rows', as: :inventories_import_failed_rows
   scope '/inventories' do
-    resources :warehouses do
-      collection do
-        get 'qrcodes', defaults: { format: :pdf }
-        get 'lookup_by_qr'
-        get 'merge'
-        post 'merge_apply'
-      end
-    end
-    resources :locations
     resources :itemins do
       collection do
         get  :preview
@@ -53,8 +45,19 @@ Rails.application.routes.draw do
       end
     end
   end
+  resources :warehouses do
+    collection do
+      get 'qrcodes', defaults: { format: :pdf }
+      get 'lookup_by_qr'
+      get 'merge'
+      post 'merge_apply'
+    end
+  end
+  resources :locations
   get '/itemins(/*path)' => redirect('/inventories/itemins/%{path}')
   get '/itemouts(/*path)' => redirect('/inventories/itemouts/%{path}')
+  get '/inventories/warehouses(/*path)' => redirect('/warehouses/%{path}')
+  get '/inventories/locations(/*path)' => redirect('/locations/%{path}')
   get '/inventories', to: 'inventory_stock#index', as: :inventories
   resources :inventories, except: [:index] do
     collection do
@@ -128,6 +131,12 @@ Rails.application.routes.draw do
   get 'app/out_warehouse_confirmation', to: 'app#out_warehouse_confirmation', as: :app_out_warehouse_confirmation
   match 'app/move_products', to: 'app#move_products', via: [:get, :post], as: :app_move_products
   get 'app/move_products_confirmation', to: 'app#move_products_confirmation', as: :app_move_products_confirmation
+  match 'app/mobile_in', to: 'app#mobile_in', via: [:get, :post], as: :app_mobile_in
+  match 'app/mobile_out', to: 'app#mobile_out', via: [:get, :post], as: :app_mobile_out
+  match 'app/mobile_var', to: 'app#mobile_var', via: [:get, :post], as: :app_mobile_var
+  get 'app/mobile_in_confirmation', to: 'app#mobile_in_confirmation', as: :app_mobile_in_confirmation
+  get 'app/mobile_out_confirmation', to: 'app#mobile_out_confirmation', as: :app_mobile_out_confirmation
+  get 'app/mobile_var_confirmation', to: 'app#mobile_var_confirmation', as: :app_mobile_var_confirmation
   match 'app/inserimento', to: 'app#inserimento', via: [:get, :post], as: :app_inserimento
   get 'app/confirm_ins', to: 'app#confirm_ins', as: :app_confirm_ins
   get 'app/check_single_qr'
@@ -194,6 +203,7 @@ Rails.application.routes.draw do
   end
 
   namespace :archive do
+    get 'dashboard', to: 'dashboard#index'
     resources :items do
       collection do
         get :qrcodes, defaults: { format: :pdf }

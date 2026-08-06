@@ -4,6 +4,14 @@ module ApplicationHelper
 
   def section_toolbar_items
     case controller_path
+    when /^app/
+      if app_warehouse_actions?
+        inventories_section_toolbar rescue []
+      elsif %w[dashboard dashboard_articoli dashboard_magazzino dashboard_produzione inserimento mobile_in mobile_out mobile_var mobile_in_confirmation mobile_out_confirmation mobile_var_confirmation].include?(action_name)
+        app_section_toolbar rescue []
+      else
+        []
+      end
     when /^mainware/, /^items/, /^collections/, /^fabriclus/
       mainware_section_toolbar rescue []
     when /^inventory/, /^warehouses/, /^locations/, /^itemins/, /^itemouts/
@@ -14,6 +22,8 @@ module ApplicationHelper
       utilities_section_toolbar rescue []
     when /^directory/, /^admin/
       directory_section_toolbar rescue []
+    when /^archive/
+      archive_section_toolbar rescue []
     else
       []
     end
@@ -283,11 +293,19 @@ module ApplicationHelper
   end
 
   def style_import_field
-    'w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded px-3 py-1.5 text-xs file:bg-accent file:text-white file:border-0 file:rounded file:px-3 file:py-1 file:mr-2 file:cursor-pointer file:text-xs file:font-medium'
+    'w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded px-3 py-1.5 text-xs file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:cursor-pointer file:font-medium ' + style_upload_field_btn
   end
 
   def style_import_btn
     'px-5 py-2 bg-accent text-white tracking-wider rounded-sm uppercase text-xs cursor-pointer hover:bg-accent-700 transition-colors'
+  end
+
+  def style_action_btn
+    'bg-gray-400 hover:bg-gray-500 text-white'
+  end
+
+  def style_close_btn(add = '')
+    'w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-500 hover:text-slate-700 dark:bg-slate-600 dark:hover:bg-slate-500 dark:border-slate-500 dark:text-slate-300 flex items-center justify-center transition' + add
   end
 
   def style_import_btn_blank
@@ -300,6 +318,38 @@ module ApplicationHelper
 
   def style_import_pdf_small
     style_import_pdf + ' text-xs'
+  end
+
+  def style_cancel_button
+    'bg-red-600 hover:bg-red-700 text-white'
+  end
+
+  def style_save_button
+    'bg-green-600 hover:bg-green-700 text-white'
+  end
+
+  def style_scan_button
+    'bg-indigo-500 hover:bg-indigo-600 text-white'
+  end
+
+  def style_scan_button_outline
+    'border border-slate-600 text-white bg-slate-700 hover:bg-slate-600'
+  end
+
+  def style_upload_field(add = '')
+    'block w-full text-sm text-slate-500 bg-gray-100 file:mr-3 file:py-2 file:px-3 file:rounded-sm file:border-0 file:text-xs file:uppercase file:tracking-wider file:cursor-pointer border border-slate-300 rounded-sm' + add
+  end
+
+  def style_upload_field_btn
+    'file:bg-gray-500 hover:file:bg-gray-600 file:text-white'
+  end
+
+  def style_lg_btn(add = ' rounded')
+    'block w-full py-3 px-5 font-medium text-center' + add
+  end
+
+  def style_md_btn(add = ' rounded')
+    'flex items-center justify-center gap-2 w-full px-4 py-3 text-sm font-bold transition' + add
   end
 
   def style_hr
@@ -395,6 +445,18 @@ module ApplicationHelper
 
   def active_class_for_controllers(*controller_names)
     controller_names.include?(controller_name) ? 'active' : ''
+  end
+
+  def app_warehouse_actions?
+    controller_name == 'app' && %w[in_warehouse out_warehouse move_products].include?(action_name)
+  end
+
+  def active_class_for_app_warehouse
+    app_warehouse_actions? ? 'active' : ''
+  end
+
+  def active_class_for_app_excluding_warehouse
+    controller_name == 'app' && !app_warehouse_actions? ? 'active' : ''
   end
 
   def active_class_for_namespace(*namespaces)

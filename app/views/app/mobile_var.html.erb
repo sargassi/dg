@@ -1,0 +1,92 @@
+<% content_for :page_header do %>
+  <%= render "application/breadcrumb", dashboard_path: app_dashboard_path, section_name: "App", page_title: "Variazione" %>
+<% end %>
+
+<%= form_with(model: @movement, url: app_mobile_var_path, id: "mobile-var-form",
+              data: {
+                controller: "mobile-wizard qr-scanner",
+                action: "submit->mobile-wizard#submit",
+                mobile_wizard_operation_type_value: 3,
+                mobile_wizard_scan_url_value: lookup_by_qr_inventories_path,
+                mobile_wizard_wh_select_value: "source_warehouse_id",
+                mobile_wizard_loc_select_value: "source_location_id"
+              }) do |form| %>
+  <%= form.hidden_field :operator_id, value: current_user.id %>
+  <%= hidden_field_tag :return_to, @return_to %>
+  <%= form.hidden_field :indate, value: Date.current %>
+  <%= form.hidden_field :notes %>
+
+  <div class="<%= style_main_cnt %> space-y-4 max-w-lg mx-auto relative" id="mobile">
+    <div class="flex items-center justify-between">
+      <h2 class="text-lg font-bold text-slate-800 dark:text-slate-100">Variazione magazzino</h2>
+      <span data-mobile-wizard-target="progress" class="text-xs font-medium text-slate-400"></span>
+    </div>
+
+    <%= render "app/mobile_location_step", step: "1", title: "Da", icon: "arrow_back", icon_class: "text-red-600", container_class: "bg-red-50 dark:bg-red-900/20", scan_btn_class: "bg-red-600 hover:bg-red-700", wh_name: "source_warehouse_id", loc_name: "source_location_id", target_prefix: "da", skip_propagate: false, default_wh: nil, default_loc: nil, show_back: false %>
+
+    <%# Step 2 — Articoli %>
+    <div data-mobile-wizard-target="step" class="hidden space-y-4">
+      <div class="flex items-center gap-2 mb-1">
+        <span class="material-symbols-outlined text-xl text-green-600">swap_horiz</span>
+        <span class="text-sm font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wide">2. Articoli</span>
+      </div>
+
+      <div data-controller="autocomplete"
+           data-autocomplete-url-value="<%= autocomplete_inventories_path %>"
+           data-action="autocomplete:select->mobile-wizard#addSelected">
+        <div class="flex gap-2">
+          <div class="relative flex-1">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none">search</span>
+            <input type="text"
+                   data-autocomplete-target="input"
+                   data-mobile-wizard-target="scanInput"
+                   data-action="input->autocomplete#search blur->autocomplete#hideResults"
+                   class="w-full border border-slate-300 outline-none px-3 py-3 pl-10 text-sm bg-white rounded-lg font-mono"
+                   placeholder="Scansiona o digita codice..."
+                   autocomplete="off">
+          </div>
+          <input type="hidden" data-autocomplete-target="hidden">
+          <button type="button" data-action="mobile-wizard#startScan" class="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-lg bg-green-600 hover:bg-green-700 text-white cursor-pointer" title="Scansiona QR">
+            <span class="material-symbols-outlined text-lg">qr_code_scanner</span>
+          </button>
+        </div>
+        <ul data-autocomplete-target="results" class="hidden absolute left-0 right-0 top-full mt-0.5 bg-white border border-slate-200 rounded-b-lg shadow-lg max-h-60 overflow-y-auto z-50 divide-y divide-slate-100"></ul>
+      </div>
+
+      <div data-mobile-wizard-target="cart" class="space-y-2"></div>
+
+      <div class="flex gap-2">
+        <button type="button" data-action="mobile-wizard#back" class="w-1/3 py-3 rounded-lg bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-sm font-semibold cursor-pointer">
+          Indietro
+        </button>
+        <button type="button" data-action="mobile-wizard#next" class="flex-1 py-3 rounded-lg bg-slate-800 hover:bg-slate-900 text-white text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer">
+          Avanti
+          <span class="material-symbols-outlined text-lg">arrow_forward</span>
+        </button>
+      </div>
+    </div>
+
+    <%= render "app/mobile_location_step", step: "3", title: "A", icon: "arrow_forward", icon_class: "text-green-600", container_class: "bg-green-50 dark:bg-green-900/20", scan_btn_class: "bg-green-600 hover:bg-green-700", wh_name: "dest_warehouse_id", loc_name: "dest_location_id", target_prefix: "a", skip_propagate: true, default_wh: @default_dest_warehouse_id, default_loc: @default_dest_location_id, show_back: true, final_label: "Salva Variazione", form: form %>
+
+    <%# Hidden nested rows (filled by mobile-wizard) %>
+    <div data-mobile-wizard-target="rows" class="hidden"></div>
+    <template data-mobile-wizard-target="template">
+      <div data-wizard-row>
+        <%= form.fields_for :itemmovements_details, ItemmovementsDetail.new, child_index: '__NEW__' do |df| %>
+          <%= df.hidden_field :_destroy, value: "0" %>
+          <%= df.hidden_field :item_id %>
+          <%= df.hidden_field :itemcode %>
+          <%= df.hidden_field :collection_id %>
+          <%= df.hidden_field :operationtype_id, value: 3 %>
+          <%= df.hidden_field :warehouse_id %>
+          <%= df.hidden_field :location_id %>
+          <%= df.hidden_field :qty, value: 1 %>
+        <% end %>
+      </div>
+    </template>
+
+    <%= render "app/qr_scan_overlay", overlay: "qr-scanner", close_action: "click->qr-scanner#stop", video_id: "qr-mobile-var-loc-video", title: "Scansiona ubica", hint: "Inquadra un QR code ubicazione", manual_select: true %>
+
+    <%= render "app/qr_scan_overlay", overlay: "mobile-wizard", close_action: "mobile-wizard#stopScan", video_id: "qr-mobile-var-item-video", title: "Scansiona articolo", hint: "Inquadra i QR articolo: si aggiungono in automatico", manual_select: true, continuous: true %>
+  </div>
+<% end %>

@@ -2,7 +2,7 @@
   <div class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-6">
     <div class="relative bg-white rounded-sm shadow-lg">
       <%= link_to safe_return_to_path(mainware_index_path),
-            class: "absolute -top-3 -right-3 z-10 w-8 h-8 bg-white rounded-full shadow flex items-center justify-center text-slate-500 hover:text-slate-700 transition",
+            class: "#{style_close_btn(' absolute -top-3 -right-3 z-10 shadow')}",
             data: { turbo_frame: "_top" } do %>
         <span class="material-symbols-outlined text-lg">close</span>
       <% end %>

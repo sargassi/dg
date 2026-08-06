@@ -146,12 +146,12 @@
     <div class="flex gap-4" data-controller="loader">
       <%= form_with url: inventories_import_confirm_path, method: :post,
                     data: { action: "submit->loader#show" } do %>
-        <button type="submit" class="<%= style_import_btn %> bg-green-600" data-loader-target="form">
+        <button type="submit" class="<%= style_save_button %> px-5 py-2 tracking-wider rounded-sm uppercase text-xs cursor-pointer transition-colors" data-loader-target="form">
           Conferma importazione (<%= valid_rows.size %> righe)
         </button>
       <% end %>
 
-      <%= button_to "Torna indietro", inventories_import_cancel_path, method: :delete, class: "#{style_import_btn} bg-gray-400" %>
+      <%= button_to "Torna indietro", inventories_import_cancel_path, method: :delete, class: "#{style_cancel_button} px-5 py-2 tracking-wider rounded-sm uppercase text-xs cursor-pointer transition-colors" %>
 
       <div data-loader-target="overlay" class="hidden fixed inset-0 z-50 bg-black/50 items-center justify-center">
         <div class="bg-white dark:bg-slate-800 rounded-xl p-8 flex flex-col items-center gap-4 shadow-2xl">

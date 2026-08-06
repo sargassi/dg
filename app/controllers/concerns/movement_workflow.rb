@@ -60,19 +60,15 @@ module MovementWorkflow
     @params = session[preview_session_key]&.with_indifferent_access
     return redirect_to send(new_path), alert: "Nessun dato, riprova" unless @params
 
-    m = MovementBuilder.new(movement_class, @params).build
+    result = MovementCreationService.new(movement_class, @params).call
+    m = result.movement
     instance_variable_set(movement_var, m)
 
-    begin
-      ActiveRecord::Base.transaction do
-        m.save!
-        inventory_service.new.call(m)
-      end
-
+    if result.success
       session.delete(preview_session_key)
       redirect_to send(success_redirect_path), notice: "Operazione creata con #{m.send(details_attr_key).size} articoli"
-    rescue => e
-      redirect_to send(new_path), alert: "Errore durante il salvataggio: #{e.message}"
+    else
+      redirect_to send(new_path), alert: "Errore durante il salvataggio: #{result.error || m.errors.full_messages.to_sentence}"
     end
   end
 
@@ -92,10 +88,6 @@ module MovementWorkflow
 
   def preview_session_key
     self.class.preview_session_key
-  end
-
-  def inventory_service
-    self.class.inventory_service
   end
 
   def new_path
@@ -141,19 +133,18 @@ module MovementWorkflow
 
   class_methods do
     attr_reader :movement_class, :movement_var, :details_attr_key,
-                :preview_session_key, :inventory_service,
+                :preview_session_key,
                 :new_path_helper, :preview_path_helper, :success_redirect_path,
                 :preview_notice_label
 
     def movement_workflow(movement_class:, movement_var:, details_attr_key:,
-                          preview_session_key:, inventory_service:,
+                          preview_session_key:,
                           new_path_helper:, preview_path_helper:,
                           success_redirect_path:, preview_notice_label:)
       @movement_class = movement_class
       @movement_var = movement_var
       @details_attr_key = details_attr_key
       @preview_session_key = preview_session_key
-      @inventory_service = inventory_service
       @new_path_helper = new_path_helper
       @preview_path_helper = preview_path_helper
       @success_redirect_path = success_redirect_path

@@ -1,20 +1,15 @@
-<% menu = [
-  { label: 'Dashboard', path: inventories_dashboard_path, active: false, icon: 'dashboard', can: 'manage_inventory' },
-  { label: 'Ricerca magazzino', path: inventories_path, active: false, icon: 'inventory_2', can: 'manage_inventory' },
-  { label: 'Movimenti', path: inventories_movements_path, active: false, icon: 'swap_vert', can: 'manage_itemins' },
-  { label: 'Magazzini e ubiche', path: warehouses_path, active: false, icon: 'warehouse', can: 'manage_warehouses' },
-] %>
-<div class="<%= style_main_header_container %>">
-  <%= render partial: 'atoms/header', locals: { link: inventories_dashboard_path, label: 'VAR', menu: menu } %>
-</div>
+<% content_for :page_header do %>
+<%= render "application/breadcrumb", dashboard_path: inventories_dashboard_path, section_name: "Magazzino", page_title: "Variazione" %>
+<% end %>
 
 <%= form_with(model: @movement, url: app_move_products_path, id: "movement-form", data: { controller: "qr-scanner" }) do |form| %>
   <%= form.hidden_field :operator_id, value: current_user.id %>
+  <%= hidden_field_tag :return_to, @return_to %>
 
   <%# Top section: Da and A warehouse/location %>
   <section class="<%= style_main_cnt %>">
-    <div class="space-y-4">
-      <div data-controller="defaults" data-defaults-target-prefix="da" class="bg-amber-50 rounded p-3 lg:rounded-lg lg:p-5">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div data-controller="defaults" data-defaults-target-prefix="da" class="bg-red-50 rounded p-3 lg:rounded-lg lg:p-5">
         <label class="text-sm font-bold text-slate-700 uppercase tracking-wide mb-2 inline-flex items-center gap-1">
           <span class="material-symbols-outlined text-base">arrow_back</span> Da
         </label>
@@ -22,7 +17,7 @@
           <div class="flex flex-col items-center">
             <label class="text-xs text-slate-400 uppercase tracking-wide block mb-1">Dove</label>
             <button type="button" data-action="click->qr-scanner#scanWarehouseLoc"
-                    class="flex-shrink-0 w-10 h-10 flex items-center justify-center border border-transparent rounded-md bg-indigo-500 text-white hover:bg-indigo-600"
+                    class="flex-shrink-0 w-10 h-10 flex items-center justify-center border border-transparent rounded-md <%= style_scan_button %>"
                     title="Scansiona QR">
               <span class="material-symbols-outlined text-lg">qr_code_scanner</span>
             </button>
@@ -48,7 +43,7 @@
         </div>
       </div>
 
-      <div data-controller="defaults" data-defaults-skip-propagate="true" data-defaults-target-prefix="a" class="bg-amber-100 rounded p-3 lg:rounded-lg lg:p-5">
+      <div data-controller="defaults" data-defaults-skip-propagate="true" data-defaults-target-prefix="a" class="bg-red-50 rounded p-3 lg:rounded-lg lg:p-5">
         <label class="text-sm font-bold text-slate-700 uppercase tracking-wide mb-2 inline-flex items-center gap-1">
           <span class="material-symbols-outlined text-base">arrow_forward</span> A
         </label>
@@ -56,7 +51,7 @@
           <div class="flex flex-col items-center">
             <label class="text-xs text-slate-400 uppercase tracking-wide block mb-1">Dove</label>
             <button type="button" data-action="click->qr-scanner#scanWarehouseLoc"
-                    class="flex-shrink-0 w-10 h-10 flex items-center justify-center border border-transparent rounded-md bg-indigo-500 text-white hover:bg-indigo-600"
+                    class="flex-shrink-0 w-10 h-10 flex items-center justify-center border border-transparent rounded-md <%= style_scan_button %>"
                     title="Scansiona QR">
               <span class="material-symbols-outlined text-lg">qr_code_scanner</span>
             </button>
@@ -89,7 +84,7 @@
     <div class="max-w-lg mx-auto lg:max-w-none lg:mx-0 lg:grid lg:grid-cols-4 lg:gap-8">
 
       <%# Sidebar — date, notes, submit %>
-      <div class="space-y-3 bg-amber-100 rounded p-3 lg:bg-amber-100 lg:rounded-lg lg:p-5 lg:sticky lg:top-0 lg:self-start lg:col-span-1 lg:order-last">
+      <div class="space-y-3 bg-blue-100 rounded p-3 lg:bg-blue-100 lg:rounded-lg lg:p-5 lg:sticky lg:top-0 lg:self-start lg:col-span-1 lg:order-last">
 
         <div>
           <%= form.label :indate, "Data", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
@@ -101,8 +96,9 @@
           <%= form.text_area :notes, rows: 1, class: "w-full border border-slate-300 outline-none px-2 py-1.5 text-sm bg-white rounded lg:px-3 lg:py-2 lg:rows-2" %>
         </div>
 
-        <div class="pt-2 hidden lg:block">
-          <%= form.submit "Salva Spostamento", class: "w-full rounded py-3 px-5 bg-accent text-white font-medium cursor-pointer text-center lg:rounded-lg" %>
+        <div class="pt-2 hidden lg:flex gap-2">
+          <%= form.button "Salva Spostamento", class: "#{style_lg_btn(' rounded lg:rounded-lg')} flex-1 #{style_save_button} cursor-pointer" %>
+          <%= link_to "Annulla", @return_to, class: "#{style_lg_btn(' rounded lg:rounded-lg')} flex-1 #{style_cancel_button}" %>
         </div>
       </div>
 
@@ -149,8 +145,9 @@
       </div>
 
       <%# Mobile submit button (after details) %>
-      <div class="lg:hidden pt-2">
-        <%= form.submit "Salva Spostamento", class: "w-full rounded py-3 px-5 bg-accent text-white font-medium cursor-pointer text-center" %>
+      <div class="lg:hidden pt-2 flex gap-2">
+        <%= form.button "Salva Spostamento", class: "#{style_lg_btn} flex-1 #{style_save_button} cursor-pointer" %>
+        <%= link_to "Annulla", @return_to, class: "#{style_lg_btn} flex-1 #{style_cancel_button}" %>
       </div>
     </div>
   </section>
@@ -162,7 +159,7 @@
       <h3 class="text-lg font-semibold text-slate-800 dark:text-slate-100">Scansiona QR Code</h3>
       <button type="button"
               data-action="click->qr-scanner#stop"
-              class="p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400">
+              class="<%= style_close_btn %>">
         <span class="material-symbols-outlined">close</span>
       </button>
     </div>

@@ -62,7 +62,7 @@ module API
             error!("Item #{d[:gencode]} not found", 404) unless item
 
             itemin.itemins_details.build(
-              itemcode: d[:gencode], qty: d[:qty], item_id: item.id,
+              itemcode: item.itemcode, qty: d[:qty], item_id: item.id,
               warehouse_id: d[:warehouse_id], location_id: d[:location_id],
               operationtype_id: 1
             )
@@ -70,7 +70,7 @@ module API
 
           ActiveRecord::Base.transaction do
             itemin.save!
-            CreateInventoriesFromItemin.new.call(itemin)
+            InventoryCreator.new.call(itemin)
           end
 
           present :id, itemin.id
@@ -101,7 +101,7 @@ module API
             error!("Item #{d[:gencode]} not found", 404) unless item
 
             itemout.itemouts_details.build(
-              itemcode: d[:gencode], qty: d[:qty], item_id: item.id,
+              itemcode: item.itemcode, qty: d[:qty], item_id: item.id,
               warehouse_id: d[:warehouse_id], location_id: d[:location_id],
               operationtype_id: 2
             )
@@ -109,7 +109,7 @@ module API
 
           ActiveRecord::Base.transaction do
             itemout.save!
-            CreateInventoriesFromItemout.new.call(itemout)
+            InventoryCreator.new.call(itemout)
           end
 
           present :id, itemout.id
@@ -150,7 +150,7 @@ module API
               error!("Insufficient stock for #{d[:gencode]} at WH##{src_wh}/LOC##{src_loc}", 422) unless sl && sl.current_qty >= d[:qty]
 
               itemmovement.itemmovements_details.build(
-                itemcode: d[:gencode], qty: d[:qty], item_id: item.id,
+                itemcode: item.itemcode, qty: d[:qty], item_id: item.id,
                 warehouse_id: src_wh, location_id: src_loc,
                 operationtype_id: 2
               )
@@ -158,7 +158,7 @@ module API
 
             ActiveRecord::Base.transaction do
               itemmovement.save!
-              CreateInventoriesFromItemmovement.new.call(itemmovement)
+              InventoryCreator.new.call(itemmovement)
             end
           end
 

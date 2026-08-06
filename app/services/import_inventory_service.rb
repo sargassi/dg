@@ -1,53 +1,31 @@
-class ImportInventoryService
-  require 'roo'
+class ImportInventoryService < SpreadsheetImportBase
+  def known_headers
+    ['Item Code:', 'Description:', 'Qt.', 'Fabric code:', 'var. code:', 'Fabric Code', 'Fabricode', 'Quantity', 'QTA', 'qtyavailable'].freeze
+  end
 
-  KNOWN_HEADERS = ['Item Code:', 'Description:', 'Qt.', 'Fabric code:', 'var. code:', 'Fabric Code', 'Fabricode', 'Quantity', 'QTA', 'qtyavailable'].freeze
+  def after_row(row)
+    resolve_warehouse_location_collection(row)
+  end
 
-  def parse(file, metadata = {})
-    override_warehouse_id = metadata[:warehouse_id].to_i if metadata[:warehouse_id].present?
-    override_location_id = metadata[:location_id].to_i if metadata[:location_id].present?
-
-    spreadsheet = Roo::Excelx.new(file)
-    header_row = find_header_row(spreadsheet)
-    headers = spreadsheet.row(header_row)
-
-    rows = ((header_row + 1)..spreadsheet.last_row).map do |i|
-      row = Hash[[headers, spreadsheet.row(i)].transpose]
-      row[:_index] = i
-      validate_row(row)
-      resolve_warehouse_location_collection(row,
-        override_warehouse_id: override_warehouse_id,
-        override_location_id: override_location_id)
-      row
-    end
-
+  def extra_metadata
     {
-      headers: headers,
-      rows: rows,
-      warehouse_id: metadata[:warehouse_id],
-      location_id: metadata[:location_id],
-      operationtype_id: metadata[:operationtype_id]
+      warehouse_id: @metadata[:warehouse_id],
+      location_id: @metadata[:location_id],
+      operationtype_id: @metadata[:operationtype_id]
     }
   end
 
-  def find_header_row(spreadsheet)
-    (1..spreadsheet.last_row).each do |i|
-      row = spreadsheet.row(i)
-      next if row.nil? || row.empty?
-      matches = KNOWN_HEADERS.count { |h| row.any? { |cell| cell.to_s.strip == h } }
-      return i if matches >= 2
-    end
-    1
-  end
+  def resolve_warehouse_location_collection(row)
+    override_warehouse_id = @metadata[:warehouse_id].to_i if @metadata[:warehouse_id].present?
+    override_location_id = @metadata[:location_id].to_i if @metadata[:location_id].present?
 
-  def resolve_warehouse_location_collection(row, override_warehouse_id: nil, override_location_id: nil)
     if override_warehouse_id
       w = Warehouse.find(override_warehouse_id)
       row[:_warehouse_id] = w.id
       row[:_warehouse_code] = w.code
       row[:_warehouse_new] = false
     else
-      dove_val = row['dove'].to_s.strip
+      dove_val = cell(row, 'dove').to_s.strip
       if dove_val.present?
         existing_w = Warehouse.find_by(code: dove_val)
         if existing_w
@@ -55,7 +33,7 @@ class ImportInventoryService
           row[:_warehouse_code] = existing_w.code
           row[:_warehouse_new] = false
         else
-          w = Warehouse.create!(code: dove_val, enabled: true)
+          w = find_or_create_warehouse(dove_val)
           row[:_warehouse_id] = w.id
           row[:_warehouse_code] = w.code
           row[:_warehouse_new] = true
@@ -69,7 +47,7 @@ class ImportInventoryService
       row[:_location_code] = loc.code
     end
 
-    note_val = row['Note:'].to_s.strip
+    note_val = cell(row, 'Note:').to_s.strip
     if note_val.present?
       existing_c = Collection.find_by(description: note_val)
       if existing_c
@@ -77,7 +55,7 @@ class ImportInventoryService
         row[:_collection_description] = existing_c.description
         row[:_collection_new] = false
       else
-        c = Collection.create!(description: note_val)
+        c = find_or_create_collection(note_val)
         row[:_collection_id] = c.id
         row[:_collection_description] = c.description
         row[:_collection_new] = true
@@ -86,9 +64,9 @@ class ImportInventoryService
   end
 
   def validate_row(row)
-    itemcode = row['Item Code:'] || row['itemcode'] || row['Item Code']
-    fabricode = row['fabricode'] || row['Fabric Code'] || row['Fabricode'] || row['Fabric code'] || row['Fabric code:']
-    varcode = row['varcode'] || row['Var Code'] || row['Var'] || row['var. code:']
+    itemcode = cell(row, 'Item Code:', 'itemcode', 'Item Code')
+    fabricode = cell(row, 'fabricode', 'Fabric Code', 'Fabricode', 'Fabric code', 'Fabric code:')
+    varcode = cell(row, 'varcode', 'Var Code', 'Var', 'var. code:')
 
     if itemcode.blank?
       row[:_valid] = false
@@ -130,13 +108,13 @@ class ImportInventoryService
 
       data[:rows].each do |row|
         unless row[:_valid]
-          itemcode = row['Item Code:'] || row['itemcode'] || row['Item Code']
+          itemcode = cell(row, 'Item Code:', 'itemcode', 'Item Code')
           stats[:invalid] << { itemcode: itemcode, row: row[:_index], error: row[:_error] }
           next
         end
 
-        raw_itemcode = row['Item Code:'] || row['itemcode'] || row['Item Code']
-        qty = (row['Qt.'] || row['Quantity'] || row['qtyavailable'] || row['QTA'] || 0).to_i
+        raw_itemcode = cell(row, 'Item Code:', 'itemcode', 'Item Code')
+        qty = (cell(row, 'Qt.', 'Quantity', 'qtyavailable', 'QTA') || 0).to_i
 
         if qty == 0
           stats[:skipped] << { itemcode: raw_itemcode, row: row[:_index] }
@@ -144,9 +122,14 @@ class ImportInventoryService
         end
 
         item = if row[:_item_id]
-          Item.find(row[:_item_id])
+          Item.find_by(id: row[:_item_id])
         else
           Item.find_by(itemcode: raw_itemcode) || Item.find_by(gencode: raw_itemcode)
+        end
+
+        if item.nil?
+          stats[:invalid] << { itemcode: raw_itemcode, row: row[:_index], error: "Articolo non trovato" }
+          next
         end
 
         warehouse_id = row[:_warehouse_id] || data[:warehouse_id]
@@ -176,12 +159,7 @@ class ImportInventoryService
       end
 
       movement.save!
-
-      if op_type_id == 1
-        CreateInventoriesFromItemin.new.call(movement)
-      else
-        CreateInventoriesFromItemout.new.call(movement)
-      end
+      InventoryCreator.new.call(movement)
 
       details = op_type_id == 1 ? movement.itemins_details : movement.itemouts_details
       details.each_with_index do |detail, i|
@@ -192,14 +170,7 @@ class ImportInventoryService
 
     stats
   rescue => e
-    error_msg = if e.respond_to?(:record) && e.record
-      e.record.errors.full_messages.join(", ")
-    elsif e.message.include?("record_invalid")
-      "Validazione fallita"
-    else
-      e.message
-    end
-    stats[:errors] << { row: 0, error: error_msg }
+    stats[:errors] << { row: 0, error: extract_error(e) }
     stats
   end
 end

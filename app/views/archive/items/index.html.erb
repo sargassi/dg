@@ -1,24 +1,12 @@
 <% content_for :page_header do %>
-<div class="flex items-center gap-4 px-0 py-0.5">
-  <h1 class="text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wide">
-    Archivio
-  </h1>
-    <div class="flex items-center gap-1">
-      <%= link_to archive_categories_path, class: "inline-flex items-center gap-1 px-3 py-1 text-xs font-medium text-slate-500 hover:text-accent hover:bg-slate-100 dark:hover:bg-slate-700 rounded-sm transition-colors" do %>
-        <span class="material-symbols-outlined text-sm">folder</span>
-        Categorie
-      <% end %>
-      <%= link_to archive_locations_path, class: "inline-flex items-center gap-1 px-3 py-1 text-xs font-medium text-slate-500 hover:text-accent hover:bg-slate-100 dark:hover:bg-slate-700 rounded-sm transition-colors" do %>
-        <span class="material-symbols-outlined text-sm">shelves</span>
-        Ubicazioni
-      <% end %>
-      <button type="button"
-              onclick="document.getElementById('import-modal').classList.remove('hidden')"
-              class="inline-flex items-center gap-1 px-3 py-1 text-xs font-medium text-amber-600 hover:text-amber-700 hover:bg-amber-50 dark:hover:bg-slate-700 rounded-sm transition-colors cursor-pointer">
-        <span class="material-symbols-outlined text-sm">inventory_2</span>
-        Importa
-      </button>
-    </div>
+<div class="flex items-center justify-center gap-3 px-0 py-0.5">
+  <%= render "application/breadcrumb", dashboard_path: archive_dashboard_path, section_name: "Archivio", page_title: "Articoli" %>
+  <button type="button"
+          onclick="document.getElementById('import-modal').classList.remove('hidden')"
+          class="inline-flex items-center gap-1 p-0 text-xs font-bold uppercase text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-slate-700 rounded-sm transition-colors cursor-pointer">
+    <span class="material-symbols-outlined text-sm">inventory_2</span>
+    Importa
+  </button>
 </div>
 <% end %>
 
@@ -56,15 +44,7 @@
               class: "border border-slate-300 outline-none px-3 py-1.5 text-xs rounded-lg dark:border-slate-600 bg-white dark:bg-slate-700 dark:text-slate-200",
               data: { action: "change->search-filter#filter", search_filter_target: "select" } %>
       <% end %>
-      <span class="text-sm font-bold text-slate-700 whitespace-nowrap border border-slate-300 rounded-full px-3 py-1 dark:text-slate-200 dark:border-slate-600 dark:bg-slate-700" data-search-filter-target="count"><%= @pagy.count %> articoli</span>
-      <div class="flex items-center gap-1 ml-auto">
-        <%= link_to archive_items_path(view: "list", q: params[:q], category_id: params[:category_id], item_type_id: params[:item_type_id], location_id: params[:location_id], status: params[:status]), class: "p-1.5 rounded-sm #{params[:view] != 'cards' ? 'bg-accent text-white' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700'}", data: { turbo_frame: "archive-items" } do %>
-          <span class="material-symbols-outlined text-base">list</span>
-        <% end %>
-        <%= link_to archive_items_path(view: "cards", q: params[:q], category_id: params[:category_id], item_type_id: params[:item_type_id], location_id: params[:location_id], status: params[:status]), class: "p-1.5 rounded-sm #{params[:view] == 'cards' ? 'bg-accent text-white' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700'}", data: { turbo_frame: "archive-items" } do %>
-          <span class="material-symbols-outlined text-base">grid_view</span>
-        <% end %>
-      </div>
+      <span class="text-sm font-bold text-slate-700 whitespace-nowrap border border-slate-300 rounded-full px-3 py-1 ml-auto dark:text-slate-200 dark:border-slate-600 dark:bg-slate-700" data-search-filter-target="count"><%= @pagy.count %> articoli</span>
     </div>
 
     <style>
@@ -74,8 +54,18 @@
     <%= turbo_frame_tag "archive-items", class: "flex flex-col flex-1 min-h-0", data: { action: "turbo:frame-load->search-filter#onFrameLoad" } do %>
       <div class="archive-items-content flex flex-col flex-1 min-h-0">
         <span hidden data-filtered-count><%= @pagy.count %></span>
+        <div class="flex flex-none items-center justify-end pb-2">
+          <div class="flex items-center gap-1 p-0.5 border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700/50 rounded-md">
+            <%= link_to archive_items_path(view: "list", q: params[:q], category_id: params[:category_id], item_type_id: params[:item_type_id], location_id: params[:location_id], status: params[:status]), class: "p-1.5 rounded-sm transition-colors #{@view != 'cards' ? 'bg-slate-800 dark:bg-slate-900 text-white shadow-sm' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200 dark:text-slate-400 dark:hover:bg-slate-600'}", data: { turbo_frame: "archive-items" }, title: "Vista elenco" do %>
+              <span class="material-symbols-outlined text-base">list</span>
+            <% end %>
+            <%= link_to archive_items_path(view: "cards", q: params[:q], category_id: params[:category_id], item_type_id: params[:item_type_id], location_id: params[:location_id], status: params[:status]), class: "p-1.5 rounded-sm transition-colors #{@view == 'cards' ? 'bg-slate-800 dark:bg-slate-900 text-white shadow-sm' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200 dark:text-slate-400 dark:hover:bg-slate-600'}", data: { turbo_frame: "archive-items" }, title: "Vista griglia" do %>
+              <span class="material-symbols-outlined text-base">grid_view</span>
+            <% end %>
+          </div>
+        </div>
         <div class="overflow-y-auto flex-1 min-h-0">
-          <% if params[:view] == 'cards' %>
+          <% if @view == 'cards' %>
             <div class="<%= style_main_card_grid %>">
               <%= render partial: 'item', collection: @items, as: :item %>
             </div>
@@ -97,7 +87,7 @@
         <% if @pagy.pages > 1 %>
           <div class="flex-none flex items-center gap-0.5 justify-end pt-3 pb-1">
             <% if @pagy.prev %>
-              <a href="<%= archive_items_path(page: @pagy.prev, view: params[:view], q: params[:q], category_id: params[:category_id], item_type_id: params[:item_type_id], location_id: params[:location_id], status: params[:status]) %>"
+              <a href="<%= archive_items_path(page: @pagy.prev, view: @view, q: params[:q], category_id: params[:category_id], item_type_id: params[:item_type_id], location_id: params[:location_id], status: params[:status]) %>"
                  data-turbo-frame="archive-items"
                  class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm text-slate-700 hover:bg-slate-100 transition-colors dark:text-slate-200 dark:hover:bg-slate-700">
                 <span class="material-symbols-outlined text-base">chevron_left</span>
@@ -110,7 +100,7 @@
 
             <% @pagy.series.each do |pag_item| %>
               <% if pag_item.is_a?(Integer) %>
-                <a href="<%= archive_items_path(page: pag_item, view: params[:view], q: params[:q], category_id: params[:category_id], item_type_id: params[:item_type_id], location_id: params[:location_id], status: params[:status]) %>"
+                <a href="<%= archive_items_path(page: pag_item, view: @view, q: params[:q], category_id: params[:category_id], item_type_id: params[:item_type_id], location_id: params[:location_id], status: params[:status]) %>"
                    data-turbo-frame="archive-items"
                    class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm text-slate-700 hover:bg-slate-100 transition-colors dark:text-slate-200 dark:hover:bg-slate-700">
                   <%= pag_item %>
@@ -125,7 +115,7 @@
             <% end %>
 
             <% if @pagy.next %>
-              <a href="<%= archive_items_path(page: @pagy.next, view: params[:view], q: params[:q], category_id: params[:category_id], item_type_id: params[:item_type_id], location_id: params[:location_id], status: params[:status]) %>"
+              <a href="<%= archive_items_path(page: @pagy.next, view: @view, q: params[:q], category_id: params[:category_id], item_type_id: params[:item_type_id], location_id: params[:location_id], status: params[:status]) %>"
                  data-turbo-frame="archive-items"
                  class="inline-flex items-center justify-center min-w-[2rem] h-8 text-xs rounded-sm text-slate-700 hover:bg-slate-100 transition-colors dark:text-slate-200 dark:hover:bg-slate-700">
                 <span class="material-symbols-outlined text-base">chevron_right</span>
@@ -149,7 +139,7 @@
     <% end %>
   </div>
 
-  <div class="w-80 flex-shrink-0 ml-4 space-y-4">
+  <div class="w-96 flex-shrink-0 ml-4 space-y-4">
     <div class="<%= style_main_card %>">
       <div class="<%= style_main_card_header %>">
         <span class="material-symbols-outlined text-lg">add</span>
@@ -171,7 +161,7 @@
         <span class="material-symbols-outlined text-lg align-middle mr-1">inventory_2</span>
         Importa da magazzino
       </h2>
-      <button type="button" onclick="document.getElementById('import-modal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+      <button type="button" onclick="document.getElementById('import-modal').classList.add('hidden')" class="<%= style_close_btn %>">
         <span class="material-symbols-outlined text-base">close</span>
       </button>
     </div>
@@ -192,7 +182,7 @@
         <button type="button"
                 data-action="row-qr#scan"
                 data-row-qr-target="button"
-                class="p-2 text-slate-400 hover:text-accent rounded-sm hover:bg-slate-100 dark:hover:bg-slate-700"
+                class="p-2 rounded-sm <%= style_scan_button %>"
                 title="Scansiona QR">
           <span class="material-symbols-outlined text-base">qr_code_scanner</span>
         </button>
@@ -228,7 +218,7 @@
           <%= f.hidden_field :location_id, value: "", data: { warehouse_import_target: "locationId" } %>
           <button type="submit"
                   onclick="setTimeout(() => document.getElementById('import-modal').classList.add('hidden'), 100)"
-                  class="w-full px-4 py-2 bg-accent hover:bg-accent-700 text-white text-xs rounded-sm font-medium cursor-pointer">
+                  class="w-full px-4 py-2 text-white text-xs rounded-sm font-medium cursor-pointer <%= style_action_btn %>">
             <span class="material-symbols-outlined text-sm align-middle">archive</span>
             Importa in archivio
           </button>
@@ -242,7 +232,7 @@
   <div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl w-full max-w-sm mx-4">
     <div class="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-600">
       <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">Nuova tipologia</h2>
-      <button type="button" onclick="document.getElementById('new-type-modal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+      <button type="button" onclick="document.getElementById('new-type-modal').classList.add('hidden')" class="<%= style_close_btn %>">
         <span class="material-symbols-outlined text-base">close</span>
       </button>
     </div>
@@ -253,7 +243,7 @@
         <input type="text" name="archive_item_type[name]" class="border border-slate-300 dark:border-slate-600 outline-none px-3 py-2 w-full text-sm dark:bg-slate-700 dark:text-slate-200" placeholder="Nome tipologia" required>
         <div class="flex gap-2 mt-4 justify-end">
           <button type="button" onclick="document.getElementById('new-type-modal').classList.add('hidden')" class="px-3 py-1.5 text-xs text-slate-500 hover:text-slate-700">Annulla</button>
-          <button type="submit" class="px-4 py-1.5 bg-accent text-white text-xs rounded-sm cursor-pointer">Crea</button>
+          <button type="submit" class="px-4 py-1.5 <%= style_save_button %> text-xs rounded-sm cursor-pointer">Crea</button>
         </div>
       </form>
     </div>
@@ -264,7 +254,7 @@
   <div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl w-full max-w-sm mx-4">
     <div class="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-600">
       <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">Nuova categoria</h2>
-      <button type="button" onclick="document.getElementById('new-cat-modal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+      <button type="button" onclick="document.getElementById('new-cat-modal').classList.add('hidden')" class="<%= style_close_btn %>">
         <span class="material-symbols-outlined text-base">close</span>
       </button>
     </div>
@@ -275,7 +265,7 @@
         <input type="text" name="archive_category[name]" class="border border-slate-300 dark:border-slate-600 outline-none px-3 py-2 w-full text-sm dark:bg-slate-700 dark:text-slate-200" placeholder="Nome categoria" required>
         <div class="flex gap-2 mt-4 justify-end">
           <button type="button" onclick="document.getElementById('new-cat-modal').classList.add('hidden')" class="px-3 py-1.5 text-xs text-slate-500 hover:text-slate-700">Annulla</button>
-          <button type="submit" class="px-4 py-1.5 bg-accent text-white text-xs rounded-sm cursor-pointer">Crea</button>
+          <button type="submit" class="px-4 py-1.5 <%= style_save_button %> text-xs rounded-sm cursor-pointer">Crea</button>
         </div>
       </form>
     </div>
@@ -286,7 +276,7 @@
   <div class="bg-white dark:bg-slate-800 rounded-lg shadow-xl w-full max-w-sm mx-4">
     <div class="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-600">
       <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">Nuova ubicazione</h2>
-      <button type="button" onclick="document.getElementById('new-loc-modal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+      <button type="button" onclick="document.getElementById('new-loc-modal').classList.add('hidden')" class="<%= style_close_btn %>">
         <span class="material-symbols-outlined text-base">close</span>
       </button>
     </div>
@@ -304,7 +294,7 @@
         </div>
         <div class="flex gap-2 justify-end">
           <button type="button" onclick="document.getElementById('new-loc-modal').classList.add('hidden')" class="px-3 py-1.5 text-xs text-slate-500 hover:text-slate-700">Annulla</button>
-          <button type="submit" class="px-4 py-1.5 bg-accent text-white text-xs rounded-sm cursor-pointer">Crea</button>
+          <button type="submit" class="px-4 py-1.5 <%= style_save_button %> text-xs rounded-sm cursor-pointer">Crea</button>
         </div>
       </form>
     </div>

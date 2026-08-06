@@ -4,7 +4,7 @@
       <div class="flex items-center justify-between border-b border-slate-200 px-4 py-3">
         <h2 class="text-sm font-semibold text-slate-700">Modifica Evento</h2>
         <%= link_to directory_events_path(start_date: params[:start_date] || @event.start_time, selected_date: params[:selected_date]),
-              class: "text-slate-400 hover:text-slate-600 transition",
+              class: "#{style_close_btn}",
               data: { turbo_frame: "_top" } do %>
           <span class="material-symbols-outlined text-lg">close</span>
         <% end %>

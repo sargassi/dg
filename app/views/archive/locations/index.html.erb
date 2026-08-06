@@ -1,9 +1,5 @@
 <% content_for :page_header do %>
-<div class="flex items-center gap-2 px-0 py-0.5">
-  <h1 class="text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wide">
-    Ubicazioni Archivio
-  </h1>
-</div>
+  <%= render "application/breadcrumb", dashboard_path: archive_dashboard_path, section_name: "Archivio", page_title: "Ubicazioni" %>
 <% end %>
 
 <section class="<%= style_main_cnt %>">
@@ -142,7 +138,7 @@
           </div>
 
           <div class="mt-6">
-            <%= form.submit "Crea ubicazione", class: "p-3 bg-accent inline-block tracking-wider rounded-sm text-xs cursor-pointer text-white" %>
+            <%= form.submit "Crea ubicazione", class: "p-3 #{style_save_button} inline-block tracking-wider rounded-sm text-xs cursor-pointer" %>
           </div>
         <% end %>
       </div>

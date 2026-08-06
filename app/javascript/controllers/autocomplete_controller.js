@@ -176,7 +176,7 @@ export default class extends Controller {
         collection_id: li.dataset.collectionId || "",
         collection_name: li.dataset.collectionName || ""
       },
-      bubbles: false
+      bubbles: true
     }));
   }
 

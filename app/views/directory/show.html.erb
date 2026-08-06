@@ -8,7 +8,7 @@
           <span class="material-symbols-outlined text-slate-400">person</span>
           <%= @user.name %> <%= @user.lastname %>
         </h2>
-        <%= link_to directory_path(q: params[:q]), class: "text-slate-400 hover:text-slate-600 transition", data: { turbo_frame: "_top" } do %>
+        <%= link_to directory_path(q: params[:q]), class: "#{style_close_btn}", data: { turbo_frame: "_top" } do %>
           <span class="material-symbols-outlined text-lg">close</span>
         <% end %>
       </div>

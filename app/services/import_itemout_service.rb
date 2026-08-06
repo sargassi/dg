@@ -1,40 +1,6 @@
-class ImportItemoutService
-  require 'roo'
-
-  KNOWN_HEADERS = ['Item Code:', 'Fabric code:', 'var. code:', 'dove', 'esce data:', 'venduto', 'destinazione:'].freeze
-
-  def cell(row, *keys)
-    keys.each do |k|
-      return row[k] if row.key?(k)
-      match = row.find { |key, _| key.to_s.downcase.strip == k.to_s.downcase.strip }
-      return match[1] if match
-    end
-    nil
-  end
-
-  def parse(file)
-    spreadsheet = Roo::Excelx.new(file)
-    header_row = find_header_row(spreadsheet)
-    headers = spreadsheet.row(header_row)
-
-    rows = ((header_row + 1)..spreadsheet.last_row).map do |i|
-      row = Hash[[headers, spreadsheet.row(i)].transpose]
-      row[:_index] = i
-      validate_row(row)
-      row
-    end
-
-    { headers: headers, rows: rows }
-  end
-
-  def find_header_row(spreadsheet)
-    (1..spreadsheet.last_row).each do |i|
-      row = spreadsheet.row(i)
-      next if row.nil? || row.empty?
-      matches = KNOWN_HEADERS.count { |h| row.any? { |cell| cell.to_s.strip.downcase == h.downcase } }
-      return i if matches >= 2
-    end
-    1
+class ImportItemoutService < SpreadsheetImportBase
+  def known_headers
+    ['Item Code:', 'Fabric code:', 'var. code:', 'dove', 'esce data:', 'venduto', 'destinazione:'].freeze
   end
 
   def validate_row(row)
@@ -108,8 +74,7 @@ class ImportItemoutService
         stats[:invalid] << { itemcode: row[:_itemcode], row: row[:_index], error: "Magazzino (dove) mancante" }
         next false
       end
-      w = Warehouse.find_or_create_by!(code: dove) { |wh| wh.enabled = true }
-      row[:_warehouse_id] = w.id
+      row[:_warehouse_id] = find_or_create_warehouse(dove).id
       true
     end
 
@@ -124,8 +89,7 @@ class ImportItemoutService
           note_val = cell(row, 'Note:', 'note').to_s.strip
           collection_id = nil
           if note_val.present?
-            c = Collection.find_or_create_by!(description: note_val)
-            collection_id = c.id
+            collection_id = find_or_create_collection(note_val).id
           end
 
           itemout.itemouts_details.build(
@@ -139,7 +103,7 @@ class ImportItemoutService
         end
 
         itemout.save!
-        CreateInventoriesFromItemout.new.call(itemout)
+        InventoryCreator.new.call(itemout)
 
         stats[:itemouts] << { id: itemout.id, date: date, details: date_rows.size }
         stats[:created] += date_rows.size
@@ -148,12 +112,7 @@ class ImportItemoutService
 
     stats
   rescue => e
-    error_msg = if e.respond_to?(:record) && e.record
-      e.record.errors.full_messages.join(", ")
-    else
-      e.message
-    end
-    stats[:errors] << { row: 0, error: error_msg }
+    stats[:errors] << { row: 0, error: extract_error(e) }
     stats
   end
 end

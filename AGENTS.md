@@ -6,20 +6,23 @@ Read these first for full project context:
 
 ### general and global
 
-- @context/project-overview.md
-- @context/coding-standards.md
-- @context/ai-interactions.md
-- @context/current-feature.md
+- `context/project-overview.md`
+- `context/coding-standards.md`
+- `context/ai-interactions.md`
+- `context/current-feature.md`
+
+### Best Practices
+check `docs.md` for reference: everytime you make a decision about the code you have to chek toìhe correct online resource for the lqnguage used and follow best practices
 
 ### Flow descriptions
 
-- @context/flows/articles_flow.md — Mainware module flow and Excel import pipeline
-- @context/flows/inventories_flow.md — Inventory, movements, and warehouse flow
-- @context/flows/production_flow.md — Production orders, prow rows, and tempesta stage tracking
+- `context/flows/articles_flow.md` — Mainware module flow and Excel import pipeline
+- `context/flows/inventories_flow.md` — Inventory, movements, and warehouse flow
+- `context/flows/production_flow.md` — Production orders, prow rows, and tempesta stage tracking
 
 ### Refactoring
 
-- @context/refactor/mainware_refactor.md — Mainware refactor roadmap and phase planning
+- `context/refactor/mainware_refactor.md` — Mainware refactor roadmap and phase planning
 
 ## Commands
 
@@ -44,9 +47,9 @@ bin/rails importmap:pin <package>
 
 ## Tech Stack
 
-- Ruby 3.2.2, Rails 7.2.3.1 (application.rb loads defaults 7.0)
+- Ruby 3.2.2, Rails 7.2.x (Gemfile `~> 7.2`, locked at 7.2.3.2; application.rb loads defaults 7.0)
 - SQLite in dev, test, and production (currently); MariaDB migration script exists at `bin/migrate_to_mariadb.sh`
-- Puma 5.6.x
+- Puma 8.x (Gemfile `>= 7.2.1`, locked at 8.0.2)
 - TailwindCSS via `tailwindcss-rails` gem (~> 3.3.1)
 - Hotwire: Turbo + Stimulus via importmap
 - Sprockets asset pipeline; no JS bundler, no Node build step
@@ -67,7 +70,7 @@ bin/rails importmap:pin <package>
 ## Test Framework
 
 - Minitest (not RSpec). Fixtures in `test/fixtures/*.yml`.
-- System tests use Capybara + Selenium.
+- System tests use Capybara + Selenium with Chrome (`test/application_system_test_case.rb`); a Chrome install is required to run them.
 - No lint or typecheck tooling is configured.
 
 ## Repo Conventions
@@ -81,7 +84,7 @@ bin/rails importmap:pin <package>
 
 From `context/ai-interactions.md`:
 
-- Document the feature in `@context/current-feature.md` before implementing.
+- Document the feature in `context/current-feature.md` before implementing.
 - Create a branch (`feature/<name>` or `fix/<name>`).
 - Do not commit or push without explicit permission.
 - Keep commits focused and use conventional commits (`feat:`, `fix:`, `chore:`, etc.).
@@ -93,6 +96,7 @@ From `context/ai-interactions.md`:
 - No `package.json` dependencies; JavaScript is managed through `config/importmap.rb` and vendored pins.
 - The API is mounted at root by Grape (`mount API::Base, at: "/"`) in addition to Rails namespace routes under `/api/v1`.
 - MariaDB migration is documented only in `bin/migrate_to_mariadb.sh`; current database.yml and Capistrano still use SQLite.
+- `**/AGENTS.md` and `**/*opencode*.md` are gitignored (see `.gitignore`); this file is for agents, not committed. Root `assets/` (spreadsheet imports) is also gitignored.
 
 ## Documentation Files Worth Consulting
 

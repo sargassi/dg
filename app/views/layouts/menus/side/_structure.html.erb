@@ -11,8 +11,13 @@
           <%= render partial: "/layouts/menus/side/lab" %>
         <% end %>
 
-        <% if current_user.godlike? || current_user.can?('manage_directory') || current_user.can?('manage_users') || current_user.can?('manage_events_calendar') || current_user.can?('manage_events') || current_user.can?('manage_eventypes') %>
-          <%= render partial: "/layouts/menus/side/users" %>
+        <% if current_user.godlike? || current_user.can?('manage_archive') %>
+          <li class="<%= style_side_li %>">
+              <%= link_to archive_dashboard_path, class: style_side_a(archive_dashboard_path) + " " + active_class_for_namespace('archive') do %>
+                  <span class="material-symbols-outlined">archive</span>
+                  <span>archivio</span>
+              <% end %>
+          </li>
         <% end %>
 
         <% if current_user.godlike? %>
@@ -25,23 +30,9 @@
         <% end %>
         <% if current_user.godlike? || current_user.can?('manage_app_sectors') %>
           <li class="<%= style_side_li %>">
-              <%= link_to app_dashboard_path, class: style_side_a(app_dashboard_path) + " " + active_class_for_controllers('app') do %>
+              <%= link_to app_dashboard_path, class: style_side_a(app_dashboard_path) + " " + active_class_for_app_excluding_warehouse do %>
                   <span class="material-symbols-outlined">qr_code_scanner</span>
                   <span>app</span>
-              <% end %>
-          </li>
-        <% end %>
-        <% if current_user.godlike? || current_user.can?('manage_archive') %>
-          <li class="<%= style_side_li %>">
-              <%= link_to archive_items_path, class: style_side_a(archive_items_path) + " " + active_class_for_namespace('archive') do %>
-                  <span class="material-symbols-outlined">archive</span>
-                  <span>archivio</span>
-              <% end %>
-          </li>
-          <li class="<%= style_side_li %>">
-              <%= link_to import_archive_items_path, class: style_side_a(import_archive_items_path) do %>
-                  <span class="material-symbols-outlined">inventory_2</span>
-                  <span>importa</span>
               <% end %>
           </li>
         <% end %>

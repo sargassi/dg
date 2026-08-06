@@ -1,7 +1,7 @@
 class InventoryStockController < ApplicationController
   include Pagy::Backend
   include InventoriesViews
-  before_action -> { require_ability!('manage_inventory') }
+  before_action -> { require_ability!('manage_inventory') }, except: [:lookup_by_qr, :autocomplete]
 
   def index
     @query = InventoryStockQuery.new(params).with_history
@@ -145,7 +145,7 @@ class InventoryStockController < ApplicationController
   def prepare_carico
     selected = params[:selected] || []
     session[:carico_prefill] = selected.map { |s| s.permit(:item_id, :gencode, :collection_id, :qty).to_h }
-    redirect_to app_in_warehouse_path, notice: "#{selected.size} articoli pronti per il carico."
+    redirect_to app_in_warehouse_path(return_to: inventories_seleziona_path), notice: "#{selected.size} articoli pronti per il carico."
   end
 
   def qr_select
@@ -183,6 +183,7 @@ class InventoryStockController < ApplicationController
     ids = session[:qr_items] || []
     @items = Item.where(id: ids).includes(:collection)
     render pdf: "qr_codici",
+           template: "inventories/qr_output",
            orientation: "portrait",
            page_size: "A4",
            margin: { top: 10, bottom: 10, left: 10, right: 10 },

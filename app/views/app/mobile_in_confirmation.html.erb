@@ -1,0 +1,49 @@
+<% content_for :page_header do %>
+  <%= render "application/breadcrumb", dashboard_path: app_dashboard_path, section_name: "App", page_title: "Carico creato" %>
+<% end %>
+
+<section class="<%= style_main_cnt %> space-y-4">
+  <div class="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg p-6 text-center">
+    <span class="material-symbols-outlined text-5xl text-emerald-600">check_circle</span>
+    <h2 class="text-xl font-semibold text-emerald-800 dark:text-emerald-200 mt-2">Carico creato con successo</h2>
+    <p class="text-sm text-emerald-600 dark:text-emerald-300 mt-1">
+      <%= @itemin.indate.strftime("%d-%m-%Y") %> &mdash; <%= pluralize(@itemin.itemins_details.size, "articolo") %>
+    </p>
+    <% first = @itemin.itemins_details.first %>
+    <% if first %>
+      <div class="inline-flex items-center gap-2 mt-2 text-sm font-semibold text-emerald-700 dark:text-emerald-300">
+        <span class="material-symbols-outlined text-base">warehouse</span>
+        <span><%= first.warehouse&.code %></span>
+        <% if first.location %>
+          <span class="material-symbols-outlined text-base">location_on</span>
+          <span><%= first.location.code %></span>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg overflow-hidden">
+    <div class="divide-y divide-slate-100 dark:divide-slate-700">
+      <% @itemin.itemins_details.each do |d| %>
+        <div class="flex items-center justify-between px-4 py-3">
+          <div class="min-w-0">
+            <div class="font-mono text-sm font-semibold text-slate-800 dark:text-slate-200 truncate"><%= d.item&.gencode.presence || d.itemcode %></div>
+            <% if d.item&.description.present? %>
+              <div class="text-xs text-slate-400 dark:text-slate-300 truncate"><%= d.item.description %></div>
+            <% end %>
+          </div>
+          <span class="text-sm font-bold text-slate-700 dark:text-slate-200 flex-shrink-0 ml-3">×<%= d.qty %></span>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="flex gap-2">
+    <%= link_to app_mobile_in_path, class: "flex-1 py-3 rounded-lg bg-accent text-white text-sm font-semibold text-center cursor-pointer" do %>
+      <span class="material-symbols-outlined text-base align-middle">add</span> Nuovo carico
+    <% end %>
+    <%= link_to app_dashboard_path, class: "flex-1 py-3 rounded-lg bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-sm font-semibold text-center" do %>
+      <span class="material-symbols-outlined text-base align-middle">home</span> Dashboard
+    <% end %>
+  </div>
+</section>

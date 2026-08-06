@@ -88,11 +88,12 @@ Move from scattered manual routes under `scope '/inventories'` to proper RESTful
 **Problem**: `IteminsController` and `ItemoutsController` implement nearly identical `create → preview → confirm` flows using session-based state management.
 **Fix**: Extract a `MovementWorkflow` controller concern handling build_from_session, store_to_session, confirm_and_create. Each controller provides movement_class, inventory_service_class, detail_key, redirect_path.
 
-### 2.3 Merge CreateInventoriesFromItemin + Itemout
+### 2.3 Merge CreateInventoriesFromItemin + Itemout + Itemmovement
 
-**Files**: `app/services/create_inventories_from_itemin.rb` (30 lines), `create_inventories_from_itemout.rb` (25 lines)
-**Problem**: ~80% identical — both iterate details, create `Inventory` rows, adjust `StockLevel`. Only difference: Itemin sets positive delta + QR codes; Itemout sets negative delta, no QR.
-**Fix**: Single `InventoryCreator` service with operation type parameter.
+**Files**: `app/services/create_inventories_from_itemin.rb`, `create_inventories_from_itemout.rb`, `create_inventories_from_itemmovement.rb`
+**Problem**: ~80% identical — both iterate details, create `Inventory` rows, adjust `StockLevel`. Only difference: Itemin sets positive delta + QR codes; Itemout sets negative delta, no QR. Itemmovement creates two records (source + destination) and adjusts two `StockLevel`s.
+**Fix**: Single `InventoryCreator` service handling all three movement types. All callers (controllers, API, import services) now use `InventoryCreator.new.call(movement)`.
+**Status**: Done.
 
 ### 2.4 MovementValidations concern
 
@@ -103,21 +104,24 @@ Move from scattered manual routes under `scope '/inventories'` to proper RESTful
 
 ## Phase 3 — Unify movement creation
 
-### 3.1 AppController delegates to shared services
+### 3.1 AppController and MovementWorkflow delegate to shared service
 
 **Problem**: `in_warehouse` and `out_warehouse` duplicate the same model-building + inventory-creation logic as the web controllers, but inline instead of calling shared services.
-**Fix**: Extract to `CreateInboundService` called from both AppController and IteminsController. Same for outbound.
+**Fix**: Extract a generic `MovementCreationService` that builds via `MovementBuilder`, validates, saves, and calls `InventoryCreator`. Used by `AppController#in_warehouse` / `#out_warehouse` and by `MovementWorkflow#confirm` (used by `IteminsController` / `ItemoutsController`). Removed the now-unused `inventory_service:` option from `MovementWorkflow`.
+**Status**: Done.
 
 ### 3.2 Extract SpreadsheetImportBase
 
 **Files**: `app/services/import_inventory_service.rb` (205 lines), `app/services/import_itemout_service.rb` (159 lines)
 **Problem**: Both implement identical parse/save structure with header detection, warehouse/collection resolution, caching, error handling. Differ only in validate_row and detail construction.
-**Fix**: Extract base class with template methods: `known_headers`, `validate_row`, `build_movement`.
+**Fix**: Extract `app/services/spreadsheet_import_base.rb` with the shared parse skeleton, case-insensitive `find_header_row`, the `cell(row, *keys)` lookup helper, `find_or_create_warehouse`/`find_or_create_collection`, and `extract_error`. Both services now subclass it; `save` stays subclass-specific per service (inventory: single movement, `_warehouse_id`/`_collection_id` resolved at parse via `after_row` + `extra_metadata`; itemout: grouped-by-date Itemouts, resolution at save).
+**Status**: Done.
 
 ### 3.3 Consistent itemcode across entry points
 
 **Problem**: Five entry points populate `itemcode` on inventory records differently (some use gencode, some use actual itemcode).
-**Fix**: Normalize to always use the Item's actual `itemcode`. Set in a single place (inventory creation service).
+**Fix**: Normalize to always use the Item's actual `itemcode`. Set in a single place (inventory creation service). `InventoryCreator` already writes `itemcode: item&.itemcode || detail.itemcode` on the Inventory record; the entry points that built detail records with gencode were normalized too (API inbound/outbound/transfer, `AppController#in_warehouse` prefill, `ItemoutsController#new` prefill, `Archive::ItemsController#import_single`).
+**Status**: Done.
 
 ---
 
@@ -127,27 +131,27 @@ Move from scattered manual routes under `scope '/inventories'` to proper RESTful
 
 **Problem**: Item resolved during parse, re-looked up via `Item.find` in save. If deleted within cache window, crashes transaction.
 **Fix**: Use `Item.find_by` and skip missing items.
+**Status**: Done (implemented with the 2.3/3.x unification; covered by `import_inventory_service_test.rb`).
 
 ### 4.2 Backport mainware import improvements
 
-- Grouped error summary with failed-row export
-- Row-level validation with visual feedback
-- Create vs update indicators (green/amber)
-- Bulk collection assignment with quick-create
-- Import audit log
-- Progress handling with cancel
-- Column visibility toggle
+**Status**: Partial. Already present in the inventory pipeline: grouped summary with invalid/skipped/errors tables, row-level validation with visual feedback, new-vs-existing (green/amber) indicators, loader with cancel. Backported in this phase:
+- **Import audit log**: `inventory_import#import_confirm` now writes an `ImportLog` (created/invalid/skipped counts, created_ids, error_details, status completed/failed).
+- **Failed-row export**: `inventory_import#import_failed_rows` streams an XLSX of invalid + skipped rows; link shown on the summary page.
+Remaining larger buildouts (not done): bulk collection assignment with quick-create, column visibility toggle, async progress with cancel.
 
 ### 4.3 Fix dead link in dashboard
 
 **File**: `app/views/inventories/dashboard.html.erb`
 **Problem**: `<a href="#">` for "Variazione Magazzino".
 **Fix**: Link to `app_move_products_path`.
+**Status**: Done (already linked to `app_move_products_path`).
 
 ### 4.4 Fix route nesting
 
 **Problem**: `resources :warehouses` is inside `scope '/inventories'`, making URLs like `/inventories/warehouses`.
-**Fix**: Move warehouse/location routes outside the inventories scope.
+**Fix**: Move warehouse/location routes outside the inventories scope. Added 301 redirects for the old `/inventories/warehouses/*` and `/inventories/locations/*` URLs and updated the hardcoded fetch in `qr_scanner_controller.js` (`/warehouses/lookup_by_qr`).
+**Status**: Done.
 
 ---
 
@@ -191,6 +195,6 @@ Add model-level guard against negative quantities in `adjust_qty!`.
 2. Phase 2.3 + 2.4 — merge duplicated services/models (low-risk, high-payoff)
 3. Phase 1 — split God controller
 4. Phase 2.1 + 2.2 — extract shared queries and workflow concern
-5. Phase 3 — unify movement creation
-6. Phase 4 — import pipeline polish
+5. Phase 3.2 + 3.3 — unify spreadsheet imports and itemcode normalization (done)
+6. Phase 4 — import pipeline polish (done: 4.1, 4.3, 4.4; 4.2 partial)
 7. Phase 5 — tests and model hardening

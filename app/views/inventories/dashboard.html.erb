@@ -4,19 +4,19 @@
 
 <section class="<%= style_main_cnt %> space-y-8">
   <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-    <%= link_to app_in_warehouse_path, class: "bg-indigo-50 dark:bg-indigo-900/20 p-4 card flex flex-col items-center justify-center text-center aspect-square shadow-md hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition" do %>
+    <%= link_to app_in_warehouse_path(return_to: inventories_dashboard_path), class: "bg-indigo-50 dark:bg-indigo-900/20 p-4 card flex flex-col items-center justify-center text-center aspect-square shadow-md hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition" do %>
       <span class="material-symbols-outlined text-4xl text-indigo-600 dark:text-indigo-400 mb-2">download</span>
       <span class="text-lg font-semibold text-slate-700 dark:text-slate-200">IN</span>
       <p class="text-muted text-xs mt-1">Registra ingresso merce in magazzino</p>
     <% end %>
 
-    <%= link_to app_out_warehouse_path, class: "bg-indigo-50 dark:bg-indigo-900/20 p-4 card flex flex-col items-center justify-center text-center aspect-square shadow-md hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition" do %>
+    <%= link_to app_out_warehouse_path(return_to: inventories_dashboard_path), class: "bg-indigo-50 dark:bg-indigo-900/20 p-4 card flex flex-col items-center justify-center text-center aspect-square shadow-md hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition" do %>
       <span class="material-symbols-outlined text-4xl text-indigo-600 dark:text-indigo-400 mb-2">upload</span>
       <span class="text-lg font-semibold text-slate-700 dark:text-slate-200">OUT</span>
       <p class="text-muted text-xs mt-1">Registra uscita merce dal magazzino</p>
     <% end %>
 
-    <%= link_to app_move_products_path, class: "bg-indigo-50 dark:bg-indigo-900/20 p-4 card flex flex-col items-center justify-center text-center aspect-square shadow-md hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition" do %>
+    <%= link_to app_move_products_path(return_to: inventories_dashboard_path), class: "bg-indigo-50 dark:bg-indigo-900/20 p-4 card flex flex-col items-center justify-center text-center aspect-square shadow-md hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition" do %>
       <span class="material-symbols-outlined text-4xl text-indigo-600 dark:text-indigo-400 mb-2">swap_horiz</span>
       <span class="text-lg font-semibold text-slate-700 dark:text-slate-200">VAR</span>
       <p class="text-muted text-xs mt-1">Spostamento tra location diverse</p>
@@ -71,10 +71,10 @@
           <span class="text-sm text-slate-700 dark:text-slate-200">Tutti i Movimenti</span>
           <span class="material-symbols-outlined text-slate-300 dark:text-slate-400 text-base">arrow_forward_ios</span>
         <% end %>
-        <a href="#" class="<%= style_main_card_link %>">
+        <%= link_to app_move_products_path(return_to: inventories_dashboard_path), class: style_main_card_link do %>
           <span class="text-sm text-slate-700 dark:text-slate-200">Variazione Magazzino</span>
           <span class="material-symbols-outlined text-slate-300 dark:text-slate-400 text-base">arrow_forward_ios</span>
-        </a>
+        <% end %>
       </div>
     </div>
 
@@ -139,35 +139,6 @@
       </div>
 
       <div>
-        <h4 class="text-xs font-semibold text-slate-700 dark:text-slate-200 tracking-wider mb-2 flex items-center gap-1">
-          <span class="inline-block w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-500"></span>
-          Variazioni
-        </h4>
-        <% if @latest_itemmovements.any? %>
-          <div class="divide-y divide-slate-100 border border-slate-200 rounded-lg overflow-hidden">
-            <% @latest_itemmovements.each do |mov| %>
-              <div class="flex items-center justify-between px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition">
-                <div class="flex-1 min-w-0">
-                  <div class="text-xs text-slate-400 dark:text-slate-300"><%= mov.indate.strftime("%d-%m-%Y") %></div>
-                  <div class="text-sm font-medium text-slate-800 dark:text-slate-200 truncate">
-                    <%= mov.itemmovements_details.map { |d| d.item&.gencode.presence }.compact.first || "—" %>
-                  </div>
-                  <div class="text-[10px] text-slate-400 dark:text-slate-300">
-                    <%= mov.source_warehouse&.code %>/<%= mov.source_location&.code %> → <%= mov.dest_warehouse&.code %>/<%= mov.dest_location&.code %>
-                  </div>
-                </div>
-                <div class="text-[10px] text-slate-500 dark:text-slate-300 ml-2 whitespace-nowrap font-bold"><%= mov.operator&.name %></div>
-              </div>
-            <% end %>
-          </div>
-        <% else %>
-          <div class="flex items-center justify-center h-24 text-sm text-slate-400 dark:text-slate-300 bg-slate-50 dark:bg-slate-700 rounded-lg">
-            Nessuna variazione recente
-          </div>
-        <% end %>
-      </div>
-
-      <div>
         <h4 class="text-xs font-semibold text-red-700 dark:text-red-400 tracking-wider mb-2 flex items-center gap-1">
           <span class="inline-block w-2 h-2 rounded-full bg-red-500"></span>
           Uscite
@@ -195,6 +166,35 @@
         <% else %>
           <div class="flex items-center justify-center h-24 text-sm text-slate-400 dark:text-slate-300 bg-slate-50 dark:bg-slate-700 rounded-lg">
             Nessuna uscita recente
+          </div>
+        <% end %>
+      </div>
+
+      <div>
+        <h4 class="text-xs font-semibold text-slate-700 dark:text-slate-200 tracking-wider mb-2 flex items-center gap-1">
+          <span class="inline-block w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-500"></span>
+          Variazioni
+        </h4>
+        <% if @latest_itemmovements.any? %>
+          <div class="divide-y divide-slate-100 border border-slate-200 rounded-lg overflow-hidden">
+            <% @latest_itemmovements.each do |mov| %>
+              <div class="flex items-center justify-between px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition">
+                <div class="flex-1 min-w-0">
+                  <div class="text-xs text-slate-400 dark:text-slate-300"><%= mov.indate.strftime("%d-%m-%Y") %></div>
+                  <div class="text-sm font-medium text-slate-800 dark:text-slate-200 truncate">
+                    <%= mov.itemmovements_details.map { |d| d.item&.gencode.presence }.compact.first || "—" %>
+                  </div>
+                  <div class="text-[10px] text-slate-400 dark:text-slate-300">
+                    <%= mov.source_warehouse&.code %>/<%= mov.source_location&.code %> → <%= mov.dest_warehouse&.code %>/<%= mov.dest_location&.code %>
+                  </div>
+                </div>
+                <div class="text-[10px] text-slate-500 dark:text-slate-300 ml-2 whitespace-nowrap font-bold"><%= mov.operator&.name %></div>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="flex items-center justify-center h-24 text-sm text-slate-400 dark:text-slate-300 bg-slate-50 dark:bg-slate-700 rounded-lg">
+            Nessuna variazione recente
           </div>
         <% end %>
       </div>

@@ -6,7 +6,7 @@
           <span class="material-symbols-outlined text-slate-400">person</span>
           Il mio profilo
         </h2>
-        <%= link_to "#", data: { controller: "closemod", action: "closemod#close", closemod_target: "profile_modal" }, class: "text-slate-400 hover:text-slate-600 transition" do %>
+        <%= link_to "#", data: { controller: "closemod", action: "closemod#close", closemod_target: "profile_modal" }, class: "#{style_close_btn}" do %>
           <span class="material-symbols-outlined text-lg">close</span>
         <% end %>
       </div>
@@ -54,7 +54,7 @@
           </div>
 
           <div class="flex items-center gap-4 pt-5 border-t border-slate-200">
-            <%= f.submit "Salva", class: "py-2 px-4 text-sm tracking-wide text-white rounded-sm inline-block cursor-pointer bg-accent hover:bg-accent/90" %>
+            <%= f.submit "Salva", class: "py-2 px-4 text-sm tracking-wide #{style_save_button} rounded-sm inline-block cursor-pointer" %>
           </div>
         <% end %>
       </div>

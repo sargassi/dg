@@ -41,7 +41,7 @@
 
     <%= form_with url: mainware_import_confirm_path, method: :post, data: { turbo: false } do %>
       <%= hidden_field_tag :confirmed, true %>
-      <button type="submit" class="block w-full text-center <%= style_import_btn %> bg-green-600 mb-3">
+      <button type="submit" class="block w-full text-center <%= style_save_button %> px-5 py-2 tracking-wider rounded-sm uppercase text-xs cursor-pointer transition-colors mb-3">
         Conferma e avvia importazione
       </button>
     <% end %>

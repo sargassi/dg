@@ -89,7 +89,7 @@
 
    <div class="form-group w-25">
     <%= form.label :photo %>
-    <%= form.file_field :photo, class:"border-slate-300 p-2 w-full" %>
+    <%= form.file_field :photo, class: "#{style_upload_field} #{style_upload_field_btn}" %>
     <%= form.hidden_field :photo_cache %>
 
     <% if @rassegna["photo"].present? %>

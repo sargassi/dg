@@ -1,36 +1,34 @@
 # Current Feature
 
-Mainware / Articles module UX and import workflow improvements.
+Godlike root home "Command Center" (`/` → `dashboard#index`).
 
 ## Status
 
-Done — Phase 3 from `context/refactor/mainware_refactor.md` is complete.
+Planned.
 
-## Goals (phase 1 — done)
+## Goals
 
-- Make the Mainware dashboard less redundant and surface the most-used workflows.
-- Make the Excel import flow safer and more transparent: template download, upload validation, deferred collection/warehouse creation, and a confirm summary page.
-- Fix small quality issues: duplicate header keys in the import mapper, exact QR search, nil-safe QR SVG rendering.
+- Add a root landing page shown **only** to godlike users, aggregating links to every section of the app.
+- Render inside the existing shell (side menu + page header), so it drops straight into `dashboard#index`.
+- Keep all non-godlike behavior intact (`ufficio`/`lab` partials, `pedone` redirect).
+- Include a light live quick-stats strip (counts from the DB) plus a section card grid and a config strip.
 
-## Phase 2 candidates
+## Summary
 
-- Row-level validation in the import preview (duplicate gencodes, missing required fields, malformed prices).
-- Create vs. update row highlighting in the preview table.
-- Better import error display (cell values, grouped messages).
-- Import history / `ImportLog` model for audit and rollback of updates.
-- Progress timeout / failure handling and a cancel-during-processing action.
-- Column visibility toggle and saved filters on the item list.
-- Wire or remove the empty `mainware/search` and `mainware/stage` pages.
+- No route change: `root` stays `dashboard#index`.
+- `DashboardController#index` gains a `portal_counts` private method feeding the stats strip.
+- New `DashboardHelper#portal_sections` returns card data reusing the existing `*_section_toolbar` helpers (`skip_config: true`) so labels/icons stay consistent.
+- New partial `app/views/dashboard/_portal.html.erb`.
+- `dashboard/index.html.erb` branches on `current_user.godlike?`.
+
+## Files changed (planned)
+
+- `context/current-feature.md` (this file)
+- `app/controllers/dashboard_controller.rb`
+- `app/helpers/dashboard_helper.rb` (new)
+- `app/views/dashboard/_portal.html.erb` (new)
+- `app/views/dashboard/index.html.erb`
 
 ## Notes
 
-- Branch: `feature/mainware-ux-improvements`
-- Keep changes inside the `mainware` surface (controllers, views, services) and avoid touching unrelated inventory/production flows.
-- Do not introduce a background job queue adapter; keep imports inline/compatible with the current setup.
-- Preserve existing Italian labels and Tailwind styling patterns.
-
-## History
-
-- Project setup and boilerplate cleanup
-- 2026-07-30: Started Mainware UX / import improvements branch
-- 2026-07-30: Phase 1 — dashboard cleanup, import template/validation/confirm summary, exact QR search, service refactor
+- Only godlike bypasses all checks; stats use plain `count` queries.

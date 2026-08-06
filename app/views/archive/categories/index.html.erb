@@ -1,9 +1,5 @@
 <% content_for :page_header do %>
-<div class="flex items-center gap-2 px-0 py-0.5">
-  <h1 class="text-sm font-semibold text-slate-500 dark:text-slate-400 tracking-wide">
-    Categorie Archivio
-  </h1>
-</div>
+  <%= render "application/breadcrumb", dashboard_path: archive_dashboard_path, section_name: "Archivio", page_title: "Categorie" %>
 <% end %>
 
 <section class="<%= style_main_cnt %>">
@@ -11,69 +7,86 @@
     <p class="py-2 px-3 bg-green-50 text-green-500 font-medium rounded-lg inline-block mb-5" id="notice"><%= notice %></p>
   <% end %>
 
-  <div class="<%= style_main_card %>">
-    <h3 class="<%= style_main_card_header %>">
-      <span class="material-symbols-outlined">category</span>
-      Categorie Archivio
-      <span class="<%= style_main_card_badge %>"><%= @categories.count %></span>
-    </h3>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
 
-    <div class="mb-6 pb-4 border-b border-slate-100 dark:border-slate-600">
-      <h4 class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-3">Nuova categoria</h4>
-      <form action="<%= archive_categories_path %>" method="POST" class="flex items-end gap-3" novalidate>
-        <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
-        <div class="grow">
-          <input type="text" name="archive_category[name]" class="border border-slate-300 dark:border-slate-600 outline-none px-3 py-2 w-full text-sm dark:bg-slate-700 dark:text-slate-200" placeholder="Nome categoria">
-        </div>
-        <div>
-          <button type="submit" class="px-4 py-2 bg-accent inline-block tracking-wider rounded-sm text-xs cursor-pointer text-white whitespace-nowrap">Crea</button>
-        </div>
-      </form>
-    </div>
+    <div>
+      <div class="<%= style_main_card %>">
+        <h3 class="<%= style_main_card_header %>">
+          <span class="material-symbols-outlined">category</span>
+          Categorie
+          <span class="<%= style_main_card_badge %>"><%= @categories.count %></span>
+        </h3>
 
-    <% if @categories.any? %>
-      <table class="w-full">
-        <thead>
-          <tr>
-            <th class="<%= style_table_th %>">Nome categoria</th>
-            <th class="<%= style_table_th %>">Articoli</th>
-            <th class="<%= style_table_th %>"></th>
-          </tr>
-        </thead>
-        <tbody>
-          <% @categories.each do |cat| %>
-            <tr id="<%= dom_id(cat) %>" class="group">
-              <td class="<%= style_table_td %>">
-                <div id="<%= dom_id(cat, :display) %>">
-                  <span class="text-sm font-bold text-slate-800 dark:text-slate-200"><%= cat.name %></span>
+        <div id="categories" class="space-y-0">
+          <% if @categories.any? %>
+            <% @categories.each do |cat| %>
+              <div id="<%= dom_id(cat) %>" class="flex items-center justify-between py-2.5 px-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors border-b border-slate-100 dark:border-slate-600 group">
+                <div class="flex items-center gap-3 min-w-0">
+                  <span class="material-symbols-outlined text-slate-300 text-xl flex-shrink-0">folder</span>
+                  <div class="min-w-0">
+                    <div id="<%= dom_id(cat, :display) %>">
+                      <span class="text-sm font-semibold text-slate-800 dark:text-slate-200"><%= cat.name %></span>
+                      <% if cat.items.any? %>
+                        <span class="<%= style_main_card_badge %> ml-2"><%= cat.items.count %> artic<%= cat.items.count == 1 ? 'olo' : 'oli' %></span>
+                      <% end %>
+                    </div>
+                    <div id="<%= dom_id(cat, :edit) %>" class="hidden">
+                      <%= form_with(model: cat, url: archive_category_path(cat), method: :patch, class: "flex items-center gap-2") do |f| %>
+                        <%= f.text_field :name, value: cat.name, class: "border border-slate-300 dark:border-slate-600 outline-none px-2 py-1 text-sm w-36 dark:bg-slate-700 dark:text-slate-200", required: true %>
+                        <%= f.submit "Salva", class: "px-3 py-1.5 #{style_save_button} tracking-wider rounded-sm text-xs cursor-pointer" %>
+                        <button type="button" onclick="document.getElementById('<%= dom_id(cat, :edit) %>').classList.add('hidden'); document.getElementById('<%= dom_id(cat, :display) %>').classList.remove('hidden');" class="px-3 py-1.5 text-xs text-slate-500 hover:text-slate-700">Annulla</button>
+                      <% end %>
+                    </div>
+                  </div>
                 </div>
-                <div id="<%= dom_id(cat, :edit) %>" class="hidden">
-                  <%= form_with(model: cat, url: archive_category_path(cat), method: :patch, class: "flex items-center gap-2") do |f| %>
-                    <%= f.text_field :name, value: cat.name, class: "border border-slate-300 dark:border-slate-600 outline-none px-2 py-1 text-sm w-36 dark:bg-slate-700 dark:text-slate-200", required: true %>
-                    <%= f.submit "Salva", class: "px-3 py-1.5 bg-accent text-white tracking-wider rounded-sm text-xs cursor-pointer" %>
-                    <button type="button" onclick="document.getElementById('<%= dom_id(cat, :edit) %>').classList.add('hidden'); document.getElementById('<%= dom_id(cat, :display) %>').classList.remove('hidden');" class="px-3 py-1.5 text-xs text-slate-500 hover:text-slate-700">Annulla</button>
-                  <% end %>
-                </div>
-              </td>
-              <td class="<%= style_table_td %>">
-                <span class="<%= style_main_card_badge %>"><%= cat.items.count %></span>
-              </td>
-              <td class="<%= style_table_td %>">
-                <div class="flex gap-1 items-center">
+                <div class="flex gap-0.5 items-center">
                   <button type="button" onclick="document.getElementById('<%= dom_id(cat, :edit) %>').classList.remove('hidden'); document.getElementById('<%= dom_id(cat, :display) %>').classList.add('hidden');" class="p-1.5 text-slate-300 hover:text-accent rounded-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
                     <span class="material-symbols-outlined text-lg">edit</span>
                   </button>
-                   <%= button_to cat, method: :delete, data: { turbo_frame: "_top", turbo_confirm: cat.items.any? ? "Impossibile eliminare: ci sono articoli in questa categoria" : "Eliminare '#{cat.name}'?" }, class: "p-1.5 text-slate-300 hover:text-red-500 rounded-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors" do %>
+                  <%= button_to archive_category_path(cat), method: :delete, data: { turbo_frame: "_top", turbo_confirm: cat.items.any? ? "Impossibile eliminare: ci sono articoli in questa categoria" : "Eliminare '#{cat.name}'?" }, class: "p-1.5 text-slate-300 hover:text-red-500 rounded-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors" do %>
                     <span class="material-symbols-outlined text-lg">delete</span>
                   <% end %>
                 </div>
-              </td>
-            </tr>
+              </div>
+            <% end %>
+          <% else %>
+            <div class="text-sm text-slate-400 italic py-4">Nessuna categoria configurata</div>
           <% end %>
-        </tbody>
-      </table>
-    <% else %>
-      <div class="text-sm text-slate-400 italic py-4">Nessuna categoria configurata</div>
-    <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="<%= style_main_card %>">
+        <h3 class="<%= style_main_card_header %>">
+          <span class="material-symbols-outlined">add_box</span>
+          Nuova categoria
+        </h3>
+
+        <%= form_with(model: @new_category, url: archive_categories_path, class: "contents") do |form| %>
+          <% if @new_category.errors.any? %>
+            <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium mb-4 border border-red-200 text-sm">
+              <h2><%= pluralize(@new_category.errors.count, "error") %> impediscono il salvataggio:</h2>
+              <ul class="mt-1 list-disc list-inside">
+                <% @new_category.errors.each do |error| %>
+                  <li><%= error.full_message %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <div class="grid grid-cols-[1fr_auto] gap-3 items-end">
+            <div>
+              <%= form.label :name, "Nome categoria", class: "text-xs text-slate-400 tracking-wide block mb-1" %>
+              <%= form.text_field :name, class: "border border-slate-300 dark:border-slate-600 outline-none px-3 py-2 w-full text-sm dark:bg-slate-700 dark:text-slate-200", placeholder: "Nome categoria", required: true %>
+            </div>
+            <div>
+              <%= form.submit "Crea", class: "p-3 #{style_save_button} inline-block tracking-wider rounded-sm text-xs cursor-pointer" %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
   </div>
 </section>

@@ -131,12 +131,17 @@ Rails.application.routes.draw do
   get 'app/out_warehouse_confirmation', to: 'app#out_warehouse_confirmation', as: :app_out_warehouse_confirmation
   match 'app/move_products', to: 'app#move_products', via: [:get, :post], as: :app_move_products
   get 'app/move_products_confirmation', to: 'app#move_products_confirmation', as: :app_move_products_confirmation
+  match 'app/mobile_print', to: 'app#mobile_print', via: [:get, :post], as: :app_mobile_print
+  get 'app/mobile_print_confirmation', to: 'app#mobile_print_confirmation', as: :app_mobile_print_confirmation
+  get 'app/mobile_print_label/:item_id', to: 'app#mobile_print_label', as: :app_mobile_print_label, defaults: { format: :pdf }
   match 'app/mobile_in', to: 'app#mobile_in', via: [:get, :post], as: :app_mobile_in
   match 'app/mobile_out', to: 'app#mobile_out', via: [:get, :post], as: :app_mobile_out
   match 'app/mobile_var', to: 'app#mobile_var', via: [:get, :post], as: :app_mobile_var
   get 'app/mobile_in_confirmation', to: 'app#mobile_in_confirmation', as: :app_mobile_in_confirmation
   get 'app/mobile_out_confirmation', to: 'app#mobile_out_confirmation', as: :app_mobile_out_confirmation
   get 'app/mobile_var_confirmation', to: 'app#mobile_var_confirmation', as: :app_mobile_var_confirmation
+  match 'app/mobile_reassign', to: 'app#mobile_reassign', via: [:get, :post], as: :app_mobile_reassign
+  get 'app/mobile_reassign_confirm', to: 'app#mobile_reassign_confirm', as: :app_mobile_reassign_confirm
   match 'app/inserimento', to: 'app#inserimento', via: [:get, :post], as: :app_inserimento
   get 'app/confirm_ins', to: 'app#confirm_ins', as: :app_confirm_ins
   get 'app/check_single_qr'

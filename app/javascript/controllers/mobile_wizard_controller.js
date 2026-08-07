@@ -8,7 +8,8 @@ export default class extends Controller {
     operationType: Number,
     scanUrl: String,
     whSelect: String,
-    locSelect: String
+    locSelect: String,
+    autoPrompt: { type: Boolean, default: true }
   };
 
   connect() {
@@ -223,6 +224,7 @@ export default class extends Controller {
 
   // Auto-open the QR scan modal on location and items steps.
   _autoPrompt() {
+    if (!this.autoPromptValue) return;
     const step = this._steps()[this._stepIndex];
     if (!step) return;
     const whSelect = step.querySelector("select[name$='_warehouse_id']");

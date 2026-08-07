@@ -182,7 +182,7 @@ class AppController < ApplicationController
       items = Item.where(id: item_ids).index_by(&:id)
       gencodes = items.values.map(&:gencode).compact.uniq
       stock = StockLevel.where(gencode: gencodes)
-        .each_with_object({}) { |sl, h| h[[sl.gencode, sl.warehouse_id, sl.location_id]] = sl.current_qty }
+        .each_with_object({}) { |sl, h| h[[sl.gencode, sl.warehouse_id, sl.location_id.to_i]] = sl.current_qty }
 
       details.each do |d|
         next unless d[:item_id]
@@ -284,8 +284,11 @@ class AppController < ApplicationController
       item_ids = details.map { |d| d[:item_id] }.compact.uniq
       items = Item.where(id: item_ids).index_by(&:id)
       gencodes = items.values.map(&:gencode).compact.uniq
+      item_ids = details.map { |d| d[:item_id] }.compact.uniq
+      items = Item.where(id: item_ids).index_by(&:id)
+      gencodes = items.values.map(&:gencode).compact.uniq
       stock = StockLevel.where(gencode: gencodes)
-        .each_with_object({}) { |sl, h| h[[sl.gencode, sl.warehouse_id, sl.location_id]] = sl.current_qty }
+        .each_with_object({}) { |sl, h| h[[sl.gencode, sl.warehouse_id, sl.location_id.to_i]] = sl.current_qty }
 
       details.each do |d|
         next unless d[:item_id]
@@ -363,7 +366,7 @@ class AppController < ApplicationController
       items = Item.where(id: item_ids).index_by(&:id)
       gencodes = items.values.map(&:gencode).compact.uniq
       stock = StockLevel.where(gencode: gencodes)
-        .each_with_object({}) { |sl, h| h[[sl.gencode, sl.warehouse_id, sl.location_id]] = sl.current_qty }
+        .each_with_object({}) { |sl, h| h[[sl.gencode, sl.warehouse_id, sl.location_id.to_i]] = sl.current_qty }
 
       details.each do |d|
         next unless d[:item_id]
@@ -417,6 +420,101 @@ class AppController < ApplicationController
     @movements = Itemmovement.includes(:source_warehouse, :dest_warehouse, :source_location, :dest_location, itemmovements_details: :item).where(id: ids).order(:id)
   end
 
+  def mobile_reassign
+    if request.post?
+      rows = Array(params[:reassign]).select { |r| r[:item_id].to_s.present? }
+
+      if params[:source_warehouse_id].blank?
+        load_form_data(ordered: true)
+        flash.now[:alert] = "Seleziona un magazzino di origine."
+        render :mobile_reassign, status: :unprocessable_entity and return
+      end
+
+      if params[:dest_warehouse_id].blank?
+        load_form_data(ordered: true)
+        flash.now[:alert] = "Seleziona un magazzino di destinazione."
+        render :mobile_reassign, status: :unprocessable_entity and return
+      end
+
+      if rows.empty?
+        load_form_data(ordered: true)
+        flash.now[:alert] = "Nessun articolo valido. Seleziona almeno un articolo dall'autocomplete."
+        render :mobile_reassign, status: :unprocessable_entity and return
+      end
+
+      item_ids = rows.map { |r| r[:item_id] }.compact.uniq
+      gencodes = Item.where(id: item_ids).pluck(:gencode).compact.uniq
+
+      result = ReassignStockService.call(
+        gencodes: gencodes,
+        src_warehouse_id: params[:source_warehouse_id],
+        src_location_id: params[:source_location_id],
+        dst_warehouse_id: params[:dest_warehouse_id],
+        dst_location_id: params[:dest_location_id]
+      )
+
+      if result.success
+        session[:mobile_reassign_result] = result.stats
+        redirect_to app_mobile_reassign_confirm_path, notice: "Riallocazione completata con successo."
+      else
+        load_form_data(ordered: true)
+        flash.now[:alert] = result.error
+        render :mobile_reassign, status: :unprocessable_entity
+      end
+    else
+      @default_dest_warehouse_id = @default_dest_location_id = nil
+      load_form_data(ordered: true)
+    end
+  end
+
+  def mobile_reassign_confirm
+    @stats = session.delete(:mobile_reassign_result)
+    redirect_to app_mobile_reassign_path, alert: "Nessuna riallocazione effettuata." if @stats.blank?
+  end
+
+  def mobile_print
+    if request.post?
+      rows = Array(params[:print]).select { |r| r[:item_id].to_s.present? }
+
+      if rows.empty?
+        load_form_data(ordered: true)
+        flash.now[:alert] = "Nessun articolo valido. Seleziona almeno un articolo dall'autocomplete."
+        render :mobile_print, status: :unprocessable_entity and return
+      end
+
+      session[:mobile_print_items] = rows.map do |r|
+        {
+          "item_id" => r[:item_id].to_i,
+          "qty" => r[:qty].to_i.positive? ? r[:qty].to_i : 1,
+          "warehouse_id" => r[:warehouse_id],
+          "location_id" => r[:location_id]
+        }
+      end
+
+      redirect_to app_mobile_print_confirmation_path
+    else
+      load_form_data(ordered: true)
+    end
+  end
+
+  def mobile_print_confirmation
+    @items = load_mobile_print_items
+    redirect_to app_mobile_print_path, alert: "Nessun articolo selezionato." if @items.empty?
+  end
+
+  def mobile_print_label
+    item = Item.find(params[:item_id])
+    qty = [params[:qty].to_i, 1].max
+    @entries = [{ item: item, qty: qty }]
+    render pdf: "mobile_print_label_#{item.gencode}",
+           template: "app/mobile_print_label",
+           orientation: "portrait",
+           page_size: "A4",
+           margin: { top: 5, bottom: 5, left: 5, right: 5 },
+           disable_smart_shrinking: true,
+           show_as_html: params.key?("debug")
+  end
+
   def itemins_list
     redirect_to inventories_movements_path(operationtype_id: 1)
   end
@@ -456,6 +554,8 @@ class AppController < ApplicationController
       { label: 'IN', path: app_mobile_in_path, icon: 'download', active: %w[mobile_in mobile_in_confirmation].include?(active), can: 'manage_app_sectors' },
       { label: 'OUT', path: app_mobile_out_path, icon: 'upload', active: %w[mobile_out mobile_out_confirmation].include?(active), can: 'manage_app_sectors' },
       { label: 'VAR', path: app_mobile_var_path, icon: 'swap_horiz', active: %w[mobile_var mobile_var_confirmation].include?(active), can: 'manage_app_sectors' },
+      { label: 'RIALLOCA', path: app_mobile_reassign_path, icon: 'swap_vert', active: %w[mobile_reassign mobile_reassign_confirm].include?(active), can: 'manage_app_sectors' },
+      { label: 'QR', path: app_mobile_print_path, icon: 'qr_code', active: %w[mobile_print mobile_print_confirmation].include?(active), can: 'manage_app_sectors' },
       { label: 'Carichi', path: inventories_movements_path(operationtype_id: 1), icon: 'list_alt', active: false, can: 'manage_app_sectors' },
       { label: 'Scarichi', path: inventories_movements_path(operationtype_id: 2), icon: 'list_alt', active: false, can: 'manage_app_sectors' },
       { label: 'Variazioni', path: inventories_movements_path(operationtype_id: 3), icon: 'swap_vert', active: false, can: 'manage_app_sectors' },
@@ -485,6 +585,19 @@ class AppController < ApplicationController
 
   def inserimento_params
     params.require(:item).permit(:itemcode, :fabricode, :varcode, :description, :tg, :note, :fabric, :colour, :materiale, :collection_id, pictures: [])
+  end
+
+  def load_mobile_print_items
+    return [] if session[:mobile_print_items].blank?
+
+    ids = session[:mobile_print_items].map { |r| r["item_id"] }
+    items = Item.where(id: ids).includes(:collection).index_by(&:id)
+
+    session[:mobile_print_items].filter_map do |r|
+      item = items[r["item_id"].to_i]
+      next unless item
+      { item: item, qty: (r["qty"] || 1).to_i, warehouse_id: r["warehouse_id"], location_id: r["location_id"] }
+    end
   end
 
 end

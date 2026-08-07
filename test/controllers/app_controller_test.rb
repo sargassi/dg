@@ -266,4 +266,117 @@ class AppControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
     assert_select "span", text: /supera la disponibilità/
   end
+
+  test "should get mobile_print" do
+    get app_mobile_print_url
+    assert_response :success
+  end
+
+  test "post mobile_print without items re-renders with alert" do
+    post app_mobile_print_url, params: { print: [{ item_id: "", qty: 1 }] }
+    assert_response :unprocessable_entity
+  end
+
+  test "post mobile_print stores selection and redirects to confirmation" do
+    post app_mobile_print_url, params: {
+      print: [{ item_id: items(:one).id, itemcode: items(:one).gencode, qty: 2 }]
+    }
+    assert_redirected_to app_mobile_print_confirmation_url
+    assert_equal [items(:one).id], session[:mobile_print_items].map { |r| r["item_id"] }
+    assert_equal [2], session[:mobile_print_items].map { |r| r["qty"] }
+  end
+
+  test "should get mobile_print_confirmation" do
+    post app_mobile_print_url, params: {
+      print: [{ item_id: items(:one).id, itemcode: items(:one).gencode, qty: 2 }]
+    }
+    get app_mobile_print_confirmation_url
+    assert_response :success
+    assert_select "a[href*='mobile_print_label']", count: 1
+  end
+
+  test "mobile_print_confirmation without items redirects back" do
+    get app_mobile_print_confirmation_url
+    assert_redirected_to app_mobile_print_url
+  end
+
+  test "mobile_print_label renders a pdf label" do
+    get app_mobile_print_label_url(item_id: items(:one).id, qty: 2)
+    assert_response :success
+  end
+
+  test "should get mobile_reassign" do
+    get app_mobile_reassign_url
+    assert_response :success
+  end
+
+  test "post mobile_reassign reassigns stock and inventory and redirects" do
+    StockLevel.create!(gencode: items(:one).gencode, warehouse_id: warehouses(:one).id, location_id: locations(:one).id, current_qty: 5)
+    Inventory.create!(gencode: items(:one).gencode, item_id: items(:one).id, qtyavailable: 5, warehouse_id: warehouses(:one).id, location_id: locations(:one).id, operationtype_id: operationtypes(:one).id)
+
+    assert_difference("Itemmovement.count", 0) do
+      assert_difference("Itemin.count", 0) do
+        assert_difference("Itemout.count", 0) do
+          post app_mobile_reassign_url, params: {
+            source_warehouse_id: warehouses(:one).id,
+            source_location_id: locations(:one).id,
+            dest_warehouse_id: warehouses(:two).id,
+            dest_location_id: locations(:two).id,
+            reassign: [{ item_id: items(:one).id }]
+          }
+        end
+      end
+    end
+
+    assert_redirected_to app_mobile_reassign_confirm_url
+    assert_equal 5, StockLevel.find_by(gencode: items(:one).gencode, warehouse_id: warehouses(:two).id, location_id: locations(:two).id).current_qty
+    assert_nil StockLevel.find_by(gencode: items(:one).gencode, warehouse_id: warehouses(:one).id, location_id: locations(:one).id)
+    assert_equal warehouses(:two).id, Inventory.find_by(gencode: items(:one).gencode).warehouse_id
+    assert_equal locations(:two).id, Inventory.find_by(gencode: items(:one).gencode).location_id
+  end
+
+  test "post mobile_reassign without source re-renders with alert" do
+    post app_mobile_reassign_url, params: {
+      dest_warehouse_id: warehouses(:two).id,
+      reassign: [{ item_id: items(:one).id }]
+    }
+    assert_response :unprocessable_entity
+    assert_match "magazzino di origine", response.body
+  end
+
+  test "post mobile_reassign without destination re-renders with alert" do
+    post app_mobile_reassign_url, params: {
+      source_warehouse_id: warehouses(:one).id,
+      reassign: [{ item_id: items(:one).id }]
+    }
+    assert_response :unprocessable_entity
+    assert_match "magazzino di destinazione", response.body
+  end
+
+  test "post mobile_reassign without articles re-renders with alert" do
+    post app_mobile_reassign_url, params: {
+      source_warehouse_id: warehouses(:one).id,
+      dest_warehouse_id: warehouses(:two).id,
+      reassign: [{ item_id: "" }]
+    }
+    assert_response :unprocessable_entity
+    assert_match "Nessun articolo valido", response.body
+  end
+
+  test "post mobile_reassign with no stock at source re-renders with alert" do
+    post app_mobile_reassign_url, params: {
+      source_warehouse_id: warehouses(:one).id,
+      source_location_id: locations(:one).id,
+      dest_warehouse_id: warehouses(:two).id,
+      dest_location_id: locations(:two).id,
+      reassign: [{ item_id: items(:one).id }]
+    }
+    assert_response :unprocessable_entity
+    assert_match "Nessuna giacenza", response.body
+  end
+
+  test "mobile_reassign_confirm without result redirects back" do
+    get app_mobile_reassign_confirm_url
+    assert_redirected_to app_mobile_reassign_url
+  end
 end

@@ -161,9 +161,13 @@ Remaining larger buildouts (not done): bulk collection assignment with quick-cre
 
 Zero tests for: `MovementBuilder`, `CreateInventoriesFromItemin/Itemout/Itemmovement`, `ImportInventoryService`, `ImportItemoutService`, `QrParser`, `CreateQrService`.
 
+**Done:** added `MovementBuilderTest` (Itemin/Itemout/Itemmovement builds, `HashWithIndifferentAccess`/`ActionController::Parameters`, destroy/empty row rejection, defaults, default operationtype, `filter_details`), `CreateQrServiceTest`, `QrParserTest`, and `ImportItemoutServiceTest` (row validation, date parsing, per-date Itemout grouping, missing warehouse handling). `InventoryCreator`, `ImportInventoryService`, `MovementCreationService`, and `SpreadsheetImportBase` already had coverage.
+
 ### 5.2 Controller action tests
 
 15 custom actions in InventoriesController untested: dashboard, seleziona, autocomplete, movements, export_xlsx, import pipeline (8), QR actions, lookup_by_qr, movement_label, movement_modal.
+
+**Partial (done):** `InventoryMovementsControllerTest` and `InventoryImportControllerTest` added covering dashboard, movements, movement_label, movement_modal, and the import pipeline async-cache-guard branches.
 
 ### 5.3 Inventory model validations
 

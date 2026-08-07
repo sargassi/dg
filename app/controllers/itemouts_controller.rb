@@ -104,7 +104,7 @@ class ItemoutsController < ApplicationController
     gencodes = items.values.map(&:gencode).compact.uniq
 
     stock = StockLevel.where(gencode: gencodes)
-      .each_with_object({}) { |sl, h| h[[sl.gencode, sl.warehouse_id, sl.location_id]] = sl.current_qty }
+      .each_with_object({}) { |sl, h| h[[sl.gencode, sl.warehouse_id, sl.location_id.to_i]] = sl.current_qty }
 
     details.each do |d|
       next unless d[:item_id]

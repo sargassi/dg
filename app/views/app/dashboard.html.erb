@@ -25,6 +25,12 @@
       <span class="text-lg font-semibold text-slate-700">VAR</span>
       <p class="text-muted text-xs mt-1">Spostamento tra location</p>
     <% end %>
+
+    <%= link_to app_mobile_print_path, class: "bg-purple-50 p-4 card flex flex-col items-center justify-center text-center aspect-square shadow-md hover:bg-purple-100 transition" do %>
+      <span class="material-symbols-outlined text-4xl text-purple-600 mb-2">qr_code</span>
+      <span class="text-lg font-semibold text-slate-700">QR</span>
+      <p class="text-muted text-xs mt-1">Stampa etichette QR</p>
+    <% end %>
   </div>
 
   <%= link_to app_dashboard_produzione_path, class: "block text-xl font-semibold text-slate-800 hover:text-accent transition" do %>

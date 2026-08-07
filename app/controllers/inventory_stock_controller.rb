@@ -81,7 +81,7 @@ class InventoryStockController < ApplicationController
 
     stock_levels = StockLevel.where(gencode: inventories.map(&:gencode).uniq)
     net_qty_by_key = stock_levels.each_with_object({}) { |sl, h|
-      h[[sl.gencode, sl.warehouse_id, sl.location_id]] = sl.current_qty
+      h[[sl.gencode, sl.warehouse_id, sl.location_id.to_i]] = sl.current_qty
     }
 
     result = []
@@ -100,7 +100,7 @@ class InventoryStockController < ApplicationController
       item = items[inv.gencode]
       next unless item
 
-      qty_remaining = net_qty_by_key[[inv.gencode, inv.warehouse_id, inv.location_id]] || 0
+      qty_remaining = net_qty_by_key[[inv.gencode, inv.warehouse_id, inv.location_id.to_i]] || 0
       next if qty_remaining <= 0
 
       result << {

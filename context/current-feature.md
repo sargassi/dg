@@ -1,34 +1,35 @@
 # Current Feature
 
-Godlike root home "Command Center" (`/` → `dashboard#index`).
+App "RIALLOCA" action — reassign imported inventory to the correct warehouse/location without creating movements.
 
 ## Status
 
-Planned.
+Implemented (uncommitted on `main`).
 
 ## Goals
 
-- Add a root landing page shown **only** to godlike users, aggregating links to every section of the app.
-- Render inside the existing shell (side menu + page header), so it drops straight into `dashboard#index`.
-- Keep all non-godlike behavior intact (`ufficio`/`lab` partials, `pedone` redirect).
-- Include a light live quick-stats strip (counts from the DB) plus a section card grid and a config strip.
+- Let operators correct stock placed in the wrong warehouse/location after an Excel import.
+- Must NOT create an `Itemmovement` / `Itemin` / `Itemout` and must NOT use an `operationtype`; it directly rewrites `StockLevel` and `Inventory` rows.
+- Mobile-wizard UX matching IN/OUT/VAR/QR flows: optional scan/autocomplete, place-filtered autocomplete, session-free confirm.
 
 ## Summary
 
-- No route change: `root` stays `dashboard#index`.
-- `DashboardController#index` gains a `portal_counts` private method feeding the stats strip.
-- New `DashboardHelper#portal_sections` returns card data reusing the existing `*_section_toolbar` helpers (`skip_config: true`) so labels/icons stay consistent.
-- New partial `app/views/dashboard/_portal.html.erb`.
-- `dashboard/index.html.erb` branches on `current_user.godlike?`.
+- `ReassignStockService` moves, per selected `gencode`, only the positive `StockLevel` rows that match the source place (warehouse required; location optional — blank moves all rows in the warehouse). Quantity is added to the destination via `StockLevel.adjust_qty!` (merging into an existing destination row), subtracted from the source, and emptied source rows are destroyed. Matching `Inventory` rows have `warehouse_id`/`location_id` rewritten to the destination.
+- `AppController#mobile_reassign` (GET renders the 3-step wizard, POST validates source/destination/articles then calls the service) and `AppController#mobile_reassign_confirm` (shows per-gencode stats, reads `session[:mobile_reassign_result]`).
+- New routes `app/mobile_reassign` (GET/POST) and `app/mobile_reassign_confirm`.
+- New views `app/views/app/mobile_reassign.html.erb` and `app/views/app/mobile_reassign_confirm.html.erb`, reusing `_mobile_location_step`, the autocomplete + `defaults` (`da`/`a` prefixes), and the QR scan overlays.
+- Menu entry "RIALLOCA" in `set_app_menu`, gated by `manage_app_sectors` (same as the other App actions).
 
-## Files changed (planned)
+## Files changed
 
-- `context/current-feature.md` (this file)
-- `app/controllers/dashboard_controller.rb`
-- `app/helpers/dashboard_helper.rb` (new)
-- `app/views/dashboard/_portal.html.erb` (new)
-- `app/views/dashboard/index.html.erb`
+- `app/services/reassign_stock_service.rb` (new)
+- `app/controllers/app_controller.rb` (`mobile_reassign`, `mobile_reassign_confirm`, menu entry)
+- `config/routes.rb`
+- `app/views/app/mobile_reassign.html.erb`, `app/views/app/mobile_reassign_confirm.html.erb` (new)
+- `test/controllers/app_controller_test.rb` (+7 tests), `test/services/reassign_stock_service_test.rb` (new, +7 tests)
 
 ## Notes
 
-- Only godlike bypasses all checks; stats use plain `count` queries.
+- The `.well-known/appspecific` routing-noise fix was explicitly dropped by the user — do not implement.
+- `StockLevel#adjust_qty!` normalizes `location_id || 0`; the service keys on that convention and merges destination rows.
+- `delete!` is unavailable on ActiveRecord 7.2.3.2 records; the service uses `destroy!` for emptied source rows.

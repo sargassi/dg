@@ -1,0 +1,45 @@
+<% content_for :page_header do %>
+  <%= render "application/breadcrumb", dashboard_path: app_dashboard_path, section_name: "App", page_title: "Etichette QR" %>
+<% end %>
+
+<section class="<%= style_main_cnt %> space-y-4">
+  <div class="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg p-6 text-center">
+    <span class="material-symbols-outlined text-5xl text-emerald-600">check_circle</span>
+    <h2 class="text-xl font-semibold text-emerald-800 dark:text-emerald-200 mt-2"><%= pluralize(@items.size, "etichetta", plural: "etichette") %> pronte</h2>
+    <p class="text-sm text-emerald-600 dark:text-emerald-300 mt-1">Stampa il QR di ciascun articolo</p>
+  </div>
+
+  <div class="space-y-4">
+    <% @items.each do |entry| %>
+      <% item = entry[:item] %>
+      <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg overflow-hidden">
+        <div class="flex items-center justify-between px-4 py-3">
+          <div class="min-w-0">
+            <div class="font-mono text-sm font-semibold text-slate-800 dark:text-slate-200 truncate"><%= item.gencode %></div>
+            <% if item.description.present? %>
+              <div class="text-xs text-slate-400 dark:text-slate-300 truncate"><%= item.description %></div>
+            <% end %>
+          </div>
+          <span class="text-sm font-bold text-slate-700 dark:text-slate-200 flex-shrink-0 ml-3">×<%= entry[:qty] %></span>
+        </div>
+        <div class="border-t border-slate-100 dark:border-slate-600 px-4 py-3 flex gap-2 items-center justify-between">
+          <span class="text-xs text-slate-400">Stampa <%= pluralize(entry[:qty], "QR") %></span>
+          <%= link_to app_mobile_print_label_path(item_id: item.id, qty: entry[:qty]),
+                      class: "inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-accent text-white text-xs font-semibold",
+                      target: "_blank" do %>
+            <span class="material-symbols-outlined text-base">print</span> Stampa QR
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="flex gap-2">
+    <%= link_to app_mobile_print_path, class: "flex-1 py-3 rounded-lg bg-accent text-white text-sm font-semibold text-center cursor-pointer" do %>
+      <span class="material-symbols-outlined text-base align-middle">add</span> Nuova stampa
+    <% end %>
+    <%= link_to app_dashboard_path, class: "flex-1 py-3 rounded-lg bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-sm font-semibold text-center" do %>
+      <span class="material-symbols-outlined text-base align-middle">home</span> Dashboard
+    <% end %>
+  </div>
+</section>

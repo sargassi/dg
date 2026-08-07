@@ -468,7 +468,7 @@ class AppController < ApplicationController
   end
 
   def mobile_reassign_confirm
-    @stats = session.delete(:mobile_reassign_result)
+    @stats = session.delete(:mobile_reassign_result)&.deep_symbolize_keys
     redirect_to app_mobile_reassign_path, alert: "Nessuna riallocazione effettuata." if @stats.blank?
   end
 

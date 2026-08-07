@@ -375,6 +375,36 @@ class AppControllerTest < ActionDispatch::IntegrationTest
     assert_match "Nessuna giacenza", response.body
   end
 
+  test "mobile_reassign_confirm renders success page after reassign" do
+    StockLevel.create!(gencode: items(:one).gencode, warehouse_id: warehouses(:one).id, location_id: locations(:one).id, current_qty: 5)
+
+    post app_mobile_reassign_url, params: {
+      source_warehouse_id: warehouses(:one).id,
+      source_location_id: locations(:one).id,
+      dest_warehouse_id: warehouses(:two).id,
+      dest_location_id: locations(:two).id,
+      reassign: [{ item_id: items(:one).id }]
+    }
+
+    get app_mobile_reassign_confirm_url
+    assert_response :success
+    assert_match "Riallocazione completata", response.body
+    assert_match items(:one).gencode, response.body
+    assert_match "5 pz", response.body
+  end
+
+  test "post mobile_reassign with identical origin and destination re-renders with alert" do
+    post app_mobile_reassign_url, params: {
+      source_warehouse_id: warehouses(:one).id,
+      source_location_id: locations(:one).id,
+      dest_warehouse_id: warehouses(:one).id,
+      dest_location_id: locations(:one).id,
+      reassign: [{ item_id: items(:one).id }]
+    }
+    assert_response :unprocessable_entity
+    assert_match "coincidono", response.body
+  end
+
   test "mobile_reassign_confirm without result redirects back" do
     get app_mobile_reassign_confirm_url
     assert_redirected_to app_mobile_reassign_url

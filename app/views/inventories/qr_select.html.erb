@@ -123,7 +123,7 @@
     <div class="px-4 py-3 border-t border-slate-200">
       <%= form_tag inventories_generate_qr_path, method: :post, data: { qr_select_target: "form" }, target: "_blank" do %>
         <div data-qr-select-target="hiddenInputs"></div>
-        <button type="submit" class="w-full px-4 py-2 text-sm tracking-wide text-white rounded-sm bg-slate-700 hover:bg-slate-800 font-medium flex items-center justify-center gap-2">
+        <button type="submit" class="w-full px-4 py-2 text-xs tracking-wide text-white rounded-sm bg-slate-700 hover:bg-slate-800 font-medium flex items-center justify-center gap-2">
           <span class="material-symbols-outlined text-base">download</span>
           Scarica PDF
         </button>

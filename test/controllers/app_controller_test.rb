@@ -24,6 +24,23 @@ class AppControllerTest < ActionDispatch::IntegrationTest
     assert_select "a", text: /Annulla/
   end
 
+  test "operation pages expose the other operations in the toolbar" do
+    get app_in_warehouse_url
+    assert_response :success
+    assert_select "a[href=?]", app_out_warehouse_path
+    assert_select "a[href=?]", app_move_products_path
+
+    get app_out_warehouse_url
+    assert_response :success
+    assert_select "a[href=?]", app_in_warehouse_path
+    assert_select "a[href=?]", app_move_products_path
+
+    get app_move_products_url
+    assert_response :success
+    assert_select "a[href=?]", app_in_warehouse_path
+    assert_select "a[href=?]", app_out_warehouse_path
+  end
+
   test "out_warehouse tracks return_to and shows Annulla" do
     get app_out_warehouse_url(return_to: inventories_dashboard_path)
     assert_response :success

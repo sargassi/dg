@@ -79,7 +79,7 @@
 
           <button type="button"
                   data-action="nested-form#add"
-                  class="mt-3 w-full py-3 text-sm text-accent hover:text-accent-700 hover:bg-accent-50 border border-accent-200 rounded transition-colors flex items-center justify-center gap-1">
+                  class="mt-3 w-full py-2 text-xs text-accent hover:text-accent-700 hover:bg-accent-50 border border-accent-200 rounded-sm transition-colors flex items-center justify-center gap-1">
             <span class="material-symbols-outlined text-base">add</span>
             Aggiungi riga
           </button>
@@ -178,8 +178,8 @@
         </div>
 
         <div class="pt-2 flex gap-2">
-          <%= form.button "Salva Scarico", class: "#{style_lg_btn(' rounded-lg')} flex-1 #{style_save_button} cursor-pointer" %>
-          <%= link_to "Annulla", @return_to, class: "#{style_lg_btn(' rounded-lg')} flex-1 #{style_cancel_button}" %>
+          <%= form.button "Salva Scarico", class: "#{style_lg_btn} flex-1 #{style_save_button} cursor-pointer" %>
+          <%= link_to "Annulla", @return_to, class: "#{style_lg_btn} flex-1 #{style_cancel_button}" %>
         </div>
       </div>
     </div>

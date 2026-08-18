@@ -170,7 +170,9 @@ The item list now has a "Colonne" dropdown to show/hide columns, persisted in `l
 
 ---
 
-## Phase 4 — Service split + bug fixes
+## Phase 4 — Service split + bug fixes — Done
+
+Implemented on branch `main` (merged `feature/mainware-ux-improvements`).
 
 ### 1. Split `ImportGeneralService` into three specialized classes
 
@@ -196,6 +198,9 @@ The item list now has a "Colonne" dropdown to show/hide columns, persisted in `l
 - **New:** `app/services/import_parser.rb`
 - **New:** `app/services/import_validator.rb`
 - **New:** `app/services/import_persister.rb`
+- **New:** `test/services/import_parser_test.rb`
+- **New:** `test/services/import_validator_test.rb`
+- **New:** `test/services/import_persister_test.rb`
 - **Modified:** `app/services/import_general_service.rb` → thin delegator
 - **Modified:** `app/controllers/mainware_controller.rb` → uses new classes
 - **Modified:** `app/jobs/import_job.rb` → uses `ImportPersister`

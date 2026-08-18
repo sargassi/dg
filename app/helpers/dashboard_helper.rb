@@ -53,7 +53,7 @@ module DashboardHelper
   end
 
   def portal_card_class
-    'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 shadow-sm px-6 py-4'
+    'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm px-6 py-5'
   end
 
   private

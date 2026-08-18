@@ -1,44 +1,44 @@
-<section class="bg-white dark:bg-slate-900">
+<div class="flex flex-col gap-6">
 
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
     <div class="<%= portal_card_class %>">
       <div class="flex items-center justify-between">
         <span class="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Articoli</span>
-        <span class="material-symbols-outlined text-slate-400 dark:text-slate-500">shelf_position</span>
+        <span class="h-8 w-8 flex items-center justify-center rounded-sm bg-accent-50 text-accent dark:bg-accent-800/40 dark:text-accent-300"><span class="material-symbols-outlined text-base">shelf_position</span></span>
       </div>
-      <p class="text-3xl font-semibold mt-2 text-slate-800 dark:text-slate-100"><%= @portal_counts[:items] %></p>
+      <p class="text-3xl lg:text-4xl font-semibold mt-3 text-slate-800 dark:text-slate-100"><%= @portal_counts[:items] %></p>
     </div>
     <div class="<%= portal_card_class %>">
       <div class="flex items-center justify-between">
         <span class="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Uscite</span>
-        <span class="material-symbols-outlined text-slate-400 dark:text-slate-500">output</span>
+        <span class="h-8 w-8 flex items-center justify-center rounded-sm bg-accent-50 text-accent dark:bg-accent-800/40 dark:text-accent-300"><span class="material-symbols-outlined text-base">output</span></span>
       </div>
-      <p class="text-3xl font-semibold mt-2 text-slate-800 dark:text-slate-100"><%= @portal_counts[:itemouts] %></p>
+      <p class="text-3xl lg:text-4xl font-semibold mt-3 text-slate-800 dark:text-slate-100"><%= @portal_counts[:itemouts] %></p>
     </div>
     <div class="<%= portal_card_class %>">
       <div class="flex items-center justify-between">
         <span class="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Movimenti oggi</span>
-        <span class="material-symbols-outlined text-slate-400 dark:text-slate-500">swap_vert</span>
+        <span class="h-8 w-8 flex items-center justify-center rounded-sm bg-accent-50 text-accent dark:bg-accent-800/40 dark:text-accent-300"><span class="material-symbols-outlined text-base">swap_vert</span></span>
       </div>
-      <p class="text-3xl font-semibold mt-2 text-slate-800 dark:text-slate-100"><%= @portal_counts[:movements_today] %></p>
+      <p class="text-3xl lg:text-4xl font-semibold mt-3 text-slate-800 dark:text-slate-100"><%= @portal_counts[:movements_today] %></p>
     </div>
     <div class="<%= portal_card_class %>">
       <div class="flex items-center justify-between">
         <span class="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">Lanci aperti</span>
-        <span class="material-symbols-outlined text-slate-400 dark:text-slate-500">checklist_rtl</span>
+        <span class="h-8 w-8 flex items-center justify-center rounded-sm bg-accent-50 text-accent dark:bg-accent-800/40 dark:text-accent-300"><span class="material-symbols-outlined text-base">checklist_rtl</span></span>
       </div>
-      <p class="text-3xl font-semibold mt-2 text-slate-800 dark:text-slate-100"><%= @portal_counts[:active_proformas] %></p>
+      <p class="text-3xl lg:text-4xl font-semibold mt-3 text-slate-800 dark:text-slate-100"><%= @portal_counts[:active_proformas] %></p>
     </div>
   </div>
 
-  <div class="flex flex-col gap-4">
+  <div class="flex flex-col gap-5">
     <% portal_sections.each do |key, section| %>
       <div class="<%= portal_card_class %>">
-        <div class="flex items-center gap-2 border-b border-slate-100 dark:border-slate-600 pb-3 mb-4">
+        <div class="flex items-center gap-2 border-b border-slate-100 dark:border-slate-700 pb-3 mb-4">
           <span class="material-symbols-outlined text-slate-500 dark:text-slate-400"><%= section[:icon] %></span>
-          <h2 class="text-base font-semibold text-slate-800 dark:text-slate-200">
+          <h2 class="text-base font-semibold text-slate-800 dark:text-slate-100">
             <% if section[:dashboard] %>
-              <%= link_to section[:label], section[:dashboard], class: "hover:text-accent transition-colors" %>
+              <%= link_to section[:label], section[:dashboard], class: "hover:text-accent dark:hover:text-accent-300 transition-colors" %>
             <% else %>
               <%= section[:label] %>
             <% end %>
@@ -46,7 +46,7 @@
         </div>
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
           <% section[:items].each do |item| %>
-            <%= link_to item[:path], class: "flex items-center gap-2 px-3 py-2.5 bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-sm text-slate-700 dark:text-slate-200 transition-all" do %>
+            <%= link_to item[:path], class: "flex items-center gap-2 px-3 py-2.5 bg-slate-50 dark:bg-slate-900/60 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-sm text-slate-700 dark:text-slate-200 transition-all" do %>
               <span class="text-sm"><%= item[:label] %></span>
             <% end %>
           <% end %>
@@ -55,14 +55,14 @@
     <% end %>
   </div>
 
-  <div class="mt-4 <%= portal_card_class %>">
-    <div class="flex items-center gap-2 border-b border-slate-100 dark:border-slate-600 pb-3 mb-4">
+  <div class="<%= portal_card_class %>">
+    <div class="flex items-center gap-2 border-b border-slate-100 dark:border-slate-700 pb-3 mb-4">
       <span class="material-symbols-outlined text-slate-500 dark:text-slate-400">settings</span>
-      <h2 class="text-base font-semibold text-slate-800 dark:text-slate-200">Configurazione</h2>
+      <h2 class="text-base font-semibold text-slate-800 dark:text-slate-100">Configurazione</h2>
     </div>
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
       <% portal_config.each do |item| %>
-        <%= link_to item[:path], class: "flex items-center gap-2 px-3 py-2.5 bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-sm text-slate-700 dark:text-slate-200 transition-all" do %>
+        <%= link_to item[:path], class: "flex items-center gap-2 px-3 py-2.5 bg-slate-50 dark:bg-slate-900/60 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-sm text-slate-700 dark:text-slate-200 transition-all" do %>
           <span class="material-symbols-outlined text-slate-400 dark:text-slate-500 text-base"><%= item[:icon] %></span>
           <span class="text-sm"><%= item[:label] %></span>
         <% end %>
@@ -70,4 +70,4 @@
     </div>
   </div>
 
-</section>
+</div>

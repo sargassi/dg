@@ -93,6 +93,57 @@ class ImportInventoryService < SpreadsheetImportBase
     end
   end
 
+  def create_missing_items(data)
+    invalid_rows = data[:rows].select do |row|
+      !row[:_valid] && cell(row, 'Item Code:', 'itemcode', 'Item Code').present?
+    end
+
+    missing = invalid_rows.group_by do |row|
+      [
+        cell(row, 'Item Code:', 'itemcode', 'Item Code').to_s.strip,
+        cell(row, 'fabricode', 'Fabric Code', 'Fabricode', 'Fabric code', 'Fabric code:')&.to_s&.strip,
+        cell(row, 'varcode', 'Var Code', 'Var', 'var. code:')&.to_s&.strip
+      ]
+    end
+
+    created = 0
+    failed = []
+
+    Item.skip_callback(:save, :before, :regenerate_qr)
+    begin
+      missing.each do |(itemcode, fabricode, varcode), rows|
+        collection_description = rows.filter_map { |r| cell(r, 'Note:')&.to_s&.strip }.find(&:present?)
+        collection = find_or_create_collection(collection_description)
+
+        if collection.nil?
+          failed << { itemcode: itemcode, error: "Collection mancante (Note: vuoto)" }
+          next
+        end
+
+        sample = rows.first
+        item = Item.find_or_initialize_by(itemcode: itemcode, fabricode: fabricode, varcode: varcode)
+        item.collection = collection
+        item.description = cell(sample, 'Description: ', 'Description:', 'description')
+        item.tg = cell(sample, 'Tg.')
+        item.fabric = cell(sample, 'fabric:', 'Fabric:')
+        item.colour = cell(sample, 'colour:', 'Colour:')
+        item.materiale = cell(sample, 'materiale')
+
+        if item.save
+          created += 1
+        else
+          failed << { itemcode: itemcode, error: item.errors.full_messages.join(", ") }
+        end
+      end
+    ensure
+      Item.set_callback(:save, :before, :regenerate_qr, if: :gencode_changed?)
+    end
+
+    data[:rows].each { |row| validate_row(row) if row[:_error].to_s.end_with?("non trovato") }
+
+    { created: created, failed: failed }
+  end
+
   def save(data, user = nil)
     stats = { total: data[:rows].size, created: 0, errors: [], items: [], skipped: [], invalid: [] }
     op_type_id = data[:operationtype_id].to_i
@@ -101,9 +152,9 @@ class ImportInventoryService < SpreadsheetImportBase
 
     ActiveRecord::Base.transaction do
       movement = if op_type_id == 1
-        Itemin.new(indate: Date.current, operator_id: user&.id, notes: "Importazione Excel")
+        Itemin.new(indate: Date.current, operator_id: user&.id, notes: "Importazione Excel", imported: true)
       else
-        Itemout.new(indate: Date.current, operator_id: user&.id, notes: "Importazione Excel")
+        Itemout.new(indate: Date.current, operator_id: user&.id, notes: "Importazione Excel", imported: true)
       end
 
       data[:rows].each do |row|

@@ -6,10 +6,10 @@
 
     <%= render @taglium %>
 
-    <%= link_to 'Edit this taglium', edit_taglium_path(@taglium), class: "mt-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
+    <%= link_to 'Edit this taglium', edit_taglium_path(@taglium), class: "mt-2 #{style_btn(variant: :neutral)}" %>
     <div class="inline-block ml-2">
-      <%= button_to 'Destroy this taglium', taglium_path(@taglium), method: :delete, class: "mt-2 rounded-lg py-3 px-5 bg-gray-100 font-medium" %>
+      <%= button_to 'Destroy this taglium', taglium_path(@taglium), method: :delete, class: "mt-2 #{style_btn(variant: :danger)}" %>
     </div>
-    <%= link_to 'Back to taglia', taglia_path, class: "ml-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
+    <%= link_to 'Back to taglia', taglia_path, class: "ml-2 #{style_btn(variant: :neutral)}" %>
   </div>
 </div>

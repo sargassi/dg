@@ -48,7 +48,7 @@
         <table class="min-w-full text-xs">
           <thead>
             <tr class="sticky top-0 bg-white dark:bg-slate-800 z-10">
-              <% %w[Tipo Data Articolo QTA Magazzino Ubicazione Operatore Documento Azioni].each do |h| %>
+              <% %w[Tipo Origine Data Articolo QTA Magazzino Ubicazione Operatore Documento Azioni].each do |h| %>
                 <th class="<%= style_table_th %>"><%= h %></th>
               <% end %>
             </tr>
@@ -81,6 +81,7 @@
                 <td class="<%= style_table_td %>">
                   <span class="inline-block <%= op_class %> px-1.5 py-0.5 rounded text-[10px] font-semibold leading-tight"><%= op_label %></span>
                 </td>
+                <td class="<%= style_table_td %>"><%= render partial: 'atoms/ux/origine', locals: { record: record } %></td>
                 <td class="<%= style_table_td %> font-mono whitespace-nowrap"><%= record.indate.strftime("%d-%m-%Y") %></td>
                 <td class="<%= style_table_td %> font-mono max-w-[200px] truncate" title="<%= items_text %>"><%= items_text %></td>
                 <td class="<%= style_table_td %> text-right font-mono font-bold <%= qty_class %>"><%= total_qty %></td>

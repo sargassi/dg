@@ -129,15 +129,15 @@ module ApplicationHelper
   end
 
   def style_main_card
-    'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 shadow-sm px-6 py-4'
+    'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm px-6 py-4'
   end
 
   def style_main_card_header
-    'text-base font-semibold text-slate-800 dark:text-slate-200 border-b border-slate-100 dark:border-slate-600 pb-3 mb-5 flex items-center gap-2'
+    'text-base font-semibold text-slate-800 dark:text-slate-100 border-b border-slate-100 dark:border-slate-700 pb-3 mb-5 flex items-center gap-2'
   end
 
   def style_main_card_link
-    'flex items-center justify-between px-3 py-2.5 bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-700 hover:border-l-2 hover:border-accent transition-all rounded-sm text-slate-700 dark:text-slate-200'
+    'flex items-center justify-between px-3 py-2.5 bg-slate-50 dark:bg-slate-900/60 hover:bg-slate-100 dark:hover:bg-slate-700 hover:border-l-2 hover:border-accent dark:hover:border-accent-400 transition-all rounded-sm text-slate-700 dark:text-slate-200'
   end
 
   def style_main_card_badge
@@ -185,7 +185,7 @@ module ApplicationHelper
   # end calendar
 
   def style_main_sub_header
-    'text-2xl my-4 flex items-center p-2 lowercase font-semibold text-slate-600 dark:text-slate-200 border-b border-t border-slate-200 dark:border-slate-600 py-4'
+    'text-xl my-4 flex items-center lowercase font-semibold text-slate-700 dark:text-slate-200 border-b border-slate-200 dark:border-slate-700 pb-3'
   end
 
   def style_main_lists
@@ -220,7 +220,7 @@ module ApplicationHelper
   end
 
   def style_actions_linx
-    'rounded-lg py-1 px-3 bg-gray-100 dark:bg-slate-700 inline-block font-semibold text-xs whitespace-nowrap'
+    'rounded-sm py-1 px-3 bg-gray-100 dark:bg-slate-700 inline-block font-semibold text-xs whitespace-nowrap'
   end
 
   def style_action_pdf
@@ -280,6 +280,27 @@ module ApplicationHelper
     'flex items-center justify-center w-full'
   end
 
+  # Central button system. Returns the full class string for a button.
+  # Keep text-xs + rounded-sm everywhere for a uniform, compact look.
+  def style_btn(variant: :primary, size: :md, extra: '')
+    base = 'inline-flex items-center justify-center gap-1.5 whitespace-nowrap font-medium transition-colors cursor-pointer select-none text-xs rounded-sm'
+    colors = {
+      primary: 'bg-accent hover:bg-accent-700 text-white',
+      success: 'bg-green-600 hover:bg-green-700 text-white',
+      danger: 'bg-red-600 hover:bg-red-700 text-white',
+      neutral: 'bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600 dark:text-slate-200',
+      outline: 'border border-slate-300 hover:bg-slate-50 text-slate-700 dark:border-slate-600 dark:hover:bg-slate-700 dark:text-slate-200',
+      ghost: 'text-accent hover:bg-accent-50 dark:text-accent-300 dark:hover:bg-slate-700',
+    }
+    sizes = {
+      sm: 'px-2 py-1',
+      md: 'px-3 py-1.5',
+      lg: 'px-4 py-2',
+      block: 'px-3 py-1.5 w-full',
+    }
+    "#{base} #{colors.fetch(variant)} #{sizes.fetch(size)} #{extra}".strip
+  end
+
   def style_main_btn(add = ' bg-accent')
     'py-1 px-2 text-white tracking-wide text-xs rounded-sm inline-block cursor-pointer' + add
   end
@@ -297,7 +318,7 @@ module ApplicationHelper
   end
 
   def style_import_btn
-    'px-5 py-2 bg-accent text-white tracking-wider rounded-sm uppercase text-xs cursor-pointer hover:bg-accent-700 transition-colors'
+    'px-4 py-1.5 bg-accent text-white tracking-wider rounded-sm uppercase text-xs cursor-pointer hover:bg-accent-700 transition-colors'
   end
 
   def style_action_btn
@@ -305,15 +326,15 @@ module ApplicationHelper
   end
 
   def style_close_btn(add = '')
-    'w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-500 hover:text-slate-700 dark:bg-slate-600 dark:hover:bg-slate-500 dark:border-slate-500 dark:text-slate-300 flex items-center justify-center transition' + add
+    'w-7 h-7 rounded-sm bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-500 hover:text-slate-700 dark:bg-slate-600 dark:hover:bg-slate-500 dark:border-slate-500 dark:text-slate-300 flex items-center justify-center transition' + add
   end
 
   def style_import_btn_blank
-    'p-2 my-2 rounded-sm inline-block rounded-sm uppercase text-xs cursor-pointer font-semibold'
+    'p-1.5 my-2 rounded-sm inline-block uppercase text-xs cursor-pointer font-semibold'
   end
 
   def style_import_pdf
-    'p-3 my-4 bg-red-500 text-white font-bold inline-block rounded-sm'
+    'p-2 my-4 bg-red-500 text-white font-bold inline-block rounded-sm'
   end
 
   def style_import_pdf_small
@@ -344,12 +365,12 @@ module ApplicationHelper
     'file:bg-gray-500 hover:file:bg-gray-600 file:text-white'
   end
 
-  def style_lg_btn(add = ' rounded')
-    'block w-full py-3 px-5 font-medium text-center' + add
+  def style_lg_btn(add = ' rounded-sm')
+    'block w-full py-2 px-4 font-medium text-center text-xs' + add
   end
 
-  def style_md_btn(add = ' rounded')
-    'flex items-center justify-center gap-2 w-full px-4 py-3 text-sm font-bold transition' + add
+  def style_md_btn(add = ' rounded-sm')
+    'flex items-center justify-center gap-2 w-full px-3 py-2 text-xs font-semibold transition' + add
   end
 
   def style_hr
@@ -378,19 +399,19 @@ module ApplicationHelper
   end
 
   def style_home_card
-    'bg-indigo-50 dark:bg-slate-800 p-4 card w-full'
+    'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm p-5 w-full'
   end
 
   def style_home_card_title
-    'font-semibold border-b border-slate-200 dark:border-slate-600 mb-2'
+    'font-semibold border-b border-slate-100 dark:border-slate-700 mb-3'
   end
 
   def style_home_card_link
-    'text-xl my-2 block text-slate-700 dark:text-slate-200 hover:text-accent transition-colors'
+    'text-xl my-2 block text-slate-800 dark:text-slate-100 hover:text-accent dark:hover:text-accent-300 transition-colors'
   end
 
   def style_home_card_subtitle
-    'text-xs text-slate-500 dark:text-slate-200'
+    'text-xs text-slate-500 dark:text-slate-400'
   end
 
   def style_pagy_btn

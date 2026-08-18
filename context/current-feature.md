@@ -1,6 +1,6 @@
 # Current Feature
 
-App "RIALLOCA" action — reassign imported inventory to the correct warehouse/location without creating movements.
+Inventories Excel import (Magazzino → Import): materialize missing items from a parsed sheet and show a richer import preview.
 
 ## Status
 
@@ -8,28 +8,29 @@ Implemented (uncommitted on `main`).
 
 ## Goals
 
-- Let operators correct stock placed in the wrong warehouse/location after an Excel import.
-- Must NOT create an `Itemmovement` / `Itemin` / `Itemout` and must NOT use an `operationtype`; it directly rewrites `StockLevel` and `Inventory` rows.
-- Mobile-wizard UX matching IN/OUT/VAR/QR flows: optional scan/autocomplete, place-filtered autocomplete, session-free confirm.
+- Keep the strict import validation (rows referencing `Item`s that don't exist stay red / are skipped), but let the operator create those missing `Item` records straight from the uploaded sheet.
+- Make the "Anteprima importazione" page show at-a-glance import health instead of only the raw table.
 
 ## Summary
 
-- `ReassignStockService` moves, per selected `gencode`, only the positive `StockLevel` rows that match the source place (warehouse required; location optional — blank moves all rows in the warehouse). Quantity is added to the destination via `StockLevel.adjust_qty!` (merging into an existing destination row), subtracted from the source, and emptied source rows are destroyed. Matching `Inventory` rows have `warehouse_id`/`location_id` rewritten to the destination.
-- `AppController#mobile_reassign` (GET renders the 3-step wizard, POST validates source/destination/articles then calls the service) and `AppController#mobile_reassign_confirm` (shows per-gencode stats, reads `session[:mobile_reassign_result]`).
-- New routes `app/mobile_reassign` (GET/POST) and `app/mobile_reassign_confirm`.
-- New views `app/views/app/mobile_reassign.html.erb` and `app/views/app/mobile_reassign_confirm.html.erb`, reusing `_mobile_location_step`, the autocomplete + `defaults` (`da`/`a` prefixes), and the QR scan overlays.
-- Menu entry "RIALLOCA" in `set_app_menu`, gated by `manage_app_sectors` (same as the other App actions).
+- `ImportInventoryService#create_missing_items(data)` dedupes invalid rows by `[itemcode, fabricode, varcode]`, resolves the collection from the `Note:` column via the existing `find_or_create_collection`, creates each distinct `Item` (with `description`/`tg`/`fabric`/`colour`/`materiale` filled from their columns), then re-runs `validate_row` on every row so `_valid`/`_item_id` are refreshed in place. Rows with a blank Item code ("Item code mancante") are not creatable and stay invalid. Returns `{ created:, failed: }`.
+- `InventoryImportController#import_create_missing_items` (POST) reads the cached parse, calls the service, rewrites the cache, and redirects back to the preview with a notice.
+- Route `POST inventories/import/create_missing_items`.
+- `app/views/inventories/import.html.erb` now shows: a stat strip (Totali / Valide / Non valide / Nuovi WH / Nuove coll.), an aggregated error panel grouped by error with a distinct missing-codes count, and a "Crea N articoli mancanti" button (only when creatable invalid rows exist).
 
 ## Files changed
 
-- `app/services/reassign_stock_service.rb` (new)
-- `app/controllers/app_controller.rb` (`mobile_reassign`, `mobile_reassign_confirm`, menu entry)
+- `app/services/import_inventory_service.rb` (+`create_missing_items`)
+- `app/controllers/inventory_import_controller.rb` (+`import_create_missing_items`)
 - `config/routes.rb`
-- `app/views/app/mobile_reassign.html.erb`, `app/views/app/mobile_reassign_confirm.html.erb` (new)
-- `test/controllers/app_controller_test.rb` (+7 tests), `test/services/reassign_stock_service_test.rb` (new, +7 tests)
+- `app/views/inventories/import.html.erb`
+- `test/services/import_inventory_service_test.rb` (+2 tests), `test/controllers/inventory_import_controller_test.rb` (+3 tests, stubbed `import_cache_key` to a fixed key and swapped `Rails.cache` to a `MemoryStore` because test env uses `:null_store`)
 
 ## Notes
 
-- The `.well-known/appspecific` routing-noise fix was explicitly dropped by the user — do not implement.
-- `StockLevel#adjust_qty!` normalizes `location_id || 0`; the service keys on that convention and merges destination rows.
-- `delete!` is unavailable on ActiveRecord 7.2.3.2 records; the service uses `destroy!` for emptied source rows.
+- Red rows for unknown item codes are intentional (commit `db65be2`) — the validation was not changed.
+- Test env uses `:null_store`, so the controller tests override `Rails.cache` and stub the private `import_cache_key` to a constant to make the parse → create flow deterministic (the integration client regenerates the session id between requests).
+- `Item#before_save` rebuilds `gencode` and regenerates the QR SVG automatically; created items therefore get QR labels.
+- `create_missing_items` temporarily skips the `regenerate_qr` callback during the bulk creation (`Item.skip_callback` / `ensure` re-add): generating an SVG per item (~21ms each) made ABITI-scale creation take ~50s with no feedback. New items get `qrcode_svg: nil`, which is safe — every view guards with `.present?`/`&.html_safe`, and printed labels build the QR on demand via `CreateQrService`. Measured: 600 items 15.1s → 2.4s.
+- The "Crea articoli mancanti" button now sits inside a `loader` Stimulus controller with a spinner overlay (`turbo_submits_with` + `submit->loader#show`), so the request no longer looks stuck.
+- Known remaining slowness: `Roo::Excelx` parsing of the 65 MB `assets/ABITI.xlsx` takes minutes (pre-existing; the upload form already shows a "Caricamento in corso..." spinner).

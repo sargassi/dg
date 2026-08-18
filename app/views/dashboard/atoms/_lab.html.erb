@@ -1,9 +1,8 @@
-<div class="utilities flex justify-between items-stretch gap-8">
+<div class="grid lg:grid-cols-2 gap-6 items-start">
 
+    <div class="flex flex-col gap-5">
 
-    <div class="utility py-4 xl:w-1/2 flex flex-col gap-4">
-
-       <h3 class="<%= style_main_sub_header %>" >Stampe</h3>
+       <h3 class="<%= style_main_sub_header %>">Stampe</h3>
 
 
        <%= render partial: '/atoms/home/card', locals: {:title => 'Etichette Laboratorio', :subtitle => 'PDF etichette adesive 7x3.6cm', :link => '/utilities/etichette_lab'} %>
@@ -16,9 +15,8 @@
       <%= render partial: '/atoms/home/card', locals: {:title => 'Etichette Proforma', :subtitle => 'PDF etichette adesive 7x3.6cm', :link => '/utilities/etichette'} %>
 
     </div>
-        <div class="utility py-4 xl:w-1/2 flex flex-col gap-4">
-              <h3 class="<%= style_main_sub_header %>" >Produzione</h3>
-              <hr>
+        <div class="flex flex-col gap-5">
+              <h3 class="<%= style_main_sub_header %>">Produzione</h3>
             <% render partial: 'atoms/form_import', locals: {prods: Proforma.new, pdf: 'n', customer: 'y', form_url: production_proformas_path} %>
 
             <%= render partial: '/atoms/home/card', locals: {:title => 'Avanzamento produzione', :subtitle => 'Elenco lanci,  consultazione avanzamento e stampa QR', :link => '/production/proformas'} %>

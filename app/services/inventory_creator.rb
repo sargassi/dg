@@ -23,7 +23,7 @@ class InventoryCreator
   def create_for(movement, type:)
     details = details_for(movement)
     items = items_by_id_for(details)
-    generate_qr = (type == :inbound)
+
     delta = (type == :inbound) ? 1 : -1
 
     details.map do |detail|
@@ -35,8 +35,7 @@ class InventoryCreator
         location_id: detail.location_id,
         qty: detail.qty,
         operationtype_id: detail.operationtype_id,
-        delta: delta,
-        generate_qr: generate_qr
+        delta: delta
       )
     end
   end
@@ -72,7 +71,7 @@ class InventoryCreator
     end
   end
 
-  def create_inventory_record(movement:, detail:, item:, warehouse_id:, location_id:, qty:, operationtype_id:, delta:, generate_qr: false)
+  def create_inventory_record(movement:, detail:, item:, warehouse_id:, location_id:, qty:, operationtype_id:, delta:)
     gencode = item&.gencode
 
     inv_attrs = {
@@ -93,11 +92,6 @@ class InventoryCreator
       inv_attrs[:itemouts_id] = movement.id
     when Itemmovement
       inv_attrs[:itemmovement_id] = movement.id
-    end
-
-    if generate_qr
-      qr_code = "#{gencode}_#{format('%04d', (detail.collection_id || 0).to_i)}_#{detail.id}"
-      inv_attrs[:qrcode_svg] = CreateQrService.new.svg(qr_code)
     end
 
     record = Inventory.create!(inv_attrs)

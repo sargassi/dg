@@ -63,12 +63,12 @@
 
     <div class="flex gap-4">
       <%= form_with url: import_confirm_itemouts_path, method: :post do %>
-        <button type="submit" class="<%= style_save_button %> px-5 py-2 tracking-wider rounded-sm uppercase text-xs cursor-pointer transition-colors">
+        <button type="submit" class="<%= style_save_button %> px-4 py-1.5 tracking-wider rounded-sm uppercase text-xs cursor-pointer transition-colors">
           Conferma importazione (<span id="import-count-btn"><%= valid_count %></span>)
         </button>
       <% end %>
 
-      <%= button_to "Annulla", import_cancel_itemouts_path, method: :delete, class: "#{style_cancel_button} px-5 py-2 tracking-wider rounded-sm uppercase text-xs cursor-pointer transition-colors" %>
+      <%= button_to "Annulla", import_cancel_itemouts_path, method: :delete, class: "#{style_cancel_button} px-4 py-1.5 tracking-wider rounded-sm uppercase text-xs cursor-pointer transition-colors" %>
     </div>
 
   <% else %>
@@ -84,7 +84,7 @@
               <%= f.file_field :file, class: style_import_field, required: true %>
             </div>
             <%= f.submit "Carica",
-                class: "px-5 py-2 tracking-wider rounded-sm uppercase text-xs cursor-pointer transition-colors #{style_action_btn}" %>
+                class: "px-4 py-1.5 tracking-wider rounded-sm uppercase text-xs cursor-pointer transition-colors #{style_action_btn}" %>
           </div>
         <% end %>
       </div>

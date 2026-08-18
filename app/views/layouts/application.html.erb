@@ -11,23 +11,23 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 transition-colors">
+  <body class="bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 transition-colors">
 
     <% if controller_name == 'app' && !app_warehouse_actions? && !%w[dashboard dashboard_articoli dashboard_magazzino dashboard_produzione inserimento mobile_in mobile_out mobile_var mobile_in_confirmation mobile_out_confirmation mobile_var_confirmation].include?(action_name) %>
       <%= yield %>
 
     <% elsif controller_name == 'sessions' %>
-      <main class="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-slate-900">
+      <main class="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-slate-950">
         <%= yield %>
       </main>
 
     <% else %>
-        <main class="flex gap-4">
+        <main class="bg-slate-100 dark:bg-slate-950 flex gap-4">
             <section class="w-16 fixed top-0 left-0 h-screen z-50">
             <%= render partial: '/layouts/menus/side/structure' %>
             </section>
 
-            <section class="home px-4 my-2 ml-16 grow">
+            <section class="home px-4 lg:px-6 my-3 ml-16 grow bg-slate-100 dark:bg-slate-950">
             <div class="flex items-center justify-between px-4 py-2.5 bg-slate-200 dark:bg-slate-800 border-b border-slate-300 dark:border-slate-700 shadow-sm">
               <%= yield(:page_header) %>
               <% if current_user.present? %>
@@ -82,17 +82,17 @@
       function highlightRow() {
         // First try sessionStorage (set when modal opened)
         let anchor = sessionStorage.getItem('highlightRow')
-        
+
         // Fall back to URL hash
         if (!anchor) {
           const match = location.href.match(/#prow-(\d+)/)
           anchor = match ? match[0] : null
         }
-        
+
         if (anchor && anchor.startsWith('#prow-')) {
           const rowId = anchor.replace('#prow-', '')
           const row = document.getElementById('prow-' + rowId)
-          
+
           if (row) {
             row.classList.add('border-4', 'border-blue-500')
             setTimeout(() => {
@@ -111,7 +111,7 @@
 
       document.addEventListener('turbo:load', highlightRow)
       window.addEventListener('load', highlightRow)
-      
+
       if (document.readyState === 'complete' || document.readyState === 'interactive') {
         setTimeout(highlightRow, 100)
       }

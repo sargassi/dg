@@ -1,86 +1,39 @@
-
-<section class="home py-4 my-8">
+<section class="home">
 
   <% if current_user.has_role?(:ufficio) %>
 
-    <div class="utilities flex justify-between items-stretch gap-8">
+    <div class="grid lg:grid-cols-2 gap-6 items-start">
 
-        <div class="utility py-4 xl:w-1/2">
-           <div class="bg-accent-50 dark:bg-slate-800 p-4 card border border-slate-200 dark:border-slate-600">
-              <h3 class="font-semibold"><a href="/production/proformas" class="text-2xl mb-4 block text-slate-800 dark:text-slate-200">QR x Produzione</a></h3>
-              <div class="flex justify-between">
-              <p class="text-xs text-slate-500 dark:text-slate-400">Inserisci nuova proforma </p>
-              <a href="/production/proformas"><span class="material-symbols-outlined">
-             arrow_forward_ios
-             </span></a>
-             </div>
-           </div>
-           <div class="bg-accent-50 dark:bg-slate-800 p-4 card mt-8 border border-slate-200 dark:border-slate-600">
-             <h3 class="font-semibold"><a href="production/research" class="text-2xl mb-4 block text-slate-800 dark:text-slate-200">Ricerca x articolo</a></h3>
-             <div class="flex justify-between">
-             <p class="text-xs text-slate-500 dark:text-slate-400">Stato avanzamento - Ricerca per articolo </p>
-             <a href="production/research"><span class="material-symbols-outlined">
-             arrow_forward_ios
-             </span></a>
-             </div>
-           </div>
-           <div class="bg-accent-50 dark:bg-slate-800 p-4 card mt-8 border border-slate-200 dark:border-slate-600">
-             <h3 class="font-semibold"><a href="production/research_qr" class="text-2xl mb-4 block text-slate-800 dark:text-slate-200">Ricerca x QR</a></h3>
-            <div class="flex justify-between">
-             <p class="text-xs text-slate-500 dark:text-slate-400">Stato avanzamento - Ricerca per QR code </p>
-             <a href="production/research_qr"><span class="material-symbols-outlined">
-             arrow_forward_ios
-             </span></a>
-             </div>
-           </div>
+        <div class="flex flex-col gap-5">
+
+          <%= render partial: '/atoms/home/card', locals: {:title => 'QR x Produzione', :subtitle => 'Inserisci nuova proforma', :link => '/production/proformas'} %>
+
+          <%= render partial: '/atoms/home/card', locals: {:title => 'Ricerca x articolo', :subtitle => 'Stato avanzamento - Ricerca per articolo', :link => '/production/research'} %>
+
+          <%= render partial: '/atoms/home/card', locals: {:title => 'Ricerca x QR', :subtitle => 'Stato avanzamento - Ricerca per QR code', :link => '/production/research_qr'} %>
+
         </div>
 
-     <div class="utility py-4 xl:w-1/2">
-        <div class="bg-accent-50 dark:bg-slate-800 p-4 card border border-slate-200 dark:border-slate-600">
-          <h3 class="font-semibold"><a href="/utilities/etichette" class="text-2xl mb-4 block text-slate-800 dark:text-slate-200">Stampa Etichette Proforma</a></h3>
-          <div class="flex justify-between">
-          <p class="text-xs text-slate-500 dark:text-slate-400">Prepara pdf pronti per stampa etichette adesive 7x3.6cm  </p>
-          <a href="/utilities/etichette"><span class="material-symbols-outlined">
-          arrow_forward_ios
-          </span></a>
-          </div>
+        <div class="flex flex-col gap-5">
+
+          <%= render partial: '/atoms/home/card', locals: {:title => 'Stampa Etichette Proforma', :subtitle => 'Prepara pdf pronti per stampa etichette adesive 7x3.6cm', :link => '/utilities/etichette'} %>
+
+          <%= render partial: '/atoms/home/card', locals: {:title => 'Stampa Etichette Laboratorio', :subtitle => 'Prepara pdf pronti per stampa etichette adesive 7x3.6cm', :link => '/utilities/etichette_lab'} %>
+
         </div>
-        <div class="bg-accent-50 dark:bg-slate-800 p-4 card mt-8 border border-slate-200 dark:border-slate-600">
-     <h3 class="font-semibold">
-      <a href="/utilities/etichette_lab" class="text-2xl mb-4 block text-slate-800 dark:text-slate-200">
-        Stampa Etichette Laboratorio
-      </a>
-     </h3>
-     <div class="flex justify-between">
-     <p class="text-xs text-slate-500 dark:text-slate-400">Prepara pdf pronti per stampa etichette adesive 7x3.6cm  </p>
-     <a href="/utilities/etichette_lab"><span class="material-symbols-outlined">
-     arrow_forward_ios
-     </span></a>
-     </div>
-   </div>
-   </div>
-     </div>
 
-
-
-    </div>
+      </div>
 
     <% elsif current_user.has_role?(:lab) %>
-        <div class="utilities flex justify-between items-stretch gap-8">
 
-          <div class="utility py-4 xl:w-1/2">
-             <div class="bg-accent-50 dark:bg-slate-800 p-4 card border border-slate-200 dark:border-slate-600">
-          <h3 class="font-semibold"><a href="/utilities/etichette_lab" class="text-2xl mb-4 block text-slate-800 dark:text-slate-200">Stampa Etichette</a></h3>
-          <div class="flex justify-between">
-          <p class="text-xs text-slate-500 dark:text-slate-400">Prepara pdf pronti per stampa etichette adesive 7x3.6cm  </p>
-          <a href="/utilities/etichette_lab"><span class="material-symbols-outlined">
-          arrow_forward_ios
-          </span></a>
+        <div class="grid lg:grid-cols-2 gap-6 items-start max-w-3xl">
+
+          <div class="flex flex-col gap-5">
+            <%= render partial: '/atoms/home/card', locals: {:title => 'Stampa Etichette', :subtitle => 'Prepara pdf pronti per stampa etichette adesive 7x3.6cm', :link => '/utilities/etichette_lab'} %>
           </div>
-        </div>
-        </div>
-      </div>
-    <% end %>
 
+        </div>
+
+    <% end %>
 
 </section>

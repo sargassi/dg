@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_07_30_132033) do
+ActiveRecord::Schema[7.2].define(version: 2026_08_13_090000) do
   create_table "abilities", force: :cascade do |t|
     t.string "name", null: false
     t.string "description"
@@ -284,7 +284,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_30_132033) do
     t.string "gencode"
     t.integer "item_id"
     t.integer "itemmovement_id"
-    t.text "qrcode_svg"
     t.index ["item_id"], name: "index_inventories_on_item_id"
     t.index ["itemins_id"], name: "index_inventories_on_itemins_id"
     t.index ["itemmovement_id"], name: "index_inventories_on_itemmovement_id"
@@ -301,6 +300,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_30_132033) do
     t.text "notes"
     t.integer "operator_id"
     t.string "description"
+    t.boolean "imported", default: false, null: false
   end
 
   create_table "itemins_details", force: :cascade do |t|
@@ -349,6 +349,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_30_132033) do
     t.datetime "updated_at", null: false
     t.text "notes"
     t.integer "operator_id"
+    t.boolean "imported", default: false, null: false
   end
 
   create_table "itemouts_details", force: :cascade do |t|

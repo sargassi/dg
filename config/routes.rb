@@ -24,8 +24,11 @@ Rails.application.routes.draw do
   get    'inventories/import/verify', to: 'inventory_import#import_verify', as: :inventories_import_verify
   post   'inventories/import/confirm', to: 'inventory_import#import_confirm', as: :inventories_import_confirm
   delete 'inventories/import/cancel', to: 'inventory_import#import_cancel', as: :inventories_import_cancel
+  post   'inventories/import/create_missing_items', to: 'inventory_import#import_create_missing_items', as: :inventories_import_create_missing_items
   get    'inventories/import/summary', to: 'inventory_import#import_summary', as: :inventories_import_summary
   get    'inventories/import/failed_rows', to: 'inventory_import#import_failed_rows', as: :inventories_import_failed_rows
+  get    'inventories/import/processing', to: 'inventory_import#import_processing', as: :inventories_import_processing
+  get    'inventories/import/status', to: 'inventory_import#import_status_json', as: :inventories_import_status
   scope '/inventories' do
     resources :itemins do
       collection do
@@ -70,6 +73,9 @@ Rails.application.routes.draw do
     collection do
       get 'autocomplete'
       get 'distinct_values'
+      get 'value_info'
+      get 'combination_info'
+      get 'combination'
       get 'create_confirmation'
     end
     member do

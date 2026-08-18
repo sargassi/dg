@@ -7,7 +7,7 @@
 <% end %>
 
 <section class="<%= style_main_cnt %>">
-  <div class="flex flex-col lg:flex-row gap-8 items-start" data-controller="item-clone qr-scanner" data-item-clone-url-value="<%= autocomplete_items_path %>">
+  <div class="flex flex-col lg:flex-row gap-8 items-start" data-controller="item-clone qr-scanner drawer" data-item-clone-url-value="<%= autocomplete_items_path %>">
 
     <!-- Left panel – QR scanner + clone -->
     <div class="w-full lg:w-1/3 flex-shrink-0 space-y-4 lg:sticky lg:top-4">
@@ -56,6 +56,12 @@
         <h3 class="<%= style_main_card_header %>">
           <span class="material-symbols-outlined">add_circle</span>
           Nuovo articolo
+          <%= link_to combination_items_path,
+                class: "#{style_import_btn} ml-auto inline-flex items-center gap-1",
+                data: { turbo_frame: "combination_drawer_content", action: "click->drawer#open" } do %>
+            <span class="material-symbols-outlined text-base">add_circle</span>
+            Nuova combinazione
+          <% end %>
         </h3>
         <%= render "form", item: @item %>
       </div>
@@ -86,6 +92,8 @@
         <p class="text-sm text-slate-500 dark:text-slate-400 text-center mt-3">Inquadra un QR code per precompilare il modulo</p>
       </div>
     </div>
+
+    <%= render "combination_drawer" %>
 
   </div>
 </section>

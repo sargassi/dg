@@ -51,9 +51,9 @@
   <% end %>
 
   <div class="flex justify-center gap-4">
-    <%= link_to @return_to, class: "rounded-lg py-3 px-6 border border-slate-300 text-slate-700 font-medium inline-block hover:bg-slate-50" do %>
+    <%= link_to @return_to, class: "#{style_btn(variant: :outline)}" do %>
       <span class="material-symbols-outlined text-base align-middle">arrow_back</span> Indietro
     <% end %>
-    <%= link_to "Nuovo spostamento", app_move_products_path, class: "rounded-lg py-3 px-6 bg-accent text-white font-medium cursor-pointer inline-block" %>
+    <%= link_to "Nuovo spostamento", app_move_products_path, class: "#{style_btn(variant: :primary)}" %>
   </div>
 </section>

@@ -23,6 +23,7 @@ check `docs.md` for reference: everytime you make a decision about the code you 
 ### Refactoring
 
 - `context/refactor/mainware_refactor.md` — Mainware refactor roadmap and phase planning
+- `context/refactor/inventories_refactor.md` — Invetories section refactor roadmap and phase planning
 
 ## Commands
 

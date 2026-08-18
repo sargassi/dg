@@ -28,7 +28,7 @@
   <% if local_assigns[:manual_select] %>
     <button type="button"
             data-action="<%= close_action %> click->mobile-wizard#manualSelect"
-            class="mt-3 w-full py-3 rounded-lg bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer">
+            class="mt-3 w-full py-2 rounded-sm bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer">
       <span class="material-symbols-outlined text-lg">list</span>
       Selezione manuale
     </button>
@@ -37,7 +37,7 @@
     <button type="button"
             data-mobile-wizard-target="doneBtn"
             data-action="mobile-wizard#finishScan"
-            class="hidden mt-3 w-full py-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer">
+            class="hidden mt-3 w-full py-2 rounded-sm bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer">
       <span class="material-symbols-outlined text-lg">check</span>
       Fatto
     </button>

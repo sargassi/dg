@@ -9,13 +9,76 @@
       Anteprima importazione (<span id="import-count"><%= @data[:rows].size %></span> righe)
     </h2>
 
-    <% wh_rows = @data[:rows].group_by { |r| [r[:_warehouse_id], r[:_warehouse_code], r[:_warehouse_new]] }
+    <% valid_rows = @data[:rows].select { |r| r[:_valid] }
+       invalid_rows = @data[:rows].reject { |r| r[:_valid] }
+       wh_rows = @data[:rows].group_by { |r| [r[:_warehouse_id], r[:_warehouse_code], r[:_warehouse_new]] }
        coll_rows = @data[:rows].select { |r| r[:_collection_id] }.group_by { |r| [r[:_collection_id], r[:_collection_description], r[:_collection_new]] }
        loc_rows = @data[:rows].select { |r| r[:_location_id] }.group_by { |r| [r[:_location_id], r[:_location_code]] } %>
 
-    <div id="import-summary" class="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4 mb-4 text-sm">
-      <div class="font-semibold text-slate-700 dark:text-slate-300 mb-2">Riepilogo</div>
-      <div class="grid grid-cols-3 gap-4">
+    <div class="grid grid-cols-5 gap-4 mb-4">
+      <div class="bg-slate-50 p-4 rounded-lg text-center">
+        <p class="text-3xl font-bold text-slate-700"><%= @data[:rows].size %></p>
+        <p class="text-xs text-slate-500 uppercase">Righe totali</p>
+      </div>
+      <div class="bg-green-50 p-4 rounded-lg text-center">
+        <p class="text-3xl font-bold text-green-700"><%= valid_rows.size %></p>
+        <p class="text-xs text-green-600 uppercase">Valide</p>
+      </div>
+      <details class="relative">
+        <summary class="cursor-pointer list-none select-none" title="Mostra errori">
+          <div class="<%= invalid_rows.any? ? 'bg-red-50' : 'bg-slate-50' %> p-4 rounded-lg text-center">
+            <p class="text-3xl font-bold <%= invalid_rows.any? ? 'text-red-700' : 'text-slate-300' %>"><%= invalid_rows.size %></p>
+            <p class="text-xs <%= invalid_rows.any? ? 'text-red-600' : 'text-slate-400' %> uppercase">Non valide</p>
+          </div>
+        </summary>
+        <% if invalid_rows.any? %>
+          <div class="absolute left-0 right-0 top-full z-10 mt-2 bg-red-50 border border-red-200 rounded-lg p-4 text-sm shadow-lg">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="material-symbols-outlined text-red-500">warning</span>
+              <span class="font-semibold text-red-800">
+                <%= invalid_rows.size %> rig<%= invalid_rows.size == 1 ? 'a' : 'he' %> non valid<%= invalid_rows.size == 1 ? 'a' : 'e' %>
+              </span>
+            </div>
+            <% error_groups = invalid_rows.group_by { |r| r[:_error].to_s }.sort_by { |_, rows| -rows.size } %>
+            <div class="space-y-1">
+              <% error_groups.each do |error, rows| %>
+                <div class="flex items-center justify-between text-red-700">
+                  <span class="truncate" title="<%= error %>"><%= error %></span>
+                  <span class="font-mono text-xs shrink-0 ml-2"><%= rows.size %> righe</span>
+                </div>
+              <% end %>
+              <% missing_codes = invalid_rows.filter_map { |r| r['Item Code:'] || r['itemcode'] || r['Item Code'] }.map(&:to_s).map(&:strip).uniq.reject(&:empty?) %>
+              <% if missing_codes.any? %>
+                <div class="flex items-center justify-between text-red-600 border-t border-red-200 pt-1 mt-1">
+                  <span>Codici articolo mancanti</span>
+                  <span class="font-mono text-xs shrink-0 ml-2"><%= missing_codes.size %></span>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </details>
+      <div class="<%= wh_rows.any? { |(_, _, is_new), _| is_new } ? 'bg-green-50' : 'bg-slate-50' %> p-4 rounded-lg text-center">
+        <p class="text-3xl font-bold <%= wh_rows.any? { |(_, _, is_new), _| is_new } ? 'text-green-700' : 'text-slate-300' %>"><%= wh_rows.count { |(_, _, is_new), _| is_new } %></p>
+        <p class="text-xs <%= wh_rows.any? { |(_, _, is_new), _| is_new } ? 'text-green-600' : 'text-slate-400' %> uppercase">Nuovi WH</p>
+      </div>
+      <div class="<%= coll_rows.any? { |(_, _, is_new), _| is_new } ? 'bg-green-50' : 'bg-slate-50' %> p-4 rounded-lg text-center">
+        <p class="text-3xl font-bold <%= coll_rows.any? { |(_, _, is_new), _| is_new } ? 'text-green-700' : 'text-slate-300' %>"><%= coll_rows.count { |(_, _, is_new), _| is_new } %></p>
+        <p class="text-xs <%= coll_rows.any? { |(_, _, is_new), _| is_new } ? 'text-green-600' : 'text-slate-400' %> uppercase">Nuove coll.</p>
+      </div>
+    </div>
+
+    <details class="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4 mb-4 text-sm group">
+      <summary class="flex items-center justify-between cursor-pointer list-none select-none">
+        <span class="font-semibold text-slate-700 dark:text-slate-300">Riepilogo</span>
+        <span class="flex items-center gap-3 text-slate-400">
+          <% if wh_rows.any? %><span class="text-xs">WH <%= wh_rows.size %></span><% end %>
+          <% if coll_rows.any? %><span class="text-xs">Coll <%= coll_rows.size %></span><% end %>
+          <% if loc_rows.any? %><span class="text-xs">Loc <%= loc_rows.size %></span><% end %>
+          <span class="material-symbols-outlined text-base transition-transform group-open:rotate-180">expand_more</span>
+        </span>
+      </summary>
+      <div class="grid grid-cols-3 gap-4 mt-3">
         <div>
           <div class="text-xs text-slate-400 tracking-wide mb-1">Warehouse</div>
           <% if wh_rows.any? %>
@@ -55,39 +118,67 @@
           <% end %>
         </div>
       </div>
-    </div>
+    </details>
 
-    <div class="overflow-x-auto mb-4">
-      <% desc_idx = @data[:headers].index { |h| h&.downcase&.strip == 'description' || h&.strip == 'Description:' || h&.downcase&.include?('descri') }
-         qty_idx  = @data[:headers].index { |h| %w[Qt. Quantity QTA qtyavailable].include?(h) }
-         display_headers = @data[:headers].dup
-         if desc_idx && qty_idx && qty_idx != desc_idx + 1
-           qt_col = display_headers.delete_at(qty_idx)
-           desc_actual = desc_idx < qty_idx ? desc_idx : desc_idx - 1
-           display_headers.insert(desc_actual + 1, qt_col)
-         else
-           display_headers = @data[:headers]
-         end %>
-      <table class="min-w-full">
-        <thead>
-          <tr>
-            <th class="<%= style_table_th %> sticky top-0 z-10 w-10 text-center"></th>
-            <th class="<%= style_table_th %> sticky top-0 z-10 w-10 text-center"></th>
-            <th class="<%= style_table_th %> sticky top-0 z-10 w-16 text-center">Riga</th>
-            <% display_headers.each do |h| %>
-              <th class="<%= style_table_th %> sticky top-0 z-10"><%= h %></th>
-            <% end %>
-          </tr>
-        </thead>
-        <%= render partial: "import_rows" %>
-      </table>
-    </div>
+    <details class="mb-4 group">
+      <summary class="<%= style_main_sub_header %> cursor-pointer list-none select-none">
+        <span class="flex items-center gap-2">
+          Righe
+          <span class="text-sm font-normal text-slate-400">(<%= @data[:rows].size %>)</span>
+          <span class="material-symbols-outlined text-base text-slate-400 transition-transform group-open:rotate-180">expand_more</span>
+        </span>
+      </summary>
+      <div class="overflow-x-auto">
+        <% desc_idx = @data[:headers].index { |h| h&.downcase&.strip == 'description' || h&.strip == 'Description:' || h&.downcase&.include?('descri') }
+           qty_idx  = @data[:headers].index { |h| %w[Qt. Quantity QTA qtyavailable].include?(h) }
+           display_headers = @data[:headers].dup
+           if desc_idx && qty_idx && qty_idx != desc_idx + 1
+             qt_col = display_headers.delete_at(qty_idx)
+             desc_actual = desc_idx < qty_idx ? desc_idx : desc_idx - 1
+             display_headers.insert(desc_actual + 1, qt_col)
+           else
+             display_headers = @data[:headers]
+           end %>
+        <table class="min-w-full">
+          <thead>
+            <tr>
+              <th class="<%= style_table_th %> sticky top-0 z-10 w-10 text-center"></th>
+              <th class="<%= style_table_th %> sticky top-0 z-10 w-10 text-center"></th>
+              <th class="<%= style_table_th %> sticky top-0 z-10 w-16 text-center">Riga</th>
+              <% display_headers.each do |h| %>
+                <th class="<%= style_table_th %> sticky top-0 z-10"><%= h %></th>
+              <% end %>
+            </tr>
+          </thead>
+          <%= render partial: "import_rows" %>
+        </table>
+      </div>
+    </details>
 
-    <div class="flex gap-4">
+    <div class="flex gap-4 items-center" data-controller="loader">
       <%= link_to "Vai alla verifica", inventories_import_verify_path,
-          class: "#{style_save_button} px-5 py-2 tracking-wider rounded-sm uppercase text-xs cursor-pointer transition-colors text-center" %>
+          class: "#{style_save_button} px-4 py-1.5 tracking-wider rounded-sm uppercase text-xs cursor-pointer transition-colors text-center" %>
 
-      <%= button_to "Annulla", inventories_import_cancel_path, method: :delete, class: "#{style_cancel_button} px-5 py-2 tracking-wider rounded-sm uppercase text-xs cursor-pointer transition-colors" %>
+      <% invalid_creatable = @data[:rows].filter_map { |r| (r['Item Code:'] || r['itemcode'] || r['Item Code'])&.to_s&.strip.presence if !r[:_valid] }.uniq.size %>
+      <% if invalid_creatable > 0 %>
+        <%= button_to "Crea #{invalid_creatable} articoli mancanti", inventories_import_create_missing_items_path,
+            method: :post,
+            data: { action: "submit->loader#show", turbo_submits_with: "Creazione articoli in corso..." },
+            class: "px-4 py-1.5 tracking-wider rounded-sm uppercase text-xs cursor-pointer transition-colors bg-amber-500 hover:bg-amber-600 text-white" %>
+      <% end %>
+
+      <%= button_to "Annulla", inventories_import_cancel_path, method: :delete, class: "#{style_cancel_button} px-4 py-1.5 tracking-wider rounded-sm uppercase text-xs cursor-pointer transition-colors" %>
+
+      <div data-loader-target="overlay" class="hidden fixed inset-0 z-50 bg-black/50 items-center justify-center">
+        <div class="bg-white dark:bg-slate-800 rounded-xl p-8 flex flex-col items-center gap-4 shadow-2xl">
+          <svg class="animate-spin h-10 w-10 text-amber-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span class="text-slate-700 dark:text-slate-200 font-semibold text-lg">Creazione articoli in corso...</span>
+          <span class="text-slate-400 dark:text-slate-400 text-sm">Attendi il completamento</span>
+        </div>
+      </div>
     </div>
 
   <% else %>
@@ -124,7 +215,7 @@
                   class: style_select_class %>
             </div>
             <%= f.submit "Carica",
-                class: "px-5 py-2 tracking-wider rounded-sm uppercase text-xs cursor-pointer transition-colors #{style_action_btn}",
+                class: "px-4 py-1.5 tracking-wider rounded-sm uppercase text-xs cursor-pointer transition-colors #{style_action_btn}",
                 data: { turbo_submits_with: "Caricamento..." } %>
           </div>
         <% end %>

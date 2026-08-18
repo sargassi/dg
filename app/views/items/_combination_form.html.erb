@@ -1,0 +1,271 @@
+<%= form_with(model: item, url: items_path, data: {
+      controller: "combination-wizard",
+      combination_wizard_url_value: distinct_values_items_path,
+      combination_wizard_info_url_value: combination_info_items_path,
+      combination_wizard_value_info_url_value: value_info_items_path,
+      turbo_frame: "_top"
+    }) do |form| %>
+  <% if item.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium mb-4 border border-red-200 text-sm">
+      <h2><%= pluralize(item.errors.count, "error") %> impediscono il salvataggio:</h2>
+      <ul class="mt-1 list-disc list-inside">
+        <% item.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= form.hidden_field :itemcode, data: { combination_wizard_target: "hidden", field: "itemcode" } %>
+  <%= form.hidden_field :fabricode, data: { combination_wizard_target: "hidden", field: "fabricode" } %>
+  <%= form.hidden_field :varcode, data: { combination_wizard_target: "hidden", field: "varcode" } %>
+
+  <% steps = [
+    { field: "itemcode", label: "Articolo", hint: "Codice articolo" },
+    { field: "fabricode", label: "Tessuto", hint: "Codice tessuto" },
+    { field: "varcode", label: "Colore", hint: "Codice colore" }
+  ] %>
+
+  <ol class="flex items-center gap-1 mb-4" data-combination-wizard-target="stepper">
+    <% steps.each_with_index do |step, i| %>
+      <li class="flex items-center gap-1 flex-1">
+        <span data-combination-wizard-target="stepDot"
+              data-field="<%= step[:field] %>"
+              class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">
+          <span class="inline-flex items-center justify-center w-5 h-5 rounded-full border border-slate-300 dark:border-slate-600 text-[10px] transition-colors"><%= i + 1 %></span>
+          <%= step[:label] %>
+        </span>
+        <% if i < steps.size - 1 %>
+          <span class="flex-1 h-px bg-slate-200 dark:bg-slate-700 mx-1 transition-colors"></span>
+        <% end %>
+      </li>
+    <% end %>
+    <li class="flex items-center gap-1">
+      <span data-combination-wizard-target="stepDot"
+            data-field="details"
+            class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">
+        <span class="inline-flex items-center justify-center w-5 h-5 rounded-full border border-slate-300 dark:border-slate-600 text-[10px] transition-colors">4</span>
+        Dettagli
+      </span>
+    </li>
+  </ol>
+
+  <div data-combination-wizard-target="codesPanel" class="space-y-3">
+    <% steps.each_with_index do |step, i| %>
+      <section data-combination-wizard-target="step"
+               data-field="<%= step[:field] %>"
+               class="rounded-sm border transition-colors bg-slate-50 dark:bg-slate-800/60">
+        <header class="flex items-center gap-2 px-3 py-2 border-b border-slate-200 dark:border-slate-700">
+          <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-[10px] font-bold"><%= i + 1 %></span>
+          <h4 class="text-xs font-bold uppercase tracking-wide text-slate-600 dark:text-slate-300"><%= step[:label] %></h4>
+          <span data-combination-wizard-target="stepState"
+                data-field="<%= step[:field] %>"
+                class="ml-auto text-[10px] font-semibold uppercase tracking-wide"></span>
+        </header>
+
+        <div class="p-3">
+          <div data-combination-wizard-target="search" data-field="<%= step[:field] %>">
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none">search</span>
+              <input type="text"
+                     placeholder="Cerca <%= step[:hint] %>..."
+                     autocomplete="off"
+                     data-combination-wizard-target="input"
+                     data-field="<%= step[:field] %>"
+                     data-action="focus->combination-wizard#search input->combination-wizard#search blur->combination-wizard#hideResults keydown.enter->combination-wizard#preventEnter"
+                     class="w-full border border-slate-300 dark:border-slate-600 outline-none pl-9 <%= step[:field] == "itemcode" ? "pr-24" : "pr-40" %> py-2 text-sm bg-white dark:bg-slate-700 focus:border-accent dark:focus:border-accent">
+              <div class="absolute right-2 top-1/2 -translate-y-1/2 inline-flex items-center gap-2">
+                <% if step[:field] != "itemcode" %>
+                <button type="button"
+                        data-action="mousedown->combination-wizard#preventBlur click->combination-wizard#showAll"
+                        data-field="<%= step[:field] %>"
+                        title="Mostra tutti i <%= step[:field] == "fabricode" ? "tessuti" : "colori" %>"
+                        class="inline-flex items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-accent-700 dark:hover:text-accent-300 hover:underline cursor-pointer">
+                  <span class="material-symbols-outlined text-sm">unfold_more</span>
+                  Tutti
+                </button>
+                <% end %>
+                <button type="button"
+                        data-action="mousedown->combination-wizard#preventBlur click->combination-wizard#toggleNew"
+                        data-field="<%= step[:field] %>"
+                        title="Crea nuovo <%= step[:field] == "itemcode" ? "codice articolo" : (step[:field] == "fabricode" ? "codice tessuto" : "codice colore") %>"
+                        class="inline-flex items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-accent-700 dark:hover:text-accent-300 hover:underline cursor-pointer">
+                  <span class="material-symbols-outlined text-sm">add</span>
+                  Crea nuovo
+                </button>
+              </div>
+              <ul data-combination-wizard-target="results"
+                  data-field="<%= step[:field] %>"
+                  class="hidden absolute left-0 right-0 top-full mt-0.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-b-sm shadow-lg z-50 max-h-48 overflow-y-auto text-sm"></ul>
+            </div>
+          </div>
+
+          <div data-combination-wizard-target="newForm"
+               data-field="<%= step[:field] %>"
+               class="hidden fixed inset-0 z-[60] bg-black/40 items-center justify-center p-4"
+               data-action="click->combination-wizard#backdropClick keydown.esc->combination-wizard#stop keydown.esc->combination-wizard#cancelNew">
+            <div class="bg-white dark:bg-slate-800 w-full max-w-md border border-slate-200 dark:border-slate-700 shadow-2xl rounded-sm overflow-hidden"
+                 data-action="click->combination-wizard#stop">
+              <header class="flex items-center justify-between px-4 py-2.5 bg-slate-800 dark:bg-slate-900">
+                <h4 class="text-xs font-bold uppercase tracking-wide text-white">Nuovo <%= step[:field] == "itemcode" ? "codice articolo" : (step[:field] == "fabricode" ? "codice tessuto" : "codice colore") %></h4>
+                <button type="button"
+                        data-action="combination-wizard#cancelNew"
+                        data-field="<%= step[:field] %>"
+                        class="inline-flex items-center justify-center h-7 w-7 text-slate-400 hover:text-white transition-colors cursor-pointer">
+                  <span class="material-symbols-outlined text-base">close</span>
+                </button>
+              </header>
+              <div class="p-4 space-y-3">
+                <div class="relative">
+                  <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none">search</span>
+                  <input type="text"
+                         placeholder="Scrivi per vedere i suggerimenti..."
+                         autocomplete="off"
+                         data-combination-wizard-target="newInput"
+                         data-field="<%= step[:field] %>"
+                         data-action="keydown.enter->combination-wizard#preventEnter keydown.enter->combination-wizard#confirmNew input->combination-wizard#searchNew"
+                         class="w-full border border-slate-300 dark:border-slate-600 outline-none pl-9 pr-3 py-2 text-sm bg-white dark:bg-slate-700 focus:border-accent dark:focus:border-accent">
+                  <ul data-combination-wizard-target="newResults"
+                      data-field="<%= step[:field] %>"
+                      class="hidden absolute left-0 right-0 top-full mt-0.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-b-sm shadow-lg z-50 max-h-48 overflow-y-auto text-sm"></ul>
+                </div>
+                <div data-combination-wizard-target="newStatus" data-field="<%= step[:field] %>" class="hidden text-xs font-medium"></div>
+                <div class="flex gap-2 pt-1">
+                  <button type="button"
+                          data-action="combination-wizard#confirmNew"
+                          data-field="<%= step[:field] %>"
+                          class="px-4 py-1.5 text-xs font-semibold uppercase tracking-wider rounded-sm bg-accent text-white hover:opacity-90 cursor-pointer">
+                    Crea
+                  </button>
+                  <button type="button"
+                          data-action="combination-wizard#useAnyway"
+                          data-field="<%= step[:field] %>"
+                          data-combination-wizard-target="useAnyway"
+                          class="hidden inline-flex items-center gap-1 text-xs font-semibold text-amber-700 dark:text-amber-400 hover:underline cursor-pointer">
+                    <span class="material-symbols-outlined text-sm">warning</span>
+                    Usa comunque
+                  </button>
+                  <button type="button"
+                          data-action="combination-wizard#cancelNew"
+                          data-field="<%= step[:field] %>"
+                          class="ml-auto px-3 py-1.5 text-xs font-medium uppercase tracking-wider rounded-sm bg-slate-200 dark:bg-slate-600 text-slate-700 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-500 cursor-pointer">
+                    Annulla
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div data-combination-wizard-target="selected" data-field="<%= step[:field] %>" class="hidden items-center gap-2">
+            <span class="material-symbols-outlined text-base text-green-600 dark:text-green-400">check_circle</span>
+            <code data-combination-wizard-target="selectedCode"
+                  data-field="<%= step[:field] %>"
+                  class="font-mono text-sm bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 px-2 py-1 rounded-sm"></code>
+            <button type="button"
+                    data-action="combination-wizard#editStep"
+                    data-field="<%= step[:field] %>"
+                    class="ml-auto text-xs font-semibold text-accent-700 dark:text-accent-300 hover:underline cursor-pointer">
+              Modifica
+            </button>
+          </div>
+
+          <div data-combination-wizard-target="pending" data-field="<%= step[:field] %>" class="hidden items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500">
+            <span class="material-symbols-outlined text-sm">lock</span>
+            Completa il passaggio precedente
+          </div>
+        </div>
+      </section>
+    <% end %>
+
+    <div class="flex gap-2 pt-2 items-center">
+      <button type="button"
+              data-action="combination-wizard#continue"
+              data-combination-wizard-target="continueBtn"
+              class="hidden px-4 py-1.5 <%= style_save_button %> inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer">
+        Continua
+      </button>
+      <button type="button"
+              data-action="click->drawer#close"
+              class="px-4 py-1.5 <%= style_cancel_button %> inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer ml-auto">
+        Annulla
+      </button>
+    </div>
+  </div>
+
+  <div data-combination-wizard-target="detailsPanel" class="hidden space-y-3">
+    <div class="text-sm font-semibold text-slate-700 dark:text-slate-200">Dettagli articolo</div>
+
+    <div>
+      <%= form.label :description, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+      <%= form.text_field :description,
+            data: { combination_wizard_target: "field", field_name: "description" },
+            class: "border border-slate-300 dark:border-slate-600 outline-none px-3 py-2 w-full text-sm bg-white dark:bg-slate-700 focus:border-accent dark:focus:border-accent" %>
+    </div>
+
+    <div class="flex gap-3">
+      <div class="flex-1">
+        <%= form.label :tg, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+        <%= form.text_field :tg,
+              data: { combination_wizard_target: "field", field_name: "tg" },
+              class: "border border-slate-300 dark:border-slate-600 outline-none px-3 py-2 w-full text-sm bg-white dark:bg-slate-700 focus:border-accent dark:focus:border-accent" %>
+      </div>
+      <div class="flex-[2]">
+        <%= form.label :fabric, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+        <%= form.text_field :fabric,
+              data: { combination_wizard_target: "field", field_name: "fabric" },
+              class: "border border-slate-300 dark:border-slate-600 outline-none px-3 py-2 w-full text-sm bg-white dark:bg-slate-700 focus:border-accent dark:focus:border-accent" %>
+      </div>
+      <div class="flex-1">
+        <%= form.label :colour, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+        <%= form.text_field :colour,
+              data: { combination_wizard_target: "field", field_name: "colour" },
+              class: "border border-slate-300 dark:border-slate-600 outline-none px-3 py-2 w-full text-sm bg-white dark:bg-slate-700 focus:border-accent dark:focus:border-accent" %>
+      </div>
+      <div class="flex-1">
+        <%= form.label :materiale, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+        <%= form.text_field :materiale,
+              data: { combination_wizard_target: "field", field_name: "materiale" },
+              class: "border border-slate-300 dark:border-slate-600 outline-none px-3 py-2 w-full text-sm bg-white dark:bg-slate-700 focus:border-accent dark:focus:border-accent" %>
+      </div>
+    </div>
+
+    <div class="flex gap-3">
+      <div class="flex-1">
+        <%= form.label :collection_id, "Collezione *", class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+        <%= form.collection_select :collection_id, @collections || [], :id, :description,
+              { include_blank: "-" },
+              class: "border border-slate-300 dark:border-slate-600 outline-none px-3 py-2 w-full text-sm bg-white dark:bg-slate-700 focus:border-accent dark:focus:border-accent",
+              data: { combination_wizard_target: "collection" } %>
+      </div>
+      <div class="flex-[2]">
+        <%= form.label :note, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+        <%= form.text_area :note, rows: 1, class: "border border-slate-300 dark:border-slate-600 outline-none px-3 py-2 w-full text-sm resize-none bg-white dark:bg-slate-700 focus:border-accent dark:focus:border-accent" %>
+      </div>
+    </div>
+
+    <button type="button"
+            data-action="combination-wizard#autofill"
+            data-combination-wizard-target="autofill"
+            class="hidden inline-flex items-center gap-1 text-xs font-semibold text-accent-700 dark:text-accent-300 hover:underline cursor-pointer">
+      <span class="material-symbols-outlined text-sm">auto_awesome</span>
+      Auto-compila campi
+    </button>
+
+    <div data-combination-wizard-target="preview"
+         class="hidden text-xs px-3 py-2 rounded-sm border bg-slate-50 border-slate-200 text-slate-700 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-200"></div>
+
+    <div class="flex gap-2 pt-2 border-t border-slate-200 dark:border-slate-700 items-center">
+      <button type="button"
+              data-action="combination-wizard#back"
+              class="px-4 py-1.5 <%= style_cancel_button %> inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer">
+        Indietro
+      </button>
+      <%= form.submit "Crea combinazione", class: "px-4 py-1.5 #{style_save_button} inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer ml-auto" %>
+      <button type="button"
+              data-action="click->drawer#close"
+              class="px-4 py-1.5 <%= style_cancel_button %> inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer">
+        Annulla
+      </button>
+    </div>
+  </div>
+<% end %>

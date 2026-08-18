@@ -9,3 +9,4 @@ pin_all_from "app/javascript/controllers", under: "controllers"
 pin "trix"
 pin "@rails/actiontext", to: "actiontext.js"
 pin "sortablejs" # @1.15.7
+pin "tom-select" # @2.6.2 (vendored with local ./sifter.js + ./unicode-variants.js)

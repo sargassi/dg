@@ -36,7 +36,7 @@
             <label class="text-xs text-slate-400 uppercase tracking-wide block mb-1">Dove</label>
             <button type="button" data-action="click->qr-scanner#scanWarehouseLoc"
                     data-qr-label="Posizione"
-                    class="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-lg bg-slate-600 hover:bg-slate-700 text-white cursor-pointer"
+                    class="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-sm bg-slate-600 hover:bg-slate-700 text-white cursor-pointer"
                     title="Scansiona QR">
               <span class="material-symbols-outlined text-lg">qr_code_scanner</span>
             </button>
@@ -78,7 +78,7 @@
                    autocomplete="off">
           </div>
           <input type="hidden" data-autocomplete-target="hidden">
-          <button type="button" data-action="mobile-wizard#startScan" class="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-lg bg-slate-800 hover:bg-slate-900 text-white cursor-pointer" title="Scansiona QR">
+          <button type="button" data-action="mobile-wizard#startScan" class="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-sm bg-slate-800 hover:bg-slate-900 text-white cursor-pointer" title="Scansiona QR">
             <span class="material-symbols-outlined text-lg">qr_code_scanner</span>
           </button>
         </div>
@@ -88,7 +88,7 @@
       <div data-mobile-wizard-target="cart" class="space-y-2"></div>
 
       <div class="flex gap-2">
-        <%= form.button "Genera etichette", class: "w-full py-3 rounded-lg #{style_save_button} text-sm font-semibold cursor-pointer" %>
+        <%= form.button "Genera etichette", class: "w-full py-2 rounded-sm #{style_save_button} text-xs font-semibold cursor-pointer" %>
       </div>
     </div>
 

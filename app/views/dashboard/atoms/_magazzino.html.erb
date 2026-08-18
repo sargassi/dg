@@ -1,7 +1,6 @@
-<div class="utilities flex justify-between items-stretch gap-8">
-    <div class="utility py-4 xl:w-1/2 flex flex-col gap-4">
+<div class="grid lg:grid-cols-2 gap-6 items-start max-w-3xl">
+    <div class="flex flex-col gap-5">
         <h3 class="<%= style_main_sub_header %>">Magazzino</h3>
-        <hr>
         <%= render partial: '/atoms/home/card', locals: {title: 'Gestione Magazzini', subtitle: 'Magazzini e ubicazioni', link: '/mainware/home'} %>
         <%= render partial: '/atoms/home/card', locals: {title: 'Articoli', subtitle: 'Gestione articoli', link: '/items'} %>
         <%= render partial: '/atoms/home/card', locals: {title: 'Carichi / Scarichi', subtitle: 'Movimenti di magazzino', link: '/mainware/index'} %>

@@ -3,6 +3,6 @@
 
   <%= render "form", inventory: @inventory %>
 
-  <%= link_to "Show this inventory", @inventory, class: "ml-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
-  <%= link_to "Back to inventories", inventories_path, class: "ml-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
+  <%= link_to "Show this inventory", @inventory, class: "ml-2 #{style_btn(variant: :neutral)}" %>
+  <%= link_to "Back to inventories", inventories_path, class: "ml-2 #{style_btn(variant: :neutral)}" %>
 </div>

@@ -6,10 +6,10 @@
 
     <%= render @event %>
 
-    <%= link_to "Edit this event", edit_directory_event_path(@event), class: "mt-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
+    <%= link_to "Edit this event", edit_directory_event_path(@event), class: "mt-2 #{style_btn(variant: :neutral)}" %>
     <div class="inline-block ml-2">
-      <%= button_to "Destroy this event", directory_event_path(@event), method: :delete, class: "mt-2 rounded-lg py-3 px-5 bg-gray-100 font-medium" %>
+      <%= button_to "Destroy this event", directory_event_path(@event), method: :delete, class: "mt-2 #{style_btn(variant: :danger)}" %>
     </div>
-    <%= link_to "Back to events", directory_events_path, class: "ml-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
+    <%= link_to "Back to events", directory_events_path, class: "ml-2 #{style_btn(variant: :neutral)}" %>
   </div>
 </div>

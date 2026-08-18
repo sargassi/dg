@@ -5,13 +5,13 @@
   <div class="search w-3/4 relative">
     <%= search_form_for @q do |f| %>
     <%= f.search_field :titolo_or_testata_or_descrizione_cont, class:"w-3/4 border-slate-300" %>
-    <%= f.submit 'Cerca', class:'px-5 py-2 bg-slate-900 hover:bg-slate-700 rounded inline-block uppercase text-white font-bold cursor-pointer text-sm' %>
+    <%= f.submit 'Cerca', class:'px-4 py-1.5 bg-slate-900 hover:bg-slate-700 rounded-sm inline-block uppercase text-white font-bold cursor-pointer text-xs' %>
   <% end %>
     <a href="?q" class="font-bold  cursor-pointer block absolute top-0 -left-6 py-2 align-center text-red-500 hover:text-red-700 font-bold  rounded">X</a>
     </div>
     <div class="nuovo w-1/4">
        
-<%= link_to "Nuovo articolo rassegna stampa", new_rassegna_path, :class=>"bg-accent-700 hover:bg-accent-600 py-2 px-5 inline-block uppercase text-white rounded text-sm" %>
+<%= link_to "Nuovo articolo rassegna stampa", new_rassegna_path, :class=>"bg-accent-700 hover:bg-accent-600 py-1.5 px-4 inline-block uppercase text-white rounded-sm text-xs" %>
 </div>
 </div>
 

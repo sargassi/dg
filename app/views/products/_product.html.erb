@@ -60,8 +60,8 @@
 </div>  
 <div class="actions flex-grow text-end w-full">
   <% if action_name != "show" %>
-    <%= link_to "Show this product", product, class: "rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
-    <%= link_to 'Edit this product', edit_product_path(product), class: "rounded-lg py-3 ml-2 px-5 bg-gray-100 inline-block font-medium" %>
+    <%= link_to "Show this product", product, class: "#{style_btn(variant: :neutral)}" %>
+    <%= link_to 'Edit this product', edit_product_path(product), class: "ml-2 #{style_btn(variant: :neutral)}" %>
     <hr class="mt-6">
   <% end %>
 </div>

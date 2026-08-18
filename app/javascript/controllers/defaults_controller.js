@@ -1,15 +1,50 @@
 import { Controller } from "@hotwired/stimulus";
+import TomSelect from "tom-select";
 
 export default class extends Controller {
-  static targets = ["warehouse", "location"];
+  static targets = ["warehouse", "location", "collection"];
 
   connect() {
     this._cacheLocations();
-    if (this.hasWarehouseTarget) {
-      this.warehouseTarget.addEventListener("change", () => this._onWarehouseChange());
-      this._onWarehouseChange();
+
+    if (this.hasCollectionTarget) {
+      this.tsCollection = this._initSelect(this.collectionTarget, {
+        allowEmptyOption: true,
+      });
     }
 
+    this.tsWarehouse = this._initSelect(this.warehouseTarget, {
+      allowEmptyOption: true,
+      onChange: () => this._onWarehouseChange(),
+    });
+
+    this.tsLocation = this._initSelect(this.locationTarget, {
+      allowEmptyOption: true,
+      onChange: () => this.propagate(),
+    });
+
+    // Bridge: keep Tom Select in sync when a value is set programmatically
+    // on the native select (e.g. QR scan sets value and dispatches change).
+    this.warehouseTarget.addEventListener("change", () => {
+      if (this.tsWarehouse) this.tsWarehouse.setValue(this.warehouseTarget.value, true);
+      this._onWarehouseChange();
+    });
+    this.locationTarget.addEventListener("change", () => {
+      if (this.tsLocation) this.tsLocation.setValue(this.locationTarget.value, true);
+      this.propagate();
+    });
+
+    this._onWarehouseChange();
+  }
+
+  _initSelect(el, opts = {}) {
+    if (!el) return null;
+    const defaults = {
+      render: {
+        item: (data, escape) => (data.value ? `<div>${escape(data.text)}</div>` : "<div>...</div>"),
+      },
+    };
+    return new TomSelect(el, { ...defaults, ...opts });
   }
 
   _cacheLocations() {
@@ -26,16 +61,26 @@ export default class extends Controller {
     const whVal = this.hasWarehouseTarget ? this.warehouseTarget.value : "";
     if (!whVal) {
       this.locationTarget.disabled = true;
-      this.locationTarget.innerHTML = '<option value="">Seleziona prima il magazzino</option>';
+      if (this.tsLocation) {
+        this.tsLocation.disable();
+        this.tsLocation.clearOptions();
+        this.tsLocation.setValue("", true);
+        this.tsLocation.refreshOptions(false);
+      }
       this.propagate();
       return;
     }
     this.locationTarget.disabled = false;
-    const filtered = this._allLocations.filter(l => l.warehouse_id === whVal);
-    const defaultLoc = this.locationTarget.dataset.defaultLocation;
-    delete this.locationTarget.dataset.defaultLocation;
-    this.locationTarget.innerHTML = '<option value="">Seleziona ubica</option>' +
-      filtered.map(l => `<option value="${l.id}" ${l.id === defaultLoc ? 'selected' : ''}>${l.code}</option>`).join("");
+    if (this.tsLocation) {
+      this.tsLocation.enable();
+      this.tsLocation.clearOptions();
+      const filtered = this._allLocations.filter(l => l.warehouse_id === whVal);
+      this.tsLocation.addOption(filtered.map(l => ({ value: l.id, text: l.code })));
+      const defaultLoc = this.locationTarget.dataset.defaultLocation;
+      delete this.locationTarget.dataset.defaultLocation;
+      this.tsLocation.setValue(defaultLoc || "", true);
+      this.tsLocation.refreshOptions(false);
+    }
     this.propagate();
   }
 
@@ -72,5 +117,20 @@ export default class extends Controller {
     });
     form.querySelectorAll(".wh-display").forEach(el => el.textContent = whTxtVal);
     form.querySelectorAll(".loc-display").forEach(el => el.textContent = locTxtVal);
+  }
+
+  disconnect() {
+    if (this.tsCollection) {
+      this.tsCollection.destroy();
+      this.tsCollection = null;
+    }
+    if (this.tsWarehouse) {
+      this.tsWarehouse.destroy();
+      this.tsWarehouse = null;
+    }
+    if (this.tsLocation) {
+      this.tsLocation.destroy();
+      this.tsLocation = null;
+    }
   }
 }

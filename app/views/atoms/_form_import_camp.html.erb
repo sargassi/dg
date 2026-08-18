@@ -5,7 +5,7 @@
       <%= hidden_field_tag :import, nil, :value => 'y' %>
       <%= f.file_field :file, class: "#{style_import_field} !w-auto", :required => true %>
       <%= f.text_field :season, class: "#{style_import_field} w-80", :required => true, :placeholder => 'Descrizione' %>
-      <%= f.submit "Importa", target: "_blank", class: "px-5 py-2 tracking-wider rounded-sm uppercase text-xs cursor-pointer transition-colors #{style_action_btn}" %>
+      <%= f.submit "Importa", target: "_blank", class: "px-4 py-1.5 tracking-wider rounded-sm uppercase text-xs cursor-pointer transition-colors #{style_action_btn}" %>
     <% end %>
 
     <form action="#" class="flex items-center ml-4">

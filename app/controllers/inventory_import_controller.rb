@@ -13,15 +13,43 @@ class InventoryImportController < ApplicationController
     return redirect_to inventories_import_path, alert: "Seleziona un file" unless params[:file].present?
     return redirect_to inventories_import_path, alert: "Seleziona un tipo operazione" unless params[:operationtype_id].present?
 
-    service = ImportInventoryService.new
-    data = service.parse(params[:file],
+    imports_dir = Rails.root.join("tmp", "imports")
+    FileUtils.mkdir_p(imports_dir)
+    file_name = params[:file].original_filename.to_s
+    file_path = imports_dir.join("inv_#{session.id}_#{Time.current.to_i}_#{file_name.to_s.parameterize.first(30)}.xlsx").to_s
+    FileUtils.cp(params[:file].path, file_path)
+
+    metadata = {
       warehouse_id: params[:warehouse_id],
       location_id: params[:location_id],
-      operationtype_id: params[:operationtype_id])
-    data[:_file_name] = params[:file].original_filename
-    Rails.cache.write(import_cache_key, data, expires_in: 30.minutes)
-    Rails.cache.delete(inventories_import_stats_key)
-    redirect_to inventories_import_path, notice: "#{data[:rows].size} righe caricate. Verifica e modifica."
+      operationtype_id: params[:operationtype_id]
+    }
+
+    Rails.cache.write(import_status_key, { state: "processing" }, expires_in: 30.minutes)
+    InventoryImportParseJob.perform_later(file_path, file_name, metadata, import_cache_key, import_status_key)
+    redirect_to inventories_import_processing_path
+  end
+
+  def import_processing
+    @status = Rails.cache.read(import_status_key)
+    return redirect_to inventories_import_path if @status&.dig(:state) == "done"
+    return redirect_to inventories_import_path, alert: "Nessuna importazione in corso" unless @status
+
+    render
+  end
+
+  def import_status_json
+    status = Rails.cache.read(import_status_key)
+    return render json: { total: 1, done: 0, complete: false } unless status
+
+    case status[:state]
+    when "done"
+      render json: { total: status[:rows], done: status[:rows], complete: true }
+    when "error"
+      render json: { total: 0, done: 0, complete: true, error: status[:error] }
+    else
+      render json: { total: 1, done: 0, complete: false }
+    end
   end
 
   def import_update_row
@@ -49,6 +77,18 @@ class InventoryImportController < ApplicationController
 
     Rails.cache.write(import_cache_key, @data, expires_in: 30.minutes)
     respond_to { |format| format.turbo_stream }
+  end
+
+  def import_create_missing_items
+    data = Rails.cache.read(import_cache_key)
+    return redirect_to inventories_import_path, alert: "Nessun dato da importare" unless data&.dig(:rows)&.any?
+
+    stats = ImportInventoryService.new.create_missing_items(data)
+    Rails.cache.write(import_cache_key, data, expires_in: 30.minutes)
+
+    message = "#{stats[:created]} articoli creati"
+    message += ", #{stats[:failed].size} non creati" if stats[:failed].any?
+    redirect_to inventories_import_path, notice: message
   end
 
   def import_verify
@@ -106,6 +146,7 @@ class InventoryImportController < ApplicationController
 
   def import_cancel
     Rails.cache.delete(import_cache_key)
+    Rails.cache.delete(import_status_key)
     redirect_to inventories_import_path, notice: "Importazione annullata."
   end
 
@@ -113,6 +154,10 @@ class InventoryImportController < ApplicationController
 
   def import_cache_key
     "import:inv:#{session.id.to_s}"
+  end
+
+  def import_status_key
+    "import:inv:status:#{session.id.to_s}"
   end
 
   def inventories_import_stats_key

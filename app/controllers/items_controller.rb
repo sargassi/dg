@@ -8,19 +8,125 @@ class ItemsController < ApplicationController
   end
 
   # GET /items/distinct_values?field=itemcode&q=xxx
+  # Filters: itemcode=XXX narrows fabricode/varcode values to items with that itemcode;
+  # fabricode=XXX narrows varcode values to items with that itemcode+fabricode.
   def distinct_values
     allowed = %w[itemcode fabricode varcode]
     return head :bad_request unless allowed.include?(params[:field])
 
+    scope = Item.all
+    scope = scope.where(itemcode: params[:itemcode]) if params[:itemcode].present?
+    scope = scope.where(fabricode: params[:fabricode]) if params[:fabricode].present?
+
     q = "%#{params[:q]}%"
-    values = Item.where(Item.arel_table[params[:field]].matches(q))
-                 .distinct
-                 .limit(20)
-                 .pluck(params[:field])
-                 .map { |v| v.presence }
-                 .compact
+    limit = params[:limit].present? ? params[:limit].to_i.clamp(1, 500) : 20
+    values = scope.where(Item.arel_table[params[:field]].matches(q))
+                  .distinct
+                  .order(params[:field] => :asc)
+                  .limit(limit)
+                  .pluck(params[:field])
+                  .map { |v| v.presence }
+                  .compact
 
     render json: values
+  end
+
+  # GET /items/value_info?field=fabricode|varcode&value=xxx&itemcode=yyy&fabricode=zzz
+  # Reports whether a fabricode/varcode already exists OUTSIDE the current
+  # itemcode (+fabricode) combination, so the wizard can warn before creating a new code.
+  def value_info
+    allowed = %w[fabricode varcode]
+    return head :bad_request unless allowed.include?(params[:field])
+    value = params[:value].to_s.strip
+    return head :bad_request if value.empty?
+
+    scope = Item.where(Item.arel_table[params[:field]].eq(value))
+    case params[:field]
+    when "fabricode"
+      scope = scope.where.not(itemcode: params[:itemcode]) if params[:itemcode].present?
+    when "varcode"
+      if params[:itemcode].present? || params[:fabricode].present?
+        scope = scope.where.not(itemcode: params[:itemcode], fabricode: params[:fabricode])
+      end
+    end
+
+    render json: { exists: scope.exists?, count: scope.count }
+  end
+
+  # GET /items/combination
+  def combination
+    @item = Item.new
+    @collections = Collection.all
+    render layout: false
+  end
+
+  # GET /items/combination_info?itemcode=X&fabricode=Y&varcode=Z&collection_id=N
+  def combination_info
+    itemcode = params[:itemcode].to_s.strip
+    fabricode = params[:fabricode].to_s.strip
+    varcode = params[:varcode].to_s.strip
+    return head :bad_request if [itemcode, fabricode, varcode].all?(&:empty?)
+
+    composed = [itemcode, fabricode, varcode].join
+    collection_id = params[:collection_id].presence
+    exclude_id = params[:exclude_id].presence
+
+    siblings_scope = Item
+      .where(itemcode: itemcode, fabricode: fabricode, varcode: varcode)
+      .where.not(itemcode: [nil, ""]).where.not(fabricode: [nil, ""]).where.not(varcode: [nil, ""])
+    if itemcode.empty? || fabricode.empty? || varcode.empty?
+      siblings_scope = Item.none
+    end
+    siblings_scope = siblings_scope.where.not(id: exclude_id) if exclude_id.present?
+    siblings_scope = siblings_scope.where.not(collection_id: collection_id) if collection_id.present?
+
+    gencode = collection_id.present? ? "#{composed}_#{collection_id}" : nil
+    exact_exists = gencode.present? &&
+      Item.where(gencode: gencode).where.not(id: exclude_id).exists?
+
+    siblings = siblings_scope
+      .includes(:collection)
+      .order("collections.created_at DESC")
+      .map do |item|
+        {
+          collection_id: item.collection_id,
+          collection: item.collection&.description,
+          unit_price: item.unit_price,
+          vendita: item.vendita
+        }
+      end
+
+    suggestion = nil
+    if itemcode.present? && fabricode.present? && varcode.present?
+      suggestion = Item.where(itemcode: itemcode, fabricode: fabricode, varcode: varcode)
+        .includes(:collection).order("collections.created_at DESC").first
+    end
+    if suggestion.nil? && itemcode.present? && fabricode.present?
+      suggestion = Item.where(itemcode: itemcode, fabricode: fabricode)
+        .includes(:collection).order("collections.created_at DESC").first
+    end
+    if suggestion.nil? && itemcode.present?
+      suggestion = Item.where(itemcode: itemcode)
+        .includes(:collection).order("collections.created_at DESC").first
+    end
+    if suggestion.nil? && fabricode.present?
+      suggestion = Item.where(fabricode: fabricode)
+        .includes(:collection).order("collections.created_at DESC").first
+    end
+
+    render json: {
+      composed: composed,
+      gencode: gencode,
+      exact_exists: exact_exists,
+      siblings: siblings,
+      suggestions: suggestion && {
+        description: suggestion.description,
+        tg: suggestion.tg,
+        fabric: suggestion.fabric,
+        colour: suggestion.colour,
+        materiale: suggestion.materiale
+      }
+    }
   end
 
   # GET /items/autocomplete

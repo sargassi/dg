@@ -7,7 +7,7 @@
       <%= f.hidden_field :group, :value => @group %>
       <%= hidden_field_tag :import, nil, :value => 'y' %>
       <%= f.file_field :file, class: "#{style_import_field} !w-auto", :required => true %>
-      <%= f.submit "Importa", target: "_blank", class: "px-5 py-2 tracking-wider rounded-sm uppercase text-xs cursor-pointer transition-colors #{style_action_btn}" %>
+      <%= f.submit "Importa", target: "_blank", class: "px-4 py-1.5 tracking-wider rounded-sm uppercase text-xs cursor-pointer transition-colors #{style_action_btn}" %>
     <% end %>
     <% if pdf.present? && pdf == 'y' %>
       <%= link_to "PDF", etichecks_etichette_path(:format => :pdf), target: "_blank", class: "#{style_import_pdf_small} ml-auto" %>

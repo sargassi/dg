@@ -62,9 +62,9 @@
   </div>
 
   <div class="flex gap-2">
-    <%= form.submit class: "p-3 #{style_save_button} inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer" %>
+    <%= form.submit class: "px-4 py-1.5 #{style_save_button} inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer" %>
     <%= link_to "Annulla", directory_events_path(start_date: (params[:start_date] || event.start_time || Date.today), selected_date: params[:selected_date]),
-          class: "p-3 #{style_cancel_button} inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer",
+          class: "px-4 py-1.5 #{style_cancel_button} inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer",
           data: { turbo_frame: "_top" } %>
   </div>
 <% end %>

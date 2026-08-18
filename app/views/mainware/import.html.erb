@@ -139,18 +139,18 @@
 
     <div class="flex gap-4">
       <% if @warnings.any? %>
-        <button type="button" disabled class="<%= style_save_button %> px-5 py-2 tracking-wider rounded-sm uppercase text-xs cursor-pointer transition-colors opacity-50 cursor-not-allowed">
+        <button type="button" disabled class="<%= style_save_button %> px-4 py-1.5 tracking-wider rounded-sm uppercase text-xs cursor-pointer transition-colors opacity-50 cursor-not-allowed">
           Conferma importazione (<span id="import-count-btn"><%= @data[:rows].size %></span>)
         </button>
       <% else %>
         <%= form_with url: mainware_import_confirm_path, method: :post, data: { turbo: false } do %>
-          <button type="submit" class="<%= style_save_button %> px-5 py-2 tracking-wider rounded-sm uppercase text-xs cursor-pointer transition-colors">
+          <button type="submit" class="<%= style_save_button %> px-4 py-1.5 tracking-wider rounded-sm uppercase text-xs cursor-pointer transition-colors">
             Conferma importazione (<span id="import-count-btn"><%= @data[:rows].size %></span>)
           </button>
         <% end %>
       <% end %>
 
-      <%= button_to "Annulla", mainware_import_cancel_path, method: :delete, class: "#{style_cancel_button} px-5 py-2 tracking-wider rounded-sm uppercase text-xs cursor-pointer transition-colors" %>
+      <%= button_to "Annulla", mainware_import_cancel_path, method: :delete, class: "#{style_cancel_button} px-4 py-1.5 tracking-wider rounded-sm uppercase text-xs cursor-pointer transition-colors" %>
     </div>
 
   <% else %>
@@ -173,11 +173,11 @@
                   class: "#{style_select_class} py-1.5" %>
             </div>
             <%= f.submit "Carica",
-                class: "px-5 py-2 tracking-wider rounded-sm uppercase text-xs cursor-pointer transition-colors #{style_action_btn}" %>
+                class: "px-4 py-1.5 tracking-wider rounded-sm uppercase text-xs cursor-pointer transition-colors #{style_action_btn}" %>
             <%= link_to "Scarica modello", mainware_import_template_path,
                 class: "text-sm text-accent hover:underline" %>
           </div>
-          <p class="text-xs text-slate-500 mt-2">File consentito: .xlsx, massimo 5 MB.</p>
+          <p class="text-xs text-slate-500 mt-2">File consentito: .xlsx.</p>
         <% end %>
       </div>
 

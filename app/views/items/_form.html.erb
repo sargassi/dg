@@ -1,5 +1,6 @@
 <% form_url = item.persisted? ? item_path(item, q: params[:q], collection_id: params[:collection_id], return_to: params[:return_to]) : items_path(q: params[:q], collection_id: params[:collection_id], return_to: params[:return_to]) %>
-<%= form_with(model: item, url: form_url, data: { turbo_frame: "_top", controller: "camera-capture", action: "submit->loader#show", item_clone_target: "form" }, multipart: true) do |form| %>
+<% form_data = { turbo_frame: "_top", controller: "camera-capture", action: "submit->loader#show", item_clone_target: "form" } %>
+<%= form_with(model: item, url: form_url, data: form_data, multipart: true) do |form| %>
   <% if item.errors.any? %>
     <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium mb-4 border border-red-200 text-sm">
       <h2><%= pluralize(item.errors.count, "error") %> impediscono il salvataggio:</h2>
@@ -13,58 +14,115 @@
 
   <div class="space-y-3">
     <div class="flex gap-3">
+      <% [{ field: "itemcode", hint: "Codice articolo", show_all: false, title: "codice articolo" },
+          { field: "fabricode", hint: "Codice tessuto", show_all: true, title: "tessuti" },
+          { field: "varcode", hint: "Codice colore", show_all: true, title: "colori" }].each do |cfg| %>
       <div class="flex-1 relative" data-controller="list-autocomplete"
            data-list-autocomplete-url-value="<%= distinct_values_items_path %>"
-           data-list-autocomplete-field-value="itemcode">
-        <%= form.label :itemcode, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
-        <%= form.text_field :itemcode,
-              data: { list_autocomplete_target: "input", action: "input->list-autocomplete#search blur->list-autocomplete#hideResults" },
-              class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm",
-              autocomplete: "off" %>
+           data-list-autocomplete-field-value="<%= cfg[:field] %>"
+           data-list-autocomplete-value-info-url-value="<%= value_info_items_path %>">
+        <%= form.label cfg[:field], class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
+        <div class="relative">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none">search</span>
+          <%= form.text_field cfg[:field],
+                data: { list_autocomplete_target: "input", action: "focus->list-autocomplete#search input->list-autocomplete#search blur->list-autocomplete#hideResults keydown.enter->list-autocomplete#preventEnter" },
+                class: "flex-1 min-w-0 border border-slate-300 outline-none pl-9 #{cfg[:show_all] ? 'pr-40' : 'pr-24'} py-2 w-full text-sm",
+                autocomplete: "off" %>
+          <div class="absolute right-2 top-1/2 -translate-y-1/2 inline-flex items-center gap-2">
+            <% if cfg[:show_all] %>
+            <button type="button"
+                    data-action="mousedown->list-autocomplete#preventBlur click->list-autocomplete#showAll"
+                    data-list-autocomplete-target="showAllBtn"
+                    title="Mostra tutti i <%= cfg[:title] %>"
+                    class="inline-flex items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-accent-700 dark:hover:text-accent-300 hover:underline cursor-pointer">
+              <span class="material-symbols-outlined text-sm">unfold_more</span>
+              Tutti
+            </button>
+            <% end %>
+            <button type="button"
+                    data-action="mousedown->list-autocomplete#preventBlur click->list-autocomplete#toggleNew"
+                    title="Crea nuovo <%= cfg[:field] == "itemcode" ? "codice articolo" : (cfg[:field] == "fabricode" ? "codice tessuto" : "codice colore") %>"
+                    class="inline-flex items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-accent-700 dark:hover:text-accent-300 hover:underline cursor-pointer">
+              <span class="material-symbols-outlined text-sm">add</span>
+              Crea nuovo
+            </button>
+          </div>
+        </div>
         <ul data-list-autocomplete-target="results"
             class="hidden absolute left-0 right-0 top-full mt-0.5 bg-white border border-slate-200 rounded-b-lg shadow-lg z-50 max-h-48 overflow-y-auto text-sm"></ul>
+        <div data-list-autocomplete-target="newForm"
+             class="hidden fixed inset-0 z-[60] bg-black/40 items-center justify-center p-4"
+             data-action="click->list-autocomplete#backdropClick keydown.esc->list-autocomplete#stop keydown.esc->list-autocomplete#cancelNew">
+          <div class="bg-white dark:bg-slate-800 w-full max-w-md border border-slate-200 dark:border-slate-700 shadow-2xl rounded-sm overflow-hidden"
+               data-action="click->list-autocomplete#stop">
+            <header class="flex items-center justify-between px-4 py-2.5 bg-slate-800 dark:bg-slate-900">
+              <h4 class="text-xs font-bold uppercase tracking-wide text-white">Nuovo <%= cfg[:field] == "itemcode" ? "codice articolo" : (cfg[:field] == "fabricode" ? "codice tessuto" : "codice colore") %></h4>
+              <button type="button"
+                      data-action="list-autocomplete#cancelNew"
+                      class="inline-flex items-center justify-center h-7 w-7 text-slate-400 hover:text-white transition-colors cursor-pointer">
+                <span class="material-symbols-outlined text-base">close</span>
+              </button>
+            </header>
+            <div class="p-4 space-y-3">
+              <div class="relative">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none">search</span>
+                <input type="text"
+                       placeholder="Scrivi per vedere i suggerimenti..."
+                       autocomplete="off"
+                       data-list-autocomplete-target="newInput"
+                       data-action="keydown.enter->list-autocomplete#preventEnter keydown.enter->list-autocomplete#confirmNew input->list-autocomplete#searchNew"
+                       class="w-full border border-slate-300 dark:border-slate-600 outline-none pl-9 pr-3 py-2 text-sm bg-white dark:bg-slate-700 focus:border-accent dark:focus:border-accent">
+                <ul data-list-autocomplete-target="newResults"
+                    class="hidden absolute left-0 right-0 top-full mt-0.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-b-sm shadow-lg z-50 max-h-48 overflow-y-auto text-sm"></ul>
+              </div>
+              <div data-list-autocomplete-target="newStatus" class="hidden text-xs font-medium"></div>
+              <div class="flex gap-2 pt-1">
+                <button type="button"
+                        data-action="list-autocomplete#confirmNew"
+                        class="px-4 py-1.5 text-xs font-semibold uppercase tracking-wider rounded-sm bg-accent text-white hover:opacity-90 cursor-pointer">
+                  Crea
+                </button>
+                <button type="button"
+                        data-action="list-autocomplete#useAnyway"
+                        data-list-autocomplete-target="useAnyway"
+                        class="hidden inline-flex items-center gap-1 text-xs font-semibold text-amber-700 dark:text-amber-400 hover:underline cursor-pointer">
+                  <span class="material-symbols-outlined text-sm">warning</span>
+                  Usa comunque
+                </button>
+                <button type="button"
+                        data-action="list-autocomplete#cancelNew"
+                        class="ml-auto px-3 py-1.5 text-xs font-medium uppercase tracking-wider rounded-sm bg-slate-200 dark:bg-slate-600 text-slate-700 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-500 cursor-pointer">
+                  Annulla
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="flex-1 relative" data-controller="list-autocomplete"
-           data-list-autocomplete-url-value="<%= distinct_values_items_path %>"
-           data-list-autocomplete-field-value="fabricode">
-        <%= form.label :fabricode, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
-        <%= form.text_field :fabricode,
-              data: { list_autocomplete_target: "input", action: "input->list-autocomplete#search blur->list-autocomplete#hideResults" },
-              class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm",
-              autocomplete: "off" %>
-        <ul data-list-autocomplete-target="results"
-            class="hidden absolute left-0 right-0 top-full mt-0.5 bg-white border border-slate-200 rounded-b-lg shadow-lg z-50 max-h-48 overflow-y-auto text-sm"></ul>
-      </div>
-      <div class="flex-1 relative" data-controller="list-autocomplete"
-           data-list-autocomplete-url-value="<%= distinct_values_items_path %>"
-           data-list-autocomplete-field-value="varcode">
-        <%= form.label :varcode, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
-        <%= form.text_field :varcode,
-              data: { list_autocomplete_target: "input", action: "input->list-autocomplete#search blur->list-autocomplete#hideResults" },
-              class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm",
-              autocomplete: "off" %>
-        <ul data-list-autocomplete-target="results"
-            class="hidden absolute left-0 right-0 top-full mt-0.5 bg-white border border-slate-200 rounded-b-lg shadow-lg z-50 max-h-48 overflow-y-auto text-sm"></ul>
-      </div>
+      <% end %>
     </div>
 
     <div>
       <%= form.label :description, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
-      <%= form.text_field :description, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+      <%= form.text_field :description,
+            class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
     </div>
 
     <div class="flex gap-3">
       <div class="flex-1">
         <%= form.label :tg, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
-        <%= form.text_field :tg, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+        <%= form.text_field :tg,
+              class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
       </div>
       <div class="flex-[2]">
         <%= form.label :fabric, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
-        <%= form.text_field :fabric, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+        <%= form.text_field :fabric,
+              class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
       </div>
       <div class="flex-1">
         <%= form.label :colour, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
-        <%= form.text_field :colour, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+        <%= form.text_field :colour,
+              class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
       </div>
       <% if false %>
       <div class="flex-1">
@@ -74,7 +132,8 @@
       <% end %>
       <div class="flex-1">
         <%= form.label :materiale, class: "text-xs text-slate-400 uppercase tracking-wide block mb-1" %>
-        <%= form.text_field :materiale, class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
+        <%= form.text_field :materiale,
+              class: "border border-slate-300 outline-none px-3 py-2 w-full text-sm" %>
       </div>
     </div>
 
@@ -112,7 +171,7 @@
     <div class="flex items-center gap-3 mb-2">
       <button type="button"
               data-action="camera-capture#open"
-              class="flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-dashed border-accent-300 text-accent-700 bg-accent-50 hover:bg-accent-100 transition text-sm font-bold whitespace-nowrap">
+              class="flex items-center justify-center gap-2 px-4 py-2 rounded-sm border border-dashed border-accent-300 text-accent-700 bg-accent-50 hover:bg-accent-100 transition text-xs font-bold whitespace-nowrap">
         <span class="material-symbols-outlined text-lg">camera_alt</span>
         Scatta foto
       </button>
@@ -156,19 +215,19 @@
         <div class="flex gap-3 mt-3 justify-center">
           <button type="button"
                   data-action="camera-capture#shoot"
-                  class="flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-accent text-white text-sm font-bold hover:opacity-90 transition">
+                  class="flex items-center justify-center gap-2 px-4 py-2 rounded-sm bg-accent text-white text-xs font-semibold hover:opacity-90 transition">
             <span class="material-symbols-outlined text-lg">camera</span>
             Scatta
           </button>
           <button type="button"
                   data-camera-capture-target="confirmBtn"
                   data-action="camera-capture#confirm"
-                  class="hidden px-6 py-3 rounded-full bg-emerald-600 text-white text-sm font-bold hover:bg-emerald-700 transition">
+                  class="hidden px-4 py-2 rounded-sm bg-emerald-600 text-white text-xs font-semibold hover:bg-emerald-700 transition">
             Conferma foto
           </button>
           <button type="button"
                   data-action="camera-capture#close"
-                  class="px-6 py-3 rounded-full bg-slate-200 dark:bg-slate-600 text-slate-700 dark:text-slate-200 text-sm font-medium hover:bg-slate-300 dark:hover:bg-slate-500 transition">
+                  class="px-4 py-2 rounded-sm bg-slate-200 dark:bg-slate-600 text-slate-700 dark:text-slate-200 text-xs font-medium hover:bg-slate-300 dark:hover:bg-slate-500 transition">
             Chiudi
           </button>
         </div>
@@ -177,9 +236,9 @@
   </div>
 
   <div class="flex gap-2 mt-4 pt-4 border-t border-slate-200 items-center">
-    <%= form.submit "Modifica", class: "p-3 #{style_save_button} inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer" %>
+    <%= form.submit "Modifica", class: "px-4 py-1.5 #{style_save_button} inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer" %>
     <%= link_to safe_return_to_path(mainware_index_path(q: params[:q], collection_id: params[:collection_id])),
-          class: "p-3 #{style_cancel_button} inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer",
+          class: "px-4 py-1.5 #{style_cancel_button} inline-block tracking-wider rounded-sm uppercase text-xs cursor-pointer",
           data: { turbo_frame: "_top" } do %>
       Annulla
     <% end %>

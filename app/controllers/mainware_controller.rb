@@ -110,10 +110,6 @@ class MainwareController < ApplicationController
       return redirect_to mainware_import_path, alert: "Il file deve essere in formato .xlsx"
     end
 
-    if params[:file].size > 5.megabytes
-      return redirect_to mainware_import_path, alert: "Il file è troppo grande (massimo 5 MB)"
-    end
-
     metadata = {}
     if params[:collection_id].present?
       c = Collection.find(params[:collection_id])

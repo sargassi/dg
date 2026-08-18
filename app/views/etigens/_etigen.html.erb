@@ -40,8 +40,8 @@
   </p>
 
   <% if action_name != "show" %>
-    <%= link_to "Show this etigen", etigen, class: "rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
-    <%= link_to "Edit this etigen", edit_etigen_path(etigen), class: "rounded-lg py-3 ml-2 px-5 bg-gray-100 inline-block font-medium" %>
+    <%= link_to "Show this etigen", etigen, class: "#{style_btn(variant: :neutral)}" %>
+    <%= link_to "Edit this etigen", edit_etigen_path(etigen), class: "ml-2 #{style_btn(variant: :neutral)}" %>
     <hr class="mt-6">
   <% end %>
 </div>

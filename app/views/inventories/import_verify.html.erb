@@ -16,18 +16,6 @@
 
     <h2 class="<%= style_main_sub_header %>">Verifica importazione</h2>
 
-    <% if invalid_rows.any? %>
-      <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-        <div class="flex items-center gap-2">
-          <span class="material-symbols-outlined text-red-500">warning</span>
-          <span class="text-sm font-semibold text-red-800">
-            <%= invalid_rows.size %> riga<%= invalid_rows.size == 1 ? '' : 'he' %> non valid<%= invalid_rows.size == 1 ? 'a' : 'e' %>
-            sar<%= invalid_rows.size == 1 ? 'à' : 'anno' %> saltat<%= invalid_rows.size == 1 ? 'a' : 'e' %>
-          </span>
-        </div>
-      </div>
-    <% end %>
-
     <div class="grid grid-cols-5 gap-4 mb-8">
       <div class="bg-slate-50 p-4 rounded-lg text-center">
         <p class="text-3xl font-bold text-slate-700"><%= @data[:rows].size %></p>
@@ -51,71 +39,53 @@
       </div>
     </div>
 
-    <div class="space-y-6 mb-8">
-      <% if wh_new.any? || wh_existing.any? %>
-        <div>
-          <h3 class="text-sm font-semibold text-slate-700 tracking-wide mb-2">Warehouse</h3>
-          <div class="border border-slate-200 rounded-lg divide-y divide-slate-100">
-            <% if wh_new.any? %>
-              <div class="bg-green-50 px-4 py-2">
-                <span class="text-xs font-semibold text-green-700 uppercase">Nuovi</span>
-              </div>
-              <% wh_new.each do |r| %>
-                <div class="px-4 py-2 text-sm text-green-700 flex items-center gap-2">
-                  <span class="material-symbols-outlined text-sm">add_circle</span>
-                  <span class="font-mono"><%= "##{r[:_warehouse_id]}" %></span>
-                  <span><%= r[:_warehouse_code] %></span>
-                </div>
-              <% end %>
-            <% end %>
-            <% if wh_existing.any? %>
-              <div class="bg-slate-50 px-4 py-2">
-                <span class="text-xs font-semibold text-slate-500 uppercase">Esistenti</span>
-              </div>
-              <% wh_existing.each do |r| %>
-                <div class="px-4 py-2 text-sm text-slate-700 flex items-center gap-2">
-                  <span class="material-symbols-outlined text-sm text-slate-400">check_circle</span>
-                  <span class="font-mono"><%= "##{r[:_warehouse_id]}" %></span>
-                  <span><%= r[:_warehouse_code] %></span>
-                </div>
-              <% end %>
-            <% end %>
-          </div>
-        </div>
-      <% end %>
+    <details class="mb-8 group">
+      <summary class="inline-flex items-center gap-2 cursor-pointer list-none select-none px-4 py-1.5 tracking-wider rounded-sm uppercase text-xs transition-colors bg-slate-100 hover:bg-slate-200 text-slate-700">
+        <span class="material-symbols-outlined text-base">summarize</span>
+        Riepilogo
+        <span class="material-symbols-outlined text-base text-slate-400 transition-transform group-open:rotate-180">expand_more</span>
+      </summary>
 
-      <% if coll_new.any? || coll_existing.any? %>
-        <div>
-          <h3 class="text-sm font-semibold text-slate-700 tracking-wide mb-2">Collection</h3>
-          <div class="border border-slate-200 rounded-lg divide-y divide-slate-100">
-            <% if coll_new.any? %>
-              <div class="bg-green-50 px-4 py-2">
-                <span class="text-xs font-semibold text-green-700 uppercase">Nuove</span>
-              </div>
-              <% coll_new.each do |r| %>
-                <div class="px-4 py-2 text-sm text-green-700 flex items-center gap-2">
-                  <span class="material-symbols-outlined text-sm">add_circle</span>
-                  <span class="font-mono"><%= "##{r[:_collection_id]}" %></span>
-                  <span><%= r[:_collection_description] %></span>
-                </div>
-              <% end %>
+      <div class="mt-4 grid grid-cols-2 gap-4">
+        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+          <p class="text-xs text-green-600 uppercase font-semibold mb-2">Importate</p>
+          <p class="text-3xl font-bold text-green-700 mb-3"><%= valid_rows.size %></p>
+          <div class="text-sm text-green-800 space-y-1">
+            <% if wh_existing.any? %>
+              <div class="flex items-center justify-between"><span>Warehouse esistenti</span><span class="font-mono shrink-0 ml-2"><%= wh_existing.size %></span></div>
+            <% end %>
+            <% if wh_new.any? %>
+              <div class="flex items-center justify-between"><span>Nuovi warehouse</span><span class="font-mono shrink-0 ml-2"><%= wh_new.size %></span></div>
             <% end %>
             <% if coll_existing.any? %>
-              <div class="bg-slate-50 px-4 py-2">
-                <span class="text-xs font-semibold text-slate-500 uppercase">Esistenti</span>
-              </div>
-              <% coll_existing.each do |r| %>
-                <div class="px-4 py-2 text-sm text-slate-700 flex items-center gap-2">
-                  <span class="material-symbols-outlined text-sm text-slate-400">check_circle</span>
-                  <span class="font-mono"><%= "##{r[:_collection_id]}" %></span>
-                  <span><%= r[:_collection_description] %></span>
-                </div>
-              <% end %>
+              <div class="flex items-center justify-between"><span>Collection esistenti</span><span class="font-mono shrink-0 ml-2"><%= coll_existing.size %></span></div>
+            <% end %>
+            <% if coll_new.any? %>
+              <div class="flex items-center justify-between"><span>Nuove collection</span><span class="font-mono shrink-0 ml-2"><%= coll_new.size %></span></div>
+            <% end %>
+            <% unless wh_existing.any? || wh_new.any? || coll_existing.any? || coll_new.any? %>
+              <span class="text-slate-400 italic">Nessun dettaglio</span>
             <% end %>
           </div>
         </div>
-      <% end %>
-    </div>
+
+        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+          <p class="text-xs text-red-600 uppercase font-semibold mb-2">Saltate</p>
+          <p class="text-3xl font-bold text-red-700 mb-3"><%= invalid_rows.size %></p>
+          <div class="text-sm text-red-800 space-y-1">
+            <% invalid_rows.group_by { |r| r[:_error].to_s }.sort_by { |_, rows| -rows.size }.each do |error, rows| %>
+              <div class="flex items-center justify-between">
+                <span class="truncate" title="<%= error %>"><%= error %></span>
+                <span class="font-mono text-xs shrink-0 ml-2"><%= rows.size %> righe</span>
+              </div>
+            <% end %>
+            <% unless invalid_rows.any? %>
+              <span class="text-slate-400 italic">Nessuna riga saltata</span>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </details>
 
     <% if invalid_rows.any? %>
       <div class="mb-8">
@@ -146,12 +116,12 @@
     <div class="flex gap-4" data-controller="loader">
       <%= form_with url: inventories_import_confirm_path, method: :post,
                     data: { action: "submit->loader#show" } do %>
-        <button type="submit" class="<%= style_save_button %> px-5 py-2 tracking-wider rounded-sm uppercase text-xs cursor-pointer transition-colors" data-loader-target="form">
+        <button type="submit" class="<%= style_save_button %> px-4 py-1.5 tracking-wider rounded-sm uppercase text-xs cursor-pointer transition-colors" data-loader-target="form">
           Conferma importazione (<%= valid_rows.size %> righe)
         </button>
       <% end %>
 
-      <%= button_to "Torna indietro", inventories_import_cancel_path, method: :delete, class: "#{style_cancel_button} px-5 py-2 tracking-wider rounded-sm uppercase text-xs cursor-pointer transition-colors" %>
+      <%= button_to "Torna indietro", inventories_import_cancel_path, method: :delete, class: "#{style_cancel_button} px-4 py-1.5 tracking-wider rounded-sm uppercase text-xs cursor-pointer transition-colors" %>
 
       <div data-loader-target="overlay" class="hidden fixed inset-0 z-50 bg-black/50 items-center justify-center">
         <div class="bg-white dark:bg-slate-800 rounded-xl p-8 flex flex-col items-center gap-4 shadow-2xl">

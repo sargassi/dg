@@ -68,6 +68,7 @@ class ImportItemoutServiceTest < ActiveSupport::TestCase
     assert_equal 3, stats[:created]
     assert_equal 2, stats[:itemouts].size
     assert_equal 4, Itemout.count
+    assert_equal 2, Itemout.where(imported: true).count
     assert_equal 7, StockLevel.find_by(gencode: @item.gencode, warehouse_id: @warehouse.id).current_qty
   end
 

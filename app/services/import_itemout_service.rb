@@ -82,7 +82,7 @@ class ImportItemoutService < SpreadsheetImportBase
 
     ActiveRecord::Base.transaction do
       rows_with_warehouse.group_by { |r| r[:_date] }.each do |date, date_rows|
-        itemout = Itemout.new(indate: date, operator_id: user&.id, notes: "Importazione Excel uscite")
+        itemout = Itemout.new(indate: date, operator_id: user&.id, notes: "Importazione Excel uscite", imported: true)
         op_type_id = 2
 
         date_rows.each do |row|

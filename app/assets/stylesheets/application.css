@@ -11,8 +11,145 @@
  * It is generally better to create a new file per style scope.
  *
  *= require_self
+ *= require tom-select
  */
 
 .cell {
     padding: 1em;
 }
+
+/* ---- Tom Select overrides (magazzino/ubicazione) ---- */
+.ts-wrapper {
+    /* TomSelect copies the native select's utility classes onto the wrapper
+       (border, padding, background). Strip them: the .ts-control is the visual. */
+    border: none;
+    padding: 0;
+    background: transparent;
+}
+
+.ts-wrapper.single .ts-control {
+    border: 1px solid #cbd5e1; /* slate-300 */
+    border-radius: 0.25rem;
+    background: #fff;
+    box-shadow: none;
+    padding: 8px 8px;
+    min-height: 40px;
+    font-size: 13px;
+    line-height: 1.5;
+    text-transform: uppercase;
+}
+
+.ts-wrapper.single .ts-control:hover {
+    border-color: #94a3b8; /* slate-400 */
+}
+
+.ts-wrapper.single .ts-control input {
+    font-size: 13px;
+    color: #0f172a; /* slate-900 */
+    text-transform: uppercase;
+    line-height: inherit;
+}
+
+.ts-wrapper.single .ts-control .item,
+.ts-wrapper.single .ts-control .item > div {
+    color: #0f172a; /* slate-900 */
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    line-height: inherit;
+}
+
+/* empty item ("..." placeholder look) */
+.ts-wrapper.single .ts-control .item[data-value=""] {
+    color: #64748b; /* slate-500 */
+}
+
+.ts-wrapper.focus .ts-control,
+.ts-wrapper.focus .ts-control:hover {
+    box-shadow: 0 0 0 2px rgba(78, 114, 211, 0.2);
+}
+
+.ts-wrapper .ts-dropdown {
+    border: 1px solid #cbd5e1;
+    border-radius: 0.375rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    z-index: 60;
+}
+
+.ts-wrapper .ts-dropdown .ts-dropdown-content .option {
+    font-size: 13px;
+    color: #334155;
+    text-transform: uppercase;
+}
+
+.ts-wrapper .ts-dropdown .ts-dropdown-content .option.active {
+    background: #eef2fb; /* accent-50 */
+    color: #1E3581;
+}
+
+.ts-wrapper .ts-dropdown .ts-dropdown-content .option.selected {
+    color: #1E3581;
+    font-weight: 600;
+}
+
+.ts-wrapper.disabled .ts-control {
+    background: #f8fafc; /* slate-50 */
+    border-color: #e2e8f0; /* slate-200 */
+    cursor: not-allowed;
+}
+
+.ts-wrapper.disabled .ts-control .item {
+    color: #64748b; /* slate-500 */
+}
+
+.ts-wrapper .ts-dropdown .ts-dropdown-content {
+    max-height: 240px;
+}
+
+/* Dark mode */
+.dark .ts-wrapper.single .ts-control {
+    background: #334155; /* slate-700 */
+    border-color: #64748b; /* slate-500 */
+}
+
+.dark .ts-wrapper.single .ts-control .item,
+.dark .ts-wrapper.single .ts-control input {
+    color: #f1f5f9;
+}
+
+.dark .ts-wrapper.single .ts-control .item[data-value=""] {
+    color: #94a3b8; /* slate-400 */
+}
+
+.dark .ts-wrapper.focus .ts-control,
+.dark .ts-wrapper.focus .ts-control:hover {
+    box-shadow: 0 0 0 2px rgba(78, 114, 211, 0.3);
+}
+
+.dark .ts-wrapper .ts-dropdown {
+    background: #1e293b; /* slate-800 */
+    border-color: #475569;
+}
+
+.dark .ts-wrapper .ts-dropdown .ts-dropdown-content .option {
+    color: #e2e8f0;
+}
+
+.dark .ts-wrapper .ts-dropdown .ts-dropdown-content .option.active {
+    background: rgba(78, 114, 211, 0.3);
+    color: #fff;
+}
+
+.dark .ts-wrapper .ts-dropdown .ts-dropdown-content .option.selected {
+    color: #b0c1ec; /* accent-200 */
+}
+
+.dark .ts-wrapper .ts-dropdown .ts-dropdown-content .ts-dropdown-item input {
+    background: #1e293b;
+    color: #e2e8f0;
+}
+
+.dark .ts-wrapper.disabled .ts-control {
+    background: #0f172a; /* slate-900 */
+}
+

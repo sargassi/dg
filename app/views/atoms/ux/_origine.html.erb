@@ -1,0 +1,8 @@
+<% if record.respond_to?(:imported?) && record.imported? %>
+  <span class="inline-flex items-center gap-1 bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wide whitespace-nowrap">
+    <span class="material-symbols-outlined text-[10px] leading-none">file_upload</span>
+    import
+  </span>
+<% else %>
+  <span class="text-slate-400 dark:text-slate-500">—</span>
+<% end %>
